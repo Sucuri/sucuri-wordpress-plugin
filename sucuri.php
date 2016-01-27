@@ -13172,11 +13172,12 @@ function sucuriscan_settings_selfhosting_monitor($nonce)
                 SucuriScanInterface::info($message);
             } elseif (strpos($monitor_fpath, $_SERVER['DOCUMENT_ROOT']) !== false) {
                 SucuriScanInterface::error('File should not be publicly accessible.');
-            } elseif (!file_exists($monitor_fpath)) {
-                SucuriScanInterface::error('File path does not exists.');
-            } elseif (!is_writable($monitor_fpath)) {
-                SucuriScanInterface::error('File path is not writable.');
+            } elseif (file_exists($monitor_fpath)) {
+                SucuriScanInterface::error('File already exists and will not be overwritten.');
+            } elseif (!is_writable(dirname($monitor_fpath))) {
+                SucuriScanInterface::error('File parent directory is not writable.');
             } else {
+                @file_put_contents($monitor_fpath, '', LOCK_EX);
                 $message = 'Log exporter file path was set correctly.';
 
                 SucuriScanEvent::report_info_event($message);
