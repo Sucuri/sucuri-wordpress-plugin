@@ -65,7 +65,7 @@
         <tr class="sucuriscan-%%SUCURI.FailedLogins.PaginationVisibility%%">
             <td colspan="6">
                 <ul class="sucuriscan-pagination">
-                    %%SUCURI.FailedLogins.PaginationLinks%%
+                    %%%SUCURI.FailedLogins.PaginationLinks%%%
                 </ul>
             </td>
         </tr>

@@ -5,7 +5,7 @@
     <div class="inside">
         %%%SUCURI.Hardening.Description%%%
 
-        <div class="sucuriscan-hstatus sucuriscan-hstatus-%%SUCURI.Hardening.Status%%">
+        <div class="sucuriscan-hstatus sucuriscan-hstatus-%%SUCURI.Hardening.Status%% sucuriscan-%%SUCURI.Hardening.StatusVisibility%%">
             <input type="submit" name="%%SUCURI.Hardening.FieldName%%"
             value="%%SUCURI.Hardening.FieldValue%%"
             %%SUCURI.Hardening.FieldAttributes%%

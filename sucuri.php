@@ -539,7 +539,15 @@ class SucuriScan
     public static function datastore_folder_path($path = '')
     {
         $default_dir = 'sucuri';
-        $datastore = SucuriScanOption::get_option(':datastore_path');
+
+        if (defined('SUCURI_DATA_STORAGE')
+            && file_exists(SUCURI_DATA_STORAGE)
+            && is_dir(SUCURI_DATA_STORAGE)
+        ) {
+            $datastore = SUCURI_DATA_STORAGE;
+        } else {
+            $datastore = SucuriScanOption::get_option(':datastore_path');
+        }
 
         // Use the uploads folder by default.
         if (empty($datastore)) {
@@ -2804,11 +2812,11 @@ class SucuriScanOption extends SucuriScanRequest
      */
     public static function get_option($option_name = '')
     {
-        if (function_exists('update_option')) {
+        if (function_exists('get_option')) {
             $option_name = self::variable_prefix($option_name);
             $option_value = get_option($option_name);
 
-            if ($option_value === false && preg_match('/^sucuriscan_/', $option_name)) {
+            if ($option_value === false && strpos($option_name, 'sucuriscan_') === 0) {
                 $option_value = self::get_default_options($option_name);
             }
 
@@ -8576,7 +8584,17 @@ class SucuriScanHardening extends SucuriScan
         $file = str_replace('<', '', $file);
         $file = str_replace('>', '', $file);
 
-        return sprintf("<Files %s>\n\x20\x20Allow from all\n</Files>\n", $file);
+        return sprintf(
+            "<Files %s>\n"
+            . "  <IfModule !mod_authz_core.c>\n"
+            . "    Allow from all\n"
+            . "  </IfModule>\n"
+            . "  <IfModule mod_authz_core.c>\n"
+            . "    Require all granted\n"
+            . "  </IfModule>\n"
+            . "</Files>\n",
+            $file
+        );
     }
 
     public static function whitelist($file = '', $folder = '')
@@ -8770,6 +8788,7 @@ function sucuriscan_harden_status($title = '', $status = 0, $type = '', $message
         'Hardening.Title' => $title,
         'Hardening.Description' => '',
         'Hardening.Status' => 'unknown',
+        'Hardening.StatusVisibility' => 'visible',
         'Hardening.FieldName' => '',
         'Hardening.FieldValue' => '',
         'Hardening.FieldAttributes' => '',
@@ -8805,6 +8824,10 @@ function sucuriscan_harden_status($title = '', $status = 0, $type = '', $message
 
     if (!is_null($updatemsg)) {
         $template_variables['Hardening.UpdateMessage'] = '<p>' . $updatemsg . '</p>';
+    }
+
+    if ($status === 999) {
+        $template_variables['Hardening.StatusVisibility'] = 'hidden';
     }
 
     return SucuriScanTemplate::getSnippet('hardening', $template_variables);
@@ -8888,6 +8911,20 @@ function sucuriscan_harden_nginx_phpfpm()
     $description .= "# Block PHP files in uploads, content, and includes directory.\n";
     $description .= "location ~* /(?:uploads|files|wp-content|wp-includes)/.*\.php$ {\n";
     $description .= "\x20\x20deny all;\n";
+    $description .= '}</pre>';
+
+    $description .= '<p>';
+    $description .= 'If you need to unblock individual files like the one required
+        to keep the TinyMCE plugin working which is located <em>(in the current
+        version)</em> at <em>"/wp-includes/js/tinymce/wp-tinymce.php"</em> you may
+        want to include a rule like this one, changing <em>"/path/to/file.php"</em>
+        with the file path that you want to allow access relative to the document
+        root.';
+    $description .= '</p>';
+
+    $description .= "<pre class='code'>";
+    $description .= "location = /path/to/file.php {\n";
+    $description .= "\x20\x20allow all;\n";
     $description .= '}</pre>';
 
     $description .= '<p class="sucuriscan-hidden">';
@@ -11190,17 +11227,7 @@ function sucuriscan_failed_logins_panel()
 
     $max_failed_logins = SucuriScanOption::get_option(':maximum_failed_logins');
     $notify_bruteforce_attack = SucuriScanOption::get_option(':notify_bruteforce_attack');
-    $failed_logins = sucuriscan_get_failed_logins();
-    $old_failed_logins = sucuriscan_get_failed_logins(true);
-
-    // Merge the new and old failed logins.
-    if (is_array($old_failed_logins) && !empty($old_failed_logins)) {
-        if (is_array($failed_logins) && !empty($failed_logins)) {
-            $failed_logins = array_merge($failed_logins, $old_failed_logins);
-        } else {
-            $failed_logins = $old_failed_logins;
-        }
-    }
+    $failed_logins = sucuriscan_get_all_failed_logins();
 
     if ($failed_logins) {
         $counter = 0;
@@ -11318,6 +11345,37 @@ function sucuriscan_failed_logins_default_content()
     $default_content = "<?php exit(0); ?>\n";
 
     return $default_content;
+}
+
+/**
+ * Returns failed logins data including old entries.
+ *
+ * @return array Failed logins data.
+ */
+function sucuriscan_get_all_failed_logins()
+{
+    $all = array();
+    $new = sucuriscan_get_failed_logins();
+    $old = sucuriscan_get_failed_logins(true);
+
+    if ($new && $old) {
+        // Merge the new and old failed logins.
+        $all = array();
+
+        $all['first_attempt'] = $old['first_attempt'];
+        $all['last_attempt'] = $new['last_attempt'];
+        $all['count'] = $new['count'] + $old['count'];
+        $all['diff_time'] = abs($all['last_attempt'] - $all['first_attempt']);
+        $all['entries'] = array_merge($new['entries'], $old['entries']);
+
+        return $all;
+    } elseif ($new && !$old) {
+        return $new;
+    } elseif (!$new && $old) {
+        return $old;
+    }
+
+    return false;
 }
 
 /**
