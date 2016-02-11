@@ -12,6 +12,12 @@
     </p>
 </div>
 
+<div class="sucuriscan-inline-alert-error sucuriscan-%%SUCURI.CoreFiles.DisabledVisibility%%">
+    <p>
+        The file scanner to check the integrity of the project is disabled.
+    </p>
+</div>
+
 <div class="sucuriscan-inline-alert-error sucuriscan-%%SUCURI.CoreFiles.FailureVisibility%%">
     <p>
         Error retrieving the <a href="%%SUCURI.CoreFiles.RemoteChecksumsURL%%" target="_blank">

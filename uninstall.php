@@ -3,7 +3,6 @@
  * Uninstallation instructions.
  *
  * @package   Sucuri Security
- * @author    Yorman Arias <yorman.arias@sucuri.net>
  * @author    Daniel Cid   <dcid@sucuri.net>
  * @copyright Since 2010-2015 Sucuri Inc.
  * @license   Released under the GPL - see LICENSE file for details.
@@ -41,6 +40,7 @@ $sucuriscan_option_names = array(
     'heartbeat_pulse',
     'ignore_scanning',
     'ignored_events',
+    'language',
     'last_email_at',
     'lastlogin_redirection',
     'logs4report',
@@ -82,6 +82,7 @@ $sucuriscan_option_names = array(
     'site_version',
     'sitecheck_counter',
     'sitecheck_scanner',
+    'sitecheck_timeout',
     'use_wpmail',
     'verify_ssl_cert',
     'xhr_monitor',

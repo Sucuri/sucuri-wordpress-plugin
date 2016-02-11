@@ -7,5 +7,5 @@ has been reset for security reasons.<br>
 You can use this temporary password to log in:
 <span style="display:inline-block;background:#f5f5f5;padding:2px 6px;
 font-family:Menlo, Monaco, monospace, serif;border:1px solid #ddd">
-%%SUCURI.ResetPassword.Password%%</span><br>
+%%%SUCURI.ResetPassword.Password%%%</span><br>
 Please change your password after you log in.
