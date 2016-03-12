@@ -562,23 +562,23 @@ class SucuriScan
                 $upload_dir = wp_upload_dir();
 
                 if (isset($upload_dir['basedir'])) {
-                    $uploads_path = rtrim($upload_dir['basedir'], '/');
+                    $uploads_path = rtrim($upload_dir['basedir'], DIRECTORY_SEPARATOR);
                 }
             }
 
             if ($uploads_path === false) {
                 if (defined('WP_CONTENT_DIR')) {
-                    $uploads_path = WP_CONTENT_DIR . '/uploads';
+                    $uploads_path = implode(DIRECTORY_SEPARATOR, array(WP_CONTENT_DIR, 'uploads'));
                 } else {
-                    $uploads_path = ABSPATH . '/wp-content/uploads';
+                    $uploads_path = implode(DIRECTORY_SEPARATOR, array(ABSPATH, 'wp-content', 'uploads'));
                 }
             }
 
-            $datastore = $uploads_path . '/' . $default_dir;
+            $datastore = $uploads_path . DIRECTORY_SEPARATOR . $default_dir;
             SucuriScanOption::update_option(':datastore_path', $datastore);
         }
 
-        return $datastore . '/' . $path;
+        return $datastore . DIRECTORY_SEPARATOR . $path;
     }
 
     /**
@@ -3793,6 +3793,7 @@ class SucuriScanEvent extends SucuriScan
             } elseif ($event == 'scan_checksums') {
                 $event = 'core_integrity_checks';
                 $email_params['Force'] = true;
+                $email_params['ForceHTML'] = true;
             }
 
             $title = str_replace('_', "\x20", $event);
@@ -5290,7 +5291,12 @@ class SucuriScanAPI extends SucuriScanOption
         }
 
         // Special response for connection timeouts.
-        if ($enqueue && @preg_match('/time(d\s)?out/', $raw_message)) {
+        if ($enqueue === true
+            && array_key_exists('params', $response)
+            && array_key_exists('m', $response['params'])
+            && array_key_exists('time', $response['params'])
+            && @preg_match('/time(d\s)?out/', $raw_message)
+        ) {
             $action_message = ''; /* Empty the error message. */
             $cache = new SucuriScanCache('auditqueue');
             $cache_key = md5($response['params']['time']);
@@ -6201,9 +6207,10 @@ class SucuriScanMail extends SucuriScanOption
         }
 
         // Check whether the email notifications will be sent in HTML or Plain/Text.
-        if (self::prettify_mails()) {
+        if (self::prettify_mails() || (isset($data_set['ForceHTML']) && $data_set['ForceHTML'])) {
             $headers = array( 'content-type: text/html' );
             $data_set['PrettifyType'] = 'pretty';
+            unset($data_set['ForceHTML']);
         } else {
             $message = strip_tags($message);
         }
@@ -6507,6 +6514,14 @@ class SucuriScanTemplate extends SucuriScanRequest
 
         if (!empty($page)) {
             $url_path .= '_' . strtolower($page);
+        }
+
+        if (SucuriScan::is_multisite()) {
+            $url_path = str_replace(
+                'wp-admin/network/admin-ajax.php',
+                'wp-admin/admin-ajax.php',
+                $url_path
+            );
         }
 
         return $url_path;
@@ -9707,7 +9722,8 @@ function sucuriscan_auditlogs()
         $iterator_start = ($page_number - 1) * $max_per_page;
         $iterator_end = $total_items;
 
-        if ($audit_logs->total_entries >= $max_per_page
+        if (property_exists($audit_logs, 'total_entries')
+            && $audit_logs->total_entries >= $max_per_page
             && SucuriScanOption::is_disabled(':audit_report')
         ) {
             $params['AuditLogs.EnableAuditReportVisibility'] = 'visible';
@@ -13221,10 +13237,6 @@ function sucuriscan_settings_alert_events($nonce)
         // Update the notification settings.
         if (SucuriScanRequest::post(':save_alert_events') !== false) {
             $ucounter = 0;
-
-            if (SucuriScanRequest::post(':notify_scan_checksums') == 1) {
-                $_POST['sucuriscan_prettify_mails'] = '1';
-            }
 
             foreach ($sucuriscan_notify_options as $alert_type => $alert_label) {
                 $option_value = SucuriScanRequest::post($alert_type, '(1|0)');
