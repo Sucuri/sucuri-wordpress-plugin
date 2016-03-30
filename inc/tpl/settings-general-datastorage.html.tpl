@@ -32,6 +32,14 @@
             </p>
         </div>
 
+        <div class="sucuriscan-inline-alert-info">
+            <p>
+                An alternative to this setting you can opt to set the directory path from the
+                WordPress configuration file using a constant named <em>"SUCURI_DATA_STORAGE"</em>
+                it must contain a valid and existing absolute directory path.
+            </p>
+        </div>
+
         <div class="sucuriscan-hstatus sucuriscan-hstatus-2">
             <span class="sucuriscan-monospace">%%SUCURI.DatastorePath%%</span>
         </div>

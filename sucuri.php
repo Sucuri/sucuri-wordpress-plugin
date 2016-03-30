@@ -539,7 +539,15 @@ class SucuriScan
     public static function datastore_folder_path($path = '')
     {
         $default_dir = 'sucuri';
-        $datastore = SucuriScanOption::get_option(':datastore_path');
+
+        if (defined('SUCURI_DATA_STORAGE')
+            && file_exists(SUCURI_DATA_STORAGE)
+            && is_dir(SUCURI_DATA_STORAGE)
+        ) {
+            $datastore = SUCURI_DATA_STORAGE;
+        } else {
+            $datastore = SucuriScanOption::get_option(':datastore_path');
+        }
 
         // Use the uploads folder by default.
         if (empty($datastore)) {
