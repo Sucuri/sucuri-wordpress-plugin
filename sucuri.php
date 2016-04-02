@@ -2812,11 +2812,11 @@ class SucuriScanOption extends SucuriScanRequest
      */
     public static function get_option($option_name = '')
     {
-        if (function_exists('update_option')) {
+        if (function_exists('get_option')) {
             $option_name = self::variable_prefix($option_name);
             $option_value = get_option($option_name);
 
-            if ($option_value === false && preg_match('/^sucuriscan_/', $option_name)) {
+            if ($option_value === false && strpos($option_name, 'sucuriscan_') === 0) {
                 $option_value = self::get_default_options($option_name);
             }
 
