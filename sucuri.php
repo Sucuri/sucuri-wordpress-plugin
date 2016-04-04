@@ -8898,6 +8898,20 @@ function sucuriscan_harden_nginx_phpfpm()
     $description .= "\x20\x20deny all;\n";
     $description .= '}</pre>';
 
+    $description .= '<p>';
+    $description .= 'If you need to unblock individual files like the one required
+        to keep the TinyMCE plugin working which is located <em>(in the current
+        version)</em> at <em>"/wp-includes/js/tinymce/wp-tinymce.php"</em> you may
+        want to include a rule like this one, changing <em>"/path/to/file.php"</em>
+        with the file path that you want to allow access relative to the document
+        root.';
+    $description .= '</p>';
+
+    $description .= "<pre class='code'>";
+    $description .= "location = /path/to/file.php {\n";
+    $description .= "\x20\x20allow all;\n";
+    $description .= '}</pre>';
+
     $description .= '<p class="sucuriscan-hidden">';
 
     return sucuriscan_harden_status(
