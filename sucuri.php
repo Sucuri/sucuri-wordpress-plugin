@@ -8778,6 +8778,7 @@ function sucuriscan_harden_status($title = '', $status = 0, $type = '', $message
         'Hardening.Title' => $title,
         'Hardening.Description' => '',
         'Hardening.Status' => 'unknown',
+        'Hardening.StatusVisibility' => 'visible',
         'Hardening.FieldName' => '',
         'Hardening.FieldValue' => '',
         'Hardening.FieldAttributes' => '',
@@ -8813,6 +8814,10 @@ function sucuriscan_harden_status($title = '', $status = 0, $type = '', $message
 
     if (!is_null($updatemsg)) {
         $template_variables['Hardening.UpdateMessage'] = '<p>' . $updatemsg . '</p>';
+    }
+
+    if ($status === 999) {
+        $template_variables['Hardening.StatusVisibility'] = 'hidden';
     }
 
     return SucuriScanTemplate::getSnippet('hardening', $template_variables);
