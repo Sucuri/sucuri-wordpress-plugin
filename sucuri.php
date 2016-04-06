@@ -11217,17 +11217,7 @@ function sucuriscan_failed_logins_panel()
 
     $max_failed_logins = SucuriScanOption::get_option(':maximum_failed_logins');
     $notify_bruteforce_attack = SucuriScanOption::get_option(':notify_bruteforce_attack');
-    $failed_logins = sucuriscan_get_failed_logins();
-    $old_failed_logins = sucuriscan_get_failed_logins(true);
-
-    // Merge the new and old failed logins.
-    if (is_array($old_failed_logins) && !empty($old_failed_logins)) {
-        if (is_array($failed_logins) && !empty($failed_logins)) {
-            $failed_logins = array_merge($failed_logins, $old_failed_logins);
-        } else {
-            $failed_logins = $old_failed_logins;
-        }
-    }
+    $failed_logins = sucuriscan_get_all_failed_logins();
 
     if ($failed_logins) {
         $counter = 0;
@@ -11345,6 +11335,37 @@ function sucuriscan_failed_logins_default_content()
     $default_content = "<?php exit(0); ?>\n";
 
     return $default_content;
+}
+
+/**
+ * Returns failed logins data including old entries.
+ *
+ * @return array Failed logins data.
+ */
+function sucuriscan_get_all_failed_logins()
+{
+    $all = array();
+    $new = sucuriscan_get_failed_logins();
+    $old = sucuriscan_get_failed_logins(true);
+
+    if ($new && $old) {
+        // Merge the new and old failed logins.
+        $all = array();
+
+        $all['first_attempt'] = $old['first_attempt'];
+        $all['last_attempt'] = $new['last_attempt'];
+        $all['count'] = $new['count'] + $old['count'];
+        $all['diff_time'] = abs($all['last_attempt'] - $all['first_attempt']);
+        $all['entries'] = array_merge($new['entries'], $old['entries']);
+
+        return $all;
+    } elseif ($new && !$old) {
+        return $new;
+    } elseif (!$new && $old) {
+        return $old;
+    }
+
+    return false;
 }
 
 /**
