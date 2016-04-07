@@ -34,7 +34,7 @@
         <tr class="sucuriscan-%%SUCURI.UserList.PaginationVisibility%%">
             <td colspan="6">
                 <ul class="sucuriscan-pagination">
-                    %%SUCURI.UserList.Pagination%%
+                    %%%SUCURI.UserList.Pagination%%%
                 </ul>
             </td>
         </tr>
