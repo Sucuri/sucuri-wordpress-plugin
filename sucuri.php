@@ -8584,7 +8584,17 @@ class SucuriScanHardening extends SucuriScan
         $file = str_replace('<', '', $file);
         $file = str_replace('>', '', $file);
 
-        return sprintf("<Files %s>\n\x20\x20Allow from all\n</Files>\n", $file);
+        return sprintf(
+            "<Files %s>\n"
+            . "  <IfModule !mod_authz_core.c>\n"
+            . "    Allow from all\n"
+            . "  </IfModule>\n"
+            . "  <IfModule mod_authz_core.c>\n"
+            . "    Require all granted\n"
+            . "  </IfModule>\n"
+            . "</Files>\n",
+            $file
+        );
     }
 
     public static function whitelist($file = '', $folder = '')
