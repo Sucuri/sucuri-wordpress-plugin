@@ -3,7 +3,6 @@
  * Uninstallation instructions.
  *
  * @package   Sucuri Security
- * @author    Yorman Arias <yorman.arias@sucuri.net>
  * @author    Daniel Cid   <dcid@sucuri.net>
  * @copyright Since 2010-2015 Sucuri Inc.
  * @license   Released under the GPL - see LICENSE file for details.
