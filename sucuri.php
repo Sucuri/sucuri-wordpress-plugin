@@ -153,6 +153,11 @@ define('SUCURISCAN_GET_PLUGINS_LIFETIME', 1800);
 define('SUCURISCAN_MAX_REQUEST_TIMEOUT', 15);
 
 /**
+ * The maximum execution time for SiteCheck requests before timeout.
+ */
+define('SUCURISCAN_MAX_SITECHECK_TIMEOUT', 60);
+
+/**
  * Plugin's global variables.
  *
  * These variables will be defined globally to allow the inclusion in multiple
@@ -2720,6 +2725,7 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_site_version' => '0.0',
             'sucuriscan_sitecheck_counter' => 0,
             'sucuriscan_sitecheck_scanner' => 'enabled',
+            'sucuriscan_sitecheck_timeout' => 30,
             'sucuriscan_use_wpmail' => 'enabled',
             'sucuriscan_verify_ssl_cert' => 'false',
             'sucuriscan_xhr_monitor' => 'disabled',
@@ -5671,6 +5677,7 @@ class SucuriScanAPI extends SucuriScanOption
     {
         if (!empty($domain)) {
             $url = 'https://sitecheck.sucuri.net/';
+            $timeout = (int) SucuriScanOption::get_option(':sitecheck_timeout');
             $response = self::apiCall(
                 $url,
                 'GET',
@@ -5682,6 +5689,7 @@ class SucuriScanAPI extends SucuriScanOption
                 ),
                 array(
                     'assoc' => true,
+                    'timeout' => $timeout,
                 )
             );
 
@@ -12415,7 +12423,7 @@ function sucuriscan_settings_general_adsvisibility($nonce)
  *
  * @return string Parsed HTML code for the scanner settings panel.
  */
-function sucuriscan_settings_scanner()
+function sucuriscan_settings_scanner($nonce)
 {
     global $sucuriscan_schedule_allowed,
         $sucuriscan_interface_allowed;
@@ -12541,6 +12549,8 @@ function sucuriscan_settings_scanner()
     $params['FailedLoginLogLife'] = SucuriScan::human_filesize(@filesize($failedlogins_log_path));
     $params['SiteCheckLogLife'] = SucuriScan::human_filesize(@filesize($sitecheck_log_path));
 
+    $params['SettingsSection.SitecheckTimeout'] = sucuriscan_settings_sitecheck_timeout($nonce);
+
     return SucuriScanTemplate::getSection('settings-scanner', $params);
 }
 
@@ -12608,6 +12618,46 @@ function sucuriscan_settings_ignorescanning()
     }
 
     return SucuriScanTemplate::getSection('settings-ignorescanning', $params);
+}
+
+/**
+ * Read and parse the content of the SiteCheck settings template.
+ *
+ * @return string Parsed HTML code for the SiteCheck settings panel.
+ */
+function sucuriscan_settings_sitecheck($nonce)
+{
+    $params = array();
+
+    return SucuriScanTemplate::getSection('settings-sitecheck', $params);
+}
+
+function sucuriscan_settings_sitecheck_timeout($nonce)
+{
+    $params = array();
+
+    // Update the SiteCheck timeout.
+    if ($nonce) {
+        $timeout = (int) SucuriScanRequest::post(':sitecheck_timeout', '[0-9]+');
+
+        if ($timeout > 0) {
+            if ($timeout <= SUCURISCAN_MAX_SITECHECK_TIMEOUT) {
+                $message = 'SiteCheck timeout set to <code>' . $timeout . '</code> seconds.';
+
+                SucuriScanOption::update_option(':sitecheck_timeout', $timeout);
+                SucuriScanEvent::report_info_event($message);
+                SucuriScanEvent::notify_event('plugin_change', $message);
+                SucuriScanInterface::info($message);
+            } else {
+                SucuriScanInterface::error('SiteCheck timeout in seconds is too high.');
+            }
+        }
+    }
+
+    $params['MaxRequestTimeout'] = SUCURISCAN_MAX_SITECHECK_TIMEOUT;
+    $params['RequestTimeout'] = SucuriScanOption::get_option(':sitecheck_timeout') . ' seconds';
+
+    return SucuriScanTemplate::getSection('settings-sitecheck-timeout', $params);
 }
 
 /**
@@ -13386,7 +13436,7 @@ function sucuriscan_settings_page()
 
     $params['PageTitle'] = 'Settings';
     $params['Settings.General'] = sucuriscan_settings_general($nonce);
-    $params['Settings.Scanner'] = sucuriscan_settings_scanner();
+    $params['Settings.Scanner'] = sucuriscan_settings_scanner($nonce);
     $params['Settings.Alerts'] = sucuriscan_settings_alert($nonce);
     $params['Settings.ApiService'] = sucuriscan_settings_apiservice($nonce);
     $params['Settings.SelfHosting'] = sucuriscan_settings_selfhosting($nonce);

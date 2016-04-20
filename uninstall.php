@@ -81,6 +81,7 @@ $sucuriscan_option_names = array(
     'site_version',
     'sitecheck_counter',
     'sitecheck_scanner',
+    'sitecheck_timeout',
     'use_wpmail',
     'verify_ssl_cert',
     'xhr_monitor',

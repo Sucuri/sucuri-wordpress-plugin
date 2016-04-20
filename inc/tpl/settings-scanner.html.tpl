@@ -225,3 +225,7 @@
 
     </tbody>
 </table>
+
+<div id="poststuff" class="sucuriscan-general-scanner">
+    %%%SUCURI.SettingsSection.SitecheckTimeout%%%
+</div>
