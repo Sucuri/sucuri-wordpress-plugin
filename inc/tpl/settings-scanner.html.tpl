@@ -127,18 +127,6 @@
             </td>
         </tr>
 
-        <tr>
-            <td>SiteCheck scanner</td>
-            <td>%%SUCURI.SiteCheckScannerStatus%%</td>
-            <td class="td-with-button">
-                <form action="%%SUCURI.URL.Settings%%#scanner" method="post">
-                    <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
-                    <input type="hidden" name="sucuriscan_sitecheck_scanner" value="%%SUCURI.SiteCheckScannerSwitchValue%%" />
-                    <button type="submit" class="button-primary %%SUCURI.SiteCheckScannerSwitchCssClass%%">%%SUCURI.SiteCheckScannerSwitchText%%</button>
-                </form>
-            </td>
-        </tr>
-
         <tr class="alternate">
             <td>SiteCheck counter</td>
             <td>%%SUCURI.SiteCheckCounter%% scans so far</td>
@@ -227,5 +215,7 @@
 </table>
 
 <div id="poststuff" class="sucuriscan-general-scanner">
-    %%%SUCURI.SettingsSection.SitecheckTimeout%%%
+    %%%SUCURI.SettingsSection.SiteCheckStatus%%%
+
+    %%%SUCURI.SettingsSection.SiteCheckTimeout%%%
 </div>

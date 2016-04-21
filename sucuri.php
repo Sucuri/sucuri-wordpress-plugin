@@ -11691,17 +11691,6 @@ function sucuriscan_settings_form_submissions($page_nonce = null)
             SucuriScanInterface::info($message);
         }
 
-        // Enable or disable the SiteCheck scanner and the malware scan page.
-        if ($sitecheck_scanner = SucuriScanRequest::post(':sitecheck_scanner', '(en|dis)able')) {
-            $action_d = $sitecheck_scanner . 'd';
-            $message = 'SiteCheck malware and blacklist scanner was <code>' . $action_d . '</code>';
-
-            SucuriScanOption::update_option(':sitecheck_scanner', $action_d);
-            SucuriScanEvent::report_auto_event($message);
-            SucuriScanEvent::notify_event('plugin_change', $message);
-            SucuriScanInterface::info($message);
-        }
-
         // Modify the schedule of the filesystem scanner.
         if ($frequency = SucuriScanRequest::post(':scan_frequency')) {
             if (array_key_exists($frequency, $sucuriscan_schedule_allowed)) {
@@ -12437,7 +12426,6 @@ function sucuriscan_settings_scanner($nonce)
     $parse_errorlogs = SucuriScanOption::get_option(':parse_errorlogs');
     $errorlogs_limit = SucuriScanOption::get_option(':errorlogs_limit');
     $ignore_scanning = SucuriScanOption::get_option(':ignore_scanning');
-    $sitecheck_scanner = SucuriScanOption::get_option(':sitecheck_scanner');
     $sitecheck_counter = SucuriScanOption::get_option(':sitecheck_counter');
     $runtime_scan_human = SucuriScanFSScanner::get_filesystem_runtime(true);
 
@@ -12477,11 +12465,6 @@ function sucuriscan_settings_scanner($nonce)
         'ParseErrorLogsSwitchText' => 'Disable',
         'ParseErrorLogsSwitchValue' => 'disable',
         'ParseErrorLogsSwitchCssClass' => 'button-danger',
-        /* SiteCheck scanner. */
-        'SiteCheckScannerStatus' => 'Enabled',
-        'SiteCheckScannerSwitchText' => 'Disable',
-        'SiteCheckScannerSwitchValue' => 'disable',
-        'SiteCheckScannerSwitchCssClass' => 'button-danger',
         /* Filsystem scanning frequency. */
         'ScanningFrequency' => 'Undefined',
         'ScanningFrequencyOptions' => $scan_freq_options,
@@ -12532,13 +12515,6 @@ function sucuriscan_settings_scanner($nonce)
         $params['ParseErrorLogsSwitchCssClass'] = 'button-success';
     }
 
-    if ($sitecheck_scanner == 'disabled') {
-        $params['SiteCheckScannerStatus'] = 'Disabled';
-        $params['SiteCheckScannerSwitchText'] = 'Enable';
-        $params['SiteCheckScannerSwitchValue'] = 'enable';
-        $params['SiteCheckScannerSwitchCssClass'] = 'button-success';
-    }
-
     if (array_key_exists($scan_freq, $sucuriscan_schedule_allowed)) {
         $params['ScanningFrequency'] = $sucuriscan_schedule_allowed[ $scan_freq ];
     }
@@ -12549,7 +12525,8 @@ function sucuriscan_settings_scanner($nonce)
     $params['FailedLoginLogLife'] = SucuriScan::human_filesize(@filesize($failedlogins_log_path));
     $params['SiteCheckLogLife'] = SucuriScan::human_filesize(@filesize($sitecheck_log_path));
 
-    $params['SettingsSection.SitecheckTimeout'] = sucuriscan_settings_sitecheck_timeout($nonce);
+    $params['SettingsSection.SiteCheckStatus'] = sucuriscan_settings_sitecheck_status($nonce);
+    $params['SettingsSection.SiteCheckTimeout'] = sucuriscan_settings_sitecheck_timeout($nonce);
 
     return SucuriScanTemplate::getSection('settings-scanner', $params);
 }
@@ -12630,6 +12607,41 @@ function sucuriscan_settings_sitecheck($nonce)
     $params = array();
 
     return SucuriScanTemplate::getSection('settings-sitecheck', $params);
+}
+
+function sucuriscan_settings_sitecheck_status($nonce)
+{
+    $params = array();
+    $params['SiteCheck.StatusNum'] = '1';
+    $params['SiteCheck.Status'] = 'Enabled';
+    $params['SiteCheck.SwitchText'] = 'Disable';
+    $params['SiteCheck.SwitchValue'] = 'disable';
+    $params['SiteCheck.SwitchCssClass'] = 'button-danger';
+
+    if ($nonce) {
+        // Enable or disable the SiteCheck scanner and the malware scan page.
+        if ($scanner = SucuriScanRequest::post(':sitecheck_scanner', '(en|dis)able')) {
+            $action_d = $scanner . 'd';
+            $message = 'SiteCheck malware and blacklist scanner was <code>' . $action_d . '</code>';
+
+            SucuriScanOption::update_option(':sitecheck_scanner', $action_d);
+            SucuriScanEvent::report_auto_event($message);
+            SucuriScanEvent::notify_event('plugin_change', $message);
+            SucuriScanInterface::info($message);
+        }
+    }
+
+    $scanner = SucuriScanOption::get_option(':sitecheck_scanner');
+
+    if ($scanner == 'disabled') {
+        $params['SiteCheck.StatusNum'] = '0';
+        $params['SiteCheck.Status'] = 'Disabled';
+        $params['SiteCheck.SwitchText'] = 'Enable';
+        $params['SiteCheck.SwitchValue'] = 'enable';
+        $params['SiteCheck.SwitchCssClass'] = 'button-success';
+    }
+
+    return SucuriScanTemplate::getSection('settings-sitecheck-status', $params);
 }
 
 function sucuriscan_settings_sitecheck_timeout($nonce)
