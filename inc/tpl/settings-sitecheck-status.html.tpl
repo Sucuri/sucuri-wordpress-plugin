@@ -10,6 +10,15 @@
             best to provide the best results, 100% accuracy is not realistic, and not guaranteed.
         </p>
 
+        <div class="sucuriscan-hstatus sucuriscan-hstatus-%%SUCURI.SiteCheck.StatusNum%%">
+            <span>Malware Scanner is %%SUCURI.SiteCheck.Status%%</span>
+            <form action="%%SUCURI.URL.Settings%%#scanner" method="post">
+                <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
+                <input type="hidden" name="sucuriscan_sitecheck_scanner" value="%%SUCURI.SiteCheck.SwitchValue%%" />
+                <button type="submit" class="button-primary %%SUCURI.SiteCheck.SwitchCssClass%%">%%SUCURI.SiteCheck.SwitchText%%</button>
+            </form>
+        </div>
+
         <p>
             The remote website scanner tries to identify if the provided site is infected
             with any type of malware including SPAM or if it has been blacklisted or
@@ -26,12 +35,12 @@
             </p>
         </div>
 
-        <div class="sucuriscan-hstatus sucuriscan-hstatus-%%SUCURI.SiteCheck.StatusNum%%">
-            <span>Malware Scanner is %%SUCURI.SiteCheck.Status%%</span>
-            <form action="%%SUCURI.URL.Settings%%#scanner" method="post">
+        <div class="sucuriscan-hstatus sucuriscan-hstatus-2">
+            <span>Malware Scanner has been executed %%SUCURI.SiteCheck.Counter%% times</span>
+            <form action="%%SUCURI.URL.Scanner%%" method="post">
                 <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
-                <input type="hidden" name="sucuriscan_sitecheck_scanner" value="%%SUCURI.SiteCheck.SwitchValue%%" />
-                <button type="submit" class="button-primary %%SUCURI.SiteCheck.SwitchCssClass%%">%%SUCURI.SiteCheck.SwitchText%%</button>
+                <input type="hidden" name="sucuriscan_malware_scan" value="1" />
+                <button type="submit" class="button-primary">Scan Now</button>
             </form>
         </div>
     </div>

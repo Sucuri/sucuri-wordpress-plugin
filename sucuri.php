@@ -12472,7 +12472,6 @@ function sucuriscan_settings_scanner($nonce)
         'ScanningInterfaceOptions' => $scan_interface_options,
         /* Filesystem scanning runtime. */
         'ScanningRuntimeHuman' => $runtime_scan_human,
-        'SiteCheckCounter' => $sitecheck_counter,
         'ErrorLogsLimit' => $errorlogs_limit,
         'IntegrityLogLife' => '0B',
         'LastLoginLogLife' => '0B',
@@ -12612,11 +12611,12 @@ function sucuriscan_settings_sitecheck($nonce)
 function sucuriscan_settings_sitecheck_status($nonce)
 {
     $params = array();
-    $params['SiteCheck.StatusNum'] = '1';
-    $params['SiteCheck.Status'] = 'Enabled';
-    $params['SiteCheck.SwitchText'] = 'Disable';
-    $params['SiteCheck.SwitchValue'] = 'disable';
-    $params['SiteCheck.SwitchCssClass'] = 'button-danger';
+    $params['SiteCheck.StatusNum'] = '0';
+    $params['SiteCheck.Status'] = 'Disabled';
+    $params['SiteCheck.SwitchText'] = 'Enable';
+    $params['SiteCheck.SwitchValue'] = 'enable';
+    $params['SiteCheck.SwitchCssClass'] = 'button-success';
+    $params['SiteCheck.Counter'] = 0;
 
     if ($nonce) {
         // Enable or disable the SiteCheck scanner and the malware scan page.
@@ -12631,14 +12631,13 @@ function sucuriscan_settings_sitecheck_status($nonce)
         }
     }
 
-    $scanner = SucuriScanOption::get_option(':sitecheck_scanner');
-
-    if ($scanner == 'disabled') {
-        $params['SiteCheck.StatusNum'] = '0';
-        $params['SiteCheck.Status'] = 'Disabled';
-        $params['SiteCheck.SwitchText'] = 'Enable';
-        $params['SiteCheck.SwitchValue'] = 'enable';
-        $params['SiteCheck.SwitchCssClass'] = 'button-success';
+    if (SucuriScanOption::is_enabled(':sitecheck_scanner')) {
+        $params['SiteCheck.StatusNum'] = '1';
+        $params['SiteCheck.Status'] = 'Enabled';
+        $params['SiteCheck.SwitchText'] = 'Disable';
+        $params['SiteCheck.SwitchValue'] = 'disable';
+        $params['SiteCheck.SwitchCssClass'] = 'button-danger';
+        $params['SiteCheck.Counter'] = SucuriScanOption::get_option(':sitecheck_counter');
     }
 
     return SucuriScanTemplate::getSection('settings-sitecheck-status', $params);

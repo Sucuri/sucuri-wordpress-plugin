@@ -127,18 +127,6 @@
             </td>
         </tr>
 
-        <tr class="alternate">
-            <td>SiteCheck counter</td>
-            <td>%%SUCURI.SiteCheckCounter%% scans so far</td>
-            <td class="td-with-button">
-                <form action="%%SUCURI.URL.Scanner%%" method="post">
-                    <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
-                    <input type="hidden" name="sucuriscan_malware_scan" value="1" />
-                    <button type="submit" class="button-primary">Force scan</button>
-                </form>
-            </td>
-        </tr>
-
         <tr>
             <td>Analyze error logs</td>
             <td>%%SUCURI.ParseErrorLogsStatus%%</td>
