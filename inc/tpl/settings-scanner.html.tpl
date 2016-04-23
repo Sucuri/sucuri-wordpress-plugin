@@ -187,23 +187,13 @@
             </td>
         </tr>
 
-        <tr class="alternate">
-            <td>Reset sitecheck logs</td>
-            <td><span class="sucuriscan-monospace">%%SUCURI.SiteCheckLogLife%% of data</span></td>
-            <td class="td-with-button">
-                <form action="%%SUCURI.URL.Settings%%#scanner" method="post">
-                    <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
-                    <input type="hidden" name="sucuriscan_reset_logfile" value="sitecheck" />
-                    <button type="submit" class="button-primary">Reset logs</button>
-                </form>
-            </td>
-        </tr>
-
     </tbody>
 </table>
 
 <div id="poststuff" class="sucuriscan-general-scanner">
     %%%SUCURI.SettingsSection.SiteCheckStatus%%%
+
+    %%%SUCURI.SettingsSection.SiteCheckCache%%%
 
     %%%SUCURI.SettingsSection.SiteCheckTimeout%%%
 </div>

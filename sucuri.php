@@ -12433,7 +12433,6 @@ function sucuriscan_settings_scanner($nonce)
     $integrity_log_path = SucuriScan::datastore_folder_path('sucuri-integrity.php');
     $lastlogins_log_path = SucuriScan::datastore_folder_path('sucuri-lastlogins.php');
     $failedlogins_log_path = SucuriScan::datastore_folder_path('sucuri-failedlogins.php');
-    $sitecheck_log_path = SucuriScan::datastore_folder_path('sucuri-sitecheck.php');
 
     // Generate the HTML code for the option list in the form select fields.
     $scan_freq_options = SucuriScanTemplate::selectOptions($sucuriscan_schedule_allowed, $scan_freq);
@@ -12476,7 +12475,6 @@ function sucuriscan_settings_scanner($nonce)
         'IntegrityLogLife' => '0B',
         'LastLoginLogLife' => '0B',
         'FailedLoginLogLife' => '0B',
-        'SiteCheckLogLife' => '0B',
     );
 
     if ($fs_scanner == 'disabled') {
@@ -12522,9 +12520,9 @@ function sucuriscan_settings_scanner($nonce)
     $params['IntegrityLogLife'] = SucuriScan::human_filesize(@filesize($integrity_log_path));
     $params['LastLoginLogLife'] = SucuriScan::human_filesize(@filesize($lastlogins_log_path));
     $params['FailedLoginLogLife'] = SucuriScan::human_filesize(@filesize($failedlogins_log_path));
-    $params['SiteCheckLogLife'] = SucuriScan::human_filesize(@filesize($sitecheck_log_path));
 
     $params['SettingsSection.SiteCheckStatus'] = sucuriscan_settings_sitecheck_status($nonce);
+    $params['SettingsSection.SiteCheckCache'] = sucuriscan_settings_sitecheck_cache($nonce);
     $params['SettingsSection.SiteCheckTimeout'] = sucuriscan_settings_sitecheck_timeout($nonce);
 
     return SucuriScanTemplate::getSection('settings-scanner', $params);
@@ -12641,6 +12639,35 @@ function sucuriscan_settings_sitecheck_status($nonce)
     }
 
     return SucuriScanTemplate::getSection('settings-sitecheck-status', $params);
+}
+
+function sucuriscan_settings_sitecheck_cache($nonce)
+{
+    $params = array();
+    $fpath = SucuriScan::datastore_folder_path('sucuri-sitecheck.php');
+
+    if ($nonce) {
+        // Reset SiteCheck results cache.
+        if (SucuriScanRequest::post(':sitecheck_cache')) {
+            if (file_exists($fpath)) {
+                if (@unlink($fpath)) {
+                    $message = 'Malware scanner cache was successfully reset.';
+
+                    SucuriScanEvent::report_debug_event($message);
+                    SucuriScanInterface::info($message);
+                } else {
+                    SucuriScanInterface::error('Count not reset the cache, delete manually.');
+                }
+            } else {
+                SucuriScanInterface::error('The cache file does not exists.');
+            }
+        }
+    }
+
+    $params['SiteCheck.CacheSize'] = SucuriScan::human_filesize(@filesize($fpath));
+    $params['SiteCheck.CacheLifeTime'] = SUCURISCAN_SITECHECK_LIFETIME;
+
+    return SucuriScanTemplate::getSection('settings-sitecheck-cache', $params);
 }
 
 function sucuriscan_settings_sitecheck_timeout($nonce)
