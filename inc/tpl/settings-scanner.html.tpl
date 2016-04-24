@@ -103,18 +103,6 @@
             </td>
         </tr>
 
-        <tr>
-            <td>FS Scanner, Ignore scanning</td>
-            <td>%%SUCURI.IgnoreScanningStatus%%</td>
-            <td class="td-with-button">
-                <form action="%%SUCURI.URL.Settings%%#scanner" method="post">
-                    <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
-                    <input type="hidden" name="sucuriscan_ignore_scanning" value="%%SUCURI.IgnoreScanningSwitchValue%%" />
-                    <button type="submit" class="button-primary %%SUCURI.IgnoreScanningSwitchCssClass%%">%%SUCURI.IgnoreScanningSwitchText%%</button>
-                </form>
-            </td>
-        </tr>
-
         <tr class="alternate">
             <td>FS Scanner, Error log files</td>
             <td>%%SUCURI.ScanErrorlogsStatus%%</td>
