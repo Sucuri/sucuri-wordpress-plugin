@@ -115,18 +115,6 @@
             </td>
         </tr>
 
-        <tr>
-            <td>Analyze error logs</td>
-            <td>%%SUCURI.ParseErrorLogsStatus%%</td>
-            <td class="td-with-button">
-                <form action="%%SUCURI.URL.Settings%%#scanner" method="post">
-                    <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
-                    <input type="hidden" name="sucuriscan_parse_errorlogs" value="%%SUCURI.ParseErrorLogsSwitchValue%%" />
-                    <button type="submit" class="button-primary %%SUCURI.ParseErrorLogsSwitchCssClass%%">%%SUCURI.ParseErrorLogsSwitchText%%</button>
-                </form>
-            </td>
-        </tr>
-
         <tr class="alternate">
             <td>Error logs limit</td>
             <td>Analyze last %%SUCURI.ErrorLogsLimit%% logs</td>

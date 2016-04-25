@@ -11669,17 +11669,6 @@ function sucuriscan_settings_form_submissions($page_nonce = null)
             SucuriScanInterface::info($message);
         }
 
-        // Enable or disable the error logs parsing.
-        if ($parse_errorlogs = SucuriScanRequest::post(':parse_errorlogs', '(en|dis)able')) {
-            $action_d = $parse_errorlogs . 'd';
-            $message = 'Analysis of main error log file was <code>' . $action_d . '</code>';
-
-            SucuriScanOption::update_option(':parse_errorlogs', $action_d);
-            SucuriScanEvent::report_auto_event($message);
-            SucuriScanEvent::notify_event('plugin_change', $message);
-            SucuriScanInterface::info($message);
-        }
-
         // Modify the schedule of the filesystem scanner.
         if ($frequency = SucuriScanRequest::post(':scan_frequency')) {
             if (array_key_exists($frequency, $sucuriscan_schedule_allowed)) {
@@ -11710,20 +11699,6 @@ function sucuriscan_settings_form_submissions($page_nonce = null)
                 SucuriScanEvent::report_info_event($message);
                 SucuriScanEvent::notify_event('plugin_change', $message);
                 SucuriScanInterface::info($message);
-            }
-        }
-
-        // Update the limit of error log lines to parse.
-        if ($errorlogs_limit = SucuriScanRequest::post(':errorlogs_limit', '[0-9]+')) {
-            if ($errorlogs_limit > 1000) {
-                SucuriScanInterface::error('Analyze more than 1,000 lines will take too much time.');
-            } else {
-                SucuriScanOption::update_option(':errorlogs_limit', $errorlogs_limit);
-                SucuriScanInterface::info('Analyze last <code>' . $errorlogs_limit . '</code> entries encountered in the error logs.');
-
-                if ($errorlogs_limit == 0) {
-                    SucuriScanOption::update_option(':parse_errorlogs', 'disabled');
-                }
             }
         }
 
@@ -12368,8 +12343,6 @@ function sucuriscan_settings_scanner($nonce)
     $scan_interface = SucuriScanOption::get_option(':scan_interface');
     $scan_checksums = SucuriScanOption::get_option(':scan_checksums');
     $scan_errorlogs = SucuriScanOption::get_option(':scan_errorlogs');
-    $parse_errorlogs = SucuriScanOption::get_option(':parse_errorlogs');
-    $errorlogs_limit = SucuriScanOption::get_option(':errorlogs_limit');
     $runtime_scan_human = SucuriScanFSScanner::get_filesystem_runtime(true);
 
     // Get the file path of the security logs.
@@ -12387,21 +12360,11 @@ function sucuriscan_settings_scanner($nonce)
         'FsScannerSwitchText' => 'Disable',
         'FsScannerSwitchValue' => 'disable',
         'FsScannerSwitchCssClass' => 'button-danger',
-        /* Scan files checksum. */
-        'ScanChecksumsStatus' => 'Enabled',
-        'ScanChecksumsSwitchText' => 'Disable',
-        'ScanChecksumsSwitchValue' => 'disable',
-        'ScanChecksumsSwitchCssClass' => 'button-danger',
         /* Scan error logs. */
         'ScanErrorlogsStatus' => 'Enabled',
         'ScanErrorlogsSwitchText' => 'Disable',
         'ScanErrorlogsSwitchValue' => 'disable',
         'ScanErrorlogsSwitchCssClass' => 'button-danger',
-        /* Parse error logs. */
-        'ParseErrorLogsStatus' => 'Enabled',
-        'ParseErrorLogsSwitchText' => 'Disable',
-        'ParseErrorLogsSwitchValue' => 'disable',
-        'ParseErrorLogsSwitchCssClass' => 'button-danger',
         /* Filsystem scanning frequency. */
         'ScanningFrequency' => 'Undefined',
         'ScanningFrequencyOptions' => $scan_freq_options,
@@ -12409,7 +12372,6 @@ function sucuriscan_settings_scanner($nonce)
         'ScanningInterfaceOptions' => $scan_interface_options,
         /* Filesystem scanning runtime. */
         'ScanningRuntimeHuman' => $runtime_scan_human,
-        'ErrorLogsLimit' => $errorlogs_limit,
         'IntegrityLogLife' => '0B',
         'LastLoginLogLife' => '0B',
         'FailedLoginLogLife' => '0B',
@@ -12434,13 +12396,6 @@ function sucuriscan_settings_scanner($nonce)
         $params['ScanErrorlogsSwitchText'] = 'Enable';
         $params['ScanErrorlogsSwitchValue'] = 'enable';
         $params['ScanErrorlogsSwitchCssClass'] = 'button-success';
-    }
-
-    if ($parse_errorlogs == 'disabled') {
-        $params['ParseErrorLogsStatus'] = 'Disabled';
-        $params['ParseErrorLogsSwitchText'] = 'Enable';
-        $params['ParseErrorLogsSwitchValue'] = 'enable';
-        $params['ParseErrorLogsSwitchCssClass'] = 'button-success';
     }
 
     if (array_key_exists($scan_freq, $sucuriscan_schedule_allowed)) {
@@ -13559,6 +13514,22 @@ function sucuriscan_infosys_page()
 }
 
 /**
+ * Handle an Ajax request for this specific page.
+ *
+ * @return mixed.
+ */
+function sucuriscan_infosys_ajax()
+{
+    SucuriScanInterface::check_permissions();
+
+    if (SucuriScanInterface::check_nonce()) {
+        sucuriscan_infosys_errorlogs_ajax();
+    }
+
+    wp_die();
+}
+
+/**
  * Find the main htaccess file for the site and check whether the rules of the
  * main htaccess file of the site are the default rules generated by WordPress.
  *
@@ -13853,67 +13824,123 @@ function sucuriscan_infosys_form_submissions()
  */
 function sucuriscan_infosys_errorlogs()
 {
-    $params = array(
-        'ErrorLog.Path' => '',
-        'ErrorLog.Exists' => 'No',
-        'ErrorLog.NoItemsVisibility' => 'hidden',
-        'ErrorLog.DisabledVisibility' => 'hidden',
-        'ErrorLog.InvalidFormatVisibility' => 'hidden',
-        'ErrorLog.LogsLimit' => '0',
-        'ErrorLog.FileSize' => '0B',
-        'ErrorLog.List' => '',
-    );
+    $params = array();
+    $nonce = SucuriScanInterface::check_nonce();
 
-    $error_log_path = false;
-    $log_filename = SucuriScan::ini_get('error_log');
-    $errorlogs_limit = SucuriScanOption::get_option(':errorlogs_limit');
-    $params['ErrorLog.LogsLimit'] = $errorlogs_limit;
-    $counter = 0;
-
-    if ($log_filename) {
-        $error_log_path = @realpath(ABSPATH . '/' . $log_filename);
-    }
-
-    if (SucuriScanOption::is_disabled(':parse_errorlogs')) {
-        $params['ErrorLog.DisabledVisibility'] = 'visible';
-    }
-
-    if ($error_log_path) {
-        $params['ErrorLog.Exists'] = 'Yes';
-        $params['ErrorLog.Path'] = $error_log_path;
-        $params['ErrorLog.FileSize'] = SucuriScan::human_filesize(filesize($error_log_path));
-
-        $last_lines = SucuriScanFileInfo::tail_file($error_log_path, $errorlogs_limit);
-        $error_logs = SucuriScanFSScanner::parse_error_logs($last_lines);
-        $error_logs = array_reverse($error_logs);
-        $counter = 0;
-
-        foreach ($error_logs as $error_log) {
-            $css_class = ( $counter % 2 === 0 ) ? '' : 'alternate';
-            $params['ErrorLog.List'] .= SucuriScanTemplate::getSnippet(
-                'infosys-errorlogs',
-                array(
-                    'ErrorLog.CssClass' => $css_class,
-                    'ErrorLog.DateTime' => SucuriScan::datetime($error_log->timestamp),
-                    'ErrorLog.ErrorType' => $error_log->error_type,
-                    'ErrorLog.ErrorCode' => $error_log->error_code,
-                    'ErrorLog.ErrorAbbr' => strtoupper(substr($error_log->error_code, 0, 1)),
-                    'ErrorLog.ErrorMessage' => $error_log->error_message,
-                    'ErrorLog.FilePath' => $error_log->file_path,
-                    'ErrorLog.LineNumber' => $error_log->line_number,
-                )
-            );
-            $counter += 1;
-        }
-
-        if ($counter <= 0) {
-            $params['ErrorLog.InvalidFormatVisibility'] = 'visible';
-        }
-    } else {
-        $params['ErrorLog.NoItemsVisibility'] = 'visible';
-    }
+    $params['ErrorLogs.Status'] = sucuriscan_infosys_errorlogs_status($nonce);
+    $params['ErrorLogs.FileLimit'] = sucuriscan_infosys_errorlogs_flimit($nonce);
+    $params['ErrorLogs.FileReader'] = sucuriscan_infosys_errorlogs_freader($nonce);
 
     return SucuriScanTemplate::getSection('infosys-errorlogs', $params);
+}
+
+function sucuriscan_infosys_errorlogs_status($nonce)
+{
+    $params = array();
+    $params['ErrorLogs.Status'] = 'Disabled';
+    $params['ErrorLogs.SwitchText'] = 'Enable';
+    $params['ErrorLogs.SwitchValue'] = 'enable';
+    $params['ErrorLogs.SwitchCssClass'] = 'button-success';
+
+    if ($nonce) {
+        // Enable or disable the error logs parsing.
+        if ($errorlogs = SucuriScanRequest::post(':parse_errorlogs', '(en|dis)able')) {
+            $action_d = $errorlogs . 'd';
+            $message = 'Analysis of the error log file was <code>' . $action_d . '</code>';
+
+            SucuriScanOption::update_option(':parse_errorlogs', $action_d);
+            SucuriScanEvent::report_auto_event($message);
+            SucuriScanEvent::notify_event('plugin_change', $message);
+            SucuriScanInterface::info($message);
+        }
+    }
+
+    if (SucuriScanOption::is_enabled(':parse_errorlogs')) {
+        $params['ErrorLogs.Status'] = 'Enabled';
+        $params['ErrorLogs.SwitchText'] = 'Disable';
+        $params['ErrorLogs.SwitchValue'] = 'disable';
+        $params['ErrorLogs.SwitchCssClass'] = 'button-danger';
+    }
+
+    return SucuriScanTemplate::getSection('infosys-errorlogs-status', $params);
+}
+
+function sucuriscan_infosys_errorlogs_flimit($nonce)
+{
+    $params = array();
+
+    if ($nonce) {
+        // Update the limit of error log lines to parse.
+        if ($limit = SucuriScanRequest::post(':errorlogs_limit', '[0-9]+')) {
+            $message = 'Error logs file limit set to <code>' . $limit . '</code> lines.';
+
+            SucuriScanOption::update_option(':errorlogs_limit', $limit);
+            SucuriScanEvent::report_auto_event($message);
+            SucuriScanEvent::notify_event('plugin_change', $message);
+            SucuriScanInterface::info($message);
+        }
+    }
+
+    $params['ErrorLogs.LogsLimit'] = SucuriScanOption::get_option(':errorlogs_limit');
+
+    return SucuriScanTemplate::getSection('infosys-errorlogs-flimit', $params);
+}
+
+function sucuriscan_infosys_errorlogs_freader($nonce)
+{
+    $params = array();
+
+    return SucuriScanTemplate::getSection('infosys-errorlogs-freader', $params);
+}
+
+function sucuriscan_infosys_errorlogs_ajax()
+{
+    if (SucuriScanRequest::post('form_action') == 'get_error_logs') {
+        $response = '';
+
+        // Scan the project and get the ignored paths.
+        if (SucuriScanOption::is_enabled(':parse_errorlogs')) {
+            $fname = SucuriScan::ini_get('error_log');
+            $fpath = $fname ? @realpath(ABSPATH . '/' . $log_filename) : false;
+
+            if ($fpath !== false
+                && is_file($fpath)
+                && file_exists($fpath)
+                && is_readable($fpath)
+            ) {
+                $limit = SucuriScanOption::get_option(':errorlogs_limit');
+                $flines = SucuriScanFileInfo::tail_file($fpath, $limit);
+                $error_logs = SucuriScanFSScanner::parse_error_logs($flines);
+                $error_logs = array_reverse($error_logs);
+                $counter = 0;
+
+                foreach ($error_logs as $log) {
+                    $css_class = ($counter % 2 === 0) ? '' : 'alternate';
+                    $response .= SucuriScanTemplate::getSnippet(
+                        'infosys-errorlogs',
+                        array(
+                            'ErrorLog.CssClass' => $css_class,
+                            'ErrorLog.DateTime' => SucuriScan::datetime($log->timestamp),
+                            'ErrorLog.ErrorType' => $log->error_type,
+                            'ErrorLog.ErrorCode' => $log->error_code,
+                            'ErrorLog.ErrorAbbr' => strtoupper(substr($log->error_code, 0, 1)),
+                            'ErrorLog.ErrorMessage' => $log->error_message,
+                            'ErrorLog.FilePath' => $log->file_path,
+                            'ErrorLog.LineNumber' => $log->line_number,
+                        )
+                    );
+                    $counter++;
+                }
+            }
+        }
+
+        if (empty($response)) {
+            $response = '<tr><td colspan="5">List is empty.</td></tr>';
+        }
+
+        print($response);
+        exit(0);
+    }
 }
 
 /**
