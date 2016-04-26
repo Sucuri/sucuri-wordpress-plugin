@@ -115,18 +115,6 @@
             </td>
         </tr>
 
-        <tr class="alternate">
-            <td>Error logs limit</td>
-            <td>Analyze last %%SUCURI.ErrorLogsLimit%% logs</td>
-            <td class="td-with-button">
-                <form action="%%SUCURI.URL.Settings%%#scanner" method="post">
-                    <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
-                    <input type="text" name="sucuriscan_errorlogs_limit" placeholder="Number of lines to analyze" class="input-text" />
-                    <button type="submit" class="button-primary">Change</button>
-                </form>
-            </td>
-        </tr>
-
         <tr>
             <td>Reset core integrity logs</td>
             <td><span class="sucuriscan-monospace">%%SUCURI.IntegrityLogLife%% of data</span></td>
