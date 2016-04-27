@@ -40,6 +40,7 @@ $sucuriscan_option_names = array(
     'heartbeat_pulse',
     'ignore_scanning',
     'ignored_events',
+    'language',
     'last_email_at',
     'lastlogin_redirection',
     'logs4report',

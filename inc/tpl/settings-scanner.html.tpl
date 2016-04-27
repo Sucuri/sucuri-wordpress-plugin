@@ -92,18 +92,6 @@
         </tr>
 
         <tr class="alternate">
-            <td>FS Scanner, Core integrity checks</td>
-            <td>%%SUCURI.ScanChecksumsStatus%%</td>
-            <td class="td-with-button">
-                <form action="%%SUCURI.URL.Settings%%#scanner" method="post">
-                    <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
-                    <input type="hidden" name="sucuriscan_scan_checksums" value="%%SUCURI.ScanChecksumsSwitchValue%%" />
-                    <button type="submit" class="button-primary %%SUCURI.ScanChecksumsSwitchCssClass%%">%%SUCURI.ScanChecksumsSwitchText%%</button>
-                </form>
-            </td>
-        </tr>
-
-        <tr class="alternate">
             <td>FS Scanner, Error log files</td>
             <td>%%SUCURI.ScanErrorlogsStatus%%</td>
             <td class="td-with-button">
@@ -111,18 +99,6 @@
                     <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
                     <input type="hidden" name="sucuriscan_scan_errorlogs" value="%%SUCURI.ScanErrorlogsSwitchValue%%" />
                     <button type="submit" class="button-primary %%SUCURI.ScanErrorlogsSwitchCssClass%%">%%SUCURI.ScanErrorlogsSwitchText%%</button>
-                </form>
-            </td>
-        </tr>
-
-        <tr>
-            <td>Reset core integrity logs</td>
-            <td><span class="sucuriscan-monospace">%%SUCURI.IntegrityLogLife%% of data</span></td>
-            <td class="td-with-button">
-                <form action="%%SUCURI.URL.Settings%%#scanner" method="post">
-                    <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
-                    <input type="hidden" name="sucuriscan_reset_logfile" value="integrity" />
-                    <button type="submit" class="button-primary">Reset logs</button>
                 </form>
             </td>
         </tr>
@@ -155,9 +131,15 @@
 </table>
 
 <div id="poststuff" class="sucuriscan-general-scanner">
-    %%%SUCURI.SettingsSection.SiteCheckStatus%%%
+    %%%SUCURI.Settings.CoreFilesStatus%%%
 
-    %%%SUCURI.SettingsSection.SiteCheckCache%%%
+    %%%SUCURI.Settings.CoreFilesLanguage%%%
 
-    %%%SUCURI.SettingsSection.SiteCheckTimeout%%%
+    %%%SUCURI.Settings.CoreFilesCache%%%
+
+    %%%SUCURI.Settings.SiteCheckStatus%%%
+
+    %%%SUCURI.Settings.SiteCheckCache%%%
+
+    %%%SUCURI.Settings.SiteCheckTimeout%%%
 </div>

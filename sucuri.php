@@ -1353,6 +1353,170 @@ class SucuriScan
     {
         return (bool) preg_match('/Microsoft-IIS/i', @$_SERVER['SERVER_SOFTWARE']);
     }
+
+    /**
+     * Returns list of supported languages.
+     *
+     * @return array Supported languages abbreviated.
+     */
+    public static function languages()
+    {
+        return array(
+            'af' => 'af',
+            'ak' => 'ak',
+            'sq' => 'sq',
+            'arq' => 'arq',
+            'am' => 'am',
+            'ar' => 'ar',
+            'hy' => 'hy',
+            'rup_MK' => 'rup_MK',
+            'frp' => 'frp',
+            'as' => 'as',
+            'az' => 'az',
+            'az_TR' => 'az_TR',
+            'bcc' => 'bcc',
+            'ba' => 'ba',
+            'eu' => 'eu',
+            'bel' => 'bel',
+            'bn_BD' => 'bn_BD',
+            'bs_BA' => 'bs_BA',
+            'bre' => 'bre',
+            'bg_BG' => 'bg_BG',
+            'ca' => 'ca',
+            'bal' => 'bal',
+            'zh_CN' => 'zh_CN',
+            'zh_HK' => 'zh_HK',
+            'zh_TW' => 'zh_TW',
+            'co' => 'co',
+            'hr' => 'hr',
+            'cs_CZ' => 'cs_CZ',
+            'da_DK' => 'da_DK',
+            'dv' => 'dv',
+            'nl_NL' => 'nl_NL',
+            'nl_BE' => 'nl_BE',
+            'dzo' => 'dzo',
+            'en_US' => 'en_US',
+            'en_AU' => 'en_AU',
+            'en_CA' => 'en_CA',
+            'en_ZA' => 'en_ZA',
+            'en_GB' => 'en_GB',
+            'eo' => 'eo',
+            'et' => 'et',
+            'fo' => 'fo',
+            'fi' => 'fi',
+            'fr_BE' => 'fr_BE',
+            'fr_CA' => 'fr_CA',
+            'fr_FR' => 'fr_FR',
+            'fy' => 'fy',
+            'fuc' => 'fuc',
+            'gl_ES' => 'gl_ES',
+            'ka_GE' => 'ka_GE',
+            'de_DE' => 'de_DE',
+            'de_CH' => 'de_CH',
+            'el' => 'el',
+            'gn' => 'gn',
+            'gu' => 'gu',
+            'haw_US' => 'haw_US',
+            'haz' => 'haz',
+            'he_IL' => 'he_IL',
+            'hi_IN' => 'hi_IN',
+            'hu_HU' => 'hu_HU',
+            'is_IS' => 'is_IS',
+            'ido' => 'ido',
+            'id_ID' => 'id_ID',
+            'ga' => 'ga',
+            'it_IT' => 'it_IT',
+            'ja' => 'ja',
+            'jv_ID' => 'jv_ID',
+            'kab' => 'kab',
+            'kn' => 'kn',
+            'kk' => 'kk',
+            'km' => 'km',
+            'kin' => 'kin',
+            'ky_KY' => 'ky_KY',
+            'ko_KR' => 'ko_KR',
+            'ckb' => 'ckb',
+            'lo' => 'lo',
+            'lv' => 'lv',
+            'li' => 'li',
+            'lin' => 'lin',
+            'lt_LT' => 'lt_LT',
+            'lb_LU' => 'lb_LU',
+            'mk_MK' => 'mk_MK',
+            'mg_MG' => 'mg_MG',
+            'ms_MY' => 'ms_MY',
+            'ml_IN' => 'ml_IN',
+            'mri' => 'mri',
+            'mr' => 'mr',
+            'xmf' => 'xmf',
+            'mn' => 'mn',
+            'me_ME' => 'me_ME',
+            'my_MM' => 'my_MM',
+            'ne_NP' => 'ne_NP',
+            'nb_NO' => 'nb_NO',
+            'nn_NO' => 'nn_NO',
+            'oci' => 'oci',
+            'ory' => 'ory',
+            'os' => 'os',
+            'ps' => 'ps',
+            'fa_IR' => 'fa_IR',
+            'fa_AF' => 'fa_AF',
+            'pl_PL' => 'pl_PL',
+            'pt_BR' => 'pt_BR',
+            'pt_PT' => 'pt_PT',
+            'pa_IN' => 'pa_IN',
+            'rhg' => 'rhg',
+            'ro_RO' => 'ro_RO',
+            'roh' => 'roh',
+            'ru_RU' => 'ru_RU',
+            'ru_UA' => 'ru_UA',
+            'rue' => 'rue',
+            'sah' => 'sah',
+            'sa_IN' => 'sa_IN',
+            'srd' => 'srd',
+            'gd' => 'gd',
+            'sr_RS' => 'sr_RS',
+            'szl' => 'szl',
+            'sd_PK' => 'sd_PK',
+            'si_LK' => 'si_LK',
+            'sk_SK' => 'sk_SK',
+            'sl_SI' => 'sl_SI',
+            'so_SO' => 'so_SO',
+            'azb' => 'azb',
+            'es_AR' => 'es_AR',
+            'es_CL' => 'es_CL',
+            'es_CO' => 'es_CO',
+            'es_MX' => 'es_MX',
+            'es_PE' => 'es_PE',
+            'es_PR' => 'es_PR',
+            'es_ES' => 'es_ES',
+            'es_VE' => 'es_VE',
+            'su_ID' => 'su_ID',
+            'sw' => 'sw',
+            'sv_SE' => 'sv_SE',
+            'gsw' => 'gsw',
+            'tl' => 'tl',
+            'tg' => 'tg',
+            'tzm' => 'tzm',
+            'ta_IN' => 'ta_IN',
+            'ta_LK' => 'ta_LK',
+            'tt_RU' => 'tt_RU',
+            'te' => 'te',
+            'th' => 'th',
+            'bo' => 'bo',
+            'tir' => 'tir',
+            'tr_TR' => 'tr_TR',
+            'tuk' => 'tuk',
+            'ug_CN' => 'ug_CN',
+            'uk' => 'uk',
+            'ur' => 'ur',
+            'uz_UZ' => 'uz_UZ',
+            'vi' => 'vi',
+            'wa' => 'wa',
+            'cy' => 'cy',
+        );
+    }
+
 }
 
 /**
@@ -2685,6 +2849,7 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_heartbeat_pulse' => 15,
             'sucuriscan_ignore_scanning' => 'disabled',
             'sucuriscan_ignored_events' => '',
+            'sucuriscan_language' => 'en_US',
             'sucuriscan_last_email_at' => time(),
             'sucuriscan_lastlogin_redirection' => 'enabled',
             'sucuriscan_logs4report' => 500,
@@ -5784,7 +5949,7 @@ class SucuriScanAPI extends SucuriScanOption
     public static function getOfficialChecksums($version = 0)
     {
         $url = 'https://api.wordpress.org/core/checksums/1.0/';
-        $language = 'en_US'; /* WPLANG does not works. */
+        $language = SucuriScanOption::get_option(':language');
         $response = self::apiCall($url, 'GET', array(
             'version' => $version,
             'locale' => $language,
@@ -9766,9 +9931,10 @@ function sucuriscan_core_files_data($send_email = false)
     if ($site_version && SucuriScanOption::is_enabled(':scan_checksums')) {
         // Check if there are added, removed, or modified files.
         $latest_hashes = sucuriscan_check_core_integrity($site_version);
+        $language = SucuriScanOption::get_option(':language');
         $params['CoreFiles.RemoteChecksumsURL'] =
             'https://api.wordpress.org/core/checksums/1.0/'
-            . '?version=' . $site_version . '&locale=en_US';
+            . '?version=' . $site_version . '&locale=' . $language;
 
         if ($latest_hashes) {
             $cache = new SucuriScanCache('integrity');
@@ -11647,17 +11813,6 @@ function sucuriscan_settings_form_submissions($page_nonce = null)
             SucuriScanInterface::info($message);
         }
 
-        // Enable or disable the filesystem scanner for file integrity.
-        if ($scan_checksums = SucuriScanRequest::post(':scan_checksums', '(en|dis)able')) {
-            $action_d = $scan_checksums . 'd';
-            $message = 'File system scanner for file integrity was <code>' . $action_d . '</code>';
-
-            SucuriScanOption::update_option(':scan_checksums', $action_d);
-            SucuriScanEvent::report_auto_event($message);
-            SucuriScanEvent::notify_event('plugin_change', $message);
-            SucuriScanInterface::info($message);
-        }
-
         // Enable or disable the filesystem scanner for error logs.
         if ($scan_errorlogs = SucuriScanRequest::post(':scan_errorlogs', '(en|dis)able')) {
             $action_d = $scan_errorlogs . 'd';
@@ -11703,7 +11858,7 @@ function sucuriscan_settings_form_submissions($page_nonce = null)
         }
 
         // Reset the plugin security logs.
-        $allowed_log_files = '(integrity|lastlogins|failedlogins|sitecheck)';
+        $allowed_log_files = '(lastlogins|failedlogins)';
         if ($reset_logfile = SucuriScanRequest::post(':reset_logfile', $allowed_log_files)) {
             $files_to_delete = array(
                 'sucuri-' . $reset_logfile . '.php',
@@ -12341,7 +12496,6 @@ function sucuriscan_settings_scanner($nonce)
     $fs_scanner = SucuriScanOption::get_option(':fs_scanner');
     $scan_freq = SucuriScanOption::get_option(':scan_frequency');
     $scan_interface = SucuriScanOption::get_option(':scan_interface');
-    $scan_checksums = SucuriScanOption::get_option(':scan_checksums');
     $scan_errorlogs = SucuriScanOption::get_option(':scan_errorlogs');
     $runtime_scan_human = SucuriScanFSScanner::get_filesystem_runtime(true);
 
@@ -12384,13 +12538,6 @@ function sucuriscan_settings_scanner($nonce)
         $params['FsScannerSwitchCssClass'] = 'button-success';
     }
 
-    if ($scan_checksums == 'disabled') {
-        $params['ScanChecksumsStatus'] = 'Disabled';
-        $params['ScanChecksumsSwitchText'] = 'Enable';
-        $params['ScanChecksumsSwitchValue'] = 'enable';
-        $params['ScanChecksumsSwitchCssClass'] = 'button-success';
-    }
-
     if ($scan_errorlogs == 'disabled') {
         $params['ScanErrorlogsStatus'] = 'Disabled';
         $params['ScanErrorlogsSwitchText'] = 'Enable';
@@ -12407,11 +12554,104 @@ function sucuriscan_settings_scanner($nonce)
     $params['LastLoginLogLife'] = SucuriScan::human_filesize(@filesize($lastlogins_log_path));
     $params['FailedLoginLogLife'] = SucuriScan::human_filesize(@filesize($failedlogins_log_path));
 
-    $params['SettingsSection.SiteCheckStatus'] = sucuriscan_settings_sitecheck_status($nonce);
-    $params['SettingsSection.SiteCheckCache'] = sucuriscan_settings_sitecheck_cache($nonce);
-    $params['SettingsSection.SiteCheckTimeout'] = sucuriscan_settings_sitecheck_timeout($nonce);
+    $params['Settings.CoreFilesStatus'] = sucuriscan_settings_corefiles_status($nonce);
+    $params['Settings.CoreFilesLanguage'] = sucuriscan_settings_corefiles_language($nonce);
+    $params['Settings.CoreFilesCache'] = sucuriscan_settings_corefiles_cache($nonce);
+    $params['Settings.SiteCheckStatus'] = sucuriscan_settings_sitecheck_status($nonce);
+    $params['Settings.SiteCheckCache'] = sucuriscan_settings_sitecheck_cache($nonce);
+    $params['Settings.SiteCheckTimeout'] = sucuriscan_settings_sitecheck_timeout($nonce);
 
     return SucuriScanTemplate::getSection('settings-scanner', $params);
+}
+
+function sucuriscan_settings_corefiles_status($nonce)
+{
+    $params = array();
+    $params['Integrity.StatusNum'] = '0';
+    $params['Integrity.Status'] = 'Disabled';
+    $params['Integrity.SwitchText'] = 'Enable';
+    $params['Integrity.SwitchValue'] = 'enable';
+    $params['Integrity.SwitchCssClass'] = 'button-success';
+
+    if ($nonce) {
+        // Enable or disable the filesystem scanner for file integrity.
+        if ($scan_checksums = SucuriScanRequest::post(':scan_checksums', '(en|dis)able')) {
+            $action_d = $scan_checksums . 'd';
+            $message = 'File system scanner for file integrity was <code>' . $action_d . '</code>';
+
+            SucuriScanOption::update_option(':scan_checksums', $action_d);
+            SucuriScanEvent::report_auto_event($message);
+            SucuriScanEvent::notify_event('plugin_change', $message);
+            SucuriScanInterface::info($message);
+        }
+    }
+
+    if (SucuriScanOption::is_enabled(':scan_checksums')) {
+        $params['Integrity.StatusNum'] = '1';
+        $params['Integrity.Status'] = 'Enabled';
+        $params['Integrity.SwitchText'] = 'Disable';
+        $params['Integrity.SwitchValue'] = 'disable';
+        $params['Integrity.SwitchCssClass'] = 'button-danger';
+    }
+
+    return SucuriScanTemplate::getSection('settings-corefiles-status', $params);
+}
+
+function sucuriscan_settings_corefiles_language($nonce)
+{
+    $params = array();
+    $languages = SucuriScan::languages();
+
+    if ($nonce) {
+        // Configure the language for the core integrity checks.
+        if ($language = SucuriScanRequest::post(':set_language')) {
+            if (array_key_exists($language, $languages)) {
+                $message = 'Language for the core integrity checks set to <code>' . $language . '</code>';
+
+                SucuriScanOption::update_option(':language', $language);
+                SucuriScanEvent::report_auto_event($message);
+                SucuriScanEvent::notify_event('plugin_change', $message);
+                SucuriScanInterface::info($message);
+            } else {
+                SucuriScanInterface::error('Selected language is not supported.');
+            }
+        }
+    }
+
+    $language = SucuriScanOption::get_option(':language');
+    $params['Integrity.LanguageDropdown'] = SucuriScanTemplate::selectOptions($languages, $language);
+    $params['Integrity.WordPressLocale'] = get_locale();
+
+    return SucuriScanTemplate::getSection('settings-corefiles-language', $params);
+}
+
+function sucuriscan_settings_corefiles_cache($nonce)
+{
+    $params = array();
+    $fpath = SucuriScan::datastore_folder_path('sucuri-integrity.php');
+
+    if ($nonce) {
+        // Reset core integrity files marked as fixed
+        if (SucuriScanRequest::post(':corefiles_cache')) {
+            if (file_exists($fpath)) {
+                if (@unlink($fpath)) {
+                    $message = 'Core integrity files marked as fixed were successfully reset.';
+
+                    SucuriScanEvent::report_debug_event($message);
+                    SucuriScanInterface::info($message);
+                } else {
+                    SucuriScanInterface::error('Count not reset the cache, delete manually.');
+                }
+            } else {
+                SucuriScanInterface::error('The cache file does not exists.');
+            }
+        }
+    }
+
+    $params['CoreFiles.CacheSize'] = SucuriScan::human_filesize(@filesize($fpath));
+    $params['CoreFiles.CacheLifeTime'] = SUCURISCAN_SITECHECK_LIFETIME;
+
+    return SucuriScanTemplate::getSection('settings-corefiles-cache', $params);
 }
 
 /**
