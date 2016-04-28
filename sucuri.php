@@ -9917,6 +9917,7 @@ function sucuriscan_core_files_data($send_email = false)
 {
     $affected_files = 0;
     $site_version = SucuriScan::site_version();
+    $integrity_is_enabled = SucuriScanOption::is_enabled(':scan_checksums');
 
     $params = array(
         'CoreFiles.List' => '',
@@ -9926,9 +9927,15 @@ function sucuriscan_core_files_data($send_email = false)
         'CoreFiles.GoodVisibility' => 'visible',
         'CoreFiles.FailureVisibility' => 'hidden',
         'CoreFiles.NotFixableVisibility' => 'hidden',
+        'CoreFiles.DisabledVisibility' => 'hidden',
     );
 
-    if ($site_version && SucuriScanOption::is_enabled(':scan_checksums')) {
+    if ($integrity_is_enabled !== true) {
+        $params['CoreFiles.GoodVisibility'] = 'hidden';
+        $params['CoreFiles.DisabledVisibility'] = 'visible';
+    }
+
+    if ($site_version && $integrity_is_enabled) {
         // Check if there are added, removed, or modified files.
         $latest_hashes = sucuriscan_check_core_integrity($site_version);
         $language = SucuriScanOption::get_option(':language');
