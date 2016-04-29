@@ -1,6 +1,6 @@
 
 <div class="postbox">
-    <h3>Core Integrity Checks - Marked as Fixed</h3>
+    <h3>Core Integrity Checks - Marked As Fixed</h3>
 
     <div class="inside">
         <p>
@@ -17,12 +17,26 @@
         </p>
 
         <div class="sucuriscan-hstatus sucuriscan-hstatus-2">
-            <span>Core Files Marked as Fixed: %%SUCURI.CoreFiles.CacheSize%% of data</span>
+            <span>Core Files Marked As Fixed: %%SUCURI.CoreFiles.CacheSize%% of data</span>
             <form action="%%SUCURI.URL.Settings%%#scanner" method="post">
                 <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
                 <input type="hidden" name="sucuriscan_corefiles_cache" value="1" />
                 <button type="submit" class="button-primary">Reset Cache</button>
             </form>
         </div>
+
+        <table class="wp-list-table widefat sucuriscan-table sucuriscan-%%SUCURI.CoreFiles.TableVisibility%%">
+            <thead>
+                <tr>
+                    <th>Reason</th>
+                    <th>Ignored At</th>
+                    <th>Line</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                %%%SUCURI.CoreFiles.IgnoredFiles%%%
+            </tbody>
+        </table>
     </div>
 </div>

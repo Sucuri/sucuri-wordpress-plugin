@@ -12657,6 +12657,29 @@ function sucuriscan_settings_corefiles_cache($nonce)
 
     $params['CoreFiles.CacheSize'] = SucuriScan::human_filesize(@filesize($fpath));
     $params['CoreFiles.CacheLifeTime'] = SUCURISCAN_SITECHECK_LIFETIME;
+    $params['CoreFiles.TableVisibility'] = 'hidden';
+    $params['CoreFiles.IgnoredFiles'] = '';
+    $cache = new SucuriScanCache('integrity');
+    $ignored_files = $cache->getAll();
+    $counter = 0;
+
+    if ($ignored_files) {
+        $params['CoreFiles.TableVisibility'] = 'visible';
+
+        foreach ($ignored_files as $hash => $data) {
+            $params['CoreFiles.IgnoredFiles'] .= SucuriScanTemplate::getSnippet(
+                'settings-corefiles-cache',
+                array(
+                    'IgnoredFile.CssClass' => ($counter % 2 === 0) ? '' : 'alternate',
+                    'IgnoredFile.UniqueId' => substr($hash, 0, 8),
+                    'IgnoredFile.FilePath' => $data->file_path,
+                    'IgnoredFile.StatusType' => $data->file_status,
+                    'IgnoredFile.IgnoredAt' => SucuriScan::datetime($data->ignored_at),
+                )
+            );
+            $counter++;
+        }
+    }
 
     return SucuriScanTemplate::getSection('settings-corefiles-cache', $params);
 }
