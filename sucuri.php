@@ -10081,9 +10081,15 @@ function sucuriscan_integrity_form_submissions()
                                         case 'restore':
                                             $file_content = SucuriScanAPI::getOriginalCoreFile($file_path);
                                             if ($file_content) {
-                                                $restored = @file_put_contents($full_path, $file_content);
-                                                $files_processed += ($restored ? 1 : 0);
-                                                $files_affected[] = $full_path;
+                                                $basedir = dirname($full_path);
+                                                if (!file_exists($basedir)) {
+                                                    @mkdir($basedir, 0755, true);
+                                                }
+                                                if (file_exists($basedir)) {
+                                                    $restored = @file_put_contents($full_path, $file_content);
+                                                    $files_processed += ($restored ? 1 : 0);
+                                                    $files_affected[] = $full_path;
+                                                }
                                             }
                                             break;
                                         case 'fixed':
