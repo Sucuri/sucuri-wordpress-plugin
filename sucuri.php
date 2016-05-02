@@ -5290,7 +5290,12 @@ class SucuriScanAPI extends SucuriScanOption
         }
 
         // Special response for connection timeouts.
-        if ($enqueue && @preg_match('/time(d\s)?out/', $raw_message)) {
+        if ($enqueue === true
+            && array_key_exists('params', $response)
+            && array_key_exists('m', $response['params'])
+            && array_key_exists('time', $response['params'])
+            && @preg_match('/time(d\s)?out/', $raw_message)
+        ) {
             $action_message = ''; /* Empty the error message. */
             $cache = new SucuriScanCache('auditqueue');
             $cache_key = md5($response['params']['time']);
@@ -9707,7 +9712,8 @@ function sucuriscan_auditlogs()
         $iterator_start = ($page_number - 1) * $max_per_page;
         $iterator_end = $total_items;
 
-        if ($audit_logs->total_entries >= $max_per_page
+        if (property_exists($audit_logs, 'total_entries')
+            && $audit_logs->total_entries >= $max_per_page
             && SucuriScanOption::is_disabled(':audit_report')
         ) {
             $params['AuditLogs.EnableAuditReportVisibility'] = 'visible';
