@@ -562,23 +562,23 @@ class SucuriScan
                 $upload_dir = wp_upload_dir();
 
                 if (isset($upload_dir['basedir'])) {
-                    $uploads_path = rtrim($upload_dir['basedir'], '/');
+                    $uploads_path = rtrim($upload_dir['basedir'], DIRECTORY_SEPARATOR);
                 }
             }
 
             if ($uploads_path === false) {
                 if (defined('WP_CONTENT_DIR')) {
-                    $uploads_path = WP_CONTENT_DIR . '/uploads';
+                    $uploads_path = implode(DIRECTORY_SEPARATOR, array(WP_CONTENT_DIR, 'uploads'));
                 } else {
-                    $uploads_path = ABSPATH . '/wp-content/uploads';
+                    $uploads_path = implode(DIRECTORY_SEPARATOR, array(ABSPATH, 'wp-content', 'uploads'));
                 }
             }
 
-            $datastore = $uploads_path . '/' . $default_dir;
+            $datastore = $uploads_path . DIRECTORY_SEPARATOR . $default_dir;
             SucuriScanOption::update_option(':datastore_path', $datastore);
         }
 
-        return $datastore . '/' . $path;
+        return $datastore . DIRECTORY_SEPARATOR . $path;
     }
 
     /**
