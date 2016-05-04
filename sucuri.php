@@ -6514,6 +6514,14 @@ class SucuriScanTemplate extends SucuriScanRequest
             $url_path .= '_' . strtolower($page);
         }
 
+        if (SucuriScan::is_multisite()) {
+            $url_path = str_replace(
+                'wp-admin/network/admin-ajax.php',
+                'wp-admin/admin-ajax.php',
+                $url_path
+            );
+        }
+
         return $url_path;
     }
 
