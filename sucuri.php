@@ -3793,6 +3793,7 @@ class SucuriScanEvent extends SucuriScan
             } elseif ($event == 'scan_checksums') {
                 $event = 'core_integrity_checks';
                 $email_params['Force'] = true;
+                $email_params['ForceHTML'] = true;
             }
 
             $title = str_replace('_', "\x20", $event);
@@ -6206,9 +6207,10 @@ class SucuriScanMail extends SucuriScanOption
         }
 
         // Check whether the email notifications will be sent in HTML or Plain/Text.
-        if (self::prettify_mails()) {
+        if (self::prettify_mails() || (isset($data_set['ForceHTML']) && $data_set['ForceHTML'])) {
             $headers = array( 'content-type: text/html' );
             $data_set['PrettifyType'] = 'pretty';
+            unset($data_set['ForceHTML']);
         } else {
             $message = strip_tags($message);
         }
@@ -13235,10 +13237,6 @@ function sucuriscan_settings_alert_events($nonce)
         // Update the notification settings.
         if (SucuriScanRequest::post(':save_alert_events') !== false) {
             $ucounter = 0;
-
-            if (SucuriScanRequest::post(':notify_scan_checksums') == 1) {
-                $_POST['sucuriscan_prettify_mails'] = '1';
-            }
 
             foreach ($sucuriscan_notify_options as $alert_type => $alert_label) {
                 $option_value = SucuriScanRequest::post($alert_type, '(1|0)');
