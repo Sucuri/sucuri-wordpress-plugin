@@ -10,6 +10,9 @@
         <li>
             <a href="#reset-plugins" data-tabname="reset-plugins">Reset Plugins</a>
         </li>
+        <li>
+            <a href="#updates" data-tabname="updates">Available Updates</a>
+        </li>
     </ul>
 
     <div class="sucuriscan-tab-containers">
@@ -23,6 +26,10 @@
 
         <div id="sucuriscan-reset-plugins">
             %%%SUCURI.ResetPlugins%%%
+        </div>
+
+        <div id="sucuriscan-updates">
+            %%%SUCURI.AvailableUpdates%%%
         </div>
     </div>
 </div>
