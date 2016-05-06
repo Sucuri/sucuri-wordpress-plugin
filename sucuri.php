@@ -100,7 +100,7 @@ define('SUCURISCAN_PLUGIN_CHECKSUM', @md5_file(SUCURISCAN_PLUGIN_FILEPATH));
 /**
  * Remote URL where the public Sucuri API service is running.
  */
-define('SUCURISCAN_API', 'https://wordpress.sucuri.net/api/');
+define('SUCURISCAN_API', 'sucuri://wordpress.sucuri.net/api/');
 
 /**
  * Latest version of the public Sucuri API.
@@ -110,7 +110,7 @@ define('SUCURISCAN_API_VERSION', 'v1');
 /**
  * Remote URL where the CloudProxy API service is running.
  */
-define('SUCURISCAN_CLOUDPROXY_API', 'https://waf.sucuri.net/api');
+define('SUCURISCAN_CLOUDPROXY_API', 'sucuri://waf.sucuri.net/api');
 
 /**
  * Latest version of the CloudProxy API.
@@ -2830,6 +2830,7 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_addr_header' => 'HTTP_X_SUCURI_CLIENTIP',
             'sucuriscan_ads_visibility' => 'enabled',
             'sucuriscan_api_key' => false,
+            'sucuriscan_api_protocol' => 'https',
             'sucuriscan_api_service' => 'enabled',
             'sucuriscan_audit_report' => 'disabled',
             'sucuriscan_cloudproxy_apikey' => '',
@@ -4854,6 +4855,26 @@ class SucuriScanAPI extends SucuriScanOption
     }
 
     /**
+     * Assign the communication protocol.
+     *
+     * @param  string $url Valid URL with or without protocol
+     * @return string      Full URL with the proper protocol.
+     */
+    public static function apiUrlProtocol($url = '')
+    {
+        $pattern = 'sucuri://'; /* Placeholder for HTTP protocol. */
+
+        if (strpos($url, $pattern) === 0) {
+            $protocol = SucuriScanOption::get_option(':api_protocol');
+            $protocol = ($protocol === 'https') ? 'https' : 'http';
+            $url = str_replace($pattern, '', $url);
+            $url = sprintf('%s://%s', $protocol, $url);
+        }
+
+        return $url;
+    }
+
+    /**
      * Retrieves a URL using a changeable HTTP method, returning results in an
      * array. Results include HTTP headers and content.
      *
@@ -4872,6 +4893,7 @@ class SucuriScanAPI extends SucuriScanOption
             return false;
         }
 
+        $url = self::apiUrlProtocol($url);
         $req_args = array(
             'method' => $method,
             'timeout' => self::requestTimeout(),
@@ -5847,10 +5869,9 @@ class SucuriScanAPI extends SucuriScanOption
     public static function getSitecheckResults($domain = '')
     {
         if (!empty($domain)) {
-            $url = 'https://sitecheck.sucuri.net/';
             $timeout = (int) SucuriScanOption::get_option(':sitecheck_timeout');
             $response = self::apiCall(
-                $url,
+                'sucuri://sitecheck.sucuri.net/',
                 'GET',
                 array(
                     'scan' => $domain,
@@ -5929,7 +5950,7 @@ class SucuriScanAPI extends SucuriScanOption
     public static function getNewSecretKeys()
     {
         $pattern = self::secret_key_pattern();
-        $response = self::apiCall('https://api.wordpress.org/secret-key/1.1/salt/', 'GET');
+        $response = self::apiCall('sucuri://api.wordpress.org/secret-key/1.1/salt/', 'GET');
 
         if ($response && @preg_match_all($pattern, $response['body'], $match)) {
             $new_keys = array();
@@ -5954,12 +5975,15 @@ class SucuriScanAPI extends SucuriScanOption
      */
     public static function getOfficialChecksums($version = 0)
     {
-        $url = 'https://api.wordpress.org/core/checksums/1.0/';
         $language = SucuriScanOption::get_option(':language');
-        $response = self::apiCall($url, 'GET', array(
-            'version' => $version,
-            'locale' => $language,
-        ));
+        $response = self::apiCall(
+            'sucuri://api.wordpress.org/core/checksums/1.0/',
+            'GET',
+            array(
+                'version' => $version,
+                'locale' => $language,
+            )
+        );
 
         if ($response) {
             if ($response['body'] instanceof stdClass) {
@@ -6014,7 +6038,7 @@ class SucuriScanAPI extends SucuriScanOption
         // Get the plugin's basic information from WordPress transient data.
         $plugins = get_plugins();
         $pattern = '/^http(s)?:\/\/wordpress\.org\/plugins\/(.*)\/$/';
-        $wp_market = 'https://wordpress.org/plugins/%s/';
+        $wp_market = 'sucuri://wordpress.org/plugins/%s/';
 
         // Loop through each plugin data and complement its information with more attributes.
         foreach ($plugins as $plugin_path => $plugin_data) {
@@ -6045,6 +6069,7 @@ class SucuriScanAPI extends SucuriScanOption
 
                 if (isset($plugin_path_parts[0])) {
                     $possible_repository = sprintf($wp_market, $plugin_path_parts[0]);
+                    $possible_repository = SucuriScanAPI::apiUrlProtocol($possible_repository);
                     $resp = wp_remote_head($possible_repository);
 
                     if (!is_wp_error($resp)
@@ -6103,13 +6128,14 @@ class SucuriScanAPI extends SucuriScanOption
     public static function getRemotePluginData($plugin = '')
     {
         if (!empty($plugin)) {
-            $url = sprintf('https://api.wordpress.org/plugins/info/1.0/%s.json', $plugin);
+            $url = sprintf('sucuri://api.wordpress.org/plugins/info/1.0/%s.json', $plugin);
             $response = self::apiCall($url, 'GET');
 
-            if ($response) {
-                if ($response['body'] instanceof stdClass) {
-                    return $response['body'];
-                }
+            if ($response
+                && array_key_exists('body', $response)
+                && $response['body'] instanceof stdClass
+            ) {
+                return $response['body'];
             }
         }
 
@@ -6136,16 +6162,16 @@ class SucuriScanAPI extends SucuriScanOption
                 $version = self::site_version();
             }
 
-            $url = sprintf('https://core.svn.wordpress.org/tags/%s/%s', $version, $filepath);
+            $url = sprintf('sucuri://core.svn.wordpress.org/tags/%s/%s', $version, $filepath);
             $response = self::apiCall($url, 'GET');
 
-            if ($response) {
-                if (isset($response['headers']['content-length'])
-                    && $response['headers']['content-length'] > 0
-                    && is_string($response['body'])
-                ) {
-                    return $response['body'];
-                }
+            if ($response
+                && isset($response['headers'])
+                && isset($response['headers']['content-length'])
+                && $response['headers']['content-length'] > 0
+                && is_string($response['body'])
+            ) {
+                return $response['body'];
             }
         }
 
@@ -13381,6 +13407,7 @@ function sucuriscan_settings_apiservice($nonce)
     $params['SettingsSection.ApiProxy'] = sucuriscan_settings_apiservice_proxy($nonce);
     $params['SettingsSection.ApiSSL'] = sucuriscan_settings_apiservice_ssl($nonce);
     $params['SettingsSection.ApiTimeout'] = sucuriscan_settings_apiservice_timeout($nonce);
+    $params['SettingsSection.ApiProtocol'] = sucuriscan_settings_apiservice_https($nonce);
 
     return SucuriScanTemplate::getSection('settings-apiservice', $params);
 }
@@ -13528,6 +13555,72 @@ function sucuriscan_settings_apiservice_timeout($nonce)
     $params['RequestTimeout'] = SucuriScanOption::get_option(':request_timeout') . ' seconds';
 
     return SucuriScanTemplate::getSection('settings-apiservice-timeout', $params);
+}
+
+function sucuriscan_settings_apiservice_https($nonce)
+{
+    $params = array();
+    $params['ApiProtocol.StatusNum'] = '1';
+    $params['ApiProtocol.Status'] = 'Enabled';
+    $params['ApiProtocol.SwitchText'] = 'Disable';
+    $params['ApiProtocol.SwitchValue'] = 'http';
+    $params['ApiProtocol.SwitchCssClass'] = 'button-danger';
+    $params['ApiProtocol.WarningVisibility'] = 'visible';
+    $params['ApiProtocol.ErrorVisibility'] = 'hidden';
+    $params['ApiProtocol.AffectedUrls'] = '';
+
+    /**
+     * Affected URLs by API protocol setting.
+     *
+     * These URLs are the ones that will be modified when the admin decides to
+     * enable or disable the API communication protocol. If this option is enabled
+     * these URLs will be queried using HTTPS and HTTP otherwise. Find an updated
+     * list of the affected URLs using the Grep command like this:
+     *
+     * grep -n 'sucuri://' sucuri.php
+     */
+    $affected_urls = array(
+        'sucuri://wordpress.sucuri.net/api/',
+        'sucuri://waf.sucuri.net/api',
+        'sucuri://sitecheck.sucuri.net/',
+        'sucuri://api.wordpress.org/secret-key/1.1/salt/',
+        'sucuri://api.wordpress.org/core/checksums/1.0/',
+        'sucuri://wordpress.org/plugins/PLUGIN/',
+        'sucuri://api.wordpress.org/plugins/info/1.0/PLUGIN.json',
+        'sucuri://core.svn.wordpress.org/tags/VERSION/FILEPATH',
+    );
+
+    if ($nonce) {
+        // Enable or disable the API service communication.
+        if ($api_protocol = SucuriScanRequest::post(':api_protocol', 'http(s)?')) {
+            $message = 'API communication protocol was set to <code>' . strtoupper($api_protocol) . '</code>';
+
+            SucuriScanEvent::report_info_event($message);
+            SucuriScanEvent::notify_event('plugin_change', $message);
+            SucuriScanOption::update_option(':api_protocol', $api_protocol);
+            SucuriScanInterface::info($message);
+        }
+    }
+
+    $api_protocol = SucuriScanOption::get_option(':api_protocol');
+
+    if ($api_protocol !== 'https') {
+        $params['ApiProtocol.StatusNum'] = '0';
+        $params['ApiProtocol.Status'] = 'Disabled';
+        $params['ApiProtocol.SwitchText'] = 'Enable';
+        $params['ApiProtocol.SwitchValue'] = 'https';
+        $params['ApiProtocol.SwitchCssClass'] = 'button-success';
+        $params['ApiProtocol.WarningVisibility'] = 'hidden';
+        $params['ApiProtocol.ErrorVisibility'] = 'visible';
+    }
+
+    foreach ($affected_urls as $affected) {
+        $affected = SucuriScanAPI::apiUrlProtocol($affected);
+        $affected = SucuriScan::escape($affected);
+        $params['ApiProtocol.AffectedUrls'] .= sprintf("<div>- %s</div>\n", $affected);
+    }
+
+    return SucuriScanTemplate::getSection('settings-apiservice-protocol', $params);
 }
 
 /**

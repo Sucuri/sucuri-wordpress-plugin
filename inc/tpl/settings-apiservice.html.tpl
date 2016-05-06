@@ -7,4 +7,6 @@
     %%%SUCURI.SettingsSection.ApiSSL%%%
 
     %%%SUCURI.SettingsSection.ApiTimeout%%%
+
+    %%%SUCURI.SettingsSection.ApiProtocol%%%
 </div>

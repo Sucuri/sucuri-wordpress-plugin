@@ -21,6 +21,7 @@ $sucuriscan_option_names = array(
     'addr_header',
     'ads_visibility',
     'api_key',
+    'api_protocol',
     'api_service',
     'audit_report',
     'cloudproxy_apikey',
