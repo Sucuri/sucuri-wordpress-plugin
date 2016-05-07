@@ -4857,6 +4857,9 @@ class SucuriScanAPI extends SucuriScanOption
     /**
      * Assign the communication protocol.
      *
+     * @see https://developer.wordpress.org/reference/functions/wp_http_supports/
+     * @see https://developer.wordpress.org/reference/functions/set_url_scheme/
+     *
      * @param  string $url Valid URL with or without protocol
      * @return string      Full URL with the proper protocol.
      */
@@ -10404,12 +10407,11 @@ function sucuriscan_posthack_page()
     $process_form = sucuriscan_posthack_process_form();
 
     // Page pseudo-variables initialization.
-    $params = array(
-        'PageTitle' => 'Post-Hack',
-        'UpdateSecretKeys' => sucuriscan_update_secret_keys($process_form),
-        'ResetPassword' => sucuriscan_posthack_users($process_form),
-        'ResetPlugins' => sucuriscan_posthack_plugins($process_form),
-    );
+    $params['PageTitle'] = 'Post-Hack';
+    $params['UpdateSecretKeys'] = sucuriscan_update_secret_keys($process_form);
+    $params['ResetPassword'] = sucuriscan_posthack_users($process_form);
+    $params['ResetPlugins'] = sucuriscan_posthack_plugins($process_form);
+    $params['AvailableUpdates'] = sucuriscan_posthack_updates($process_form);
 
     echo SucuriScanTemplate::getTemplate('posthack', $params);
 }
@@ -10425,6 +10427,7 @@ function sucuriscan_posthack_ajax()
 
     if (SucuriScanInterface::check_nonce()) {
         sucuriscan_posthack_plugins_ajax();
+        sucuriscan_posthack_updates_ajax();
     }
 
     wp_die();
@@ -10678,6 +10681,21 @@ function sucuriscan_posthack_plugins($process_form = false)
 }
 
 /**
+ * Find and list available updates for plugins and themes.
+ *
+ * @param  boolean $process_form Whether a form was submitted or not.
+ * @return void
+ */
+function sucuriscan_posthack_updates($process_form = false)
+{
+    $params = array(
+        'AvailableUpdates.ItemList' => '',
+    );
+
+    return SucuriScanTemplate::getSection('posthack-updates', $params);
+}
+
+/**
  * Process the Ajax request to retrieve the plugins metadata.
  *
  * @return string HTML code for a table with the plugins metadata.
@@ -10714,6 +10732,44 @@ function sucuriscan_posthack_plugins_ajax()
         }
 
         print( $response );
+        exit(0);
+    }
+}
+
+/**
+ * Process the Ajax request to retrieve the available updates.
+ *
+ * @return string HTML code for a table with the updates information.
+ */
+function sucuriscan_posthack_updates_ajax()
+{
+    if (SucuriScanRequest::post('form_action') == 'get_available_updates') {
+        $result = wp_update_plugins();
+        $updates = get_plugin_updates();
+        $response = '';
+
+        if (is_array($updates) && !empty($updates)) {
+            $counter = 0;
+
+            foreach ($updates as $data) {
+                $css_class = ($counter % 2 == 0) ? '' : 'alternate';
+                $response .= SucuriScanTemplate::getSnippet(
+                    'posthack-updates',
+                    array(
+                        'Update.CssClass' => $css_class,
+                        'Update.Plugin' => SucuriScan::excerpt($data->Name, 35),
+                        'Update.Version' => $data->Version,
+                        'Update.NewVersion' => $data->update->new_version,
+                        'Update.TestedWith' => $data->update->tested,
+                        'Update.ArchiveUrl' => $data->update->package,
+                        'Update.MarketUrl' => $data->update->url,
+                    )
+                );
+                $counter++;
+            }
+        }
+
+        print($response);
         exit(0);
     }
 }
