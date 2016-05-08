@@ -10744,9 +10744,11 @@ function sucuriscan_posthack_plugins_ajax()
 function sucuriscan_posthack_updates_ajax()
 {
     if (SucuriScanRequest::post('form_action') == 'get_available_updates') {
+        $response = '';
+
+        // Check for available plugin updates.
         $result = wp_update_plugins();
         $updates = get_plugin_updates();
-        $response = '';
 
         if (is_array($updates) && !empty($updates)) {
             $counter = 0;
@@ -10757,12 +10759,39 @@ function sucuriscan_posthack_updates_ajax()
                     'posthack-updates',
                     array(
                         'Update.CssClass' => $css_class,
-                        'Update.Plugin' => SucuriScan::excerpt($data->Name, 35),
+                        'Update.IconType' => 'plugins',
+                        'Update.Extension' => SucuriScan::excerpt($data->Name, 35),
                         'Update.Version' => $data->Version,
                         'Update.NewVersion' => $data->update->new_version,
-                        'Update.TestedWith' => $data->update->tested,
+                        'Update.TestedWith' => "WordPress\x20" . $data->update->tested,
                         'Update.ArchiveUrl' => $data->update->package,
                         'Update.MarketUrl' => $data->update->url,
+                    )
+                );
+                $counter++;
+            }
+        }
+
+        // Check for available theme updates.
+        $result = wp_update_themes();
+        $updates = get_theme_updates();
+
+        if (is_array($updates) && !empty($updates)) {
+            $counter = 0;
+
+            foreach ($updates as $data) {
+                $css_class = ($counter % 2 == 0) ? '' : 'alternate';
+                $response .= SucuriScanTemplate::getSnippet(
+                    'posthack-updates',
+                    array(
+                        'Update.CssClass' => $css_class,
+                        'Update.IconType' => 'appearance',
+                        'Update.Extension' => SucuriScan::excerpt($data->Name, 35),
+                        'Update.Version' => $data->Version,
+                        'Update.NewVersion' => $data->update['new_version'],
+                        'Update.TestedWith' => 'Newest WordPress',
+                        'Update.ArchiveUrl' => $data->update['package'],
+                        'Update.MarketUrl' => $data->update['url'],
                     )
                 );
                 $counter++;

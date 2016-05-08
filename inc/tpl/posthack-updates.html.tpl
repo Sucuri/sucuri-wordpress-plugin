@@ -13,7 +13,7 @@
             <table class="wp-list-table widefat sucuriscan-table sucuriscan-updates-table">
                 <thead>
                     <tr>
-                        <th class="manage-column">Plugin</th>
+                        <th class="manage-column">Extension</th>
                         <th class="manage-column">Installed</th>
                         <th class="manage-column">Available</th>
                         <th class="manage-column">Tested With</th>
