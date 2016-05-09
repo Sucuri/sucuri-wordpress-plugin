@@ -46,6 +46,7 @@ $sucuriscan_option_names = array(
     'lastlogin_redirection',
     'logs4report',
     'maximum_failed_logins',
+    'notify_available_updates',
     'notify_bruteforce_attack',
     'notify_failed_login',
     'notify_plugin_activated',

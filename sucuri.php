@@ -211,6 +211,7 @@ if (defined('SUCURISCAN')) {
         'sucuriscan_use_wpmail' => 'Use WordPress functions to send mails <em>(uncheck to use native PHP functions)</em>',
         'sucuriscan_lastlogin_redirection' => 'Allow redirection after login to report the last-login information',
         'sucuriscan_notify_scan_checksums' => 'Receive email alerts for core integrity checks',
+        'sucuriscan_notify_available_updates' => 'Receive email alerts for available updates',
         'sucuriscan_notify_user_registration' => 'user:Receive email alerts for new user registration',
         'sucuriscan_notify_success_login' => 'user:Receive email alerts for successful login attempts',
         'sucuriscan_notify_failed_login' => 'user:Receive email alerts for failed login attempts <em>(you may receive tons of emails)</em>',
@@ -697,6 +698,7 @@ class SucuriScan
     {
         SucuriScanEvent::filesystem_scan();
         sucuriscan_core_files_data(true);
+        sucuriscan_posthack_updates_content(true);
     }
 
     /**
@@ -2855,6 +2857,7 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_lastlogin_redirection' => 'enabled',
             'sucuriscan_logs4report' => 500,
             'sucuriscan_maximum_failed_logins' => 30,
+            'sucuriscan_notify_available_updates' => 'disabled',
             'sucuriscan_notify_bruteforce_attack' => 'disabled',
             'sucuriscan_notify_failed_login' => 'enabled',
             'sucuriscan_notify_plugin_activated' => 'disabled',
@@ -3793,6 +3796,9 @@ class SucuriScanEvent extends SucuriScan
                 $email_params['Force'] = true;
             } elseif ($event == 'scan_checksums') {
                 $event = 'core_integrity_checks';
+                $email_params['Force'] = true;
+                $email_params['ForceHTML'] = true;
+            } elseif ($event == 'available_updates') {
                 $email_params['Force'] = true;
                 $email_params['ForceHTML'] = true;
             }
@@ -10085,6 +10091,7 @@ function sucuriscan_integrity_form_submissions()
             SucuriScanEvent::notify_event('plugin_change', 'Filesystem scan forced at: ' . date('r'));
             SucuriScanEvent::filesystem_scan(true);
             sucuriscan_core_files_data(true);
+            sucuriscan_posthack_updates_content(true);
         }
 
         // Restore, Remove, Mark as fixed the core files.
@@ -10681,21 +10688,6 @@ function sucuriscan_posthack_plugins($process_form = false)
 }
 
 /**
- * Find and list available updates for plugins and themes.
- *
- * @param  boolean $process_form Whether a form was submitted or not.
- * @return void
- */
-function sucuriscan_posthack_updates($process_form = false)
-{
-    $params = array(
-        'AvailableUpdates.ItemList' => '',
-    );
-
-    return SucuriScanTemplate::getSection('posthack-updates', $params);
-}
-
-/**
  * Process the Ajax request to retrieve the plugins metadata.
  *
  * @return string HTML code for a table with the plugins metadata.
@@ -10737,6 +10729,96 @@ function sucuriscan_posthack_plugins_ajax()
 }
 
 /**
+ * Find and list available updates for plugins and themes.
+ *
+ * @param  boolean $process_form Whether a form was submitted or not.
+ * @return void
+ */
+function sucuriscan_posthack_updates($process_form = false)
+{
+    $params = array();
+
+    return SucuriScanTemplate::getSection('posthack-updates', $params);
+}
+
+/**
+ * Retrieve the information for the available updates.
+ *
+ * @return string HTML code for a table with the updates information.
+ */
+function sucuriscan_posthack_updates_content($send_email = false)
+{
+    $response = '';
+
+    // Check for available plugin updates.
+    $result = wp_update_plugins();
+    $updates = get_plugin_updates();
+
+    if (is_array($updates) && !empty($updates)) {
+        $counter = 0;
+
+        foreach ($updates as $data) {
+            $css_class = ($counter % 2 == 0) ? '' : 'alternate';
+            $response .= SucuriScanTemplate::getSnippet(
+                'posthack-updates',
+                array(
+                    'Update.CssClass' => $css_class,
+                    'Update.IconType' => 'plugins',
+                    'Update.Extension' => SucuriScan::excerpt($data->Name, 35),
+                    'Update.Version' => $data->Version,
+                    'Update.NewVersion' => $data->update->new_version,
+                    'Update.TestedWith' => "WordPress\x20" . $data->update->tested,
+                    'Update.ArchiveUrl' => $data->update->package,
+                    'Update.MarketUrl' => $data->update->url,
+                )
+            );
+            $counter++;
+        }
+    }
+
+    // Check for available theme updates.
+    $result = wp_update_themes();
+    $updates = get_theme_updates();
+
+    if (is_array($updates) && !empty($updates)) {
+        $counter = 0;
+
+        foreach ($updates as $data) {
+            $css_class = ($counter % 2 == 0) ? '' : 'alternate';
+            $response .= SucuriScanTemplate::getSnippet(
+                'posthack-updates',
+                array(
+                    'Update.CssClass' => $css_class,
+                    'Update.IconType' => 'appearance',
+                    'Update.Extension' => SucuriScan::excerpt($data->Name, 35),
+                    'Update.Version' => $data->Version,
+                    'Update.NewVersion' => $data->update['new_version'],
+                    'Update.TestedWith' => 'Newest WordPress',
+                    'Update.ArchiveUrl' => $data->update['package'],
+                    'Update.MarketUrl' => $data->update['url'],
+                )
+            );
+            $counter++;
+        }
+    }
+
+    // Send an email notification with the affected files.
+    if ($send_email === true) {
+        if (is_string($response) && !empty($response)) {
+            $params = array('AvailableUpdates.Content' => $response);
+            $content = SucuriScanTemplate::getSection('posthack-updates-notification', $params);
+            $sent = SucuriScanEvent::notify_event('available_updates', $content);
+
+            return $sent;
+        }
+
+        return false;
+    }
+
+    return $response;
+}
+
+/**
  * Process the Ajax request to retrieve the available updates.
  *
  * @return string HTML code for a table with the updates information.
@@ -10744,61 +10826,8 @@ function sucuriscan_posthack_plugins_ajax()
 function sucuriscan_posthack_updates_ajax()
 {
     if (SucuriScanRequest::post('form_action') == 'get_available_updates') {
-        $response = '';
-
-        // Check for available plugin updates.
-        $result = wp_update_plugins();
-        $updates = get_plugin_updates();
-
-        if (is_array($updates) && !empty($updates)) {
-            $counter = 0;
-
-            foreach ($updates as $data) {
-                $css_class = ($counter % 2 == 0) ? '' : 'alternate';
-                $response .= SucuriScanTemplate::getSnippet(
-                    'posthack-updates',
-                    array(
-                        'Update.CssClass' => $css_class,
-                        'Update.IconType' => 'plugins',
-                        'Update.Extension' => SucuriScan::excerpt($data->Name, 35),
-                        'Update.Version' => $data->Version,
-                        'Update.NewVersion' => $data->update->new_version,
-                        'Update.TestedWith' => "WordPress\x20" . $data->update->tested,
-                        'Update.ArchiveUrl' => $data->update->package,
-                        'Update.MarketUrl' => $data->update->url,
-                    )
-                );
-                $counter++;
-            }
-        }
-
-        // Check for available theme updates.
-        $result = wp_update_themes();
-        $updates = get_theme_updates();
-
-        if (is_array($updates) && !empty($updates)) {
-            $counter = 0;
-
-            foreach ($updates as $data) {
-                $css_class = ($counter % 2 == 0) ? '' : 'alternate';
-                $response .= SucuriScanTemplate::getSnippet(
-                    'posthack-updates',
-                    array(
-                        'Update.CssClass' => $css_class,
-                        'Update.IconType' => 'appearance',
-                        'Update.Extension' => SucuriScan::excerpt($data->Name, 35),
-                        'Update.Version' => $data->Version,
-                        'Update.NewVersion' => $data->update['new_version'],
-                        'Update.TestedWith' => 'Newest WordPress',
-                        'Update.ArchiveUrl' => $data->update['package'],
-                        'Update.MarketUrl' => $data->update['url'],
-                    )
-                );
-                $counter++;
-            }
-        }
-
-        print($response);
+        header('Content-Type: text/html; charset=UTF-8');
+        print(sucuriscan_posthack_updates_content());
         exit(0);
     }
 }
