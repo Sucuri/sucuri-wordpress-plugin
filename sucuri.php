@@ -2857,7 +2857,7 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_lastlogin_redirection' => 'enabled',
             'sucuriscan_logs4report' => 500,
             'sucuriscan_maximum_failed_logins' => 30,
-            'sucuriscan_notify_available_updates' => 'disabled',
+            'sucuriscan_notify_available_updates' => 'enabled',
             'sucuriscan_notify_bruteforce_attack' => 'disabled',
             'sucuriscan_notify_failed_login' => 'enabled',
             'sucuriscan_notify_plugin_activated' => 'disabled',
