@@ -4884,6 +4884,143 @@ class SucuriScanAPI extends SucuriScanOption
     }
 
     /**
+     * Affected URLs by API protocol setting.
+     *
+     * These URLs are the ones that will be modified when the admin decides to
+     * enable or disable the API communication protocol. If this option is enabled
+     * these URLs will be queried using HTTPS and HTTP otherwise. Find an updated
+     * list of the affected URLs using the Grep command like this:
+     *
+     * Note: The string that identifies each URL is a descriptive unique string used
+     * to differentiate and easily select the URLs from the list. Make sure that
+     * they are different among them all.
+     *
+     * @see    grep -n 'sucuri://' sucuri.php
+     * @return array API URLs affected by the HTTP protocol setting.
+     */
+    public static function ambiguousApiUrls()
+    {
+        return array(
+            'sucuriwp' => 'sucuri://wordpress.sucuri.net/api/',
+            'cproxywp' => 'sucuri://waf.sucuri.net/api',
+            'sitechck' => 'sucuri://sitecheck.sucuri.net/',
+            'wpssalts' => 'sucuri://api.wordpress.org/secret-key/1.1/salt/',
+            'wphashes' => 'sucuri://api.wordpress.org/core/checksums/1.0/',
+            'wpplugin' => 'sucuri://wordpress.org/plugins/PLUGIN/',
+            'plugindt' => 'sucuri://api.wordpress.org/plugins/info/1.0/PLUGIN.json',
+            'wpvfpath' => 'sucuri://core.svn.wordpress.org/tags/VERSION/FILEPATH',
+        );
+    }
+
+    /**
+     * Send test HTTP request to the API URLs.
+     *
+     * @param  string $unique Unique API URL selector.
+     * @return object         WordPress HTTP request response.
+     */
+    public static function debugApiCall($unique = null)
+    {
+        $urls = self::ambiguousApiUrls();
+
+        if (array_key_exists($unique, $urls)) {
+            $params = array();
+            $url = self::apiUrlProtocol($urls[$unique]);
+
+            if ($unique === 'sitechck') {
+                $response = self::getSitecheckResults('sucuri.net', false);
+            } else {
+                if ($unique === 'cproxywp') {
+                    $params['v2'] = 'true';
+                    $params['a'] = 'test';
+                } elseif ($unique === 'wpplugin') {
+                    $url = str_replace('/PLUGIN/', '/sucuri-scanner/', $url);
+                } elseif ($unique === 'plugindt') {
+                    $url = str_replace('/PLUGIN.json', '/sucuri-scanner.json', $url);
+                } elseif ($unique === 'wpvfpath') {
+                    $fpath = sprintf('/%s/wp-load.php', SucuriScan::site_version());
+                    $url = str_replace('/VERSION/FILEPATH', $fpath, $url);
+                }
+
+                $response = self::apiCall($url, 'GET', $params);
+            }
+
+            if (is_array($response) && !empty($response)) {
+                if ($unique === 'sucuriwp'
+                    && array_key_exists('body_arr', $response)
+                    && array_key_exists('status', $response['body_arr'])
+                    && array_key_exists('action', $response['body_arr'])
+                    && is_numeric($response['body_arr']['status'])
+                ) {
+                    return array('unique' => $unique, 'output' => 'OK');
+                }
+
+                elseif ($unique === 'cproxywp'
+                    && array_key_exists('body_arr', $response)
+                    && array_key_exists('status', $response['body_arr'])
+                    && array_key_exists('action', $response['body_arr'])
+                    && is_numeric($response['body_arr']['status'])
+                ) {
+                    return array('unique' => $unique, 'output' => 'OK');
+                }
+
+                elseif ($unique === 'sitechck'
+                    && array_key_exists('SCAN', $response)
+                    && array_key_exists('SYSTEM', $response)
+                    && array_key_exists('BLACKLIST', $response)
+                ) {
+                    return array('unique' => $unique, 'output' => 'OK');
+                }
+
+                elseif ($unique === 'wpssalts'
+                    && array_key_exists('body', $response)
+                    && strpos($response['body'], 'AUTH_KEY')
+                    && strpos($response['body'], 'AUTH_SALT')
+                    && strpos($response['body'], 'SECURE_AUTH_KEY')
+                ) {
+                    return array('unique' => $unique, 'output' => 'OK');
+                }
+
+                elseif ($unique === 'wphashes'
+                    && array_key_exists('response', $response)
+                    && array_key_exists('code', $response['response'])
+                    && array_key_exists('message', $response['response'])
+                    && strpos($response['body'], '"checksums"')
+                ) {
+                    return array('unique' => $unique, 'output' => 'OK');
+                }
+
+                elseif ($unique === 'wpplugin'
+                    && array_key_exists('response', $response)
+                    && array_key_exists('code', $response['response'])
+                    && array_key_exists('message', $response['response'])
+                    && $response['response']['code'] == 200
+                ) {
+                    return array('unique' => $unique, 'output' => 'OK');
+                }
+
+                elseif ($unique === 'plugindt'
+                    && array_key_exists('body_arr', $response)
+                    && array_key_exists('slug', $response['body_arr'])
+                    && $response['body_arr']['slug'] === 'sucuri-scanner'
+                ) {
+                    return array('unique' => $unique, 'output' => 'OK');
+                }
+
+                elseif ($unique === 'wpvfpath'
+                    && array_key_exists('response', $response)
+                    && array_key_exists('code', $response['response'])
+                    && array_key_exists('message', $response['response'])
+                    && $response['response']['code'] == 200
+                ) {
+                    return array('unique' => $unique, 'output' => 'OK');
+                }
+            }
+        }
+
+        return array('unique' => $unique, 'output' => 'ERROR');
+    }
+
+    /**
      * Retrieves a URL using a changeable HTTP method, returning results in an
      * array. Results include HTTP headers and content.
      *
@@ -5872,22 +6009,28 @@ class SucuriScanAPI extends SucuriScanOption
      *
      * [1] https://sitecheck.sucuri.net/
      *
-     * @param  string $domain The clean version of the website's domain.
-     * @return object         Serialized data of the scanning results for the site specified.
+     * @param  string  $domain The clean version of the website's domain.
+     * @param  boolean $clear  Request the results from a fresh scan or not.
+     * @return object          JSON encoded website scan results.
      */
-    public static function getSitecheckResults($domain = '')
+    public static function getSitecheckResults($domain = '', $clear = true)
     {
         if (!empty($domain)) {
+            $params = array();
             $timeout = (int) SucuriScanOption::get_option(':sitecheck_timeout');
+            $params['scan'] = $domain;
+            $params['fromwp'] = 2;
+            $params['json'] = 1;
+
+            // Request a fresh scan or not.
+            if ($clear === true) {
+                $params['clear'] = 1;
+            }
+
             $response = self::apiCall(
                 'sucuri://sitecheck.sucuri.net/',
                 'GET',
-                array(
-                    'scan' => $domain,
-                    'fromwp' => 2,
-                    'clear' => 1,
-                    'json' => 1,
-                ),
+                $params,
                 array(
                     'assoc' => true,
                     'timeout' => $timeout,
@@ -13674,6 +13817,7 @@ function sucuriscan_settings_apiservice_timeout($nonce)
 function sucuriscan_settings_apiservice_https($nonce)
 {
     $params = array();
+
     $params['ApiProtocol.StatusNum'] = '1';
     $params['ApiProtocol.Status'] = 'Enabled';
     $params['ApiProtocol.SwitchText'] = 'Disable';
@@ -13682,27 +13826,6 @@ function sucuriscan_settings_apiservice_https($nonce)
     $params['ApiProtocol.WarningVisibility'] = 'visible';
     $params['ApiProtocol.ErrorVisibility'] = 'hidden';
     $params['ApiProtocol.AffectedUrls'] = '';
-
-    /**
-     * Affected URLs by API protocol setting.
-     *
-     * These URLs are the ones that will be modified when the admin decides to
-     * enable or disable the API communication protocol. If this option is enabled
-     * these URLs will be queried using HTTPS and HTTP otherwise. Find an updated
-     * list of the affected URLs using the Grep command like this:
-     *
-     * grep -n 'sucuri://' sucuri.php
-     */
-    $affected_urls = array(
-        'sucuri://wordpress.sucuri.net/api/',
-        'sucuri://waf.sucuri.net/api',
-        'sucuri://sitecheck.sucuri.net/',
-        'sucuri://api.wordpress.org/secret-key/1.1/salt/',
-        'sucuri://api.wordpress.org/core/checksums/1.0/',
-        'sucuri://wordpress.org/plugins/PLUGIN/',
-        'sucuri://api.wordpress.org/plugins/info/1.0/PLUGIN.json',
-        'sucuri://core.svn.wordpress.org/tags/VERSION/FILEPATH',
-    );
 
     if ($nonce) {
         // Enable or disable the API service communication.
@@ -13728,13 +13851,37 @@ function sucuriscan_settings_apiservice_https($nonce)
         $params['ApiProtocol.ErrorVisibility'] = 'visible';
     }
 
-    foreach ($affected_urls as $affected) {
-        $affected = SucuriScanAPI::apiUrlProtocol($affected);
-        $affected = SucuriScan::escape($affected);
-        $params['ApiProtocol.AffectedUrls'] .= sprintf("<div>- %s</div>\n", $affected);
+    $counter = 0;
+    $affected_urls = SucuriScanAPI::ambiguousApiUrls();
+
+    foreach ($affected_urls as $unique => $url) {
+        $counter++;
+        $url = SucuriScanAPI::apiUrlProtocol($url);
+        $css_class = ($counter % 2 === 0) ? 'alternate' : '';
+        $params['ApiProtocol.AffectedUrls'] .= SucuriScanTemplate::getSnippet(
+            'settings-apiservice-protocol',
+            array(
+                'ApiProtocol.CssClass' => $css_class,
+                'ApiProtocol.ID' => $unique,
+                'ApiProtocol.URL' => $url,
+            )
+        );
+
     }
 
     return SucuriScanTemplate::getSection('settings-apiservice-protocol', $params);
+}
+
+function sucuriscan_settings_apiservice_https_ajax()
+{
+    if (SucuriScanRequest::post('form_action') == 'debug_api_call') {
+        $unique = SucuriScanRequest::post('api_unique');
+        $response = SucuriScanAPI::debugApiCall($unique);
+
+        header('Content-Type: application/json');
+        print(@json_encode($response));
+        exit(0);
+    }
 }
 
 /**
@@ -13974,6 +14121,7 @@ function sucuriscan_settings_ajax()
 
     if (SucuriScanInterface::check_nonce()) {
         sucuriscan_settings_ignorescan_ajax();
+        sucuriscan_settings_apiservice_https_ajax();
     }
 
     wp_die();
