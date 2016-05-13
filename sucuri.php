@@ -718,7 +718,14 @@ class SucuriScan
     public static function allowedHttpHeaders($with_keys = false)
     {
         $allowed = array(
+            /* CloudProxy custom HTTP headers */
             'HTTP_X_SUCURI_CLIENTIP',
+            /* CloudFlare custom HTTP headers */
+            'HTTP_CF_CONNECTING_IP', /* Real visitor IP. */
+            'HTTP_CF_IPCOUNTRY', /* Country of visitor. */
+            'HTTP_CF_RAY', /* https://support.cloudflare.com/entries/23046742-w. */
+            'HTTP_CF_VISITOR', /* Determine if HTTP or HTTPS. */
+            /* Possible HTTP headers */
             'HTTP_X_REAL_IP',
             'HTTP_CLIENT_IP',
             'HTTP_X_FORWARDED_FOR',
