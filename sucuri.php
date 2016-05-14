@@ -8993,7 +8993,7 @@ class SucuriScanHardening extends SucuriScan
             && is_readable($htaccess)
             && is_writable($htaccess)
         ) {
-            $content = @file_get_contents($htaccess);
+            $content = file_get_contents($htaccess);
             $rules = self::whitelist_rule($file);
             $content = str_replace($rules, '', $content);
             @file_put_contents($htaccess, $content);
@@ -9003,10 +9003,15 @@ class SucuriScanHardening extends SucuriScan
     public static function get_whitelisted($folder = '')
     {
         $htaccess = self::htaccess($folder);
-        $content = @file_get_contents($htaccess);
 
-        if (@preg_match_all('/<Files (\S+)>/', $content, $matches)) {
-            return $matches[1];
+        if (file_exists($htaccess)
+            && is_readable($htaccess)
+        ) {
+            $content = file_get_contents($htaccess);
+
+            if (@preg_match_all('/<Files (\S+)>/', $content, $matches)) {
+                return $matches[1];
+            }
         }
 
         return false;
