@@ -1,7 +1,16 @@
 
 <div id="poststuff">
     <div class="postbox sucuriscan-border sucuriscan-table-description">
-        <h3>Failed logins</h3>
+        <h3 class="thead-with-button">
+            <span>Failed logins</span>
+            <span class="thead-topright-action">
+                <form action="%%SUCURI.URL.Settings%%#scanner" method="post">
+                    <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
+                    <input type="hidden" name="sucuriscan_reset_logfile" value="failedlogins" />
+                    <button type="submit" class="button button-primary">Reset logs</button>
+                </form>
+            </span>
+        </h3>
 
         <div class="inside">
             <p>
