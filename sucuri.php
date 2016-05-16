@@ -9089,6 +9089,7 @@ function sucuriscan_hardening_whitelist()
         'wp-content/uploads',
     );
 
+    if (SucuriScanInterface::check_nonce()) {
     // Add a new file to the hardening whitelist.
     if ($fwhite = SucuriScanRequest::post(':hardening_whitelist')) {
         $folder = SucuriScanRequest::post(':hardening_folder');
@@ -9114,6 +9115,7 @@ function sucuriscan_hardening_whitelist()
         }
 
         SucuriScanInterface::info('Selected files were processed successfully');
+    }
     }
 
     // Read the access control file and retrieve the whitelisted files.
