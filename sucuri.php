@@ -8997,7 +8997,7 @@ class SucuriScanHardening extends SucuriScan
             }
 
             if ($fhandle) {
-                $rules_str = implode("\n", $deny_rules) . "\n";
+                $rules_str = "\n" . implode("\n", $deny_rules) . "\n";
                 $written = @fwrite($fhandle, $rules_str);
                 @fclose($fhandle);
 
