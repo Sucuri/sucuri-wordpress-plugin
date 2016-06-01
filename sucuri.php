@@ -3262,6 +3262,12 @@ class SucuriScanOption extends SucuriScanRequest
             $settings[ $row->option_name ] = $row->option_value;
         }
 
+        $external = self::getAllOptions();
+
+        foreach ($external as $option => $value) {
+            $settings[$option] = $value;
+        }
+
         return $settings;
     }
 
