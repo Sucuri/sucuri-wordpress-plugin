@@ -168,23 +168,14 @@ define('SUCURISCAN_MAX_SITECHECK_TIMEOUT', 60);
 if (defined('SUCURISCAN')) {
     /**
      * Define the prefix for some actions and filters that rely in the
-     * differentiation of the type of site where the extension is being used.
-     * There are a few differences between a single site installation that must
-     * be correctly defined when the extension is in a different environment,
-     * for example, in a multisite installation.
-     *
-     * As of May 30, 2016 the menu in the sidebar and all associated
-     * functionality of the plugin must be visible in the single installations
-     * all the time. If the website is part of a network installation then the
-     * plugin must hide the menu from the network dashboard and only display it
-     * when the user is in the dashboard of one of the subsites.
-     *
-     * Use prefix network_ if on network installation.
-     * Use empty prefix if on single installation.
+     * differentiation of the type of site where the extension is being used. There
+     * are a few differences between a single site installation that must be
+     * correctly defined when the extension is in a different environment, for
+     * example, in a multisite installation.
      *
      * @var string
      */
-    $sucuriscan_action_prefix = '';
+    $sucuriscan_action_prefix = SucuriScan::is_multisite() ? 'network_' : '';
 
     /**
      * List an associative array with the sub-pages of this plugin.
@@ -601,24 +592,13 @@ class SucuriScan
         return (bool) (function_exists('is_multisite') && is_multisite());
     }
 
-    /**
-     * Returns URL of the admin dashboard.
-     *
-     * Note: As for May 30, 2016 this function stopped returning the URL for the
-     * network admin dashboard because the plugin stopped being served in that
-     * interface, instead the network admin must configure each site
-     * individually. If a network has five sub-sites and the network admin wants
-     * to set different alerts for each site he has to go to the dashboard of
-     * each sub-page and change the plugin' settings for each site individually.
-     *
-     * Use network_admin_url for a network installation.
-     *
-     * @param  string $url Trailing of the URL in the admin dashboard.
-     * @return string      Full URL of the admin dashboard, with the trailing.
-     */
     public static function admin_url($url = '')
     {
-        return admin_url($url);
+        if (self::is_multisite()) {
+            return network_admin_url($url);
+        } else {
+            return admin_url($url);
+        }
     }
 
     /**
@@ -2874,7 +2854,7 @@ class SucuriScanOption extends SucuriScanRequest
      */
     public static function get_default_option_values()
     {
-        return array(
+        $defaults = array(
             'sucuriscan_account' => '',
             'sucuriscan_addr_header' => 'HTTP_X_SUCURI_CLIENTIP',
             'sucuriscan_ads_visibility' => 'enabled',
@@ -2946,6 +2926,8 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_verify_ssl_cert' => 'false',
             'sucuriscan_xhr_monitor' => 'disabled',
         );
+
+        return $defaults;
     }
 
     /**
@@ -2955,7 +2937,10 @@ class SucuriScanOption extends SucuriScanRequest
      */
     public static function get_default_option_names()
     {
-        return array_keys(self::get_default_option_values());
+        $options = self::get_default_option_values();
+        $names = array_keys($options);
+
+        return $names;
     }
 
     /**
@@ -3021,7 +3006,6 @@ class SucuriScanOption extends SucuriScanRequest
      */
     public static function optionsFilePath()
     {
-        $unique = get_current_blog_id();
         $folder = implode(
             DIRECTORY_SEPARATOR,
             array(WP_CONTENT_DIR, 'uploads', 'sucuri')
@@ -3034,7 +3018,7 @@ class SucuriScanOption extends SucuriScanRequest
             $folder = SUCURI_DATA_STORAGE;
         }
 
-        return sprintf('%s/sucuri-options-site%d.php', $folder, $unique);
+        return sprintf('%s/sucuri-settings.php', $folder);
     }
 
     /**
@@ -3487,18 +3471,17 @@ class SucuriScanOption extends SucuriScanRequest
      */
     public static function setRevProxy($action = 'disable')
     {
-        if ($action === 'enable' || $action === 'disable') {
-            $action_d = $action . 'd';
-            $message = 'Reverse proxy support was <code>' . $action_d . '</code>';
-
-            self::update_option(':revproxy', $action_d);
-
-            SucuriScanEvent::report_info_event($message);
-            SucuriScanEvent::notify_event('plugin_change', $message);
-            SucuriScanInterface::info($message);
-        } else {
-            self::delete_option(':revproxy');
+        if ($action !== 'enable' && $action !== 'disable') {
+            return self::delete_option(':revproxy');
         }
+
+        $action_d = $action . 'd';
+        $message = 'Reverse proxy support was <code>' . $action_d . '</code>';
+
+        self::update_option(':revproxy', $action_d);
+        SucuriScanEvent::report_info_event($message);
+        SucuriScanEvent::notify_event('plugin_change', $message);
+        SucuriScanInterface::info($message);
     }
 
     /**
@@ -11195,6 +11178,10 @@ function sucuriscan_posthack_reinstall_plugins($process_form = false)
     }
 }
 
+class SucuriScanLastLogins extends SucuriScan
+{
+}
+
 /**
  * Generate and print the HTML code for the Last Logins page.
  *
@@ -11227,6 +11214,7 @@ function sucuriscan_lastlogins_page()
         'LastLogins.AllUsers' => sucuriscan_lastlogins_all(),
         'LoggedInUsers' => sucuriscan_loggedin_users_panel(),
         'FailedLogins' => sucuriscan_failed_logins_panel(),
+        'BlockedUsers' => SucuriScanBlockedUsers::page(),
     );
 
     echo SucuriScanTemplate::getTemplate('lastlogins', $params);
