@@ -5282,16 +5282,6 @@ class SucuriScanAPI extends SucuriScanOption
         $option_name = ':cloudproxy_apikey';
         $api_key = self::get_option($option_name);
 
-        // Check if the cloudproxy-waf plugin was previously installed.
-        if (!$api_key) {
-            $api_key = self::get_option('sucuriwaf_apikey');
-
-            if ($api_key) {
-                self::update_option($option_name, $api_key);
-                self::delete_option('sucuriwaf_apikey');
-            }
-        }
-
         // Check the validity of the API key.
         $match = self::isValidCloudproxyKey($api_key, true);
 
