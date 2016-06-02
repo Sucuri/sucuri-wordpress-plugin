@@ -3228,7 +3228,7 @@ class SucuriScanOption extends SucuriScanRequest
         );
 
         foreach ($options as $option) {
-            self::delete_option($option->option_name);
+            delete_option($option->option_name);
         }
 
         // Merge with the default options to ensure full cleanup.
