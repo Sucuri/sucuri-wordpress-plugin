@@ -46,37 +46,48 @@
                     href="%%SUCURI.URL.Settings%%#general">general settings</a>
                 </p>
             </div>
+
+            <form method="post">
+                <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
+
+                <table class="wp-list-table widefat sucuriscan-table sucuriscan-lastlogins-failed sucuriscan-%%SUCURI.IgnoreRules.TableVisibility%%">
+                    <thead>
+                        <tr>
+                            <th class="manage-column column-cb check-column">
+                                <label class="screen-reader-text" for="cb-select-all-1">Select All</label>
+                                <input id="cb-select-all-1" type="checkbox">
+                            </th>
+                            <th class="manage-column">User</th>
+                            <th class="manage-column">Password</th>
+                            <th class="manage-column">IP Address</th>
+                            <th class="manage-column">Date/Time</th>
+                            <th class="manage-column" width="300">User-Agent</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        %%%SUCURI.FailedLogins.List%%%
+
+                        <tr class="sucuriscan-%%SUCURI.FailedLogins.NoItemsVisibility%%">
+                            <td colspan="6">
+                                <em>No logs so far.</em>
+                            </td>
+                        </tr>
+
+                        <tr class="sucuriscan-%%SUCURI.FailedLogins.PaginationVisibility%%">
+                            <td colspan="6">
+                                <ul class="sucuriscan-pagination">
+                                    %%%SUCURI.FailedLogins.PaginationLinks%%%
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="sucuriscan-recipient-form">
+                    <button type="submit" class="button button-primary">Block Selected Users</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
-
-<table class="wp-list-table widefat sucuriscan-table sucuriscan-lastlogins-failed sucuriscan-%%SUCURI.IgnoreRules.TableVisibility%%">
-    <thead>
-        <tr>
-            <th class="manage-column">&nbsp;</th>
-            <th class="manage-column">User</th>
-            <th class="manage-column">Password</th>
-            <th class="manage-column">IP Address</th>
-            <th class="manage-column">Date/Time</th>
-            <th class="manage-column" width="300">User-Agent</th>
-        </tr>
-    </thead>
-
-    <tbody>
-        %%%SUCURI.FailedLogins.List%%%
-
-        <tr class="sucuriscan-%%SUCURI.FailedLogins.NoItemsVisibility%%">
-            <td colspan="6">
-                <em>No logs so far.</em>
-            </td>
-        </tr>
-
-        <tr class="sucuriscan-%%SUCURI.FailedLogins.PaginationVisibility%%">
-            <td colspan="6">
-                <ul class="sucuriscan-pagination">
-                    %%%SUCURI.FailedLogins.PaginationLinks%%%
-                </ul>
-            </td>
-        </tr>
-    </tbody>
-</table>
