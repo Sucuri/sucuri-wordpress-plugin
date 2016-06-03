@@ -6750,10 +6750,11 @@ class SucuriScanTemplate extends SucuriScanRequest
     /**
      * Gather and generate the information required globally by all the template files.
      *
-     * @param  array $params Key-value array with pseudo-variables shared with the template.
-     * @return array         A complementary list of pseudo-variables for the template files.
+     * @param  string $target Scenario where the params are going to be replaced.
+     * @param  array  $params Key-value array with variables shared with the template.
+     * @return array          Additional list of variables for the template files.
      */
-    private static function sharedParams($params = array())
+    private static function sharedParams($target = null, $params = array())
     {
         $params = is_array($params) ? $params : array();
 
@@ -6768,7 +6769,9 @@ class SucuriScanTemplate extends SucuriScanRequest
         $params['AdminEmails'] = '';
 
         // Get a list of admin users for the API key generation.
-        if (SucuriScanAPI::getPluginKey() === false) {
+        if ($target === 'modal' /* Get API key if required */
+            && SucuriScanAPI::getPluginKey() === false
+        ) {
             $admin_users = SucuriScan::get_users_for_api_key();
             $params['AdminEmails'] = self::selectOptions($admin_users);
         }
@@ -6915,7 +6918,7 @@ class SucuriScanTemplate extends SucuriScanRequest
     {
         $params = is_array($params) ? $params : array();
 
-        $params = self::sharedParams($params);
+        $params = self::sharedParams('base', $params);
         $params['PageContent'] = $html;
 
         return self::getTemplate('base', $params);
@@ -6993,7 +6996,7 @@ class SucuriScanTemplate extends SucuriScanRequest
      */
     public static function getSection($template = '', $params = array())
     {
-        $params = self::sharedParams($params);
+        $params = self::sharedParams('section', $params);
 
         return self::getTemplate($template, $params, 'section');
     }
@@ -7034,7 +7037,7 @@ class SucuriScanTemplate extends SucuriScanRequest
 
         $params['Visibility'] = 'sucuriscan-' . $params['Visibility'];
         $params['Identifier'] = 'sucuriscan-' . $template . '-modal';
-        $params = self::sharedParams($params);
+        $params = self::sharedParams('modal', $params);
 
         return self::getTemplate('modalwindow', $params, 'section');
     }
