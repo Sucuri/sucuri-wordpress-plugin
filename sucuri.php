@@ -282,6 +282,8 @@ if (defined('SUCURISCAN')) {
         'Sucuri Alert, :event',
     );
 
+    $sucuriscan_all_options = SucuriScanOption::getAllOptions();
+
     /**
      * Remove the WordPress generator meta-tag from the source code.
      */
@@ -3032,6 +3034,12 @@ class SucuriScanOption extends SucuriScanRequest
      */
     public static function getAllOptions()
     {
+        global $sucuriscan_all_options;
+
+        if ($sucuriscan_all_options !== null) {
+            return $sucuriscan_all_options;
+        }
+
         $options = array();
         $fpath = self::optionsFilePath();
 
