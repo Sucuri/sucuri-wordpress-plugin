@@ -106,6 +106,7 @@ if ($sucuriscan_storage_path !== false
     @unlink($sucuriscan_storage_path . '/sucuri-oldfailedlogins.php');
     @unlink($sucuriscan_storage_path . '/sucuri-plugindata.php');
     @unlink($sucuriscan_storage_path . '/sucuri-sitecheck.php');
+    @unlink($sucuriscan_storage_path . '/sucuri-settings.php');
     @unlink($sucuriscan_storage_path . '/sucuri-trustip.php');
 
     @rmdir($sucuriscan_storage_path);

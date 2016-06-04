@@ -282,7 +282,8 @@ if (defined('SUCURISCAN')) {
         'Sucuri Alert, :event',
     );
 
-    $sucuriscan_all_options = SucuriScanOption::getAllOptions();
+    $sucuriscan_date_format = get_option('date_format');
+    $sucuriscan_time_format = get_option('time_format');
 
     /**
      * Remove the WordPress generator meta-tag from the source code.
@@ -1047,9 +1048,9 @@ class SucuriScan
      */
     public static function datetime($timestamp = null)
     {
-        $date_format = SucuriScanOption::get_option('date_format');
-        $time_format = SucuriScanOption::get_option('time_format');
-        $tz_format = sprintf('%s %s', $date_format, $time_format);
+        global $sucuriscan_date_format, $sucuriscan_time_format;
+
+        $tz_format = $sucuriscan_date_format . "\x20" . $sucuriscan_time_format;
 
         if (is_numeric($timestamp) && $timestamp > 0) {
             return date_i18n($tz_format, $timestamp);
@@ -2859,7 +2860,6 @@ class SucuriScanOption extends SucuriScanRequest
         $defaults = array(
             'sucuriscan_account' => '',
             'sucuriscan_addr_header' => 'HTTP_X_SUCURI_CLIENTIP',
-            'sucuriscan_ads_visibility' => 'enabled',
             'sucuriscan_api_key' => false,
             'sucuriscan_api_protocol' => 'https',
             'sucuriscan_api_service' => 'enabled',
@@ -3034,12 +3034,6 @@ class SucuriScanOption extends SucuriScanRequest
      */
     public static function getAllOptions()
     {
-        global $sucuriscan_all_options;
-
-        if ($sucuriscan_all_options !== null) {
-            return $sucuriscan_all_options;
-        }
-
         $options = array();
         $fpath = self::optionsFilePath();
 
@@ -6811,7 +6805,7 @@ class SucuriScanTemplate extends SucuriScanRequest
         }
 
         // Hide the advertisements from the layout.
-        if (SucuriScanOption::is_disabled(':ads_visibility')) {
+        if (defined('SUCURISCAN_HIDE_ADS') && SUCURISCAN_HIDE_ADS === true) {
             $params['LayoutType'] = 'onecolumn';
             $params['AdsVisibility'] = 'hidden';
             $params['ReviewNavbarButton'] = 'visible';
@@ -6891,6 +6885,7 @@ class SucuriScanTemplate extends SucuriScanRequest
 
         $params = is_array($params) ? $params : array();
         $sub_pages = is_array($sucuriscan_pages) ? $sucuriscan_pages : array();
+        $no_sitecheck = SucuriScanOption::is_disabled(':sitecheck_scanner');
 
         $params['Navbar'] = '';
         $params['CurrentPageFunc'] = '';
@@ -6900,8 +6895,8 @@ class SucuriScanTemplate extends SucuriScanRequest
         }
 
         foreach ($sub_pages as $sub_page_func => $sub_page_title) {
-            if ($sub_page_func == 'sucuriscan_scanner'
-                && SucuriScanOption::is_disabled(':sitecheck_scanner')
+            if ($sub_page_func === 'sucuriscan_scanner'
+                && $no_sitecheck === true
             ) {
                 continue;
             }
@@ -11895,6 +11890,7 @@ function sucuriscan_failed_logins_panel()
 
     $max_failed_logins = SucuriScanOption::get_option(':maximum_failed_logins');
     $notify_bruteforce_attack = SucuriScanOption::get_option(':notify_bruteforce_attack');
+    $collect_passwords = sucuriscan_collect_wrong_passwords();
     $failed_logins = sucuriscan_get_all_failed_logins();
 
     if ($failed_logins) {
@@ -11907,7 +11903,7 @@ function sucuriscan_failed_logins_panel()
                 $wrong_user_password = 'hidden';
                 $wrong_user_password_color = 'default';
 
-                if (sucuriscan_collect_wrong_passwords() === true) {
+                if ($collect_passwords === true) {
                     if (isset($login_data['user_password']) && !empty($login_data['user_password'])) {
                         $wrong_user_password = $login_data['user_password'];
                         $wrong_user_password_color = 'none';
@@ -11955,7 +11951,7 @@ function sucuriscan_failed_logins_panel()
         $template_variables['FailedLogins.WarningVisibility'] = 'hidden';
     }
 
-    if (sucuriscan_collect_wrong_passwords() !== true) {
+    if ($collect_passwords !== true) {
         $template_variables['FailedLogins.CollectPasswordsVisibility'] = 'hidden';
     }
 
@@ -12650,8 +12646,6 @@ function sucuriscan_settings_general($nonce)
     $params['SettingsSection.AuditLogStats'] = sucuriscan_settings_general_auditlogstats($nonce);
     $params['SettingsSection.Datetime'] = sucuriscan_settings_general_datetime($nonce);
 
-    sucuriscan_settings_general_adsvisibility($nonce);
-
     return SucuriScanTemplate::getSection('settings-general', $params);
 }
 
@@ -13100,23 +13094,6 @@ function sucuriscan_settings_general_datetime($nonce)
     }
 
     return SucuriScanTemplate::getSection('settings-general-datetime', $params);
-}
-
-function sucuriscan_settings_general_adsvisibility($nonce)
-{
-    // Update the advertisement visibility settings.
-    if ($nonce) {
-        $ads_visibility = SucuriScanRequest::post(':ads_visibility');
-
-        if ($ads_visibility === 'disable') {
-            $option_value = $ads_visibility . 'd';
-            $message = sprintf('Plugin advertisement set to <code>%s</code>', $option_value);
-
-            SucuriScanOption::update_option(':ads_visibility', $option_value);
-            SucuriScanEvent::report_info_event($message);
-            SucuriScanInterface::info($message);
-        }
-    }
 }
 
 /**
