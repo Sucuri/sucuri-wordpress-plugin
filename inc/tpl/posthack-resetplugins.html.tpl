@@ -1,5 +1,5 @@
 
-<div id="poststuff" class="sucuriscan-reset-plugins">
+<div class="sucuriscan-panelstuff sucuriscan-reset-plugins">
     <div class="postbox">
         <div class="inside">
             <form action="%%SUCURI.URL.Posthack%%#reset-plugins" method="post">

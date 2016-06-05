@@ -1,5 +1,5 @@
 
-<div id="poststuff" class="sucuriscan-general-scanner">
+<div class="sucuriscan-panelstuff sucuriscan-general-scanner">
     %%%SUCURI.SettingsSection.IgnoreScanStatus%%%
 
     %%%SUCURI.SettingsSection.IgnoreScanFiles%%%

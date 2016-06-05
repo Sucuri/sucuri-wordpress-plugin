@@ -1,5 +1,5 @@
 
-<div id="poststuff">
+<div class="sucuriscan-panelstuff">
     %%%SUCURI.AlertSettings.Recipients%%%
 
     %%%SUCURI.AlertSettings.Subject%%%

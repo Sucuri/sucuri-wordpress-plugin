@@ -1,5 +1,5 @@
 
-<div id="poststuff">
+<div class="sucuriscan-panelstuff">
     <form method="post">
         <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
         <input type="hidden" name="sucuriscan_run_hardening" value="1" />

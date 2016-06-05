@@ -1,5 +1,5 @@
 
-<div id="poststuff" class="sucuriscan-general-errorlogs">
+<div class="sucuriscan-panelstuff sucuriscan-general-errorlogs">
     %%%SUCURI.ErrorLogs.Status%%%
 
     %%%SUCURI.ErrorLogs.FileLimit%%%

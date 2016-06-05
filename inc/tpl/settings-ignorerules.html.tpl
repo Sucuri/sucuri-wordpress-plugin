@@ -1,5 +1,5 @@
 
-<div id="poststuff">
+<div class="sucuriscan-panelstuff">
     <div class="postbox sucuriscan-border sucuriscan-border-bad sucuriscan-%%SUCURI.IgnoreRules.MessageVisibility%%">
         <h3>Ignore Alerts</h3>
 
@@ -15,7 +15,7 @@
     </div>
 </div>
 
-<div id="poststuff">
+<div class="sucuriscan-panelstuff">
     <div class="postbox sucuriscan-border sucuriscan-table-description sucuriscan-%%SUCURI.IgnoreRules.TableVisibility%%">
         <h3>Ignore Alerts</h3>
 

@@ -1,5 +1,5 @@
 
-<div id="poststuff">
+<div class="sucuriscan-panelstuff">
     <div class="postbox sucuriscan-border sucuriscan-table-description">
         <h3>Scanner Settings</h3>
 
@@ -130,7 +130,7 @@
     </tbody>
 </table>
 
-<div id="poststuff" class="sucuriscan-general-scanner">
+<div class="sucuriscan-panelstuff sucuriscan-general-scanner">
     %%%SUCURI.Settings.CoreFilesStatus%%%
 
     %%%SUCURI.Settings.CoreFilesLanguage%%%

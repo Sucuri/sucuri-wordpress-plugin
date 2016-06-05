@@ -1,5 +1,5 @@
 
-<div id="poststuff" class="sucuriscan-hardening-whitelist">
+<div class="sucuriscan-panelstuff sucuriscan-hardening-whitelist">
     <div class="postbox sucuriscan-border sucuriscan-table-description">
         <h3>Whitelist Blocked PHP Files</h3>
 
