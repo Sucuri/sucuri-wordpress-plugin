@@ -4999,15 +4999,19 @@ class SucuriScanAPI extends SucuriScanOption
      * @see https://developer.wordpress.org/reference/functions/wp_http_supports/
      * @see https://developer.wordpress.org/reference/functions/set_url_scheme/
      *
-     * @param  string $url Valid URL with or without protocol
-     * @return string      Full URL with the proper protocol.
+     * @param  string $url      Valid URL with or without protocol
+     * @param  string $protocol Optional protocol, we will get it from the config.
+     * @return string           Full URL with the proper protocol.
      */
-    public static function apiUrlProtocol($url = '')
+    public static function apiUrlProtocol($url = '', $protocol = false)
     {
         $pattern = 'sucuri://'; /* Placeholder for HTTP protocol. */
 
         if (strpos($url, $pattern) === 0) {
-            $protocol = SucuriScanOption::get_option(':api_protocol');
+            if (!$protocol) {
+                $protocol = SucuriScanOption::get_option(':api_protocol');
+            }
+
             $protocol = ($protocol === 'https') ? 'https' : 'http';
             $url = str_replace($pattern, '', $url);
             $url = sprintf('%s://%s', $protocol, $url);
@@ -12729,6 +12733,7 @@ function sucuriscan_settings_general_resetoptions($nonce)
             @unlink(SucuriScan::datastore_folder_path('sucuri-oldfailedlogins.php'));
             @unlink(SucuriScan::datastore_folder_path('sucuri-plugindata.php'));
             @unlink(SucuriScan::datastore_folder_path('sucuri-sitecheck.php'));
+            @unlink(SucuriScan::datastore_folder_path('sucuri-settings.php'));
             @unlink(SucuriScan::datastore_folder_path('sucuri-trustip.php'));
             @rmdir(SucuriScan::datastore_folder_path());
 
@@ -13171,9 +13176,10 @@ function sucuriscan_settings_scanner($nonce)
     $runtime_scan_human = SucuriScanFSScanner::get_filesystem_runtime(true);
 
     // Get the file path of the security logs.
-    $integrity_log_path = SucuriScan::datastore_folder_path('sucuri-integrity.php');
-    $lastlogins_log_path = SucuriScan::datastore_folder_path('sucuri-lastlogins.php');
-    $failedlogins_log_path = SucuriScan::datastore_folder_path('sucuri-failedlogins.php');
+    $basedir = SucuriScan::datastore_folder_path();
+    $integrity_log_path = $basedir . '/sucuri-integrity.php';
+    $lastlogins_log_path = $basedir . '/sucuri-lastlogins.php';
+    $failedlogins_log_path = $basedir . '/sucuri-failedlogins.php';
 
     // Generate the HTML code for the option list in the form select fields.
     $scan_freq_options = SucuriScanTemplate::selectOptions($sucuriscan_schedule_allowed, $scan_freq);
@@ -14204,7 +14210,7 @@ function sucuriscan_settings_apiservice_https($nonce)
 
     foreach ($affected_urls as $unique => $url) {
         $counter++;
-        $url = SucuriScanAPI::apiUrlProtocol($url);
+        $url = SucuriScanAPI::apiUrlProtocol($url, $api_protocol);
         $css_class = ($counter % 2 === 0) ? 'alternate' : '';
         $params['ApiProtocol.AffectedUrls'] .= SucuriScanTemplate::getSnippet(
             'settings-apiservice-protocol',
@@ -14214,7 +14220,6 @@ function sucuriscan_settings_apiservice_https($nonce)
                 'ApiProtocol.URL' => $url,
             )
         );
-
     }
 
     return SucuriScanTemplate::getSection('settings-apiservice-protocol', $params);
