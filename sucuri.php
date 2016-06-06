@@ -11072,6 +11072,7 @@ function sucuriscan_posthack_plugins_ajax()
                     'ResetPlugin.CssClass' => $css_class,
                     'ResetPlugin.Disabled' => $input_disabled,
                     'ResetPlugin.PluginPath' => $plugin_path,
+                    'ResetPlugin.Repository' => $plugin_data['Repository'],
                     'ResetPlugin.Plugin' => SucuriScan::excerpt($plugin_data['Name'], 35),
                     'ResetPlugin.Version' => $plugin_data['Version'],
                     'ResetPlugin.Type' => $plugin_data['PluginType'],
@@ -11109,8 +11110,6 @@ function sucuriscan_posthack_updates($process_form = false)
 function sucuriscan_posthack_updates_content($send_email = false)
 {
     $response = '';
-
-    // Check for available plugin updates.
     $result = wp_update_plugins();
     $updates = get_plugin_updates();
 
@@ -11162,17 +11161,17 @@ function sucuriscan_posthack_updates_content($send_email = false)
         }
     }
 
+    if (!is_string($response) || empty($response)) {
+        return false;
+    }
+
     // Send an email notification with the affected files.
     if ($send_email === true) {
-        if (is_string($response) && !empty($response)) {
-            $params = array('AvailableUpdates.Content' => $response);
-            $content = SucuriScanTemplate::getSection('posthack-updates-notification', $params);
-            $sent = SucuriScanEvent::notify_event('available_updates', $content);
+        $params = array('AvailableUpdates.Content' => $response);
+        $content = SucuriScanTemplate::getSection('posthack-updates-notification', $params);
+        $sent = SucuriScanEvent::notify_event('available_updates', $content);
 
-            return $sent;
-        }
-
-        return false;
+        return $sent;
     }
 
     return $response;
@@ -11186,8 +11185,14 @@ function sucuriscan_posthack_updates_content($send_email = false)
 function sucuriscan_posthack_updates_ajax()
 {
     if (SucuriScanRequest::post('form_action') == 'get_available_updates') {
+        $response = sucuriscan_posthack_updates_content();
+
+        if (!$response) {
+            $response = '<tr><td colspan="5">No updates available.</td></tr>';
+        }
+
         header('Content-Type: text/html; charset=UTF-8');
-        print(sucuriscan_posthack_updates_content());
+        print($response);
         exit(0);
     }
 }
@@ -11271,7 +11276,7 @@ function sucuriscan_lastlogins_page()
     ) {
         $file_path = sucuriscan_lastlogins_datastore_filepath();
 
-        if (unlink($file_path)) {
+        if (@unlink($file_path)) {
             sucuriscan_lastlogins_datastore_exists();
             SucuriScanInterface::info('Last-Logins logs were reset successfully.');
         } else {
