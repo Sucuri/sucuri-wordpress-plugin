@@ -12728,19 +12728,23 @@ function sucuriscan_settings_general_apikey($nonce)
 
         // Recover API key through the email registered previously.
         if (SucuriScanRequest::post(':recover_key') !== false) {
+            $_GET['recover'] = 'true';
             SucuriScanAPI::recoverKey();
             SucuriScanEvent::report_info_event('Recovery of the Sucuri API key was requested.');
-            $api_recovery_modal = SucuriScanTemplate::getModal(
-                'settings-apirecovery',
-                array(
-                    'Title' => 'Plugin API Key Recovery',
-                    'CssClass' => 'sucuriscan-apirecovery',
-                )
-            );
         }
     }
 
     $api_key = SucuriScanAPI::getPluginKey();
+
+    if (SucuriScanRequest::get('recover') !== false) {
+        $api_recovery_modal = SucuriScanTemplate::getModal(
+            'settings-apirecovery',
+            array(
+                'Title' => 'Plugin API Key Recovery',
+                'CssClass' => 'sucuriscan-apirecovery',
+            )
+        );
+    }
 
     // Check whether the domain name is valid or not.
     if (!$api_key) {

@@ -40,12 +40,22 @@
             </p>
         </div>
 
-        <div class="sucuriscan-hstatus sucuriscan-hstatus-0 sucuriscan-%%SUCURI.APIKey.RecoverVisibility%%">
-            <div class="sucuriscan-monospace">Plugin API Key: %%SUCURI.APIKey%%</div>
-            <form action="%%SUCURI.URL.Settings%%" method="post">
-                <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
-                <button type="submit" name="sucuriscan_recover_key" class="button-primary">Recover</button>
-            </form>
+        <div class="sucuriscan-%%SUCURI.APIKey.RecoverVisibility%%">
+            <div class="sucuriscan-hstatus sucuriscan-hstatus-0">
+                <div class="sucuriscan-monospace">Plugin API Key: %%SUCURI.APIKey%%</div>
+                <form action="%%SUCURI.URL.Settings%%" method="post">
+                    <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
+                    <button type="submit" name="sucuriscan_recover_key" class="button-primary">Recover Via E-mail</button>
+                </form>
+            </div>
+
+            <p>
+                If you don't have access to the e-mail address used to generate the
+                API key, but have a copy of the key at hand you can <a target="_self"
+                href="%%SUCURI.URL.Settings%%&recover">click this link</a> to activate
+                the plugin manually. Be aware that if the key is invalid the plugin will
+                delete it afterwards.
+            </p>
         </div>
 
         <div class="sucuriscan-hstatus sucuriscan-hstatus-1 sucuriscan-%%SUCURI.APIKey.RemoveVisibility%%">
