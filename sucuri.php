@@ -7151,11 +7151,12 @@ class SucuriScanTemplate extends SucuriScanRequest
             }
 
             $html_links .= sprintf(
-                '<li><a href="%s&paged=%d%s" class="%s">%s</a></li>',
+                '<li><a href="%s&paged=%d%s" class="%s" data-page="%d">%s</a></li>',
                 $base_url,
                 $j,
                 $extra_url,
                 $link_class,
+                $j,
                 $j
             );
         }
@@ -10028,6 +10029,7 @@ function sucuriscan_ajax()
 
     if (SucuriScanInterface::check_nonce()) {
         sucuriscan_core_files_ajax();
+        sucuriscan_audit_logs_ajax();
     }
 
     wp_die();
@@ -10041,95 +10043,110 @@ function sucuriscan_ajax()
  */
 function sucuriscan_auditlogs()
 {
-    // Initialize the values for the pagination.
-    $max_per_page = SUCURISCAN_AUDITLOGS_PER_PAGE;
-    $page_number = SucuriScanTemplate::pageNumber();
-    $logs_limit = $page_number * $max_per_page;
-    $audit_logs = SucuriScanAPI::getLogs($logs_limit);
-
-    $params = array(
-        'PageTitle' => 'Audit Logs',
-        'AuditLogs.List' => '',
-        'AuditLogs.Count' => 0,
-        'AuditLogs.MaxPerPage' => $max_per_page,
-        'AuditLogs.NoItemsVisibility' => 'visible',
-        'AuditLogs.PaginationVisibility' => 'hidden',
-        'AuditLogs.PaginationLinks' => '',
-        'AuditLogs.EnableAuditReportVisibility' => 'hidden',
-    );
-
-    if ($audit_logs) {
-        $counter_i = 0;
-        $total_items = count($audit_logs->output_data);
-        $iterator_start = ($page_number - 1) * $max_per_page;
-        $iterator_end = $total_items;
-
-        if (property_exists($audit_logs, 'total_entries')
-            && $audit_logs->total_entries >= $max_per_page
-            && SucuriScanOption::is_disabled(':audit_report')
-        ) {
-            $params['AuditLogs.EnableAuditReportVisibility'] = 'visible';
-        }
-
-        for ($i = $iterator_start; $i < $total_items; $i++) {
-            if ($counter_i > $max_per_page) {
-                break;
-            }
-
-            if (isset($audit_logs->output_data[ $i ])) {
-                $audit_log = $audit_logs->output_data[ $i ];
-
-                $css_class = ( $counter_i % 2 == 0 ) ? '' : 'alternate';
-                $snippet_data = array(
-                    'AuditLog.CssClass' => $css_class,
-                    'AuditLog.Event' => $audit_log['event'],
-                    'AuditLog.EventTitle' => ucfirst($audit_log['event']),
-                    'AuditLog.Timestamp' => $audit_log['timestamp'],
-                    'AuditLog.DateTime' => SucuriScan::datetime($audit_log['timestamp']),
-                    'AuditLog.Account' => $audit_log['account'],
-                    'AuditLog.Username' => $audit_log['username'],
-                    'AuditLog.RemoteAddress' => $audit_log['remote_addr'],
-                    'AuditLog.Message' => $audit_log['message'],
-                    'AuditLog.Extra' => '',
-                );
-
-                // Print every file_list information item in a separate table.
-                if ($audit_log['file_list']) {
-                    $css_scrollable = $audit_log['file_list_count'] > 10 ? 'sucuriscan-list-as-table-scrollable' : '';
-                    $snippet_data['AuditLog.Extra'] .= '<ul class="sucuriscan-list-as-table ' . $css_scrollable . '">';
-                    foreach ($audit_log['file_list'] as $log_extra) {
-                        $snippet_data['AuditLog.Extra'] .= '<li>' . SucuriScan::escape($log_extra) . '</li>';
-                    }
-                    $snippet_data['AuditLog.Extra'] .= '</ul>';
-                }
-
-                $params['AuditLogs.List'] .= SucuriScanTemplate::getSnippet('integrity-auditlogs', $snippet_data);
-                $counter_i += 1;
-            }
-        }
-
-        $params['AuditLogs.Count'] = $counter_i;
-        $params['AuditLogs.NoItemsVisibility'] = 'hidden';
-
-        if ($total_items > 1) {
-            $max_pages = ceil($audit_logs->total_entries / $max_per_page);
-
-            if ($max_pages > SUCURISCAN_MAX_PAGINATION_BUTTONS) {
-                $max_pages = SUCURISCAN_MAX_PAGINATION_BUTTONS;
-            }
-
-            if ($max_pages > 1) {
-                $params['AuditLogs.PaginationVisibility'] = 'visible';
-                $params['AuditLogs.PaginationLinks'] = SucuriScanTemplate::pagination(
-                    '%%SUCURI.URL.Home%%',
-                    $max_per_page * $max_pages,
-                    $max_per_page
-                );
-            }
-        }
-    }
+    $params = array();
+    $params['PageTitle'] = 'Audit Logs';
 
     return SucuriScanTemplate::getSection('integrity-auditlogs', $params);
+}
+
+function sucuriscan_audit_logs_ajax()
+{
+    if (SucuriScanRequest::post('form_action') == 'get_audit_logs') {
+        $response = array();
+        $response['count'] = 0;
+        $response['enable_report'] = false;
+
+        // Initialize the values for the pagination.
+        $max_per_page = SUCURISCAN_AUDITLOGS_PER_PAGE;
+        $page_number = SucuriScanTemplate::pageNumber();
+        $logs_limit = ($page_number * $max_per_page);
+
+        ob_start();
+        $audit_logs = SucuriScanAPI::getLogs($logs_limit);
+        $errors = ob_get_contents();
+        ob_end_clean();
+
+        if (!empty($errors)) {
+            header('Content-Type: text/html; charset=UTF-8');
+            print($errors);
+            exit(0);
+        }
+
+        if ($audit_logs) {
+            $counter_i = 0;
+            $total_items = count($audit_logs->output_data);
+            $iterator_start = ($page_number - 1) * $max_per_page;
+            $iterator_end = $total_items;
+
+            if (property_exists($audit_logs, 'total_entries')
+                && $audit_logs->total_entries >= $max_per_page
+                && SucuriScanOption::is_disabled(':audit_report')
+            ) {
+                $response['enable_report'] = true;
+            }
+
+            for ($i = $iterator_start; $i < $total_items; $i++) {
+                if ($counter_i > $max_per_page) {
+                    break;
+                }
+
+                if (isset($audit_logs->output_data[ $i ])) {
+                    $audit_log = $audit_logs->output_data[ $i ];
+
+                    $css_class = ($counter_i % 2 === 0) ? '' : 'alternate';
+                    $snippet_data = array(
+                        'AuditLog.CssClass' => $css_class,
+                        'AuditLog.Event' => $audit_log['event'],
+                        'AuditLog.EventTitle' => ucfirst($audit_log['event']),
+                        'AuditLog.Timestamp' => $audit_log['timestamp'],
+                        'AuditLog.DateTime' => SucuriScan::datetime($audit_log['timestamp']),
+                        'AuditLog.Account' => $audit_log['account'],
+                        'AuditLog.Username' => $audit_log['username'],
+                        'AuditLog.RemoteAddress' => $audit_log['remote_addr'],
+                        'AuditLog.Message' => $audit_log['message'],
+                        'AuditLog.Extra' => '',
+                    );
+
+                    // Print every file_list information item in a separate table.
+                    if ($audit_log['file_list']) {
+                        $css_scrollable = $audit_log['file_list_count'] > 10 ? 'sucuriscan-list-as-table-scrollable' : '';
+                        $snippet_data['AuditLog.Extra'] .= '<ul class="sucuriscan-list-as-table ' . $css_scrollable . '">';
+
+                        foreach ($audit_log['file_list'] as $log_extra) {
+                            $snippet_data['AuditLog.Extra'] .= '<li>' . SucuriScan::escape($log_extra) . '</li>';
+                        }
+
+                        $snippet_data['AuditLog.Extra'] .= '</ul>';
+                    }
+
+                    $response['content'] .= SucuriScanTemplate::getSnippet('integrity-auditlogs', $snippet_data);
+                    $counter_i += 1;
+                }
+            }
+
+            $response['count'] = $counter_i;
+
+            if ($total_items > 1) {
+                $max_pages = ceil($audit_logs->total_entries / $max_per_page);
+
+                if ($max_pages > SUCURISCAN_MAX_PAGINATION_BUTTONS) {
+                    $max_pages = SUCURISCAN_MAX_PAGINATION_BUTTONS;
+                }
+
+                if ($max_pages > 1) {
+                    $response['pagination'] = SucuriScanTemplate::pagination(
+                        SucuriScanTemplate::getUrl(),
+                        ($max_per_page * $max_pages),
+                        $max_per_page
+                    );
+                }
+            }
+        }
+
+        header('Content-Type: application/json');
+        print(json_encode($response));
+        exit(0);
+    }
 }
 
 /**
