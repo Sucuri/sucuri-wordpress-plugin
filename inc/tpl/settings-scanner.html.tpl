@@ -142,6 +142,4 @@
     %%%SUCURI.Settings.SiteCheckCache%%%
 
     %%%SUCURI.Settings.SiteCheckTimeout%%%
-
-    %%%SUCURI.Settings.DataStorage%%%
 </div>

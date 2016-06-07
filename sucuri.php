@@ -539,6 +539,24 @@ class SucuriScan
     }
 
     /**
+     * Fix the deliminar of a resource path.
+     *
+     * In Windows based system the directory separator is a back slash which
+     * differs from what other file systems use. To keep consistency during the
+     * unit-tests we have decided to replace any non forward slash with it.
+     *
+     * @return string Fixed file path.
+     */
+    public static function fixPath($path = '')
+    {
+        $delimiter = '/' /* Forward slash */;
+        $path = str_replace(DIRECTORY_SEPARATOR, $delimiter, $path);
+        $path = rtrim($path, $delimiter);
+
+        return $path;
+    }
+
+    /**
      * Returns the system filepath to the relevant user uploads directory for this
      * site. This is a multisite capable function.
      *
@@ -548,6 +566,7 @@ class SucuriScan
     public static function datastore_folder_path($path = '')
     {
         $default_dir = 'sucuri';
+        $abspath = self::fixPath(ABSPATH);
 
         if (defined('SUCURI_DATA_STORAGE')
             && file_exists(SUCURI_DATA_STORAGE)
@@ -575,15 +594,20 @@ class SucuriScan
                 if (defined('WP_CONTENT_DIR')) {
                     $uploads_path = implode(DIRECTORY_SEPARATOR, array(WP_CONTENT_DIR, 'uploads'));
                 } else {
-                    $uploads_path = implode(DIRECTORY_SEPARATOR, array(ABSPATH, 'wp-content', 'uploads'));
+                    $uploads_path = implode(DIRECTORY_SEPARATOR, array($abspath, 'wp-content', 'uploads'));
                 }
             }
 
             $datastore = $uploads_path . DIRECTORY_SEPARATOR . $default_dir;
+            $datastore = self::fixPath($datastore);
             SucuriScanOption::update_option(':datastore_path', $datastore);
         }
 
-        return $datastore . DIRECTORY_SEPARATOR . $path;
+        // Keep consistency with the directory separator.
+        $final = $datastore . DIRECTORY_SEPARATOR . $path;
+        $final = self::fixPath($final);
+
+        return $final;
     }
 
     /**
@@ -1705,7 +1729,7 @@ class SucuriScanFileInfo extends SucuriScan
     public function get_directory_tree_md5($directory = '', $as_array = false)
     {
         $project_signatures = '';
-        $abs_path = rtrim(ABSPATH, DIRECTORY_SEPARATOR);
+        $abspath = self::fixPath(ABSPATH);
         $files = $this->get_directory_tree($directory);
 
         if ($as_array) {
@@ -1720,7 +1744,7 @@ class SucuriScanFileInfo extends SucuriScan
                 $filesize = @filesize($filepath);
 
                 if ($as_array) {
-                    $basename = str_replace($abs_path . DIRECTORY_SEPARATOR, '', $filepath);
+                    $basename = str_replace($abspath . '/', '', $filepath);
                     $project_signatures[ $basename ] = array(
                         'filepath' => $filepath,
                         'checksum' => $file_checksum,
@@ -1729,7 +1753,7 @@ class SucuriScanFileInfo extends SucuriScan
                         'modified_at' => @filemtime($filepath),
                     );
                 } else {
-                    $filepath = str_replace($abs_path, $abs_path . DIRECTORY_SEPARATOR, $filepath);
+                    $filepath = str_replace($abspath, $abspath . '/', $filepath);
                     $project_signatures .= sprintf(
                         "%s%s%s%s\n",
                         $file_checksum,
@@ -1787,7 +1811,9 @@ class SucuriScanFileInfo extends SucuriScan
                     break;
             }
 
-            return $tree;
+            if (is_array($tree) && !empty($tree)) {
+                return array_map(array('SucuriScan', 'fixPath'), $tree);
+            }
         }
 
         return false;
@@ -2984,10 +3010,7 @@ class SucuriScanOption extends SucuriScanRequest
      */
     public static function optionsFilePath()
     {
-        $folder = implode(
-            DIRECTORY_SEPARATOR,
-            array(WP_CONTENT_DIR, 'uploads', 'sucuri')
-        );
+        $folder = WP_CONTENT_DIR . '/uploads/sucuri';
 
         if (defined('SUCURI_DATA_STORAGE')
             && file_exists(SUCURI_DATA_STORAGE)
@@ -2996,7 +3019,7 @@ class SucuriScanOption extends SucuriScanRequest
             $folder = SUCURI_DATA_STORAGE;
         }
 
-        return sprintf('%s/sucuri-settings.php', $folder);
+        return $folder . '/sucuri-settings.php';
     }
 
     /**
@@ -10578,8 +10601,6 @@ function sucuriscan_integrity_form_submissions()
  */
 function sucuriscan_get_integrity_tree($dir = './', $recursive = false)
 {
-    $abs_path = rtrim(ABSPATH, '/');
-
     $file_info = new SucuriScanFileInfo();
     $file_info->ignore_files = false;
     $file_info->ignore_directories = false;
