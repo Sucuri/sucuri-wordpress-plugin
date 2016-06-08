@@ -11130,6 +11130,14 @@ function sucuriscan_posthack_updates($process_form = false)
  */
 function sucuriscan_posthack_updates_content($send_email = false)
 {
+    if (!function_exists('wp_update_plugins')
+        || !function_exists('get_plugin_updates')
+        || !function_exists('wp_update_themes')
+        || !function_exists('get_theme_updates')
+    ) {
+        return false;
+    }
+
     $response = '';
     $result = wp_update_plugins();
     $updates = get_plugin_updates();
