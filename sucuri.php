@@ -10046,7 +10046,11 @@ function sucuriscan_auditlogs()
     $params = array();
     $params['PageTitle'] = 'Audit Logs';
 
-    return SucuriScanTemplate::getSection('integrity-auditlogs', $params);
+    if (SucuriScanOption::get_option(':api_key')) {
+        return SucuriScanTemplate::getSection('integrity-auditlogs', $params);
+    }
+
+    return '' /* Empty string */;
 }
 
 function sucuriscan_audit_logs_ajax()
