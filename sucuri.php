@@ -3145,7 +3145,6 @@ class SucuriScanOption extends SucuriScanRequest
     public static function update_option($option = '', $value = '')
     {
         if (strpos($option, ':') === 0 || strpos($option, 'sucuriscan') === 0) {
-            $fpath = self::optionsFilePath();
             $options = self::getAllOptions();
             $option = self::variable_prefix($option);
             $options[$option] = $value;
@@ -3659,16 +3658,14 @@ class SucuriScanEvent extends SucuriScan
      * Generates an audit event log (to be sent later).
      *
      * @param  integer $severity Importance of the event that will be reported, values from one to five.
-     * @param  string  $location In which part of the system was the event triggered.
      * @param  string  $message  The explanation of the event.
      * @param  boolean $internal Whether the event will be publicly visible or not.
      * @return boolean           TRUE if the event was logged in the monitoring service, FALSE otherwise.
      */
-    private static function report_event($severity = 0, $location = '', $message = '', $internal = false)
+    private static function report_event($severity = 0, $message = '', $internal = false)
     {
         $user = wp_get_current_user();
         $username = false;
-        $current_time = date('Y-m-d H:i:s');
         $remote_ip = self::get_remote_addr();
 
         // Identify current user in session.
@@ -3780,7 +3777,7 @@ class SucuriScanEvent extends SucuriScan
      */
     public static function report_debug_event($message = '', $internal = false)
     {
-        return self::report_event(0, 'core', $message, $internal);
+        return self::report_event(0, $message, $internal);
     }
 
     /**
@@ -3792,7 +3789,7 @@ class SucuriScanEvent extends SucuriScan
      */
     public static function report_notice_event($message = '', $internal = false)
     {
-        return self::report_event(1, 'core', $message, $internal);
+        return self::report_event(1, $message, $internal);
     }
 
     /**
@@ -3804,7 +3801,7 @@ class SucuriScanEvent extends SucuriScan
      */
     public static function report_info_event($message = '', $internal = false)
     {
-        return self::report_event(2, 'core', $message, $internal);
+        return self::report_event(2, $message, $internal);
     }
 
     /**
@@ -3816,7 +3813,7 @@ class SucuriScanEvent extends SucuriScan
      */
     public static function report_warning_event($message = '', $internal = false)
     {
-        return self::report_event(3, 'core', $message, $internal);
+        return self::report_event(3, $message, $internal);
     }
 
     /**
@@ -3828,7 +3825,7 @@ class SucuriScanEvent extends SucuriScan
      */
     public static function report_error_event($message = '', $internal = false)
     {
-        return self::report_event(4, 'core', $message, $internal);
+        return self::report_event(4, $message, $internal);
     }
 
     /**
@@ -3840,7 +3837,7 @@ class SucuriScanEvent extends SucuriScan
      */
     public static function report_critical_event($message = '', $internal = false)
     {
-        return self::report_event(5, 'core', $message, $internal);
+        return self::report_event(5, $message, $internal);
     }
 
     /**
@@ -7704,7 +7701,7 @@ class SucuriScanInterface
                         deactivate_plugins($plugin);
                     }
 
-                    $plugin_removed = $file_info->remove_directory_tree($plugin_directory);
+                    $file_info->remove_directory_tree($plugin_directory);
                 }
             }
         }
@@ -8671,10 +8668,9 @@ function sucuriscan_explain_firewall_settings($settings = array())
 /**
  * Generate the HTML code for the firewall logs panel.
  *
- * @param  string $api_key The CloudProxy API key.
- * @return string          The parsed-content of the firewall logs panel.
+ * @return string The parsed-content of the firewall logs panel.
  */
-function sucuriscan_firewall_auditlogs($api_key = '')
+function sucuriscan_firewall_auditlogs()
 {
     $date = date('Y-m-d');
     $params = array();
@@ -9848,8 +9844,6 @@ function sucuriscan_harden_readme()
  */
 function sucuriscan_harden_adminuser()
 {
-    global $wpdb;
-
     $upmsg = null;
     $user_query = new WP_User_Query(array(
         'search' => 'admin',
@@ -10135,7 +10129,6 @@ function sucuriscan_audit_logs_ajax()
             $counter_i = 0;
             $total_items = count($audit_logs->output_data);
             $iterator_start = ($page_number - 1) * $max_per_page;
-            $iterator_end = $total_items;
 
             if (property_exists($audit_logs, 'total_entries')
                 && $audit_logs->total_entries >= $max_per_page
@@ -10799,7 +10792,7 @@ function sucuriscan_posthack_page()
     $params['UpdateSecretKeys'] = sucuriscan_update_secret_keys($process_form);
     $params['ResetPassword'] = sucuriscan_posthack_users($process_form);
     $params['ResetPlugins'] = sucuriscan_posthack_plugins($process_form);
-    $params['AvailableUpdates'] = sucuriscan_posthack_updates($process_form);
+    $params['AvailableUpdates'] = sucuriscan_posthack_updates();
 
     echo SucuriScanTemplate::getTemplate('posthack', $params);
 }
@@ -11113,10 +11106,9 @@ function sucuriscan_posthack_plugins_ajax()
 /**
  * Find and list available updates for plugins and themes.
  *
- * @param  boolean $process_form Whether a form was submitted or not.
  * @return void
  */
-function sucuriscan_posthack_updates($process_form = false)
+function sucuriscan_posthack_updates()
 {
     $params = array();
 
@@ -11252,7 +11244,7 @@ function sucuriscan_posthack_reinstall_plugins($process_form = false)
             $all_plugins = SucuriScanAPI::getPlugins();
 
             // Loop through all the installed plugins.
-            foreach ($_POST['plugin_path'] as $plugin_path) {
+            foreach ($plugin_list as $plugin_path) {
                 if (array_key_exists($plugin_path, $all_plugins)) {
                     $plugin_data = $all_plugins[ $plugin_path ];
 
@@ -12093,9 +12085,7 @@ function sucuriscan_failed_logins_datastore_path($get_old_logs = false, $reset =
  */
 function sucuriscan_failed_logins_default_content()
 {
-    $default_content = "<?php exit(0); ?>\n";
-
-    return $default_content;
+    return "<?php exit(0); ?>\n";
 }
 
 /**
@@ -12143,8 +12133,6 @@ function sucuriscan_get_all_failed_logins()
 function sucuriscan_get_failed_logins($get_old_logs = false)
 {
     $datastore_path = sucuriscan_failed_logins_datastore_path($get_old_logs);
-    $default_content = sucuriscan_failed_logins_default_content();
-    $default_content_n = substr_count($default_content, "\n");
 
     if ($datastore_path) {
         $lines = SucuriScanFileInfo::file_lines($datastore_path);
@@ -12196,7 +12184,6 @@ function sucuriscan_get_failed_logins($get_old_logs = false)
 
     return false;
 }
-
 
 /**
  * Add a new entry in the datastore file where the failed logins are being kept,
@@ -12501,9 +12488,7 @@ class SucuriScanBlockedUsers extends SucuriScanLastLogins
 function sucuriscan_settings_form_submissions($page_nonce = null)
 {
     global $sucuriscan_schedule_allowed,
-        $sucuriscan_interface_allowed,
-        $sucuriscan_notify_options,
-        $sucuriscan_email_subjects;
+        $sucuriscan_interface_allowed;
 
     // Use this conditional to avoid double checking.
     if (is_null($page_nonce)) {
@@ -13268,7 +13253,7 @@ function sucuriscan_settings_scanner($nonce)
     $params['Settings.CoreFilesStatus'] = sucuriscan_settings_corefiles_status($nonce);
     $params['Settings.CoreFilesLanguage'] = sucuriscan_settings_corefiles_language($nonce);
     $params['Settings.CoreFilesCache'] = sucuriscan_settings_corefiles_cache($nonce);
-    $params['Settings.SiteCheckStatus'] = SucuriScanSiteCheck::statusPage($nonce);
+    $params['Settings.SiteCheckStatus'] = SucuriScanSiteCheck::statusPage();
     $params['Settings.SiteCheckCache'] = SucuriScanSiteCheck::cachePage($nonce);
     $params['Settings.SiteCheckTimeout'] = SucuriScanSiteCheck::timeoutPage($nonce);
 
@@ -13403,7 +13388,7 @@ class SucuriScanSiteCheck extends SucuriScanSettings
         );
     }
 
-    public static function statusPage($nonce)
+    public static function statusPage()
     {
         $params = array();
         $params['SiteCheck.StatusNum'] = '1';
@@ -13491,7 +13476,7 @@ function sucuriscan_settings_ignorescan($nonce)
     $params = array();
 
     $params['SettingsSection.IgnoreScanStatus'] = sucuriscan_settings_ignore_scan_status($nonce);
-    $params['SettingsSection.IgnoreScanFiles'] = sucuriscan_settings_ignore_scan_files($nonce);
+    $params['SettingsSection.IgnoreScanFiles'] = sucuriscan_settings_ignore_scan_files();
     $params['SettingsSection.IgnoreScanFolders'] = sucuriscan_settings_ignore_scan_folders($nonce);
 
     return SucuriScanTemplate::getSection('settings-ignorescan', $params);
@@ -13579,7 +13564,7 @@ function sucuriscan_settings_ignore_scan_status($nonce)
     return SucuriScanTemplate::getSection('settings-ignorescan-status', $params);
 }
 
-function sucuriscan_settings_ignore_scan_files($nonce)
+function sucuriscan_settings_ignore_scan_files()
 {
     $params = array();
 
@@ -14755,7 +14740,6 @@ function sucuriscan_show_cronjobs()
     );
 
     $cronjobs = _get_cron_array();
-    $schedules = wp_get_schedules();
     $counter = 0;
 
     foreach ($cronjobs as $timestamp => $cronhooks) {
@@ -14862,7 +14846,7 @@ function sucuriscan_infosys_errorlogs()
 
     $params['ErrorLogs.Status'] = sucuriscan_infosys_errorlogs_status($nonce);
     $params['ErrorLogs.FileLimit'] = sucuriscan_infosys_errorlogs_flimit($nonce);
-    $params['ErrorLogs.FileReader'] = sucuriscan_infosys_errorlogs_freader($nonce);
+    $params['ErrorLogs.FileReader'] = sucuriscan_infosys_errorlogs_freader();
 
     return SucuriScanTemplate::getSection('infosys-errorlogs', $params);
 }
@@ -14919,7 +14903,7 @@ function sucuriscan_infosys_errorlogs_flimit($nonce)
     return SucuriScanTemplate::getSection('infosys-errorlogs-flimit', $params);
 }
 
-function sucuriscan_infosys_errorlogs_freader($nonce)
+function sucuriscan_infosys_errorlogs_freader()
 {
     $params = array();
 
@@ -14934,7 +14918,7 @@ function sucuriscan_infosys_errorlogs_ajax()
         // Scan the project and get the ignored paths.
         if (SucuriScanOption::is_enabled(':parse_errorlogs')) {
             $fname = SucuriScan::ini_get('error_log');
-            $fpath = $fname ? @realpath(ABSPATH . '/' . $log_filename) : false;
+            $fpath = $fname ? @realpath(ABSPATH . '/' . $fname) : false;
 
             if ($fpath !== false
                 && is_file($fpath)
