@@ -50,7 +50,7 @@
             <form method="post">
                 <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
 
-                <table class="wp-list-table widefat sucuriscan-table sucuriscan-lastlogins-failed sucuriscan-%%SUCURI.IgnoreRules.TableVisibility%%">
+                <table class="wp-list-table widefat sucuriscan-table sucuriscan-lastlogins-failed">
                     <thead>
                         <tr>
                             <th class="manage-column column-cb check-column">
