@@ -305,9 +305,10 @@ if (defined('SUCURISCAN')) {
      * execute the bootstrap function of the plugin.
      */
     add_action('init', 'SucuriScanInterface::initialize', 1);
-    add_action('admin_init', 'SucuriScanInterface::create_datastore_folder');
-    add_action('admin_init', 'SucuriScanInterface::handle_old_plugins');
-    add_action('admin_enqueue_scripts', 'SucuriScanInterface::enqueue_scripts', 1);
+    add_action('init', 'SucuriScanBlockedUsers::blockUserLogin', 1);
+    add_action('admin_init', 'SucuriScanInterface::handleOldPlugins');
+    add_action('admin_init', 'SucuriScanInterface::createStorageFolder');
+    add_action('admin_enqueue_scripts', 'SucuriScanInterface::enqueueScripts', 1);
 
     /**
      * Display extension menu and submenu items in the correct interface. For single
@@ -315,7 +316,7 @@ if (defined('SUCURISCAN')) {
      * multisite installations the menu items must be available only in the network
      * panel and hidden in the administration panel of the subsites.
      */
-    add_action($sucuriscan_action_prefix . 'admin_menu', 'SucuriScanInterface::add_interface_menu');
+    add_action($sucuriscan_action_prefix . 'admin_menu', 'SucuriScanInterface::addInterfaceMenu');
 
     /**
      * Attach Ajax requests to a custom page handler.
@@ -7602,8 +7603,6 @@ class SucuriScanInterface
             $_SERVER['SUCURIREAL_REMOTE_ADDR'] = $_SERVER['REMOTE_ADDR'];
             $_SERVER['REMOTE_ADDR'] = SucuriScan::get_remote_addr();
         }
-
-        SucuriScanBlockedUsers::blockUserLogin();
     }
 
     /**
@@ -7612,7 +7611,7 @@ class SucuriScanInterface
      *
      * @return void
      */
-    public static function enqueue_scripts()
+    public static function enqueueScripts()
     {
         $asset_version = '';
 
@@ -7638,7 +7637,7 @@ class SucuriScanInterface
      *
      * @return void
      */
-    public static function add_interface_menu()
+    public static function addInterfaceMenu()
     {
         global $sucuriscan_pages;
 
@@ -7686,7 +7685,7 @@ class SucuriScanInterface
      *
      * @return void
      */
-    public static function handle_old_plugins()
+    public static function handleOldPlugins()
     {
         if (class_exists('SucuriScanFileInfo')) {
             $file_info = new SucuriScanFileInfo();
@@ -7718,7 +7717,7 @@ class SucuriScanInterface
      *
      * @return void
      */
-    public static function create_datastore_folder()
+    public static function createStorageFolder()
     {
         $directory = SucuriScan::datastore_folder_path();
 
@@ -7805,7 +7804,7 @@ class SucuriScanInterface
      * @param  string $message The message that will be printed in the alert.
      * @return void
      */
-    private static function admin_notice($type = 'updated', $message = '')
+    private static function adminNotice($type = 'updated', $message = '')
     {
         $display_notice = true;
 
@@ -7847,7 +7846,7 @@ class SucuriScanInterface
      */
     public static function error($error_msg = '')
     {
-        self::admin_notice('error', '<b>Sucuri:</b> ' . $error_msg);
+        self::adminNotice('error', '<b>Sucuri:</b> ' . $error_msg);
     }
 
     /**
@@ -7858,7 +7857,7 @@ class SucuriScanInterface
      */
     public static function info($info_msg = '')
     {
-        self::admin_notice('updated', '<b>Sucuri:</b> ' . $info_msg);
+        self::adminNotice('updated', '<b>Sucuri:</b> ' . $info_msg);
     }
 
     /**
@@ -12364,23 +12363,27 @@ class SucuriScanBlockedUsers extends SucuriScanLastLogins
 
     public static function blockUserLogin()
     {
-        $username = SucuriScanRequest::post('log');
-        $password = SucuriScanRequest::post('pwd');
+        if (class_exists('SucuriScanRequest')
+            && class_exists('SucuriScanCache')
+        ) {
+            $username = SucuriScanRequest::post('log');
+            $password = SucuriScanRequest::post('pwd');
 
-        if ($username !== false && $password !== false) {
-            $cache = new SucuriScanCache('blockedusers');
-            $blocked = $cache->getAll();
-            $cache_key = md5($username);
+            if ($username !== false && $password !== false) {
+                $cache = new SucuriScanCache('blockedusers');
+                $blocked = $cache->getAll();
+                $cache_key = md5($username);
 
-            if (array_key_exists($cache_key, $blocked)) {
-                $blocked[$cache_key]->last_attempt = time();
-                $cache->set($cache_key, $blocked[$cache_key]);
+                if (array_key_exists($cache_key, $blocked)) {
+                    $blocked[$cache_key]->last_attempt = time();
+                    $cache->set($cache_key, $blocked[$cache_key]);
 
-                if (!headers_sent()) {
-                    header('HTTP/1.1 403 Forbidden');
+                    if (!headers_sent()) {
+                        header('HTTP/1.1 403 Forbidden');
+                    }
+
+                    exit(0);
                 }
-
-                exit(0);
             }
         }
     }
