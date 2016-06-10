@@ -306,9 +306,12 @@ if (defined('SUCURISCAN')) {
      */
     add_action('init', 'SucuriScanInterface::initialize', 1);
     add_action('init', 'SucuriScanBlockedUsers::blockUserLogin', 1);
-    add_action('admin_init', 'SucuriScanInterface::handleOldPlugins');
-    add_action('admin_init', 'SucuriScanInterface::createStorageFolder');
     add_action('admin_enqueue_scripts', 'SucuriScanInterface::enqueueScripts', 1);
+
+    if (SucuriScan::runAdminInit()) {
+        add_action('admin_init', 'SucuriScanInterface::handleOldPlugins');
+        add_action('admin_init', 'SucuriScanInterface::createStorageFolder');
+    }
 
     /**
      * Display extension menu and submenu items in the correct interface. For single
@@ -370,7 +373,10 @@ if (defined('SUCURISCAN')) {
             add_action($hook_name, $hook_func, 50, 5);
         }
 
-        add_action('admin_init', 'SucuriScanHook::hook_undefined_actions');
+        if (SucuriScan::runAdminInit()) {
+            add_action('admin_init', 'SucuriScanHook::hook_undefined_actions');
+        }
+
         add_action('login_form', 'SucuriScanHook::hook_undefined_actions');
     } else {
         SucuriScanInterface::error('Function call interceptors are not working properly.');
@@ -536,6 +542,29 @@ class SucuriScan
         $sz = 'BKMGTP';
         $factor = floor((strlen($bytes) - 1) / 3);
         return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[ $factor ];
+    }
+
+    /**
+     * Check if the admin init hook must not be intercepted.
+     *
+     * @return boolean True if the admin init hook must not be intercepted.
+     */
+    public static function noAdminInit()
+    {
+        return (bool) (
+            defined('SUCURISCAN_ADMIN_INIT')
+            && SUCURISCAN_ADMIN_INIT === false
+        );
+    }
+
+    /**
+     * Check if the admin init hook must be intercepted.
+     *
+     * @return boolean True if the admin init hook must be intercepted.
+     */
+    public static function runAdminInit()
+    {
+        return (bool) (self::noAdminInit() === false);
     }
 
     /**
@@ -6772,6 +6801,19 @@ class SucuriScanTemplate extends SucuriScanRequest
     }
 
     /**
+     * Check if the ads in the sidebar are visible or not.
+     *
+     * @return boolean True if the ads must be hidden.
+     */
+    private static function noAdvertisement()
+    {
+        return (bool) (
+            defined('SUCURISCAN_HIDE_ADS')
+            && SUCURISCAN_HIDE_ADS === true
+        );
+    }
+
+    /**
      * Gather and generate the information required globally by all the template files.
      *
      * @param  string $target Scenario where the params are going to be replaced.
@@ -6801,7 +6843,7 @@ class SucuriScanTemplate extends SucuriScanRequest
         }
 
         // Hide the advertisements from the layout.
-        if (defined('SUCURISCAN_HIDE_ADS') && SUCURISCAN_HIDE_ADS === true) {
+        if (self::noAdvertisement()) {
             $params['LayoutType'] = 'onecolumn';
             $params['AdsVisibility'] = 'hidden';
             $params['ReviewNavbarButton'] = 'visible';
