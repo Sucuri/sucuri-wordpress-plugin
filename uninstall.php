@@ -70,6 +70,7 @@ $sucuriscan_option_names = array(
     'notify_widget_added',
     'notify_widget_deleted',
     'parse_errorlogs',
+    'plugin_version',
     'prettify_mails',
     'request_timeout',
     'revproxy',

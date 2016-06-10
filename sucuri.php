@@ -311,6 +311,7 @@ if (defined('SUCURISCAN')) {
     if (SucuriScan::runAdminInit()) {
         add_action('admin_init', 'SucuriScanInterface::handleOldPlugins');
         add_action('admin_init', 'SucuriScanInterface::createStorageFolder');
+        add_action('admin_init', 'SucuriScanInterface::noticeAfterUpdate');
     }
 
     /**
@@ -2942,6 +2943,7 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_notify_widget_added' => 'disabled',
             'sucuriscan_notify_widget_deleted' => 'disabled',
             'sucuriscan_parse_errorlogs' => 'enabled',
+            'sucuriscan_plugin_version' => '0.0',
             'sucuriscan_prettify_mails' => 'disabled',
             'sucuriscan_request_timeout' => 5,
             'sucuriscan_revproxy' => 'disabled',
@@ -7793,6 +7795,43 @@ class SucuriScanInterface
                 the plugin general settings page or create this directory manually and give
                 it write permissions: <code>' . $directory . '</code>'
             );
+        }
+    }
+
+    /**
+     * Do something if the plugin was updated.
+     *
+     * Check if an option exists with the version number of the plugin, if the
+     * number is different than the number defined in the constant that comes
+     * with this code then we can consider this as an update, in which case we
+     * will execute certain actions and/or display some messages.
+     *
+     * @return void
+     */
+    public static function noticeAfterUpdate()
+    {
+        $version = SucuriScanOption::get_option(':plugin_version');
+
+        // Use simple comparison to force type cast.
+        if ($version != SUCURISCAN_VERSION) {
+            /**
+             * Check if the API communication has been disabled due to issues
+             * with the previous version of the code, in this case we will
+             * display a message at the top of the admin dashboard suggesting
+             * the user to enable it once again expecting to see have a better
+             * performance with the new code.
+             */
+            if (SucuriScanOption::is_disabled(':api_service')) {
+                self::info(
+                    'API service communication is disabled, if you just updated '
+                    . 'the plugin this might be a good opportunity to test this '
+                    . 'feature once again with the new code. Enable it again from '
+                    . 'the "API Service" panel located in the settings page.'
+                );
+            }
+
+            // Update the version number in the plugin settings.
+            SucuriScanOption::update_option(':plugin_version', SUCURISCAN_VERSION);
         }
     }
 
