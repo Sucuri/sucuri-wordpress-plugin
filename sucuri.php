@@ -12431,25 +12431,28 @@ class SucuriScanBlockedUsers extends SucuriScanLastLogins
 
         $cache = new SucuriScanCache('blockedusers', false);
         $blocked = $cache->getAll();
-        $counter = 0;
 
-        foreach ($blocked as $data) {
-            $css_class = ($counter % 2 === 0) ? '' : 'alternate';
-            $output['BlockedUsers.List'] .= SucuriScanTemplate::getSnippet(
-                'lastlogins-blockedusers',
-                array(
-                    'BlockedUsers.CssClass' => $css_class,
-                    'BlockedUsers.Username' => $data->username,
-                    'BlockedUsers.BlockedAt' => self::datetime($data->blocked_at),
-                    'BlockedUsers.FirstAttempt' => self::datetime($data->first_attempt),
-                    'BlockedUsers.LastAttempt' => self::datetime($data->last_attempt),
-                )
-            );
-            $counter++;
-        }
+        if (is_array($blocked) && !empty($blocked)) {
+            $counter = 0;
 
-        if ($counter > 0) {
-            $output['BlockedUsers.NoItemsVisibility'] = 'hidden';
+            foreach ($blocked as $data) {
+                $css_class = ($counter % 2 === 0) ? '' : 'alternate';
+                $output['BlockedUsers.List'] .= SucuriScanTemplate::getSnippet(
+                    'lastlogins-blockedusers',
+                    array(
+                        'BlockedUsers.CssClass' => $css_class,
+                        'BlockedUsers.Username' => $data->username,
+                        'BlockedUsers.BlockedAt' => self::datetime($data->blocked_at),
+                        'BlockedUsers.FirstAttempt' => self::datetime($data->first_attempt),
+                        'BlockedUsers.LastAttempt' => self::datetime($data->last_attempt),
+                    )
+                );
+                $counter++;
+            }
+
+            if ($counter > 0) {
+                $output['BlockedUsers.NoItemsVisibility'] = 'hidden';
+            }
         }
 
         return SucuriScanTemplate::getSection('lastlogins-blockedusers', $output);
