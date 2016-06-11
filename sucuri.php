@@ -3548,7 +3548,7 @@ class SucuriScanEvent extends SucuriScan
      *
      * @return void
      */
-    public static function schedule_task()
+    public static function schedule_task($run_now = true)
     {
         $task_name = 'sucuriscan_scheduled_scan';
 
@@ -3556,7 +3556,10 @@ class SucuriScanEvent extends SucuriScan
             wp_schedule_event(time() + 10, 'twicedaily', $task_name);
         }
 
-        wp_schedule_single_event(time() + 300, $task_name);
+        if ($run_now === true) {
+            // Execute scheduled task after five minutes.
+            wp_schedule_single_event(time() + 300, $task_name);
+        }
     }
 
     /**
@@ -7603,6 +7606,8 @@ class SucuriScanInterface
             $_SERVER['SUCURIREAL_REMOTE_ADDR'] = $_SERVER['REMOTE_ADDR'];
             $_SERVER['REMOTE_ADDR'] = SucuriScan::get_remote_addr();
         }
+
+        SucuriScanEvent::schedule_task(false);
     }
 
     /**
@@ -14778,7 +14783,6 @@ function sucuriscan_infosys_form_submissions()
                     ));
 
                     foreach ($cronjobs as $task_name) {
-                        wp_clear_scheduled_hook($task_name);
                         $next_due = wp_next_scheduled($task_name);
                         wp_schedule_event($next_due, $cronjob_action, $task_name);
                     }
