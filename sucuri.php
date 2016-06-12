@@ -2923,7 +2923,6 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_selfhosting_monitor' => 'disabled',
             'sucuriscan_site_version' => '0.0',
             'sucuriscan_sitecheck_counter' => 0,
-            'sucuriscan_sitecheck_scanner' => 'enabled',
             'sucuriscan_sitecheck_timeout' => 30,
             'sucuriscan_use_wpmail' => 'enabled',
             'sucuriscan_verify_ssl_cert' => 'false',
@@ -6889,7 +6888,6 @@ class SucuriScanTemplate extends SucuriScanRequest
 
         $params = is_array($params) ? $params : array();
         $sub_pages = is_array($sucuriscan_pages) ? $sucuriscan_pages : array();
-        $no_sitecheck = SucuriScanOption::is_disabled(':sitecheck_scanner');
 
         $params['Navbar'] = '';
         $params['CurrentPageFunc'] = '';
@@ -6900,7 +6898,7 @@ class SucuriScanTemplate extends SucuriScanRequest
 
         foreach ($sub_pages as $sub_page_func => $sub_page_title) {
             if ($sub_page_func === 'sucuriscan_scanner'
-                && $no_sitecheck === true
+                && SucuriScanSiteCheck::isDisabled()
             ) {
                 continue;
             }
@@ -7663,7 +7661,7 @@ class SucuriScanInterface
 
             foreach ($sucuriscan_pages as $sub_page_func => $sub_page_title) {
                 if ($sub_page_func == 'sucuriscan_scanner'
-                    && SucuriScanOption::is_disabled(':sitecheck_scanner')
+                    && SucuriScanSiteCheck::isDisabled()
                 ) {
                     continue;
                 }
@@ -13204,9 +13202,9 @@ function sucuriscan_settings_scanner($nonce)
     $params['Settings.CoreFilesStatus'] = sucuriscan_settings_corefiles_status($nonce);
     $params['Settings.CoreFilesLanguage'] = sucuriscan_settings_corefiles_language($nonce);
     $params['Settings.CoreFilesCache'] = sucuriscan_settings_corefiles_cache($nonce);
-    $params['Settings.SiteCheckStatus'] = sucuriscan_settings_sitecheck_status($nonce);
-    $params['Settings.SiteCheckCache'] = sucuriscan_settings_sitecheck_cache($nonce);
-    $params['Settings.SiteCheckTimeout'] = sucuriscan_settings_sitecheck_timeout($nonce);
+    $params['Settings.SiteCheckStatus'] = SucuriScanSiteCheck::statusPage($nonce);
+    $params['Settings.SiteCheckCache'] = SucuriScanSiteCheck::cachePage($nonce);
+    $params['Settings.SiteCheckTimeout'] = SucuriScanSiteCheck::timeoutPage($nonce);
 
     return SucuriScanTemplate::getSection('settings-scanner', $params);
 }
@@ -13324,108 +13322,97 @@ function sucuriscan_settings_corefiles_cache($nonce)
     return SucuriScanTemplate::getSection('settings-corefiles-cache', $params);
 }
 
-/**
- * Read and parse the content of the SiteCheck settings template.
- *
- * @return string Parsed HTML code for the SiteCheck settings panel.
- */
-function sucuriscan_settings_sitecheck($nonce)
+class SucuriScanSiteCheck extends SucuriScanSettings
 {
-    $params = array();
-
-    return SucuriScanTemplate::getSection('settings-sitecheck', $params);
-}
-
-function sucuriscan_settings_sitecheck_status($nonce)
-{
-    $params = array();
-    $params['SiteCheck.StatusNum'] = '0';
-    $params['SiteCheck.Status'] = 'Disabled';
-    $params['SiteCheck.SwitchText'] = 'Enable';
-    $params['SiteCheck.SwitchValue'] = 'enable';
-    $params['SiteCheck.SwitchCssClass'] = 'button-success';
-    $params['SiteCheck.Counter'] = 0;
-
-    if ($nonce) {
-        // Enable or disable the SiteCheck scanner and the malware scan page.
-        if ($scanner = SucuriScanRequest::post(':sitecheck_scanner', '(en|dis)able')) {
-            $action_d = $scanner . 'd';
-            $message = 'SiteCheck malware and blacklist scanner was <code>' . $action_d . '</code>';
-
-            SucuriScanOption::update_option(':sitecheck_scanner', $action_d);
-            SucuriScanEvent::report_auto_event($message);
-            SucuriScanEvent::notify_event('plugin_change', $message);
-            SucuriScanInterface::info($message);
-        }
+    public static function isEnabled()
+    {
+        return (bool) !self::isDisabled();
     }
 
-    if (SucuriScanOption::is_enabled(':sitecheck_scanner')) {
+    public static function isDisabled()
+    {
+        return (bool) (
+            defined('SUCURISCAN_NO_SITECHECK')
+            && SUCURISCAN_NO_SITECHECK === true
+        );
+    }
+
+    public static function statusPage($nonce)
+    {
+        $params = array();
         $params['SiteCheck.StatusNum'] = '1';
         $params['SiteCheck.Status'] = 'Enabled';
-        $params['SiteCheck.SwitchText'] = 'Disable';
-        $params['SiteCheck.SwitchValue'] = 'disable';
-        $params['SiteCheck.SwitchCssClass'] = 'button-danger';
+        $params['SiteCheck.IfEnabled'] = 'visible';
+        $params['SiteCheck.IfDisabled'] = 'hidden';
+
+        if (SucuriScanSiteCheck::isDisabled()) {
+            $params['SiteCheck.StatusNum'] = '0';
+            $params['SiteCheck.Status'] = 'Disabled';
+            $params['SiteCheck.IfEnabled'] = 'hidden';
+            $params['SiteCheck.IfDisabled'] = 'visible';
+        }
+
         $params['SiteCheck.Counter'] = SucuriScanOption::get_option(':sitecheck_counter');
+
+        return SucuriScanTemplate::getSection('settings-sitecheck-status', $params);
     }
 
-    return SucuriScanTemplate::getSection('settings-sitecheck-status', $params);
-}
+    public static function cachePage($nonce)
+    {
+        $params = array();
+        $fpath = SucuriScan::datastore_folder_path('sucuri-sitecheck.php');
 
-function sucuriscan_settings_sitecheck_cache($nonce)
-{
-    $params = array();
-    $fpath = SucuriScan::datastore_folder_path('sucuri-sitecheck.php');
+        if ($nonce) {
+            // Reset SiteCheck results cache.
+            if (SucuriScanRequest::post(':sitecheck_cache')) {
+                if (file_exists($fpath)) {
+                    if (@unlink($fpath)) {
+                        $message = 'Malware scanner cache was successfully reset.';
 
-    if ($nonce) {
-        // Reset SiteCheck results cache.
-        if (SucuriScanRequest::post(':sitecheck_cache')) {
-            if (file_exists($fpath)) {
-                if (@unlink($fpath)) {
-                    $message = 'Malware scanner cache was successfully reset.';
+                        SucuriScanEvent::report_debug_event($message);
+                        SucuriScanInterface::info($message);
+                    } else {
+                        SucuriScanInterface::error('Count not reset the cache, delete manually.');
+                    }
+                } else {
+                    SucuriScanInterface::error('The cache file does not exists.');
+                }
+            }
+        }
 
-                    SucuriScanEvent::report_debug_event($message);
+        $params['SiteCheck.CacheSize'] = SucuriScan::human_filesize(@filesize($fpath));
+        $params['SiteCheck.CacheLifeTime'] = SUCURISCAN_SITECHECK_LIFETIME;
+
+        return SucuriScanTemplate::getSection('settings-sitecheck-cache', $params);
+    }
+
+    public static function timeoutPage($nonce)
+    {
+        $params = array();
+
+        // Update the SiteCheck timeout.
+        if ($nonce) {
+            $timeout = (int) SucuriScanRequest::post(':sitecheck_timeout', '[0-9]+');
+
+            if ($timeout > 0) {
+                if ($timeout <= SUCURISCAN_MAX_SITECHECK_TIMEOUT) {
+                    $message = 'SiteCheck timeout set to <code>' . $timeout . '</code> seconds.';
+
+                    SucuriScanOption::update_option(':sitecheck_timeout', $timeout);
+                    SucuriScanEvent::report_info_event($message);
+                    SucuriScanEvent::notify_event('plugin_change', $message);
                     SucuriScanInterface::info($message);
                 } else {
-                    SucuriScanInterface::error('Count not reset the cache, delete manually.');
+                    SucuriScanInterface::error('SiteCheck timeout in seconds is too high.');
                 }
-            } else {
-                SucuriScanInterface::error('The cache file does not exists.');
             }
         }
+
+        $params['MaxRequestTimeout'] = SUCURISCAN_MAX_SITECHECK_TIMEOUT;
+        $params['RequestTimeout'] = SucuriScanOption::get_option(':sitecheck_timeout') . ' seconds';
+
+        return SucuriScanTemplate::getSection('settings-sitecheck-timeout', $params);
     }
-
-    $params['SiteCheck.CacheSize'] = SucuriScan::human_filesize(@filesize($fpath));
-    $params['SiteCheck.CacheLifeTime'] = SUCURISCAN_SITECHECK_LIFETIME;
-
-    return SucuriScanTemplate::getSection('settings-sitecheck-cache', $params);
-}
-
-function sucuriscan_settings_sitecheck_timeout($nonce)
-{
-    $params = array();
-
-    // Update the SiteCheck timeout.
-    if ($nonce) {
-        $timeout = (int) SucuriScanRequest::post(':sitecheck_timeout', '[0-9]+');
-
-        if ($timeout > 0) {
-            if ($timeout <= SUCURISCAN_MAX_SITECHECK_TIMEOUT) {
-                $message = 'SiteCheck timeout set to <code>' . $timeout . '</code> seconds.';
-
-                SucuriScanOption::update_option(':sitecheck_timeout', $timeout);
-                SucuriScanEvent::report_info_event($message);
-                SucuriScanEvent::notify_event('plugin_change', $message);
-                SucuriScanInterface::info($message);
-            } else {
-                SucuriScanInterface::error('SiteCheck timeout in seconds is too high.');
-            }
-        }
-    }
-
-    $params['MaxRequestTimeout'] = SUCURISCAN_MAX_SITECHECK_TIMEOUT;
-    $params['RequestTimeout'] = SucuriScanOption::get_option(':sitecheck_timeout') . ' seconds';
-
-    return SucuriScanTemplate::getSection('settings-sitecheck-timeout', $params);
 }
 
 /**
@@ -14417,6 +14404,10 @@ function sucuriscan_settings_heartbeat()
     }
 
     return SucuriScanTemplate::getSection('settings-heartbeat', $params);
+}
+
+class SucuriScanSettings extends SucuriScanOption
+{
 }
 
 /**
