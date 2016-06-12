@@ -6834,7 +6834,6 @@ class SucuriScanTemplate extends SucuriScanRequest
         $params['PageNonce'] = wp_create_nonce('sucuriscan_page_nonce');
         $params['PageStyleClass'] = isset($params['PageStyleClass']) ? $params['PageStyleClass'] : 'base';
         $params['CleanDomain'] = self::get_domain();
-        $params['AdminEmails'] = '';
 
         // Get a list of admin users for the API key generation.
         if ($target === 'modal' /* Get API key if required */
