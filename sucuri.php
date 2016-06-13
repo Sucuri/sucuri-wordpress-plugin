@@ -1324,30 +1324,6 @@ class SucuriScan
     }
 
     /**
-     * Determine if the plugin notices can be displayed in the current page.
-     *
-     * @param  string  $current_page Identifier of the current page.
-     * @return boolean               TRUE if the current page must not have noticies.
-     */
-    public static function no_notices_here($current_page = false)
-    {
-        global $sucuriscan_no_notices_in;
-
-        if ($current_page === false) {
-            $current_page = SucuriScanRequest::get('page');
-        }
-
-        if (isset($sucuriscan_no_notices_in)
-            && is_array($sucuriscan_no_notices_in)
-            && !empty($sucuriscan_no_notices_in)
-        ) {
-            return (bool) in_array($current_page, $sucuriscan_no_notices_in);
-        }
-
-        return false;
-    }
-
-    /**
      * Check whether the site is running over the Nginx web server.
      *
      * @return boolean TRUE if the site is running over Nginx, FALSE otherwise.
@@ -7864,6 +7840,63 @@ class SucuriScanInterface
     }
 
     /**
+     * Decide if the API key generator needs to be visible.
+     *
+     * Once the user activates the plugin an information bar will appear at the
+     * top of the admin interface advising him to generate an unique API key for
+     * his website, this will allow him to activate additional features of the
+     * plugin that are only available while the API key is present.
+     *
+     * If the user doesn't generates the key right after the activation in the
+     * plugins page we have to keep the information bar visible in certain pages
+     * to remind him. This is, the home page of the admin dashboard, the plugins
+     * page, and any of the pages associated to the plugin.
+     *
+     * @return boolean Display the API key generator button or not.
+     */
+    private static function displayNoticesHere()
+    {
+        global $sucuriscan_pages;
+
+        $page = SucuriScanRequest::get('page');
+        $script = (string) @$_SERVER['SCRIPT_NAME'];
+        $visibility = array(
+            '/wp-admin/index.php',
+            '/wp-admin/plugins.php',
+        );
+
+        if ($page && array_key_exists($page, $sucuriscan_pages)) {
+            return true;
+        }
+
+        if (in_array($script, $visibility)) {
+            return true;
+        }
+
+        /**
+         * Retry using a reverse name.
+         *
+         * People might choose to install WordPress in a sublevel of the
+         * document root, this changes the structure of the script name
+         * variable. To address this incompatibility we will iterate over all
+         * the visible pages and check the reverse version of the string with
+         * the reverse version of the script name, if the beginning of the
+         * string matches then we will consider the page available.
+         */
+        $script = strrev($script);
+
+        foreach ($visibility as $visible) {
+            $elbis = strrev($visible);
+
+            if (strpos($script, $elbis) === 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Display a notice message with instructions to continue the setup of the
      * plugin, this includes the generation of the API key and other steps that need
      * to be done to fully activate this plugin.
@@ -7873,7 +7906,7 @@ class SucuriScanInterface
     public static function setup_notice()
     {
         if (current_user_can('manage_options')
-            && SucuriScan::no_notices_here() === false
+            && self::displayNoticesHere()
             && !SucuriScanAPI::getPluginKey()
             && SucuriScanRequest::post(':plugin_api_key') === false
             && SucuriScanRequest::post(':recover_key') === false
