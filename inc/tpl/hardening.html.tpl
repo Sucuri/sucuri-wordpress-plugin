@@ -4,10 +4,12 @@
     jQuery(document).ready(function ($) {
         var total = $('.sucuriscan-hardening-boxes .postbox').length;
         var applied = $('.sucuriscan-hardening-boxes .postbox .sucuriscan-hstatus-1').length;
-        var content = '({{APPLIED}}/{{TOTAL}})'
+
+        $('#sucuriscan-hardening-stats').html(
+            '({{APPLIED}}/{{TOTAL}})'
             .replace('{{TOTAL}}', total)
-            .replace('{{APPLIED}}', applied);
-        $('#sucuriscan-hardening-stats').html(content);
+            .replace('{{APPLIED}}', applied)
+        );
     });
     </script>
 

@@ -5,12 +5,10 @@
 
         <div class="inside">
             <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                Any user login passing accross the built-in mechanism that WordPress provides to
+                authentication the session will be intercepted by the plugin and analyzed to see
+                if the username is in the list of blocked accounts, if yes then the request will
+                be stopped. No logs will be registered and no alerts will be sent to your email.
             </p>
 
             <div class="sucuriscan-inline-alert-info">
