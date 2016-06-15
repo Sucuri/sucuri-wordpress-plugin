@@ -2536,7 +2536,7 @@ class SucuriScanCache extends SucuriScan
     {
         if (!is_null($this->datastore)) {
             $folder_path = $this->datastore_folder_path();
-            $file_path = $folder_path . 'sucuri-' . $this->datastore . '.php';
+            $file_path = $folder_path . '/sucuri-' . $this->datastore . '.php';
 
             // Create the datastore parent directory.
             if (!file_exists($folder_path)) {
@@ -3266,10 +3266,11 @@ class SucuriScanOption extends SucuriScanRequest
 
         // Merge with the default options to ensure full cleanup.
         $default = self::get_default_option_names();
-        $options = array_merge($options, $default);
 
-        foreach ($options as $option) {
-            self::delete_option($option);
+        foreach ($default as $option) {
+            if (is_string($option)) {
+                self::delete_option($option);
+            }
         }
     }
 
