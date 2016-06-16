@@ -3145,8 +3145,10 @@ class SucuriScanOption extends SucuriScanRequest
             $value = get_option($option);
 
             if ($value !== false) {
-                delete_option($option);
-                self::update_option($option, $value);
+                if (strpos($option, 'sucuriscan_') === 0) {
+                    delete_option($option);
+                    self::update_option($option, $value);
+                }
 
                 return $value;
             }
