@@ -1,5 +1,5 @@
 
-<div id="poststuff">
+<div class="sucuriscan-panelstuff">
     <div class="postbox">
         <h3>Firewall Audit Logs</h3>
 

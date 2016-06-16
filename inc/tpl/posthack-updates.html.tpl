@@ -1,5 +1,5 @@
 
-<div id="poststuff" class="sucuriscan-updates">
+<div class="sucuriscan-panelstuff sucuriscan-updates">
     <div class="postbox">
         <div class="inside">
             <p>

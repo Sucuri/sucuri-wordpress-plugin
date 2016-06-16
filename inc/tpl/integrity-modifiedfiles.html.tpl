@@ -1,5 +1,5 @@
 
-<div id="poststuff">
+<div class="sucuriscan-panelstuff">
     <div class="postbox sucuriscan-border sucuriscan-table-description">
         <h3>Modified Files</h3>
 

@@ -1,5 +1,5 @@
 
-<div id="poststuff" class="sucuriscan-reset-users-password">
+<div class="sucuriscan-panelstuff sucuriscan-reset-users-password">
     <div class="postbox">
         <div class="inside">
             <form method="post">

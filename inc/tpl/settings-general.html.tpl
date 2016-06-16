@@ -1,5 +1,5 @@
 
-<div id="poststuff" class="sucuriscan-general-settings">
+<div class="sucuriscan-panelstuff sucuriscan-general-settings">
     %%%SUCURI.SettingsSection.ApiKey%%%
 
     %%%SUCURI.SettingsSection.DataStorage%%%

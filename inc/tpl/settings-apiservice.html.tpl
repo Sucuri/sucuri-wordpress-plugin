@@ -1,5 +1,5 @@
 
-<div id="poststuff" class="sucuriscan-general-apiservice">
+<div class="sucuriscan-panelstuff sucuriscan-general-apiservice">
     %%%SUCURI.SettingsSection.ApiStatus%%%
 
     %%%SUCURI.SettingsSection.ApiProxy%%%

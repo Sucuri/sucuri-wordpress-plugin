@@ -1,6 +1,8 @@
 
 <tr class="%%SUCURI.FailedLogins.CssClass%%">
-    <td>%%SUCURI.FailedLogins.Num%%</td>
+    <td class="check-column">
+        <input type="checkbox" name="sucuriscan_block_user[]" value="%%SUCURI.FailedLogins.Username%%">
+    </td>
     <td><span class="sucuriscan-monospace">%%SUCURI.FailedLogins.Username%%</span></td>
     <td><span class="sucuriscan-label-%%SUCURI.FailedLogins.PasswordColor%%">%%SUCURI.FailedLogins.Password%%</span></td>
     <td><span class="sucuriscan-monospace">%%SUCURI.FailedLogins.RemoteAddr%%</span></td>

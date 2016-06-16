@@ -1,6 +1,6 @@
 
-<div id="poststuff">
-    <div class="postbox sucuriscan-border sucuriscan-table-description sucuriscan-%%SUCURI.IgnoreRules.TableVisibility%%">
+<div class="sucuriscan-panelstuff">
+    <div class="postbox sucuriscan-border sucuriscan-table-description">
         <h3>Scheduled Tasks (%%SUCURI.Cronjobs.Total%% tasks)</h3>
 
         <div class="inside">
@@ -20,34 +20,30 @@
                     required by the site to work correctly.
                 </p>
             </div>
-        </div>
-    </div>
-</div>
 
-<form action="%%SUCURI.URL.Infosys%%#wordpress-cronjobs" method="post">
-    <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
+            <form action="%%SUCURI.URL.Infosys%%#wordpress-cronjobs" method="post">
+                <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
 
-    <table class="wp-list-table widefat sucuriscan-table sucuriscan-wpcron-list">
-        <thead>
-            <tr>
-                <th class="manage-column column-cb check-column">
-                    <label class="screen-reader-text" for="cb-select-all-1">Select All</label>
-                    <input id="cb-select-all-1" type="checkbox">
-                </th>
-                <th>Task</th>
-                <th>Schedule</th>
-                <th>Next due</th>
-                <th>Arguments</th>
-            </tr>
-        </thead>
+                <table class="wp-list-table widefat sucuriscan-table sucuriscan-wpcron-list">
+                    <thead>
+                        <tr>
+                            <th class="manage-column column-cb check-column">
+                                <label class="screen-reader-text" for="cb-select-all-1">Select All</label>
+                                <input id="cb-select-all-1" type="checkbox">
+                            </th>
+                            <th>Task</th>
+                            <th>Schedule</th>
+                            <th>Next due</th>
+                            <th>Arguments</th>
+                        </tr>
+                    </thead>
 
-        <tbody>
-            %%%SUCURI.Cronjobs.List%%%
-        </tbody>
+                    <tbody>
+                        %%%SUCURI.Cronjobs.List%%%
+                    </tbody>
+                </table>
 
-        <tfoot>
-            <tr>
-                <td colspan="5">
+                <div class="sucuriscan-recipient-form">
                     <label>
                         <select name="sucuriscan_cronjob_action">
                             <option value="">Choose action</option>
@@ -59,9 +55,8 @@
                         </select>
                     </label>
                     <button type="submit" class="button button-primary">Send action</button>
-                </td>
-            </tr>
-        </tfoot>
-    </table>
-
-</form>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

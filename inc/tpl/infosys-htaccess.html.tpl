@@ -1,5 +1,5 @@
 
-<div id="poststuff" class="sucuriscan-infosys-htaccess">
+<div class="sucuriscan-panelstuff sucuriscan-infosys-htaccess">
     <div class="postbox sucuriscan-border sucuriscan-table-description">
         <h3>Access File Integrity</h3>
 
