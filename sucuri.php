@@ -5135,73 +5135,51 @@ class SucuriScanAPI extends SucuriScanOption
                 $response = self::apiCall($url, 'GET', $params);
             }
 
-            if (is_array($response) && !empty($response)) {
+            if ($response) {
                 if ($unique === 'sucuriwp'
-                    && array_key_exists('body_arr', $response)
-                    && array_key_exists('status', $response['body_arr'])
-                    && array_key_exists('action', $response['body_arr'])
-                    && is_numeric($response['body_arr']['status'])
+                    && array_key_exists('status', $response)
+                    && array_key_exists('action', $response)
+                    && array_key_exists('output', $response)
+                    && is_numeric($response['status'])
                 ) {
                     return array('unique' => $unique, 'output' => 'OK');
-                }
-
-                elseif ($unique === 'cproxywp'
-                    && array_key_exists('body_arr', $response)
-                    && array_key_exists('status', $response['body_arr'])
-                    && array_key_exists('action', $response['body_arr'])
-                    && is_numeric($response['body_arr']['status'])
+                } elseif ($unique === 'cproxywp'
+                    && array_key_exists('status', $response)
+                    && array_key_exists('action', $response)
+                    && array_key_exists('output', $response)
+                    && is_numeric($response['status'])
                 ) {
                     return array('unique' => $unique, 'output' => 'OK');
-                }
-
-                elseif ($unique === 'sitechck'
+                } elseif ($unique === 'sitechck'
                     && array_key_exists('SCAN', $response)
                     && array_key_exists('SYSTEM', $response)
                     && array_key_exists('BLACKLIST', $response)
                 ) {
                     return array('unique' => $unique, 'output' => 'OK');
-                }
-
-                elseif ($unique === 'wpssalts'
-                    && array_key_exists('body', $response)
-                    && strpos($response['body'], 'AUTH_KEY')
-                    && strpos($response['body'], 'AUTH_SALT')
-                    && strpos($response['body'], 'SECURE_AUTH_KEY')
+                } elseif ($unique === 'wpssalts'
+                    && strpos($response, 'AUTH_KEY')
+                    && strpos($response, 'AUTH_SALT')
+                    && strpos($response, 'SECURE_AUTH_KEY')
                 ) {
                     return array('unique' => $unique, 'output' => 'OK');
-                }
-
-                elseif ($unique === 'wphashes'
-                    && array_key_exists('response', $response)
-                    && array_key_exists('code', $response['response'])
-                    && array_key_exists('message', $response['response'])
-                    && strpos($response['body'], '"checksums"')
+                } elseif ($unique === 'wphashes'
+                    && array_key_exists('checksums', $response)
+                    && is_array($response['checksums'])
                 ) {
                     return array('unique' => $unique, 'output' => 'OK');
-                }
-
-                elseif ($unique === 'wpplugin'
-                    && array_key_exists('response', $response)
-                    && array_key_exists('code', $response['response'])
-                    && array_key_exists('message', $response['response'])
-                    && $response['response']['code'] == 200
+                } elseif ($unique === 'wpplugin'
+                    && strpos($response, '<title>Sucuri Security')
+                    && strpos($response, 'wordpress.org/plugin/sucuri-scanner')
                 ) {
                     return array('unique' => $unique, 'output' => 'OK');
-                }
-
-                elseif ($unique === 'plugindt'
-                    && array_key_exists('body_arr', $response)
-                    && array_key_exists('slug', $response['body_arr'])
-                    && $response['body_arr']['slug'] === 'sucuri-scanner'
+                } elseif ($unique === 'plugindt'
+                    && array_key_exists('slug', $response)
+                    && $response['slug'] === 'sucuri-scanner'
                 ) {
                     return array('unique' => $unique, 'output' => 'OK');
-                }
-
-                elseif ($unique === 'wpvfpath'
-                    && array_key_exists('response', $response)
-                    && array_key_exists('code', $response['response'])
-                    && array_key_exists('message', $response['response'])
-                    && $response['response']['code'] == 200
+                } elseif ($unique === 'wpvfpath'
+                    && strpos($response, 'ABSPATH')
+                    && strpos($response, 'wp_die')
                 ) {
                     return array('unique' => $unique, 'output' => 'OK');
                 }
@@ -5212,66 +5190,93 @@ class SucuriScanAPI extends SucuriScanOption
     }
 
     /**
-     * Retrieves a URL using a changeable HTTP method, returning results in an
-     * array. Results include HTTP headers and content.
+     * Communicates with a remote URL and retrieves its content.
      *
-     * @see https://codex.wordpress.org/Function_Reference/wp_remote_post
-     * @see https://codex.wordpress.org/Function_Reference/wp_remote_get
+     * Curl is a reflective object-oriented programming language for interactive
+     * web applications whose goal is to provide a smoother transition between
+     * formatting and programming. It makes it possible to embed complex objects
+     * in simple documents without needing to switch between programming
+     * languages or development platforms.
+     *
+     * Using Curl instead of the custom WordPress HTTP functions allow us to
+     * control the functionality at 100% without expecting breaking changes in
+     * newer versions of the code. For exampe, as of WordPress 4.6.x the result
+     * of executing the functions prefixed with "wp_remote_" returns an object
+     * WP_HTTP_Requests_Response that is not compatible with older implementations
+     * of the plugin.
+     *
+     * @see https://secure.php.net/manual/en/book.curl.php
      *
      * @param  string $url    The target URL where the request will be sent.
      * @param  string $method HTTP method that will be used to send the request.
-     * @param  array  $params Parameters for the request defined in an associative array of key-value.
-     * @param  array  $args   Request arguments like the timeout, redirections, headers, cookies, etc.
+     * @param  array  $params Parameters for the request defined in an associative array.
+     * @param  array  $args   Request arguments like the timeout, headers, cookies, etc.
      * @return array          Response object after the HTTP request is executed.
      */
     private static function apiCall($url = '', $method = 'GET', $params = array(), $args = array())
     {
-        if (!$url) {
-            return false;
-        }
+        if ($url
+            && function_exists('curl_init')
+            && ($method === 'GET' || $method === 'POST')
+        ) {
+            $curl = curl_init();
+            $url = self::apiUrlProtocol($url);
+            $timeout = self::requestTimeout();
 
-        $url = self::apiUrlProtocol($url);
-        $req_args = array(
-            'method' => $method,
-            'timeout' => self::requestTimeout(),
-            'redirection' => 2,
-            'httpversion' => '1.0',
-            'user-agent' => self::userAgent(),
-            'blocking' => true,
-            'headers' => array(),
-            'cookies' => array(),
-            'compress' => false,
-            'decompress' => false,
-            'sslverify' => self::verifySslCert(),
-        );
+            // Add random request parameter to avoid request reset.
+            if (!empty($params) && !array_key_exists('time', $params)) {
+                $params['time'] = time();
+            }
 
-        // Update the request arguments with the values passed tot he function.
-        foreach ($args as $arg_name => $arg_value) {
-            if (array_key_exists($arg_name, $req_args)) {
-                $req_args[$arg_name] = $arg_value;
+            if ($method === 'GET'
+                && is_array($params)
+                && !empty($params)
+            ) {
+                $url .= '?' . http_build_query($params);
+            }
+
+            curl_setopt($curl, CURLOPT_URL, $url);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_USERAGENT, self::userAgent());
+            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
+            curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $timeout);
+            curl_setopt($curl, CURLOPT_TIMEOUT, $timeout * 2);
+            curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($curl, CURLOPT_MAXREDIRS, 2);
+
+            if ($method === 'POST') {
+                curl_setopt($curl, CURLOPT_POST, true);
+                curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($params));
+            }
+
+            if (self::verifySslCert()) {
+                curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
+                curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
+            } else {
+                curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+                curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+            }
+
+            $output = curl_exec($curl);
+            $headers = curl_getinfo($curl);
+
+            curl_close($curl);
+
+            if (array_key_exists('http_code', $headers)
+                && $headers['http_code'] === 200
+                && !empty($output)
+            ) {
+                $result = @json_decode($output, true);
+
+                if ($result) {
+                    return $result;
+                }
+
+                return $output;
             }
         }
 
-        // Add random request parameter to avoid request reset.
-        if (!empty($params) && !array_key_exists('time', $params)) {
-            $params['time'] = time();
-        }
-
-        if ($method == 'GET') {
-            if (!empty($params)) {
-                $url = sprintf('%s?%s', $url, http_build_query($params));
-            }
-
-            $response = wp_remote_get($url, $req_args);
-        } elseif ($method == 'POST') {
-            $req_args['body'] = $params;
-            $response = wp_remote_post($url, $req_args);
-        } else {
-            $response = false;
-            SucuriScanInterface::error('HTTP method not allowed: ' . $method);
-        }
-
-        return self::processResponse($response, $params, $args);
+        return false;
     }
 
     /**
@@ -5433,95 +5438,6 @@ class SucuriScanAPI extends SucuriScanOption
             unset($params['string']);
 
             return self::apiCall($url, $method, $params);
-        }
-
-        return false;
-    }
-
-    /**
-     * Execute some actions according to the response message.
-     *
-     * @param  array $response Response object after the HTTP request is executed.
-     * @param  array $params   Parameters for the request defined in an associative array of key-value.
-     * @param  array $args     Request arguments like the timeout, redirections, headers, cookies, etc.
-     * @return array           Response object with some modifications.
-     */
-    private static function processResponse($response = array(), $params = array(), $args = array())
-    {
-        /**
-         * Convert the error message generated by the code base functions after the HTTP
-         * request is executed to a valid response object that will allow this code
-         * process the data according to the specified standards.
-         */
-        if (is_wp_error($response)) {
-            // Extract information from the error object.
-            $error_message = $response->get_error_message();
-            $request_action = isset($params['a']) ? $params['a'] : 'unknown';
-
-            // Build a fake request response with custom data.
-            $data_set = array(
-                'status' => 0,
-                'action' => $request_action,
-                'messages' => array( $error_message ),
-                'request_time' => SucuriScan::local_time(),
-                'output' => new stdClass(),
-                'verbose' => 0,
-            );
-
-            // Build the response object and encode data.
-            $response = array();
-            $response['body'] = json_encode($data_set);
-            $response['headers']['date'] = date('r');
-            $response['headers']['connection'] = 'close';
-            $response['headers']['content-type'] = 'application/json';
-            $response['headers']['content-length'] = strlen($response['body']);
-            $response['response']['code'] = 500;
-            $response['response']['message'] = 'ERROR';
-        }
-
-        /**
-         * Process the response object.
-         *
-         * Some response messages and even errors require extra steps of processing to,
-         * for example, try to fix automatically issues related with disconnections,
-         * timeouts, SSL certificate verifications, etc. Some of these actions can not
-         * be fixed if the server where the website is being hosted has a special
-         * configuration, which then requires the human interaction of the admin user,
-         * they will see extra information explaining the response and how to proceed
-         * with it.
-         */
-        if (is_array($response)
-            && array_key_exists('body', $response)
-            && array_key_exists('headers', $response)
-            && array_key_exists('response', $response)
-        ) {
-            // Keep a copy of the raw HTTP response.
-            $response['body_raw'] = $response['body'];
-
-            // Append the non-private HTTP request parameters.
-            $response['params'] = $params;
-            unset($response['params']['k']);
-
-            /**
-             * Check and decode the API response.
-             *
-             * Note that serialized data is going to be ignored, the old API service used to
-             * respond to all endpoints with serialized data and considering the risk that
-             * it poses to unserialize in PHP it was decided to drop that option and stick
-             * to JSON which is a bit safer.
-             */
-            if (isset($response['headers']['content-type'])
-                && $response['headers']['content-type'] == 'application/json'
-            ) {
-                $assoc = (isset($args['assoc']) && $args['assoc'] === true) ? true : false;
-                $response['body'] = @json_decode($response['body_raw'], $assoc);
-                $response['body_arr'] = @json_decode($response['body_raw'], true);
-            } elseif (self::is_serialized($response['body'])) {
-                $response['body_raw'] = null;
-                $response['body'] = 'ERROR:Serialized data is not supported.';
-            }
-
-            return $response;
         }
 
         return false;
@@ -6218,9 +6134,7 @@ class SucuriScanAPI extends SucuriScanOption
                 )
             );
 
-            if ($response) {
-                return $response['body'];
-            }
+            return $response;
         }
 
         return false;
