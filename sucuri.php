@@ -75,7 +75,7 @@ define('SUCURISCAN_PLUGIN_FILE', 'sucuri.php');
 /**
  * The name of the folder where the plugin's files will be located.
  */
-define('SUCURISCAN_PLUGIN_FOLDER', 'sucuri-scanner');
+define('SUCURISCAN_PLUGIN_FOLDER', basename(__DIR__));
 
 /**
  * The fullpath where the plugin's files will be located.
