@@ -7776,6 +7776,15 @@ class SucuriScanInterface
 
         // Display the HTML notice to the current user.
         if ($display_notice === true && !empty($message)) {
+            if (defined('SUCURISCAN_THROW_EXCEPTIONS')
+                && SUCURISCAN_THROW_EXCEPTIONS === true
+            ) {
+                $number = (string) crc32($type);
+                $code = (int) substr($number, 0, 3);
+
+                throw new Exception($message, $code);
+            }
+
             echo SucuriScanTemplate::getSection(
                 'notification-admin',
                 array(
