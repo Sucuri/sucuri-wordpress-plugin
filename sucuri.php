@@ -5550,6 +5550,12 @@ class SucuriScanAPI extends SucuriScanOption
                 . 'd to reduce the noise during the execution of the HTTP req'
                 . 'uests.';
             }
+
+            // Check if the MX records as missing for API registration.
+            if (strpos($raw, 'Invalid email') !== false) {
+                $msg = 'Email has an invalid format, or the host '
+                . 'associated to the email has no MX records.';
+            }
         }
 
         if (!empty($msg) && $enqueue) {
@@ -5578,7 +5584,8 @@ class SucuriScanAPI extends SucuriScanOption
         ), false);
 
         if (self::handleResponse($response)) {
-            self::setPluginKey($response['body']->output->api_key);
+            self::setPluginKey($response['output']['api_key']);
+
             SucuriScanEvent::schedule_task();
             SucuriScanEvent::notify_event('plugin_change', 'Site registered and API key generated');
             SucuriScanInterface::info('The API key for your site was successfully generated and saved.');
