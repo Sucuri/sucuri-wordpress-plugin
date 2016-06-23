@@ -7767,6 +7767,11 @@ class SucuriScanInterface
             ) {
                 $number = (string) crc32($type);
                 $code = (int) substr($number, 0, 3);
+                $message = str_replace(
+                    '<b>Sucuri:</b>',
+                    ($type === 'error' ? 'Error:' : 'Info:'),
+                    $message
+                );
 
                 throw new Exception($message, $code);
             }
