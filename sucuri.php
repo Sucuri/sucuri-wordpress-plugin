@@ -10107,11 +10107,11 @@ function sucuriscan_audit_logs_ajax()
 
         if ($audit_logs) {
             $counter_i = 0;
-            $total_items = count($audit_logs->output_data);
+            $total_items = count($audit_logs['output_data']);
             $iterator_start = ($page_number - 1) * $max_per_page;
 
-            if (property_exists($audit_logs, 'total_entries')
-                && $audit_logs->total_entries >= $max_per_page
+            if (array_key_exists('total_entries', $audit_logs)
+                && $audit_logs['total_entries'] >= $max_per_page
                 && SucuriScanOption::is_disabled(':audit_report')
             ) {
                 $response['enable_report'] = true;
@@ -10122,8 +10122,8 @@ function sucuriscan_audit_logs_ajax()
                     break;
                 }
 
-                if (isset($audit_logs->output_data[ $i ])) {
-                    $audit_log = $audit_logs->output_data[ $i ];
+                if (isset($audit_logs['output_data'][ $i ])) {
+                    $audit_log = $audit_logs['output_data'][ $i ];
 
                     $css_class = ($counter_i % 2 === 0) ? '' : 'alternate';
                     $snippet_data = array(
