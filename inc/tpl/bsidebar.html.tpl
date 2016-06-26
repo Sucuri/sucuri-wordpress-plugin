@@ -16,13 +16,12 @@
 
         <div class="sucuriscan-ad-footer">
             <ul>
-                <li>Sucuri CloudProxy Firewall</li>
-                <li class="featured">Stopping 33M+ attacks a month</li>
-                <li>Web Application Firewall Protection</li>
+                <li>Sucuri Firewall</li>
+                <li>Protection . Performance . Security</li>
+                <li class="featured">Cloud-based WAF + DDoS Protection</li>
                 <li>Virtual Website Patching</li>
-                <li>Cloud Intrusion Prevention System</li>
-                <li>High Security Website Monitoring</li>
-                <li>Malicious Traffic Filtering</li>
+                <li>Anycast CDN + Website Accelerator</li>
+                <li>All in one security for your site.</li>
             </ul>
         </div>
     </div>
@@ -52,8 +51,6 @@
             <img src="%%SUCURI.SucuriURL%%/inc/images/sucuri-website.png" alt="Sucuri Website" />
         </a>
     </div>
-
-    <iframe src="https://www.youtube-nocookie.com/embed/EVa9FY3nKuQ" height="250" class="sucuriscan-scanner-video" allowfullscreen></iframe>
 
     <a href="https://wordpress.org/support/plugin/sucuri-scanner" target="_blank"
     class="button button-primary sucuriscan-supportbtn">Visit Support Forum</a>
