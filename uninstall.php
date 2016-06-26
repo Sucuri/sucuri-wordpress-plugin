@@ -20,6 +20,7 @@ $sucuriscan_option_names = array(
     'account',
     'addr_header',
     'ads_visibility',
+    'api_handler',
     'api_key',
     'api_protocol',
     'api_service',
