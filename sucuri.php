@@ -1847,6 +1847,8 @@ class SucuriScanFileInfo extends SucuriScan
             }
 
             if (is_array($tree) && !empty($tree)) {
+                sort($tree); /* Sort in alphabetic order */
+
                 return array_map(array('SucuriScan', 'fixPath'), $tree);
             }
         }
@@ -2165,12 +2167,15 @@ class SucuriScanFileInfo extends SucuriScan
             foreach ($dir_tree as $filepath) {
                 $dir_path = dirname($filepath);
 
-                if (is_array($dirs)
-                    && !in_array($dir_path, $dirs)
-                    && array_key_exists('directories', $this->ignored_directories)
-                    && is_array($this->ignored_directories['directories'])
-                    && !in_array($dir_path, $this->ignored_directories['directories'])
-                ) {
+                if (!in_array($dir_path, $dirs)) {
+                    if (is_array($this->ignored_directories)
+                        && array_key_exists('directories', $this->ignored_directories)
+                        && is_array($this->ignored_directories['directories'])
+                        && in_array($dir_path, $this->ignored_directories['directories'])
+                    ) {
+                        continue;
+                    }
+
                     $dirs[] = $dir_path;
                 }
             }
