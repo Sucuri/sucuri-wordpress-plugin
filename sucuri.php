@@ -5192,6 +5192,7 @@ class SucuriScanAPI extends SucuriScanOption
                 ) {
                     return array('unique' => $unique, 'output' => 'OK');
                 } elseif ($unique === 'wphashes'
+                    && is_array($response)
                     && array_key_exists('checksums', $response)
                     && is_array($response['checksums'])
                 ) {
@@ -5377,7 +5378,9 @@ class SucuriScanAPI extends SucuriScanOption
                 $socket = fsockopen($host, $port, $errno, $errstr, $timeout);
 
                 if ($socket) {
-                    $result = '';
+                    $headers = '';
+                    $response = '';
+
                     $out = sprintf("%s %s HTTP/1.1\r\n", $method, $path);
                     $out .= "Accept: */*\r\n";
                     $out .= sprintf("Host: %s\r\n", $url_parts['host']);
@@ -5393,26 +5396,42 @@ class SucuriScanAPI extends SucuriScanOption
 
                     fwrite($socket, $out . "\r\n");
 
+                    while (strpos($headers, "\r\n\r\n") === false) {
+                        $headers .= fread($socket, 1);
+                    }
+
+                    $chunk = '';
+                    $segmented = false;
+
                     while (!feof($socket)) {
-                        $result .= fgets($socket, 128);
+                        $byte = fread($socket, 1);
+
+                        if ($byte === "\r") { /* CR */
+                            fread($socket, 1); /* LF */
+
+                            if (strlen($chunk) <= 4) {
+                                /* Chunk size, ignore */
+                            } else {
+                                $segmented = true;
+                                $response .= $chunk;
+                            }
+
+                            /* Reset and continue */
+                            $chunk = '';
+                            continue;
+                        }
+
+                        $chunk .= $byte;
+                    }
+
+                    if ($segmented === false) {
+                        $response = $chunk;
                     }
 
                     fclose($socket);
 
-                    $parts = explode("\r\n\r\n", $result, 2);
-
-                    if (count($parts) === 2) {
-                        $headers = $parts[0];
-                        $body = $parts[1];
-
-                        if (strpos($headers, 'Server: Sucuri/Cloudproxy') !== false) {
-                            $first = strpos($body, '{');
-                            $last = strrpos($body, '}') - $first;
-                            $body = substr($body, $first, $last + 1);
-                            $body = preg_replace('/\r\n[a-z0-9]{4}\r\n/', '', $body);
-                        }
-
-                        return $body;
+                    if (strpos($headers, '200 OK')) {
+                        return $response;
                     }
                 }
             }
@@ -6335,17 +6354,16 @@ class SucuriScanAPI extends SucuriScanOption
             )
         );
 
-        if ($response) {
-            if (array_key_exists('checksums', $response)
-                && !empty($response['checksums'])
+        if (is_array($response)
+            && array_key_exists('checksums', $response)
+            && !empty($response['checksums'])
+        ) {
+            if (count((array) $response['checksums']) <= 1
+                && array_key_exists($version, $response['checksums'])
             ) {
-                if (count((array) $response['checksums']) <= 1
-                    && array_key_exists($version, $response['checksums'])
-                ) {
-                    return $response['checksums'][$version];
-                } else {
-                    return $response['checksums'];
-                }
+                return $response['checksums'][$version];
+            } else {
+                return $response['checksums'];
             }
         }
 
