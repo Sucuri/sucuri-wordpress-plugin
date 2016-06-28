@@ -3,8 +3,8 @@ Contributors: dd@sucuri.net
 Donate Link: https://sucuri.net/
 Tags: malware, security, firewall, scan, spam, virus, sucuri, protection,WordPress Security, Login Security,Security Auditing,File Integrity,htaccess,phishing,backdoors,SQL Injection, RFI, LFI, XSS, CSRF, website firewall, Website Security, Performance Optimization, Zero Day, Software Vulnerability, Exploits, Hacks, Attackers, Bad Actors, Reverse Proxy, Two Factor Security, Two Factor Authentication, Security Logs, HeatBleed Vulnerability, Website Protection, Bash Vulnerability, RevSlider Vulnerability, MailPoet Vulnerability, Malware Prevention, Website Firewall, Website AntiVirus, Security Response, Security Detection, Security Prevention
 Requires at least:3.2
-Stable tag: 1.7.17
-Tested up to: 4.4.1
+Stable tag: 1.7.19
+Tested up to: 4.5.3
 
 The Sucuri WordPress Security plugin is a security toolset for security integrity monitoring, malware detection and security hardening.
 
@@ -353,6 +353,31 @@ service from the WordPress dashboard.
 
 
 == Changelog ==
+
+= 1.7.19 =
+* Added function to rescue HTTP requests using sockets
+* Fixed mishandled JSON data in audit logs Ajax request
+* Modified list of CloudProxy features and promo video
+
+= 1.7.18 =
+* Added options library using external file instead of the database
+* Modified API calls using custom HTTP request using Curl
+* Fixed core files marked as broken in a Windows server
+* Fixed pagination links in last and failed logins page
+* Fixed password with ampersands in email notification
+* Fixed whitelist hardening using the authz_core module
+* Removed unnecessary emails to reduce spam
+* Added constant to stop execution of admin init hooks
+* Added explanation for invalid emails and no MX records
+* Added link to open the form to insert the API key manually
+* Added more options in the IP discoverer setting
+* Added option to configure malware scanner timeout
+* Added option to configure the API communication protocol
+* Added option to reset the malware scanner cache
+* Added scheduled task and email alert for available updates
+* Added tool to block user accounts from attempting a login
+* Added tool to debug HTTP requests to the API services
+* Various minor adjustments and fixes
 
 = 1.7.17 =
 * Added API service failback mechanism
