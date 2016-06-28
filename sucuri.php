@@ -5081,6 +5081,22 @@ class SucuriScanAPI extends SucuriScanOption
         return substr($trail, 1);
     }
 
+    private static function canCurlFollowRedirection()
+    {
+        $safe_mode = ini_get('safe_mode');
+        $open_basedir = ini_get('open_basedir');
+
+        if ($safe_mode === '1' || $safe_mode === 'On') {
+            return false;
+        }
+
+        if (!empty($open_basedir)) {
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * Assign the communication protocol.
      *
@@ -5303,8 +5319,11 @@ class SucuriScanAPI extends SucuriScanOption
             curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
             curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $timeout);
             curl_setopt($curl, CURLOPT_TIMEOUT, $timeout * 2);
-            curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
-            curl_setopt($curl, CURLOPT_MAXREDIRS, 2);
+
+            if (self::canCurlFollowRedirection()) {
+                curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+                curl_setopt($curl, CURLOPT_MAXREDIRS, 2);
+            }
 
             if ($method === 'POST') {
                 curl_setopt($curl, CURLOPT_POST, true);
