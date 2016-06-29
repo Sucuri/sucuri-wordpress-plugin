@@ -14791,11 +14791,16 @@ function sucuriscan_htaccess_is_standard($rules = false)
         }
     }
 
-    if (is_string($rules) && !empty($rules)) {
+    if (class_exists('WP_Rewrite')
+        && is_string($rules)
+        && !empty($rules)
+    ) {
         $rewrite = new WP_Rewrite();
         $standard = $rewrite->mod_rewrite_rules();
 
-        return (bool) (strpos($rules, $standard) !== false);
+        if (!empty($standard)) {
+            return (bool) (strpos($rules, $standard) !== false);
+        }
     }
 
     return false;
