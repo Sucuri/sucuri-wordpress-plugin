@@ -12636,21 +12636,6 @@ function sucuriscan_settings_form_submissions($page_nonce = null)
     }
 
     if ($page_nonce) {
-        // Save API key after it was recovered by the administrator.
-        if ($api_key = SucuriScanRequest::post(':manual_api_key')) {
-            SucuriScanAPI::setPluginKey($api_key, true);
-            SucuriScanEvent::schedule_task();
-            SucuriScanEvent::report_info_event('Sucuri API key was added manually.');
-        }
-
-        // Remove API key from the local storage.
-        if (SucuriScanRequest::post(':remove_api_key') !== false) {
-            SucuriScanAPI::setPluginKey('');
-            wp_clear_scheduled_hook('sucuriscan_scheduled_scan');
-            SucuriScanEvent::report_critical_event('Sucuri API key was deleted.');
-            SucuriScanEvent::notify_event('plugin_change', 'Sucuri API key removed');
-        }
-
         // Enable or disable the filesystem scanner.
         if ($fs_scanner = SucuriScanRequest::post(':fs_scanner', '(en|dis)able')) {
             $action_d = $fs_scanner . 'd';
@@ -12923,6 +12908,33 @@ function sucuriscan_settings_general_apikey($nonce)
     $display_manual_key_form = (bool) (SucuriScanRequest::post(':recover_key') !== false);
 
     if ($nonce) {
+        if (!empty($_POST)) {
+            $fpath = SucuriScanOption::optionsFilePath();
+
+            if (!is_writable($fpath)) {
+                SucuriScanInterface::error(
+                    'Storage is not writable: <code>'
+                    . $fpath . '</code>'
+                );
+            }
+        }
+
+        // Remove API key from the local storage.
+        if (SucuriScanRequest::post(':remove_api_key') !== false) {
+            SucuriScanAPI::setPluginKey('');
+            wp_clear_scheduled_hook('sucuriscan_scheduled_scan');
+            SucuriScanEvent::report_critical_event('Sucuri API key was deleted.');
+            SucuriScanEvent::notify_event('plugin_change', 'Sucuri API key removed');
+        }
+
+        // Save API key after it was recovered by the administrator.
+        if ($api_key = SucuriScanRequest::post(':manual_api_key')) {
+            SucuriScanAPI::setPluginKey($api_key, true);
+            SucuriScanEvent::schedule_task();
+            SucuriScanEvent::report_info_event('Sucuri API key was added manually.');
+        }
+
+        // Generate new API key from the API service.
         if (SucuriScanRequest::post(':plugin_api_key') !== false) {
             $user_id = SucuriScanRequest::post(':setup_user');
             $user_obj = SucuriScan::get_user_by_id($user_id);
