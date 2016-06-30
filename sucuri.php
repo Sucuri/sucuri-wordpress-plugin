@@ -12568,7 +12568,10 @@ class SucuriScanBlockedUsers extends SucuriScanLastLogins
                 $blocked = $cache->getAll();
                 $cache_key = md5($username);
 
-                if (array_key_exists($cache_key, $blocked)) {
+                if (is_array($blocked)
+                    && is_string($cache_key)
+                    && array_key_exists($cache_key, $blocked)
+                ) {
                     $blocked[$cache_key]->last_attempt = time();
                     $cache->set($cache_key, $blocked[$cache_key]);
 
