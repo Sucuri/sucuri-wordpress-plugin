@@ -3157,14 +3157,21 @@ class SucuriScanOption extends SucuriScanRequest
          * If the option is not in the external file nor in the database, and
          * the name starts with the same prefix used by the plugin then we must
          * return the default value defined by the author.
+         *
+         * Note that if the plain text file is not writable the function should
+         * not delete the option from the database to keep backward compatibility
+         * with previous installations of the plugin.
          */
         if (function_exists('get_option')) {
             $value = get_option($option);
 
             if ($value !== false) {
                 if (strpos($option, 'sucuriscan_') === 0) {
-                    delete_option($option);
-                    self::update_option($option, $value);
+                    $written = self::update_option($option, $value);
+
+                    if ($written === true) {
+                        delete_option($option);
+                    }
                 }
 
                 return $value;
