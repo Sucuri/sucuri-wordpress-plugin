@@ -2946,7 +2946,7 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_notify_plugin_installed' => 'disabled',
             'sucuriscan_notify_plugin_updated' => 'disabled',
             'sucuriscan_notify_post_publication' => 'enabled',
-            'sucuriscan_notify_scan_checksums' => 'enabled',
+            'sucuriscan_notify_scan_checksums' => 'disabled',
             'sucuriscan_notify_settings_updated' => 'disabled',
             'sucuriscan_notify_success_login' => 'enabled',
             'sucuriscan_notify_theme_activated' => 'disabled',
