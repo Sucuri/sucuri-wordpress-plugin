@@ -2979,6 +2979,9 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_xhr_monitor' => 'disabled',
         );
 
+        $fpath = self::optionsFilePath();
+        $defaults['sucuriscan_datastore_path'] = dirname($fpath);
+
         return $defaults;
     }
 
