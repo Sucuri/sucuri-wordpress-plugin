@@ -14074,8 +14074,11 @@ function sucuriscan_settings_alert_events($nonce)
 
                     // Check that the option value was actually changed.
                     if ($current_value !== $option_value) {
-                        SucuriScanOption::update_option($alert_type, $option_value);
-                        $ucounter += 1;
+                        $written = SucuriScanOption::update_option($alert_type, $option_value);
+
+                        if ($written === true) {
+                            $ucounter += 1;
+                        }
                     }
                 }
             }
