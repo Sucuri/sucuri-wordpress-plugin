@@ -6197,7 +6197,7 @@ class SucuriScanAPI extends SucuriScanOption
         $response = self::apiCallCloudproxy('GET', $params);
 
         if (self::handleResponse($response)) {
-            return $response['body']->output;
+            return $response['output'];
         }
 
         return false;
@@ -6261,7 +6261,7 @@ class SucuriScanAPI extends SucuriScanOption
         $response = self::apiCallCloudproxy('GET', $params);
 
         if (self::handleResponse($response)) {
-            return $response['body_arr']['output'];
+            return $response['output'];
         }
 
         return false;
@@ -8756,8 +8756,13 @@ function sucuriscan_firewall_settings($api_key = '')
                     $css_scrollable = count($option_value) > 10 ? 'sucuriscan-list-as-table-scrollable' : '';
                     $html_list  = '<ul class="sucuriscan-list-as-table ' . $css_scrollable . '">';
 
-                    foreach ($option_value as $single_value) {
-                        $html_list .= '<li>' . SucuriScan::escape($single_value) . '</li>';
+                    if (!empty($option_value)) {
+                        foreach ($option_value as $single_value) {
+                            $single_value = SucuriScan::escape($single_value);
+                            $html_list .= '<li>' . SucuriScan::escape($single_value) . '</li>';
+                        }
+                    } else {
+                        $html_list .= '<li>(no data available)</li>';
                     }
 
                     $html_list .= '</ul>';
@@ -8904,35 +8909,37 @@ function sucuriscan_firewall_auditlogs_entries($entries = array())
         $counter = 0;
 
         foreach ($entries as $entry) {
-            $data_set = array();
-            $data_set['AccessLog.CssClass'] = ($counter % 2 == 0) ? '' : 'alternate';
+            if (array_key_exists('is_usable', $entry) && $entry['is_usable']) {
+                $data_set = array();
+                $data_set['AccessLog.CssClass'] = ($counter % 2 == 0) ? '' : 'alternate';
 
-            foreach ($attributes as $attr) {
-                // Generate variable name for the template pseudo-tags.
-                $keyname = str_replace('_', "\x20", $attr);
-                $keyname = ucwords($keyname);
-                $keyname = str_replace("\x20", '', $keyname);
-                $keyname = 'AccessLog.' . $keyname;
+                foreach ($attributes as $attr) {
+                    // Generate variable name for the template pseudo-tags.
+                    $keyname = str_replace('_', "\x20", $attr);
+                    $keyname = ucwords($keyname);
+                    $keyname = str_replace("\x20", '', $keyname);
+                    $keyname = 'AccessLog.' . $keyname;
 
-                // Assign and escape variable value before rendering.
-                if (array_key_exists($attr, $entry)) {
-                    $data_set[$keyname] = $entry[$attr];
-                } else {
-                    $data_set[$keyname] = '';
+                    // Assign and escape variable value before rendering.
+                    if (array_key_exists($attr, $entry)) {
+                        $data_set[$keyname] = $entry[$attr];
+                    } else {
+                        $data_set[$keyname] = '';
+                    }
+
+                    // Special cases to convert value to readable data.
+                    if ($attr == 'resource_path' && $data_set[$keyname] == '/') {
+                        $data_set[$keyname] = '/ (root of the website)';
+                    } elseif ($attr == 'http_referer' && $data_set[$keyname] == '-') {
+                        $data_set[$keyname] = '- (no referer)';
+                    } elseif ($attr == 'request_country_name' && $data_set[$keyname] == '') {
+                        $data_set[$keyname] = 'Anonymous';
+                    }
                 }
 
-                // Special cases to convert value to readable data.
-                if ($attr == 'resource_path' && $data_set[$keyname] == '/') {
-                    $data_set[$keyname] = '/ (root of the website)';
-                } elseif ($attr == 'http_referer' && $data_set[$keyname] == '-') {
-                    $data_set[$keyname] = '- (no referer)';
-                } elseif ($attr == 'request_country_name' && $data_set[$keyname] == '') {
-                    $data_set[$keyname] = 'Anonymous';
-                }
+                $output .= SucuriScanTemplate::getSnippet('firewall-auditlogs', $data_set);
+                $counter++;
             }
-
-            $output .= SucuriScanTemplate::getSnippet('firewall-auditlogs', $data_set);
-            $counter++;
         }
     }
 
