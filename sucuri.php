@@ -269,6 +269,11 @@ if (defined('SUCURISCAN')) {
         'false' => 'Stop peer\'s cert verification',
     );
 
+    $sucuriscan_api_handlers = array(
+        'curl' => 'Curl - libcurl',
+        'socket' => 'Socket - fsockopen',
+    );
+
     $sucuriscan_no_notices_in = array(
         /* Value of the page parameter to ignore. */
     );
@@ -2893,6 +2898,7 @@ class SucuriScanOption extends SucuriScanRequest
         $defaults = array(
             'sucuriscan_account' => '',
             'sucuriscan_addr_header' => 'HTTP_X_SUCURI_CLIENTIP',
+            'sucuriscan_api_handler' => 'curl',
             'sucuriscan_api_key' => false,
             'sucuriscan_api_protocol' => 'https',
             'sucuriscan_api_service' => 'enabled',
@@ -5236,7 +5242,30 @@ class SucuriScanAPI extends SucuriScanOption
      * @param  array  $args   Request arguments like the timeout, headers, cookies, etc.
      * @return array          Response object after the HTTP request is executed.
      */
-    private static function apiCall($url = '', $method = 'GET', $params = array(), $args = array())
+    public static function apiCall($url = '', $method = 'GET', $params = array(), $args = array())
+    {
+        if ($url && ($method === 'GET' || $method === 'POST')) {
+            $handler = SucuriScanOption::get_option(':api_handler');
+
+            if (!function_exists('curl_init') || $handler === 'socket') {
+                $output = self::apiCallSocket($url, $method, $params, $args);
+            } else {
+                $output = self::apiCallCurl($url, $method, $params, $args);
+            }
+
+            $result = @json_decode($output, true);
+
+            if ($result) {
+                return $result;
+            }
+
+            return $output;
+        }
+
+        return false;
+    }
+
+    private static function apiCallCurl($url = '', $method = 'GET', $params = array(), $args = array())
     {
         if ($url
             && function_exists('curl_init')
@@ -5293,13 +5322,99 @@ class SucuriScanAPI extends SucuriScanOption
                 && $headers['http_code'] === 200
                 && !empty($output)
             ) {
-                $result = @json_decode($output, true);
+                return $output;
+            }
+        }
 
-                if ($result) {
-                    return $result;
+        return false;
+    }
+
+    private static function apiCallSocket($url = '', $method = 'GET', $params = array(), $args = array())
+    {
+        if (function_exists('fsockopen')) {
+            $url = self::apiUrlProtocol($url);
+            $timeout = self::requestTimeout();
+
+            if (is_array($args) && isset($args['timeout'])) {
+                $timeout = $args['timeout'];
+            }
+
+            // Add random request parameter to avoid request reset.
+            if (!empty($params) && !array_key_exists('time', $params)) {
+                $params['time'] = time();
+            }
+
+            if ($method === 'GET'
+                && is_array($params)
+                && !empty($params)
+            ) {
+                $url .= '?' . self::buildQuery($params);
+            }
+
+            $url_parts = parse_url($url);
+
+            if (is_array($url_parts)
+                && array_key_exists('host', $url_parts)
+                && array_key_exists('scheme', $url_parts)
+            ) {
+                $host = $url_parts['host'];
+                $path = '/';
+                $port = 80;
+
+                if ($url_parts['scheme'] === 'https') {
+                    $host = sprintf('ssl://%s', $url_parts['host']);
+                    $port = 443;
                 }
 
-                return $output;
+                if (array_key_exists('path', $url_parts)) {
+                    $path = $url_parts['path'];
+                }
+
+                if (array_key_exists('query', $url_parts)) {
+                    $path .= '?' . $url_parts['query'];
+                }
+
+                $socket = fsockopen($host, $port, $errno, $errstr, $timeout);
+
+                if ($socket) {
+                    $result = '';
+                    $out = sprintf("%s %s HTTP/1.1\r\n", $method, $path);
+                    $out .= "Accept: */*\r\n";
+                    $out .= sprintf("Host: %s\r\n", $url_parts['host']);
+                    $out .= sprintf("User-Agent: %s\r\n", self::userAgent());
+                    $out .= "Connection: Close\r\n";
+
+                    if ($method === 'POST') {
+                        $query = self::buildQuery($params);
+                        $out .= sprintf("Content-Length: %s\r\n", strlen($query));
+                        $out .= "Content-Type: application/x-www-form-urlencoded; charset=utf-8\r\n";
+                        $out .= "\r\n" . $query;
+                    }
+
+                    fwrite($socket, $out . "\r\n");
+
+                    while (!feof($socket)) {
+                        $result .= fgets($socket, 128);
+                    }
+
+                    fclose($socket);
+
+                    $parts = explode("\r\n\r\n", $result, 2);
+
+                    if (count($parts) === 2) {
+                        $headers = $parts[0];
+                        $body = $parts[1];
+
+                        if (strpos($headers, 'Server: Sucuri/Cloudproxy') !== false) {
+                            $first = strpos($body, '{');
+                            $last = strrpos($body, '}') - $first;
+                            $body = substr($body, $first, $last + 1);
+                            $body = preg_replace('/\r\n[a-z0-9]{4}\r\n/', '', $body);
+                        }
+
+                        return $body;
+                    }
+                }
             }
         }
 
@@ -14019,6 +14134,7 @@ function sucuriscan_settings_apiservice($nonce)
     $params['SettingsSection.ApiStatus'] = sucuriscan_settings_apiservice_status($nonce);
     $params['SettingsSection.ApiProxy'] = sucuriscan_settings_apiservice_proxy($nonce);
     $params['SettingsSection.ApiSSL'] = sucuriscan_settings_apiservice_ssl($nonce);
+    $params['SettingsSection.ApiHandler'] = sucuriscan_settings_apiservice_handler($nonce);
     $params['SettingsSection.ApiTimeout'] = sucuriscan_settings_apiservice_timeout($nonce);
     $params['SettingsSection.ApiProtocol'] = sucuriscan_settings_apiservice_https($nonce);
 
@@ -14140,6 +14256,39 @@ function sucuriscan_settings_apiservice_ssl($nonce)
     }
 
     return SucuriScanTemplate::getSection('settings-apiservice-ssl', $params);
+}
+
+function sucuriscan_settings_apiservice_handler($nonce)
+{
+    global $sucuriscan_api_handlers;
+
+    $params = array();
+
+    // Update the configuration for the SSL certificate verification.
+    if ($nonce) {
+        $api_handler = SucuriScanRequest::post(':api_handler');
+
+        if ($api_handler) {
+            if (array_key_exists($api_handler, $sucuriscan_api_handlers)) {
+                $message = 'API request handler set to <code>' . $api_handler . '</code>';
+
+                SucuriScanOption::update_option(':api_handler', $api_handler);
+                SucuriScanEvent::report_warning_event($message);
+                SucuriScanEvent::notify_event('plugin_change', $message);
+                SucuriScanInterface::info($message);
+            } else {
+                SucuriScanInterface::error('Invalid value for the API request handler.');
+            }
+        }
+    }
+
+    $api_handler = SucuriScanOption::get_option(':api_handler');
+    $params['ApiHandlerOptions'] = SucuriScanTemplate::selectOptions(
+        $sucuriscan_api_handlers,
+        $api_handler
+    );
+
+    return SucuriScanTemplate::getSection('settings-apiservice-handler', $params);
 }
 
 function sucuriscan_settings_apiservice_timeout($nonce)
