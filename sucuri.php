@@ -5223,6 +5223,10 @@ class SucuriScanAPI extends SucuriScanOption
             $url = self::apiUrlProtocol($url);
             $timeout = self::requestTimeout();
 
+            if (is_array($args) && isset($args['timeout'])) {
+                $timeout = $args['timeout'];
+            }
+
             // Add random request parameter to avoid request reset.
             if (!empty($params) && !array_key_exists('time', $params)) {
                 $params['time'] = time();
