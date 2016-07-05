@@ -5454,40 +5454,20 @@ class SucuriScanAPI extends SucuriScanOption
      */
     private static function handleResponse($response = array(), $enqueue = true)
     {
-        $error_msg = '';
-
-        if ($response) {
-            if ($response['body'] instanceof stdClass) {
-                if (isset($response['body']->status)) {
-                    if ($response['body']->status == 1) {
-                        return true;
-                    } else {
-                        return self::handleErrorResponse($response, $enqueue);
-                    }
-                } else {
-                    $error_msg = 'Could not determine the status of an API call.';
-                }
-            } else {
-                $message = 'non JSON-encoded response.';
-
-                if (isset($response['response'])
-                    && isset($response['response']['message'])
-                    && isset($response['response']['code'])
-                    && $response['response']['code'] !== 200
-                ) {
-                    $message = sprintf(
-                        '(%s) %s',
-                        $response['response']['code'],
-                        $response['response']['message']
-                    );
-                }
-
-                $error_msg = 'Malformed API response: ' . $message;
+        if ($response !== false) {
+            if (is_array($response)
+                && array_key_exists('status', $response)
+                && intval($response['status']) === 1
+            ) {
+                return true;
             }
-        }
 
-        if (!empty($error_msg) && $enqueue) {
-            SucuriScanInterface::error($error_msg);
+            if (is_array($response)
+                && array_key_exists('messages', $response)
+                && !empty($response['messages'])
+            ) {
+                return self::handleErrorResponse($response, $enqueue);
+            }
         }
 
         return false;
@@ -5526,81 +5506,66 @@ class SucuriScanAPI extends SucuriScanOption
      */
     private static function handleErrorResponse($response = array(), $enqueue = true)
     {
-        $action_message = 'Unknown error, there is no more information.';
+        $msg = 'Unknown error, there is no more information.';
 
-        // Check whether the message list is empty or not.
-        if (isset($response['body']->messages[0])) {
-            $action_message = $response['body']->messages[0] . '.';
-        }
-
-        // Keep a copy of the original API response message.
-        $raw_message = $action_message;
-
-        // Special response for invalid API keys.
-        if (stripos($raw_message, 'log file not found') !== false) {
-            SucuriScanOption::delete_option(':api_key');
-
-            $action_message .= ' This generally happens when you add an invalid API key, the'
-                . ' key will be deleted automatically to hide these warnings, if you want to'
-                . ' recover it go to the settings page and use the recover button to send the'
-                . ' key to your email address.';
-        }
-
-        // Special response for invalid CloudProxy API keys.
-        if (stripos($raw_message, 'wrong api key') !== false) {
-            SucuriScanOption::delete_option(':cloudproxy_apikey');
-            SucuriScanOption::setRevProxy('disable');
-            SucuriScanOption::setAddrHeader('REMOTE_ADDR');
-
-            $action_message .= ' The CloudProxy API key does not seems to be valid.';
-        }
-
-        // Special response for connection timeouts.
-        if ($enqueue === true
-            && array_key_exists('params', $response)
-            && array_key_exists('m', $response['params'])
-            && array_key_exists('time', $response['params'])
-            && @preg_match('/time(d\s)?out/', $raw_message)
+        if (is_array($response)
+            && array_key_exists('messages', $response)
+            && !empty($response['messages'])
         ) {
-            $action_message = ''; /* Empty the error message. */
-            $cache = new SucuriScanCache('auditqueue');
-            $cache_key = md5($response['params']['time']);
-            $cache_value = array(
-                'created_at' => $response['params']['time'],
-                'message' => $response['params']['m'],
-            );
-            $cache->add($cache_key, $cache_value);
-        }
+            $msg = implode(".\x20", $response['messages']);
+            $raw = $msg; /* Keep a copy of the original message. */
 
-        // Stop SSL peer verification on connection failures.
-        if (stripos($raw_message, 'no alternative certificate')
-            || stripos($raw_message, 'error setting certificate')
-            || stripos($raw_message, 'SSL connect error')
-        ) {
-            SucuriScanOption::update_option(':verify_ssl_cert', 'false');
+            // Special response for invalid API keys.
+            if (stripos($raw, 'log file not found') !== false) {
+                $key = SucuriScanOption::get_option(':api_key');
+                $msg .= '; this generally happens when you add an invalid API '
+                . 'key, the key will be deleted automatically to hide these w'
+                . 'arnings, if you want to recover it go to the settings page'
+                . ' and use the recover button to send the key to your email '
+                . 'address: ' . SucuriScan::escape($key);
 
-            $action_message .= 'There were some issues with the SSL certificate either in this'
-                . ' server or with the remote API service. The automatic verification of the'
-                . ' certificates has been deactivated to reduce the noise during the execution'
-                . ' of the HTTP requests.';
-        }
-
-        if (!empty($action_message)) {
-            if ($enqueue) {
-                SucuriScanInterface::error(
-                    sprintf(
-                        '(%d) %s: %s',
-                        SucuriScan::local_time(),
-                        ucwords($response['body']->action),
-                        $action_message
-                    )
-                );
+                SucuriScanOption::delete_option(':api_key');
             }
 
-            return false;
+            // Special response for invalid CloudProxy API keys.
+            if (stripos($raw, 'wrong api key') !== false) {
+                $key = SucuriScanOption::get_option(':cloudproxy_apikey');
+                $msg .= '; invalid CloudProxy API key: ' . SucuriScan::escape($key);
+
+                SucuriScanInterface::error($msg);
+                $msg = ''; /* Force premature error message. */
+
+                SucuriScanOption::delete_option(':cloudproxy_apikey');
+                SucuriScanOption::setAddrHeader('REMOTE_ADDR');
+                SucuriScanOption::setRevProxy('disable');
+            }
+
+            // Stop SSL peer verification on connection failures.
+            if (stripos($raw, 'no alternative certificate')
+                || stripos($raw, 'error setting certificate')
+                || stripos($raw, 'SSL connect error')
+            ) {
+                SucuriScanOption::update_option(':verify_ssl_cert', 'false');
+
+                $msg .= 'There were some issues with the SSL certificate eith'
+                . 'er in this server or with the remote API service. The auto'
+                . 'matic verification of the certificates has been deactivate'
+                . 'd to reduce the noise during the execution of the HTTP req'
+                . 'uests.';
+            }
+
+            // Check if the MX records as missing for API registration.
+            if (strpos($raw, 'Invalid email') !== false) {
+                $msg = 'Email has an invalid format, or the host '
+                . 'associated to the email has no MX records.';
+            }
         }
 
-        return true;
+        if (!empty($msg) && $enqueue) {
+            SucuriScanInterface::error($msg);
+        }
+
+        return false;
     }
 
     /**
@@ -5622,7 +5587,8 @@ class SucuriScanAPI extends SucuriScanOption
         ), false);
 
         if (self::handleResponse($response)) {
-            self::setPluginKey($response['body']->output->api_key);
+            self::setPluginKey($response['output']['api_key']);
+
             SucuriScanEvent::schedule_task();
             SucuriScanEvent::notify_event('plugin_change', 'Site registered and API key generated');
             SucuriScanInterface::info('The API key for your site was successfully generated and saved.');
@@ -5650,7 +5616,7 @@ class SucuriScanAPI extends SucuriScanOption
 
         if (self::handleResponse($response)) {
             SucuriScanEvent::notify_event('plugin_change', 'API key recovered for domain: ' . $clean_domain);
-            SucuriScanInterface::info($response['body']->output->message);
+            SucuriScanInterface::info($response['output']['message']);
 
             return true;
         }
@@ -5746,7 +5712,7 @@ class SucuriScanAPI extends SucuriScanOption
 
         // If success continue with the retrieval of the logs data.
         if (self::handleResponse($response)) {
-            return self::getLogs($response['body']->total_entries);
+            return self::getLogs($response['total_entries']);
         }
 
         return false;
@@ -5766,13 +5732,13 @@ class SucuriScanAPI extends SucuriScanOption
         ));
 
         if (self::handleResponse($response)) {
-            $response['body']->output_data = array();
+            $response['output_data'] = array();
             $log_pattern = '/^([0-9\-]+) ([0-9:]+) (\S+) : (.+)/';
             $extra_pattern = '/(.+ \(multiple entries\):) (.+)/';
             $generic_pattern = '/^@?([A-Z][a-z]{3,7}): ([^;]+; )?(.+)/';
             $auth_pattern = '/^User authentication (succeeded|failed): ([^<;]+)/';
 
-            foreach ($response['body']->output as $log) {
+            foreach ($response['output'] as $log) {
                 if (@preg_match($log_pattern, $log, $log_match)) {
                     $log_data = array(
                         'event' => 'notice',
@@ -5841,11 +5807,11 @@ class SucuriScanAPI extends SucuriScanOption
                         $log_data['file_list_count'] = count($log_data['file_list']);
                     }
 
-                    $response['body']->output_data[] = $log_data;
+                    $response['output_data'][] = $log_data;
                 }
             }
 
-            return $response['body'];
+            return $response;
         }
 
         return false;
@@ -5896,10 +5862,10 @@ class SucuriScanAPI extends SucuriScanOption
     {
         $audit_logs = self::getLogs($lines);
 
-        if ($audit_logs instanceof stdClass
-            && property_exists($audit_logs, 'total_entries')
-            && property_exists($audit_logs, 'output_data')
-            && !empty($audit_logs->output_data)
+        if (is_array($audit_logs)
+            && array_key_exists('total_entries', $audit_logs)
+            && array_key_exists('output_data', $audit_logs)
+            && !empty($audit_logs['output_data'])
         ) {
             // Data structure that will be returned.
             $report = array(
@@ -5924,7 +5890,7 @@ class SucuriScanAPI extends SucuriScanOption
             }
 
             // Collect information for each report chart.
-            foreach ($audit_logs->output_data as $event) {
+            foreach ($audit_logs['output_data'] as $event) {
                 $report['total_events'] += 1;
 
                 // Increment the number of events for this event type.
@@ -6174,12 +6140,7 @@ class SucuriScanAPI extends SucuriScanOption
                     $data_set['malware_docs'] = $match[2];
                 }
 
-                $payload = trim($malware_parts[1]);
-                $payload = html_entity_decode($payload);
-
-                if (@preg_match('/<div id=\'HiddenDiv\'>(.+)<\/div>/', $payload, $match)) {
-                    $data_set['malware_payload'] = trim($match[1]);
-                }
+                $data_set['malware_payload'] = trim($malware_parts[1]);
             }
 
             return $data_set;
@@ -6199,7 +6160,7 @@ class SucuriScanAPI extends SucuriScanOption
         $pattern = self::secret_key_pattern();
         $response = self::apiCall('sucuri://api.wordpress.org/secret-key/1.1/salt/', 'GET');
 
-        if ($response && @preg_match_all($pattern, $response['body'], $match)) {
+        if ($response && @preg_match_all($pattern, $response, $match)) {
             $new_keys = array();
 
             foreach ($match[1] as $i => $value) {
@@ -6233,26 +6194,15 @@ class SucuriScanAPI extends SucuriScanOption
         );
 
         if ($response) {
-            if ($response['body'] instanceof stdClass) {
-                $json_data = $response['body'];
-            } else {
-                $json_data = @json_decode($response['body']);
-            }
-
-            if (isset($json_data->checksums)
-                && !empty($json_data->checksums)
+            if (array_key_exists('checksums', $response)
+                && !empty($response['checksums'])
             ) {
-                if (count((array) $json_data->checksums) <= 1
-                    && property_exists($json_data->checksums, $version)
+                if (count((array) $response['checksums']) <= 1
+                    && array_key_exists($version, $response['checksums'])
                 ) {
-                    $checksums = $json_data->checksums->{$version};
+                    return $response['checksums'][$version];
                 } else {
-                    $checksums = $json_data->checksums;
-                }
-
-                // Check whether the list of file is an object.
-                if ($checksums instanceof stdClass) {
-                    return (array) $checksums;
+                    return $response['checksums'];
                 }
             }
         }
@@ -6378,11 +6328,8 @@ class SucuriScanAPI extends SucuriScanOption
             $url = sprintf('sucuri://api.wordpress.org/plugins/info/1.0/%s.json', $plugin);
             $response = self::apiCall($url, 'GET');
 
-            if ($response
-                && array_key_exists('body', $response)
-                && $response['body'] instanceof stdClass
-            ) {
-                return $response['body'];
+            if ($response) {
+                return $response;
             }
         }
 
@@ -6412,13 +6359,8 @@ class SucuriScanAPI extends SucuriScanOption
             $url = sprintf('sucuri://core.svn.wordpress.org/tags/%s/%s', $version, $filepath);
             $response = self::apiCall($url, 'GET');
 
-            if ($response
-                && isset($response['headers'])
-                && isset($response['headers']['content-length'])
-                && $response['headers']['content-length'] > 0
-                && is_string($response['body'])
-            ) {
-                return $response['body'];
+            if ($response) {
+                return $response;
             }
         }
 
@@ -7820,6 +7762,20 @@ class SucuriScanInterface
 
         // Display the HTML notice to the current user.
         if ($display_notice === true && !empty($message)) {
+            if (defined('SUCURISCAN_THROW_EXCEPTIONS')
+                && SUCURISCAN_THROW_EXCEPTIONS === true
+            ) {
+                $number = (string) crc32($type);
+                $code = (int) substr($number, 0, 3);
+                $message = str_replace(
+                    '<b>Sucuri:</b>',
+                    ($type === 'error' ? 'Error:' : 'Info:'),
+                    $message
+                );
+
+                throw new Exception($message, $code);
+            }
+
             echo SucuriScanTemplate::getSection(
                 'notification-admin',
                 array(
