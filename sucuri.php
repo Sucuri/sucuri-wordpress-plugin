@@ -5048,6 +5048,29 @@ class SucuriScanAPI extends SucuriScanOption
     }
 
     /**
+     * Alternative to the built-in PHP function http_build_query.
+     *
+     * Some PHP installations with different encoding or with different language
+     * (German for example) might produce an unwanted behavior when building an
+     * URL, because of this we decided to write our own URL query builder to
+     * keep control of the output.
+     *
+     * @param  array  $params May be an array or object containing properties.
+     * @return string         Returns a URL-encoded string.
+     */
+    private static function buildQuery($params = array())
+    {
+        $trail = '';
+
+        foreach ($params as $param => $value) {
+            $value = urlencode($value);
+            $trail .= sprintf('&%s=%s', $param, $value);
+        }
+
+        return substr($trail, 1);
+    }
+
+    /**
      * Assign the communication protocol.
      *
      * @see https://developer.wordpress.org/reference/functions/wp_http_supports/
@@ -5236,7 +5259,7 @@ class SucuriScanAPI extends SucuriScanOption
                 && is_array($params)
                 && !empty($params)
             ) {
-                $url .= '?' . http_build_query($params);
+                $url .= '?' . self::buildQuery($params);
             }
 
             curl_setopt($curl, CURLOPT_URL, $url);
@@ -5250,7 +5273,7 @@ class SucuriScanAPI extends SucuriScanOption
 
             if ($method === 'POST') {
                 curl_setopt($curl, CURLOPT_POST, true);
-                curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($params));
+                curl_setopt($curl, CURLOPT_POSTFIELDS, self::buildQuery($params));
             }
 
             if (self::verifySslCert()) {
@@ -10084,11 +10107,11 @@ function sucuriscan_audit_logs_ajax()
 
         if ($audit_logs) {
             $counter_i = 0;
-            $total_items = count($audit_logs->output_data);
+            $total_items = count($audit_logs['output_data']);
             $iterator_start = ($page_number - 1) * $max_per_page;
 
-            if (property_exists($audit_logs, 'total_entries')
-                && $audit_logs->total_entries >= $max_per_page
+            if (array_key_exists('total_entries', $audit_logs)
+                && $audit_logs['total_entries'] >= $max_per_page
                 && SucuriScanOption::is_disabled(':audit_report')
             ) {
                 $response['enable_report'] = true;
@@ -10099,8 +10122,8 @@ function sucuriscan_audit_logs_ajax()
                     break;
                 }
 
-                if (isset($audit_logs->output_data[ $i ])) {
-                    $audit_log = $audit_logs->output_data[ $i ];
+                if (isset($audit_logs['output_data'][ $i ])) {
+                    $audit_log = $audit_logs['output_data'][ $i ];
 
                     $css_class = ($counter_i % 2 === 0) ? '' : 'alternate';
                     $snippet_data = array(
