@@ -4,7 +4,7 @@ Plugin Name: Sucuri Security - Auditing, Malware Scanner and Hardening
 Plugin URI: https://wordpress.sucuri.net/
 Description: The <a href="https://sucuri.net/" target="_blank">Sucuri</a> plugin provides the website owner the best Activity Auditing, SiteCheck Remote Malware Scanning, Effective Security Hardening and Post-Hack features. SiteCheck will check for malware, spam, blacklisting and other security issues like .htaccess redirects, hidden eval code, etc. The best thing about it is it's completely free.
 Author: Sucuri, INC
-Version: 1.7.17
+Version: 1.7.19
 Author URI: https://sucuri.net
 */
 
@@ -65,7 +65,7 @@ define('SUCURISCAN', 'sucuriscan');
 /**
  * Current version of the plugin's code.
  */
-define('SUCURISCAN_VERSION', '1.7.17');
+define('SUCURISCAN_VERSION', '1.7.19');
 
 /**
  * The name of the Sucuri plugin main file.
@@ -1847,6 +1847,8 @@ class SucuriScanFileInfo extends SucuriScan
             }
 
             if (is_array($tree) && !empty($tree)) {
+                sort($tree); /* Sort in alphabetic order */
+
                 return array_map(array('SucuriScan', 'fixPath'), $tree);
             }
         }
@@ -2165,12 +2167,15 @@ class SucuriScanFileInfo extends SucuriScan
             foreach ($dir_tree as $filepath) {
                 $dir_path = dirname($filepath);
 
-                if (is_array($dirs)
-                    && !in_array($dir_path, $dirs)
-                    && array_key_exists('directories', $this->ignored_directories)
-                    && is_array($this->ignored_directories['directories'])
-                    && !in_array($dir_path, $this->ignored_directories['directories'])
-                ) {
+                if (!in_array($dir_path, $dirs)) {
+                    if (is_array($this->ignored_directories)
+                        && array_key_exists('directories', $this->ignored_directories)
+                        && is_array($this->ignored_directories['directories'])
+                        && in_array($dir_path, $this->ignored_directories['directories'])
+                    ) {
+                        continue;
+                    }
+
                     $dirs[] = $dir_path;
                 }
             }
@@ -5076,6 +5081,22 @@ class SucuriScanAPI extends SucuriScanOption
         return substr($trail, 1);
     }
 
+    private static function canCurlFollowRedirection()
+    {
+        $safe_mode = ini_get('safe_mode');
+        $open_basedir = ini_get('open_basedir');
+
+        if ($safe_mode === '1' || $safe_mode === 'On') {
+            return false;
+        }
+
+        if (!empty($open_basedir)) {
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * Assign the communication protocol.
      *
@@ -5298,8 +5319,11 @@ class SucuriScanAPI extends SucuriScanOption
             curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
             curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $timeout);
             curl_setopt($curl, CURLOPT_TIMEOUT, $timeout * 2);
-            curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
-            curl_setopt($curl, CURLOPT_MAXREDIRS, 2);
+
+            if (self::canCurlFollowRedirection()) {
+                curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+                curl_setopt($curl, CURLOPT_MAXREDIRS, 2);
+            }
 
             if ($method === 'POST') {
                 curl_setopt($curl, CURLOPT_POST, true);
