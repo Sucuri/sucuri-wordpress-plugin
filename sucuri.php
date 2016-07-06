@@ -4,7 +4,7 @@ Plugin Name: Sucuri Security - Auditing, Malware Scanner and Hardening
 Plugin URI: https://wordpress.sucuri.net/
 Description: The <a href="https://sucuri.net/" target="_blank">Sucuri</a> plugin provides the website owner the best Activity Auditing, SiteCheck Remote Malware Scanning, Effective Security Hardening and Post-Hack features. SiteCheck will check for malware, spam, blacklisting and other security issues like .htaccess redirects, hidden eval code, etc. The best thing about it is it's completely free.
 Author: Sucuri, INC
-Version: 1.7.19
+Version: 1.8.0
 Author URI: https://sucuri.net
 */
 
@@ -65,7 +65,7 @@ define('SUCURISCAN', 'sucuriscan');
 /**
  * Current version of the plugin's code.
  */
-define('SUCURISCAN_VERSION', '1.7.19');
+define('SUCURISCAN_VERSION', '1.8.0');
 
 /**
  * The name of the Sucuri plugin main file.
@@ -74,8 +74,14 @@ define('SUCURISCAN_PLUGIN_FILE', 'sucuri.php');
 
 /**
  * The name of the folder where the plugin's files will be located.
+ *
+ * Note that we are using the constant FILE instead of DIR because some
+ * installations of PHP are either outdated or are not supporting the access to
+ * that definition, to keep things simple we will select the name of the
+ * directory name of the current file, then select the base name of that
+ * directory.
  */
-define('SUCURISCAN_PLUGIN_FOLDER', basename(__DIR__));
+define('SUCURISCAN_PLUGIN_FOLDER', basename(dirname(__FILE__)));
 
 /**
  * The fullpath where the plugin's files will be located.
@@ -3151,14 +3157,21 @@ class SucuriScanOption extends SucuriScanRequest
          * If the option is not in the external file nor in the database, and
          * the name starts with the same prefix used by the plugin then we must
          * return the default value defined by the author.
+         *
+         * Note that if the plain text file is not writable the function should
+         * not delete the option from the database to keep backward compatibility
+         * with previous installations of the plugin.
          */
         if (function_exists('get_option')) {
             $value = get_option($option);
 
             if ($value !== false) {
                 if (strpos($option, 'sucuriscan_') === 0) {
-                    delete_option($option);
-                    self::update_option($option, $value);
+                    $written = self::update_option($option, $value);
+
+                    if ($written === true) {
+                        delete_option($option);
+                    }
                 }
 
                 return $value;
@@ -12568,7 +12581,10 @@ class SucuriScanBlockedUsers extends SucuriScanLastLogins
                 $blocked = $cache->getAll();
                 $cache_key = md5($username);
 
-                if (array_key_exists($cache_key, $blocked)) {
+                if (is_array($blocked)
+                    && is_string($cache_key)
+                    && array_key_exists($cache_key, $blocked)
+                ) {
                     $blocked[$cache_key]->last_attempt = time();
                     $cache->set($cache_key, $blocked[$cache_key]);
 
@@ -12636,21 +12652,6 @@ function sucuriscan_settings_form_submissions($page_nonce = null)
     }
 
     if ($page_nonce) {
-        // Save API key after it was recovered by the administrator.
-        if ($api_key = SucuriScanRequest::post(':manual_api_key')) {
-            SucuriScanAPI::setPluginKey($api_key, true);
-            SucuriScanEvent::schedule_task();
-            SucuriScanEvent::report_info_event('Sucuri API key was added manually.');
-        }
-
-        // Remove API key from the local storage.
-        if (SucuriScanRequest::post(':remove_api_key') !== false) {
-            SucuriScanAPI::setPluginKey('');
-            wp_clear_scheduled_hook('sucuriscan_scheduled_scan');
-            SucuriScanEvent::report_critical_event('Sucuri API key was deleted.');
-            SucuriScanEvent::notify_event('plugin_change', 'Sucuri API key removed');
-        }
-
         // Enable or disable the filesystem scanner.
         if ($fs_scanner = SucuriScanRequest::post(':fs_scanner', '(en|dis)able')) {
             $action_d = $fs_scanner . 'd';
@@ -12923,6 +12924,33 @@ function sucuriscan_settings_general_apikey($nonce)
     $display_manual_key_form = (bool) (SucuriScanRequest::post(':recover_key') !== false);
 
     if ($nonce) {
+        if (!empty($_POST)) {
+            $fpath = SucuriScanOption::optionsFilePath();
+
+            if (!is_writable($fpath)) {
+                SucuriScanInterface::error(
+                    'Storage is not writable: <code>'
+                    . $fpath . '</code>'
+                );
+            }
+        }
+
+        // Remove API key from the local storage.
+        if (SucuriScanRequest::post(':remove_api_key') !== false) {
+            SucuriScanAPI::setPluginKey('');
+            wp_clear_scheduled_hook('sucuriscan_scheduled_scan');
+            SucuriScanEvent::report_critical_event('Sucuri API key was deleted.');
+            SucuriScanEvent::notify_event('plugin_change', 'Sucuri API key removed');
+        }
+
+        // Save API key after it was recovered by the administrator.
+        if ($api_key = SucuriScanRequest::post(':manual_api_key')) {
+            SucuriScanAPI::setPluginKey($api_key, true);
+            SucuriScanEvent::schedule_task();
+            SucuriScanEvent::report_info_event('Sucuri API key was added manually.');
+        }
+
+        // Generate new API key from the API service.
         if (SucuriScanRequest::post(':plugin_api_key') !== false) {
             $user_id = SucuriScanRequest::post(':setup_user');
             $user_obj = SucuriScan::get_user_by_id($user_id);
@@ -14779,11 +14807,16 @@ function sucuriscan_htaccess_is_standard($rules = false)
         }
     }
 
-    if (is_string($rules) && !empty($rules)) {
+    if (class_exists('WP_Rewrite')
+        && is_string($rules)
+        && !empty($rules)
+    ) {
         $rewrite = new WP_Rewrite();
         $standard = $rewrite->mod_rewrite_rules();
 
-        return (bool) (strpos($rules, $standard) !== false);
+        if (!empty($standard)) {
+            return (bool) (strpos($rules, $standard) !== false);
+        }
     }
 
     return false;
