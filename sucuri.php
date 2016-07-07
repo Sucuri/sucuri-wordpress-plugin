@@ -6220,7 +6220,7 @@ class SucuriScanAPI extends SucuriScanOption
         $response = self::apiCallCloudproxy('GET', $params);
 
         if (self::handleResponse($response)) {
-            return $response['body'];
+            return $response;
         }
 
         return false;
@@ -9037,13 +9037,13 @@ function sucuriscan_firewall_clearcache($nonce)
             $response = SucuriScanAPI::clearCloudproxyCache();
 
             if ($response) {
-                if (isset($response->messages[0])) {
+                if (isset($response['messages'][0])) {
                     // Clear W3 Total Cache if it is installed.
                     if (function_exists('w3tc_flush_all')) {
                         w3tc_flush_all();
                     }
 
-                    SucuriScanInterface::info($response->messages[0]);
+                    SucuriScanInterface::info($response['messages'][0]);
                 } else {
                     SucuriScanInterface::error('Could not clear the cache of your site, try later again.');
                 }
