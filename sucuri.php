@@ -2869,6 +2869,10 @@ class SucuriScanCache extends SucuriScan
     {
         $finfo = $this->getDatastoreContent();
 
+        if (array_key_exists('entries', $finfo)) {
+            $finfo['entries'] = array();
+        }
+
         return $this->saveNewEntries($finfo);
     }
 }
