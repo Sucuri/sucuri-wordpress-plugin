@@ -2946,7 +2946,7 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_notify_plugin_installed' => 'disabled',
             'sucuriscan_notify_plugin_updated' => 'disabled',
             'sucuriscan_notify_post_publication' => 'enabled',
-            'sucuriscan_notify_scan_checksums' => 'enabled',
+            'sucuriscan_notify_scan_checksums' => 'disabled',
             'sucuriscan_notify_settings_updated' => 'disabled',
             'sucuriscan_notify_success_login' => 'enabled',
             'sucuriscan_notify_theme_activated' => 'disabled',
@@ -2978,6 +2978,9 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_verify_ssl_cert' => 'false',
             'sucuriscan_xhr_monitor' => 'disabled',
         );
+
+        $fpath = self::optionsFilePath();
+        $defaults['sucuriscan_datastore_path'] = dirname($fpath);
 
         return $defaults;
     }
@@ -6194,7 +6197,7 @@ class SucuriScanAPI extends SucuriScanOption
         $response = self::apiCallCloudproxy('GET', $params);
 
         if (self::handleResponse($response)) {
-            return $response['body']->output;
+            return $response['output'];
         }
 
         return false;
@@ -6217,7 +6220,7 @@ class SucuriScanAPI extends SucuriScanOption
         $response = self::apiCallCloudproxy('GET', $params);
 
         if (self::handleResponse($response)) {
-            return $response['body'];
+            return $response;
         }
 
         return false;
@@ -6258,7 +6261,7 @@ class SucuriScanAPI extends SucuriScanOption
         $response = self::apiCallCloudproxy('GET', $params);
 
         if (self::handleResponse($response)) {
-            return $response['body_arr']['output'];
+            return $response['output'];
         }
 
         return false;
@@ -8753,8 +8756,13 @@ function sucuriscan_firewall_settings($api_key = '')
                     $css_scrollable = count($option_value) > 10 ? 'sucuriscan-list-as-table-scrollable' : '';
                     $html_list  = '<ul class="sucuriscan-list-as-table ' . $css_scrollable . '">';
 
-                    foreach ($option_value as $single_value) {
-                        $html_list .= '<li>' . SucuriScan::escape($single_value) . '</li>';
+                    if (!empty($option_value)) {
+                        foreach ($option_value as $single_value) {
+                            $single_value = SucuriScan::escape($single_value);
+                            $html_list .= '<li>' . SucuriScan::escape($single_value) . '</li>';
+                        }
+                    } else {
+                        $html_list .= '<li>(no data available)</li>';
                     }
 
                     $html_list .= '</ul>';
@@ -8901,35 +8909,37 @@ function sucuriscan_firewall_auditlogs_entries($entries = array())
         $counter = 0;
 
         foreach ($entries as $entry) {
-            $data_set = array();
-            $data_set['AccessLog.CssClass'] = ($counter % 2 == 0) ? '' : 'alternate';
+            if (array_key_exists('is_usable', $entry) && $entry['is_usable']) {
+                $data_set = array();
+                $data_set['AccessLog.CssClass'] = ($counter % 2 == 0) ? '' : 'alternate';
 
-            foreach ($attributes as $attr) {
-                // Generate variable name for the template pseudo-tags.
-                $keyname = str_replace('_', "\x20", $attr);
-                $keyname = ucwords($keyname);
-                $keyname = str_replace("\x20", '', $keyname);
-                $keyname = 'AccessLog.' . $keyname;
+                foreach ($attributes as $attr) {
+                    // Generate variable name for the template pseudo-tags.
+                    $keyname = str_replace('_', "\x20", $attr);
+                    $keyname = ucwords($keyname);
+                    $keyname = str_replace("\x20", '', $keyname);
+                    $keyname = 'AccessLog.' . $keyname;
 
-                // Assign and escape variable value before rendering.
-                if (array_key_exists($attr, $entry)) {
-                    $data_set[$keyname] = $entry[$attr];
-                } else {
-                    $data_set[$keyname] = '';
+                    // Assign and escape variable value before rendering.
+                    if (array_key_exists($attr, $entry)) {
+                        $data_set[$keyname] = $entry[$attr];
+                    } else {
+                        $data_set[$keyname] = '';
+                    }
+
+                    // Special cases to convert value to readable data.
+                    if ($attr == 'resource_path' && $data_set[$keyname] == '/') {
+                        $data_set[$keyname] = '/ (root of the website)';
+                    } elseif ($attr == 'http_referer' && $data_set[$keyname] == '-') {
+                        $data_set[$keyname] = '- (no referer)';
+                    } elseif ($attr == 'request_country_name' && $data_set[$keyname] == '') {
+                        $data_set[$keyname] = 'Anonymous';
+                    }
                 }
 
-                // Special cases to convert value to readable data.
-                if ($attr == 'resource_path' && $data_set[$keyname] == '/') {
-                    $data_set[$keyname] = '/ (root of the website)';
-                } elseif ($attr == 'http_referer' && $data_set[$keyname] == '-') {
-                    $data_set[$keyname] = '- (no referer)';
-                } elseif ($attr == 'request_country_name' && $data_set[$keyname] == '') {
-                    $data_set[$keyname] = 'Anonymous';
-                }
+                $output .= SucuriScanTemplate::getSnippet('firewall-auditlogs', $data_set);
+                $counter++;
             }
-
-            $output .= SucuriScanTemplate::getSnippet('firewall-auditlogs', $data_set);
-            $counter++;
         }
     }
 
@@ -9027,13 +9037,13 @@ function sucuriscan_firewall_clearcache($nonce)
             $response = SucuriScanAPI::clearCloudproxyCache();
 
             if ($response) {
-                if (isset($response->messages[0])) {
+                if (isset($response['messages'][0])) {
                     // Clear W3 Total Cache if it is installed.
                     if (function_exists('w3tc_flush_all')) {
                         w3tc_flush_all();
                     }
 
-                    SucuriScanInterface::info($response->messages[0]);
+                    SucuriScanInterface::info($response['messages'][0]);
                 } else {
                     SucuriScanInterface::error('Could not clear the cache of your site, try later again.');
                 }
@@ -10884,19 +10894,19 @@ function sucuriscan_ignore_integrity_filepath($file_path = '')
     $ignore_files = array(
         '^sucuri-[0-9a-z\-]+\.php$',
         '^\S+-sucuri-db-dump-gzip-[0-9]{10}-[0-9a-z]{32}\.gz$',
-        '^favicon\.ico$',
+        '\.ico$',
         '^php\.ini$',
-        '^\.htaccess$',
+        '^\.(htaccess|htpasswd|ftpquota)$',
         '^wp-includes\/\.htaccess$',
         '^wp-admin\/setup-config\.php$',
         '^wp-(config|pass|rss|feed|register|atom|commentsrss2|rss2|rdf)\.php$',
         '^wp-content\/(themes|plugins)\/.+', // TODO: Add the popular themes/plugins integrity checks.
         '^sitemap\.xml($|\.gz)$',
-        '^readme\.html$',
+        '^readme(\.[a-z0-9]{32})?\.html$',
         '^(503|404)\.php$',
         '^500\.(shtml|php)$',
         '^40[0-9]\.shtml$',
-        '^([^\/]*)\.(pdf|css|txt)$',
+        '^([^\/]*)\.(pdf|css|txt|jpg|gif|png|jpeg)$',
         '^google[0-9a-z]{16}\.html$',
         '^pinterest-[0-9a-z]{5}\.html$',
         '(^|\/)error_log$',
@@ -14071,8 +14081,11 @@ function sucuriscan_settings_alert_events($nonce)
 
                     // Check that the option value was actually changed.
                     if ($current_value !== $option_value) {
-                        SucuriScanOption::update_option($alert_type, $option_value);
-                        $ucounter += 1;
+                        $written = SucuriScanOption::update_option($alert_type, $option_value);
+
+                        if ($written === true) {
+                            $ucounter += 1;
+                        }
                     }
                 }
             }

@@ -14,7 +14,7 @@
                 many other threats against your site.
             </p>
 
-            <div class="sucuriscan-inline-alert-info">
+            <div class="sucuriscan-inline-alert-info sucuriscan-%%SUCURI.Firewall.APIKeyFormVisibility%%">
                 <p>
                     Add your <a href="https://waf.sucuri.net/?settings&panel=api" target="_blank">
                     CloudProxy API key</a> in the form below to start communicating with the firewall

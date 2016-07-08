@@ -33,13 +33,20 @@
         <tr>
             <td colspan="5">
                 <p>
-                    <strong>Note.</strong> This is not a malware scanner but an integrity checker
-                    which is a completely different thing, if you want to check if your site is
-                    generating malicious code then use the <a href="%%SUCURI.URL.Scanner%%">malware
-                    scan</a> tool. If you see the text <em>"must be fixed manually"</em> in any of
-                    these files that means that they do not have write permissions so you can not
-                    fix them using this tool. Access the <a href="%%SUCURI.URL.Home%%">admin area
-                    </a> of your website to fix these files.
+                    <b>Note:</b> This is not a malware scanner but an integrity checker, if
+                    you want to check if your site is generating malicious code then use the
+                    <a href="%%SUCURI.URL.Scanner%%">malware scan</a> tool. If you see the
+                    text <em>"must be fixed manually"</em> in any of these files that means
+                    that they do not have write permissions so you can not fix them using
+                    this tool. Access the <a href="%%SUCURI.URL.Home%%">admin area</a> of
+                    your website to fix these files.
+                </p>
+
+                <p>
+                    <b>Note:</b> Disable the <em>"Receive email alerts for core integrity
+                    checks"</em> option from the "Alerts" panel located in the plugin'
+                    settings page to stop receiving these emails, but keep an eye on the
+                    flagged files to keep your website clean.
                 </p>
             </td>
         </tr>
