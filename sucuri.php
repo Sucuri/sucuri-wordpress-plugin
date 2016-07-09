@@ -13555,6 +13555,7 @@ function sucuriscan_settings_corefiles_cache($nonce)
     return SucuriScanTemplate::getSection('settings-corefiles-cache', $params);
 }
 
+if (!class_exists('SucuriScanSiteCheck')) {
 class SucuriScanSiteCheck extends SucuriScanSettings
 {
     public static function isEnabled()
@@ -13646,6 +13647,7 @@ class SucuriScanSiteCheck extends SucuriScanSettings
 
         return SucuriScanTemplate::getSection('settings-sitecheck-timeout', $params);
     }
+}
 }
 
 /**
