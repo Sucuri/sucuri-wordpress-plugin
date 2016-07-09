@@ -606,49 +606,9 @@ class SucuriScan
      */
     public static function datastore_folder_path($path = '')
     {
-        $default_dir = 'sucuri';
-        $abspath = self::fixPath(ABSPATH);
+        $datastore = SucuriScanOption::get_option(':datastore_path');
 
-        if (defined('SUCURI_DATA_STORAGE')
-            && file_exists(SUCURI_DATA_STORAGE)
-            && is_dir(SUCURI_DATA_STORAGE)
-        ) {
-            $datastore = SUCURI_DATA_STORAGE;
-        } else {
-            $datastore = SucuriScanOption::get_option(':datastore_path');
-        }
-
-        // Use the uploads folder by default.
-        if (empty($datastore)) {
-            $uploads_path = false;
-
-            // Multisite installations may have different paths.
-            if (function_exists('wp_upload_dir')) {
-                $upload_dir = wp_upload_dir();
-
-                if (isset($upload_dir['basedir'])) {
-                    $uploads_path = rtrim($upload_dir['basedir'], DIRECTORY_SEPARATOR);
-                }
-            }
-
-            if ($uploads_path === false) {
-                if (defined('WP_CONTENT_DIR')) {
-                    $uploads_path = implode(DIRECTORY_SEPARATOR, array(WP_CONTENT_DIR, 'uploads'));
-                } else {
-                    $uploads_path = implode(DIRECTORY_SEPARATOR, array($abspath, 'wp-content', 'uploads'));
-                }
-            }
-
-            $datastore = $uploads_path . DIRECTORY_SEPARATOR . $default_dir;
-            $datastore = self::fixPath($datastore);
-            SucuriScanOption::update_option(':datastore_path', $datastore);
-        }
-
-        // Keep consistency with the directory separator.
-        $final = $datastore . DIRECTORY_SEPARATOR . $path;
-        $final = self::fixPath($final);
-
-        return $final;
+        return self::fixPath($datastore . '/' . $path);
     }
 
     /**
@@ -2921,7 +2881,7 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_cloudproxy_apikey' => '',
             'sucuriscan_collect_wrong_passwords' => 'disabled',
             'sucuriscan_comment_monitor' => 'disabled',
-            'sucuriscan_datastore_path' => '',
+            'sucuriscan_datastore_path' => dirname(self::optionsFilePath()),
             'sucuriscan_dismiss_setup' => 'disabled',
             'sucuriscan_dns_lookups' => 'enabled',
             'sucuriscan_email_subject' => 'Sucuri Alert, :domain, :event',
@@ -2982,9 +2942,6 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_verify_ssl_cert' => 'false',
             'sucuriscan_xhr_monitor' => 'disabled',
         );
-
-        $fpath = self::optionsFilePath();
-        $defaults['sucuriscan_datastore_path'] = dirname($fpath);
 
         return $defaults;
     }
@@ -3065,7 +3022,10 @@ class SucuriScanOption extends SucuriScanRequest
      */
     public static function optionsFilePath()
     {
-        $folder = WP_CONTENT_DIR . '/uploads/sucuri';
+        $content_dir = defined('WP_CONTENT_DIR')
+            ? rtrim(WP_CONTENT_DIR, '/')
+            : ABSPATH . '/wp-content';
+        $folder = $content_dir . '/uploads/sucuri';
 
         if (defined('SUCURI_DATA_STORAGE')
             && file_exists(SUCURI_DATA_STORAGE)
@@ -3074,7 +3034,7 @@ class SucuriScanOption extends SucuriScanRequest
             $folder = SUCURI_DATA_STORAGE;
         }
 
-        return $folder . '/sucuri-settings.php';
+        return self::fixPath($folder . '/sucuri-settings.php');
     }
 
     /**
@@ -7827,35 +7787,20 @@ class SucuriScanInterface
             @mkdir($directory, 0755, true);
         }
 
-        if (@preg_match(';/uploads/$;', $directory)) {
-            SucuriScanOption::delete_option(':datastore_path');
-            SucuriScanInterface::error('Uploads directory must not be used as the data store path.');
-        } elseif (file_exists($directory)) {
+        if (file_exists($directory)) {
             // Create last-logins datastore file.
             sucuriscan_lastlogins_datastore_exists();
 
             // Create a htaccess file to deny access from all.
-            @file_put_contents(
-                $directory . '/.htaccess',
-                "Order Deny,Allow\nDeny from all\n",
-                LOCK_EX
-            );
+            if (!SucuriScanHardening::is_hardened($directory)) {
+                SucuriScanHardening::harden_directory($directory);
+            }
 
             // Create an index.html to avoid directory listing.
             @file_put_contents(
                 $directory . '/index.html',
                 '<!-- Prevent the directory listing. -->',
                 LOCK_EX
-            );
-        } else {
-            SucuriScanOption::delete_option(':datastore_path');
-            SucuriScanInterface::error(
-                'Data folder does not exists and could not be created. Try to <a href="' .
-                SucuriScanTemplate::getUrl('settings') . '">click this link</a> to see
-                if the plugin is able to fix this error automatically, if this message
-                reappears you will need to either change the location of the directory from
-                the plugin general settings page or create this directory manually and give
-                it write permissions: <code>' . $directory . '</code>'
             );
         }
     }
@@ -13026,47 +12971,53 @@ function sucuriscan_settings_general_apikey($nonce)
 function sucuriscan_settings_general_datastorage($nonce)
 {
     $params = array();
+    $files = array(
+        '', /* <root> */
+        'auditqueue',
+        'blockedusers',
+        'failedlogins',
+        'ignorescanning',
+        'integrity',
+        'lastlogins',
+        'oldfailedlogins',
+        'plugindata',
+        'settings',
+        'sitecheck',
+        'trustip',
+    );
 
-    // Update the datastore path (if the new directory exists).
-    if ($nonce) {
-        $directory = SucuriScanRequest::post(':datastore_path');
-
-        if ($directory) {
-            $current = SucuriScanOption::datastore_folder_path();
-
-            // Try to create the new directory (if possible).
-            if (!file_exists($directory)) {
-                @mkdir($directory, 0755, true);
-            }
-
-            // Check if the directory is writable and move all the logs.
-            if (file_exists($directory)) {
-                if (is_writable($directory)) {
-                    $message = 'Datastore path set to <code>' . $directory . '</code>';
-
-                    SucuriScanOption::update_option(':datastore_path', $directory);
-                    SucuriScanEvent::report_info_event($message);
-                    SucuriScanEvent::notify_event('plugin_change', $message);
-                    SucuriScanInterface::info($message);
-
-                    if (file_exists($current)) {
-                        $newpath = SucuriScanOption::datastore_folder_path();
-
-                        // Some file systems do not work correctly with trailing separators.
-                        $current = rtrim($current, '/');
-                        $newpath = rtrim($newpath, '/');
-                        @rename($current, $newpath);
-                    }
-                } else {
-                    SucuriScanInterface::error('The new directory path is not writable.');
-                }
-            } else {
-                SucuriScanInterface::error('The directory path specified does not exists.');
-            }
-        }
-    }
-
+    $counter = 0;
+    $params['DataStorage.Files'] = '';
     $params['DatastorePath'] = SucuriScanOption::get_option(':datastore_path');
+
+    foreach ($files as $name) {
+        $counter++;
+        $fname = ($name ? sprintf('sucuri-%s.php', $name) : '');
+        $fpath = SucuriScan::datastore_folder_path($fname);
+        $exists = (file_exists($fpath) ? 'Yes' : 'No');
+        $iswritable = (is_writable($fpath) ? 'Yes' : 'No');
+        $css_class = ($counter % 2 === 0) ? 'alternate' : '';
+        $disabled = 'disabled="disabled"';
+
+        if ($exists === 'Yes' && $iswritable === 'Yes') {
+            $disabled = ''; /* Allow file deletion */
+        }
+
+        // Remove unnecessary parts from the file path.
+        $fpath = str_replace(ABSPATH, '/', $fpath);
+
+        $params['DataStorage.Files'] .= SucuriScanTemplate::getSnippet(
+            'settings-datastorage-files',
+            array(
+                'DataStorage.CssClass' => $css_class,
+                'DataStorage.Fname' => $fname,
+                'DataStorage.Fpath' => $fpath,
+                'DataStorage.Exists' => $exists,
+                'DataStorage.IsWritable' => $iswritable,
+                'DataStorage.DisabledInput' => $disabled,
+            )
+        );
+    }
 
     return SucuriScanTemplate::getSection('settings-general-datastorage', $params);
 }
