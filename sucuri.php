@@ -11279,19 +11279,34 @@ function sucuriscan_posthack_updates_content($send_email = false)
 
         foreach ($updates as $data) {
             $css_class = ($counter % 2 == 0) ? '' : 'alternate';
-            $response .= SucuriScanTemplate::getSnippet(
-                'posthack-updates',
-                array(
-                    'Update.CssClass' => $css_class,
-                    'Update.IconType' => 'plugins',
-                    'Update.Extension' => SucuriScan::excerpt($data->Name, 35),
-                    'Update.Version' => $data->Version,
-                    'Update.NewVersion' => $data->update->new_version,
-                    'Update.TestedWith' => "WordPress\x20" . $data->update->tested,
-                    'Update.ArchiveUrl' => $data->update->package,
-                    'Update.MarketUrl' => $data->update->url,
-                )
+            $params = array(
+                'Update.CssClass' => $css_class,
+                'Update.IconType' => 'plugins',
+                'Update.Extension' => SucuriScan::excerpt($data->Name, 35),
+                'Update.Version' => $data->Version,
+                'Update.NewVersion' => 'Unknown',
+                'Update.TestedWith' => 'Unknown',
+                'Update.ArchiveUrl' => 'Unknown',
+                'Update.MarketUrl' => 'Unknown',
             );
+
+            if (property_exists($data->update, 'new_version')) {
+                $params['Update.NewVersion'] = $data->update->new_version;
+            }
+
+            if (property_exists($data->update, 'tested')) {
+                $params['Update.TestedWith'] = "WordPress\x20" . $data->update->tested;
+            }
+
+            if (property_exists($data->update, 'package')) {
+                $params['Update.ArchiveUrl'] = $data->update->package;
+            }
+
+            if (property_exists($data->update, 'url')) {
+                $params['Update.MarketUrl'] = $data->update->url;
+            }
+
+            $response .= SucuriScanTemplate::getSnippet('posthack-updates', $params);
             $counter++;
         }
     }
