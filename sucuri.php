@@ -3010,6 +3010,31 @@ class SucuriScanOption extends SucuriScanRequest
     }
 
     /**
+     * Check if the settings will be stored in the database.
+     *
+     * Since version 1.7.18 the plugin started using plain text files to store
+     * its settings as a security measure to reduce the scope of the attacks
+     * against the database and to simplify the management of the settings for
+     * multisite installations. Some users complained about this and suggested
+     * to create an option to allow them to keep using the database instead of
+     * plain text files.
+     *
+     * We will not add an explicit option in the settings page, but users can go
+     * around this defining a constant in the configuration file named
+     * "SUCURI_SETTINGS_IN" with value "database" to force the plugin to store
+     * its settings in the database instead of the plain text files.
+     *
+     * @return boolean True if the settings will be stored in the database.
+     */
+    public static function settingsInDatabase()
+    {
+        return (bool) (
+            defined('SUCURI_SETTINGS_IN')
+            && SUCURI_SETTINGS_IN === 'database'
+        );
+    }
+
+    /**
      * Returns path of the options storage.
      *
      * Returns the absolute path of the file that will store the options
@@ -3173,7 +3198,13 @@ class SucuriScanOption extends SucuriScanRequest
             $option = self::variable_prefix($option);
             $options[$option] = $value;
 
-            return self::writeNewOptions($options);
+            // Skip if user wants to use the database.
+            if (self::settingsInDatabase()) {
+                // Try to write in file, otherwise in database.
+                if (self::writeNewOptions($options)) {
+                    return true;
+                }
+            }
         }
 
         if (function_exists('update_option')) {
@@ -12883,7 +12914,7 @@ function sucuriscan_settings_general_apikey($nonce)
     $display_manual_key_form = (bool) (SucuriScanRequest::post(':recover_key') !== false);
 
     if ($nonce) {
-        if (!empty($_POST)) {
+        if (!empty($_POST) && !SucuriScanOption::settingsInDatabase()) {
             $fpath = SucuriScanOption::optionsFilePath();
 
             if (!is_writable($fpath)) {

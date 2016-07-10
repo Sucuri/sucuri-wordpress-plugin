@@ -14,7 +14,6 @@
 
         <div class="sucuriscan-inline-alert-warning">
             <p>
-
                 The plugin requires write permissions in this directory as well
                 as the files contained in it. If you prefer to keep these files
                 in a non-public directory <em>(one level up the document root)
@@ -37,6 +36,16 @@
             migrated to the settings file if it is writable, otherwise they will
             remain in the database until the user grants write permissions.
         </p>
+
+        <div class="sucuriscan-inline-alert-info">
+            <p>
+                Add this <code>define('SUCURI_SETTINGS_IN', 'database');</code>
+                in the configuration file if you want to keep using the database.
+                However, we encourage you to keep using the plain text files as
+                this guarantees that the automated tests will cover all the code
+                that powers the plugin.
+            </p>
+        </div>
 
         <table class="wp-list-table widefat sucuriscan-table">
             <thead>
