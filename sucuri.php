@@ -10247,6 +10247,7 @@ function sucuriscan_audit_logs_ajax()
     if (SucuriScanRequest::post('form_action') == 'get_audit_logs') {
         $response = array();
         $response['count'] = 0;
+        $response['content'] = '';
         $response['enable_report'] = false;
 
         // Initialize the values for the pagination.
@@ -10319,7 +10320,7 @@ function sucuriscan_audit_logs_ajax()
             $response['count'] = $counter_i;
 
             if ($total_items > 1) {
-                $max_pages = ceil($audit_logs->total_entries / $max_per_page);
+                $max_pages = ceil($audit_logs['total_entries'] / $max_per_page);
 
                 if ($max_pages > SUCURISCAN_MAX_PAGINATION_BUTTONS) {
                     $max_pages = SUCURISCAN_MAX_PAGINATION_BUTTONS;
