@@ -3035,6 +3035,16 @@ class SucuriScanOption extends SucuriScanRequest
     }
 
     /**
+     * Check if the settings will be stored in a plain text file.
+     *
+     * @return boolean True if the settings will be stored in a file.
+     */
+    public static function settingsInTextFile()
+    {
+        return (bool) (self::settingsInDatabase() === false);
+    }
+
+    /**
      * Returns path of the options storage.
      *
      * Returns the absolute path of the file that will store the options
@@ -3199,11 +3209,8 @@ class SucuriScanOption extends SucuriScanRequest
             $options[$option] = $value;
 
             // Skip if user wants to use the database.
-            if (self::settingsInDatabase()) {
-                // Try to write in file, otherwise in database.
-                if (self::writeNewOptions($options)) {
-                    return true;
-                }
+            if (self::settingsInTextFile() && self::writeNewOptions($options)) {
+                return true;
             }
         }
 
@@ -12930,7 +12937,7 @@ function sucuriscan_settings_general_apikey($nonce)
     $display_manual_key_form = (bool) (SucuriScanRequest::post(':recover_key') !== false);
 
     if ($nonce) {
-        if (!empty($_POST) && !SucuriScanOption::settingsInDatabase()) {
+        if (!empty($_POST) && SucuriScanOption::settingsInTextFile()) {
             $fpath = SucuriScanOption::optionsFilePath();
 
             if (!is_writable($fpath)) {
