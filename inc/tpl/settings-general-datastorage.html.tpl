@@ -14,29 +14,12 @@
 
         <div class="sucuriscan-inline-alert-warning">
             <p>
-                Note that the virtual protection added by the plugin to these files is not bullet
-                proof, it may be bypassed and depending on the configuration of the server it may
-                leak information, but this is better than to store the data in the database and
-                wait for a SQL injection to be used to attack the rest of the site.
-            </p>
-        </div>
-
-        <div class="sucuriscan-inline-alert-info">
-            <p>
-                There are some entries in the options table that will be moved to a plain text
-                file during the development of the next version of the plugin, this is part of
-                a plan to include a way to import and export the settings of this extension to
-                other sites in an easy way. This is necessary as importing data into a database
-                may open security holes <em>(depending on how the code is written)</em> to reduce
-                the risk we will use plain text files which makes things a bit safer.
-            </p>
-        </div>
-
-        <div class="sucuriscan-inline-alert-info">
-            <p>
-                An alternative to this setting you can opt to set the directory path from the
-                WordPress configuration file using a constant named <em>"SUCURI_DATA_STORAGE"</em>
-                it must contain a valid and existing absolute directory path.
+                The plugin requires write permissions in this directory as well
+                as the files contained in it. If you prefer to keep these files
+                in a non-public directory <em>(one level up the document root)
+                </em> please define a constant in the <em>"wp-config.php"</em>
+                file named <em>"SUCURI_DATA_STORAGE"</em> with the absolute path
+                to the new directory.
             </p>
         </div>
 
@@ -45,18 +28,41 @@
         </div>
 
         <p>
-            Some people may prefer to use a folder that is not in the document root of the
-            website to add another layer of protection to the data, feel free to change this
-            path if you want, make sure to use absolute paths.
+            As of version 1.7.18 the plugin started using a plain text file named
+            <em>"sucuri-settings.php"</em> to store its settings instead of the
+            database, this was both a security measure and a mechanism to simplify
+            the management of the settings for multisite installations. Options
+            created in the database by previous versions of the plugin will be
+            migrated to the settings file if it is writable, otherwise they will
+            remain in the database until the user grants write permissions.
         </p>
 
-        <form action="%%SUCURI.URL.Settings%%" method="post">
-            <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
-            <span class="sucuriscan-input-group">
-                <label>Data Storage Path:</label>
-                <input type="text" name="sucuriscan_datastore_path" class="input-text" />
-            </span>
-            <button type="submit" class="button-primary">Proceed</button>
-        </form>
+        <div class="sucuriscan-inline-alert-info">
+            <p>
+                Add this <code>define('SUCURI_SETTINGS_IN', 'database');</code>
+                in the configuration file if you want to keep using the database.
+                However, we encourage you to keep using the plain text files as
+                this guarantees that the automated tests will cover all the code
+                that powers the plugin.
+            </p>
+        </div>
+
+        <table class="wp-list-table widefat sucuriscan-table">
+            <thead>
+                <tr>
+                    <th class="manage-column column-cb check-column">
+                        <label class="screen-reader-text" for="cb-select-all-1">Select All</label>
+                        <input id="cb-select-all-1" type="checkbox">
+                    </th>
+                    <th class="manage-column">File</th>
+                    <th width="70" class="manage-column">Exists?</th>
+                    <th width="90" class="manage-column">Writable?</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                %%%SUCURI.DataStorage.Files%%%
+            </tbody>
+        </table>
     </div>
 </div>
