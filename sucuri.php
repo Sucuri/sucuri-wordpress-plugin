@@ -439,6 +439,31 @@ class SucuriScan
     }
 
     /**
+     * Throw generic exception instead of silent failure for unit-tests.
+     *
+     * @param  string $message Error or information message.
+     * @param  string $type    Either info or error.
+     * @return void
+     */
+    public static function throwException($message, $type = 'error')
+    {
+        if (defined('SUCURISCAN_THROW_EXCEPTIONS')
+            && SUCURISCAN_THROW_EXCEPTIONS === true
+            && is_string($message)
+            && !empty($message)
+        ) {
+            $code = ($type === 'error' ? 157 : 333);
+            $message = str_replace(
+                '<b>Sucuri:</b>',
+                ($type === 'error' ? 'Error:' : 'Info:'),
+                $message
+            );
+
+            throw new Exception($message, $code);
+        }
+    }
+
+    /**
      * Return name of a variable with the plugin's prefix (if needed).
      *
      * To facilitate the development, you can prefix the name of the key in the
@@ -5357,16 +5382,19 @@ class SucuriScanAPI extends SucuriScanOption
             }
 
             $output = curl_exec($curl);
-            $headers = curl_getinfo($curl);
+            $header = curl_getinfo($curl);
+            $errors = curl_error($curl);
 
             curl_close($curl);
 
-            if (array_key_exists('http_code', $headers)
-                && $headers['http_code'] === 200
+            if (array_key_exists('http_code', $header)
+                && $header['http_code'] === 200
                 && !empty($output)
             ) {
                 return $output;
             }
+
+            SucuriScan::throwException($errors);
         }
 
         return false;
@@ -7949,19 +7977,7 @@ class SucuriScanInterface
 
         // Display the HTML notice to the current user.
         if ($display_notice === true && !empty($message)) {
-            if (defined('SUCURISCAN_THROW_EXCEPTIONS')
-                && SUCURISCAN_THROW_EXCEPTIONS === true
-            ) {
-                $number = (string) crc32($type);
-                $code = (int) substr($number, 0, 3);
-                $message = str_replace(
-                    '<b>Sucuri:</b>',
-                    ($type === 'error' ? 'Error:' : 'Info:'),
-                    $message
-                );
-
-                throw new Exception($message, $code);
-            }
+            SucuriScan::throwException($message, $type);
 
             echo SucuriScanTemplate::getSection(
                 'notification-admin',
