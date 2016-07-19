@@ -9244,8 +9244,9 @@ class SucuriScanHardening extends SucuriScan
                 $rules_str = implode("\n", $deny_rules);
                 $content = str_replace($rules_str, '', $content);
                 $written = @file_put_contents($fpath, $content);
+                $trimmed = trim($content);
 
-                if (filesize($fpath) === 0) {
+                if (!filesize($fpath) || empty($trimmed)) {
                     @unlink($fpath);
                 }
 
@@ -9340,7 +9341,7 @@ class SucuriScanHardening extends SucuriScan
 
         if (file_exists($htaccess)) {
             if (is_writable($htaccess)) {
-                $rules = self::whitelist_rule($file);
+                $rules = "\n" . self::whitelist_rule($file);
                 @file_put_contents($htaccess, $rules, FILE_APPEND);
             } else {
                 throw new Exception('Access control file is not writable');
@@ -9361,6 +9362,8 @@ class SucuriScanHardening extends SucuriScan
             $content = file_get_contents($htaccess);
             $rules = self::whitelist_rule($file);
             $content = str_replace($rules, '', $content);
+            $content = rtrim($content) . "\n";
+
             @file_put_contents($htaccess, $content);
         }
     }
@@ -9369,9 +9372,7 @@ class SucuriScanHardening extends SucuriScan
     {
         $htaccess = self::htaccess($folder);
 
-        if (file_exists($htaccess)
-            && is_readable($htaccess)
-        ) {
+        if (file_exists($htaccess) && is_readable($htaccess)) {
             $content = file_get_contents($htaccess);
 
             if (@preg_match_all('/<Files (\S+)>/', $content, $matches)) {
