@@ -676,9 +676,7 @@ class SucuriScan
             }
         }
 
-        $wp_version = self::escape($wp_version);
-
-        return $wp_version;
+        return self::escape($wp_version);
     }
 
     /**
@@ -751,6 +749,7 @@ class SucuriScan
     public static function run_scheduled_task()
     {
         SucuriScanEvent::filesystem_scan();
+
         sucuriscan_core_files_data(true);
         sucuriscan_posthack_updates_content(true);
     }
@@ -896,7 +895,7 @@ class SucuriScan
         if (function_exists('get_site_url')) {
             $site_url = get_site_url();
             $pattern = '/([fhtps]+:\/\/)?([^:\/]+)(:[0-9:]+)?(\/.*)?/';
-            $replacement = ( $return_tld === true ) ? '$2' : '$2$3$4';
+            $replacement = ($return_tld === true) ? '$2' : '$2$3$4';
             $domain_name = @preg_replace($pattern, $replacement, $site_url);
 
             return $domain_name;
@@ -972,9 +971,7 @@ class SucuriScan
          * the site as protected by a firewall. A fake key can be used to bypass the DNS
          * checking, but that is not something that will affect us, only the client.
          */
-        if ($status === false
-            && SucuriScanAPI::getCloudproxyKey()
-        ) {
+        if (!$status && SucuriScanAPI::getCloudproxyKey()) {
             $status = true;
         }
 
@@ -1035,9 +1032,7 @@ class SucuriScan
     public static function get_admin_users()
     {
         if (function_exists('get_users')) {
-            $args = array( 'role' => 'administrator' );
-
-            return get_users($args);
+            return get_users(array('role' => 'administrator'));
         }
 
         return false;
@@ -1061,7 +1056,7 @@ class SucuriScan
         if ($users !== false) {
             foreach ($users as $user) {
                 if ($user->user_status === '0') {
-                    $valid_users[ $user->ID ] = sprintf(
+                    $valid_users[$user->ID] = sprintf(
                         '%s - %s',
                         $user->user_login,
                         $user->user_email
@@ -6610,7 +6605,6 @@ class SucuriScanAPI extends SucuriScanOption
  */
 class SucuriScanMail extends SucuriScanOption
 {
-
     /**
      * Check whether the email notifications will be sent in HTML or Plain/Text.
      *
@@ -6694,6 +6688,7 @@ class SucuriScanMail extends SucuriScanOption
 
             if ($mail_sent) {
                 $emails_sent_num = (int) self::get_option(':emails_sent');
+
                 self::update_option(':emails_sent', $emails_sent_num + 1);
                 self::update_option(':last_email_at', time());
 
@@ -8040,7 +8035,10 @@ class SucuriScanInterface
             '/wp-admin/plugins.php',
         );
 
-        if ($page && array_key_exists($page, $sucuriscan_pages)) {
+        if ($page
+            && is_array($sucuriscan_pages)
+            && array_key_exists($page, $sucuriscan_pages)
+        ) {
             return true;
         }
 
