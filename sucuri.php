@@ -2672,6 +2672,8 @@ class SucuriScanCache extends SucuriScan
         $finfo = $this->getDatastoreContent();
 
         if (!empty($finfo['info'])) {
+            $finfo['info']['fpath'] = $this->datastore_path;
+
             return $finfo['info'];
         }
 
@@ -8212,11 +8214,30 @@ function sucuriscan_scanner_page()
     $cache = new SucuriScanCache('sitecheck');
     $scan_results = $cache->get('scan_results', SUCURISCAN_SITECHECK_LIFETIME, 'array');
     $report_results = (bool) ($scan_results && !empty($scan_results));
+    $nonce = SucuriScanInterface::check_nonce();
 
-    if (SucuriScanInterface::check_nonce()
-        && SucuriScanRequest::post(':malware_scan', '1')
-    ) {
+    // Retrieve SiteCheck scan results if user submits the form.
+    if ($nonce && SucuriScanRequest::post(':malware_scan')) {
         $report_results = true;
+    }
+
+    /**
+     * Retrieve SiteCheck results from custom domain.
+     *
+     * To facilitate the debugging of the code we will allow the existence of a
+     * GET parameter that will force the plugin to scan a specific website
+     * instead of the website where the plugin is running. Since this will be a
+     * semi-hidden feature we can bypass some actions like the recycling of the
+     * data returned by a previous scan.
+     *
+     * Usage: Add "&s=TLD" where TLD is a WordPress or non-WordPress website.
+     */
+    if ($nonce && SucuriScanRequest::get('s')) {
+        $info = $cache->getDatastoreInfo();
+        $report_results = true;
+        $scan_results = false;
+
+        @unlink($info['fpath']);
     }
 
     if ($report_results === true) {
@@ -8257,9 +8278,20 @@ function sucuriscan_scanner_ajax()
  */
 function sucuriscan_sitecheck_info($scan_results = array())
 {
-    $clean_domain = SucuriScan::get_domain();
+    $tld = SucuriScan::get_domain();
+
+    if ($custom = SucuriScanRequest::get('s')) {
+        $pattern = '/^[0-9a-z_\.\-\/]+$/';
+
+        if (preg_match($pattern, $custom)) {
+            $tld = SucuriScan::escape($custom);
+        } else {
+            SucuriScanInterface::error('Invalid website, using default: ' . SucuriScan::escape($tld));
+        }
+    }
+
     $params = array(
-        'ScannedDomainName' => $clean_domain,
+        'ScannedDomainName' => $tld,
         'ScannerResults.CssClass' => '',
         'ScannerResults.Content' => '',
         'WebsiteDetails.CssClass' => '',
@@ -8275,13 +8307,13 @@ function sucuriscan_sitecheck_info($scan_results = array())
 
     // If the results are not cached, then request a new scan and store in cache.
     if ($scan_results === false) {
-        $scan_results = SucuriScanAPI::getSitecheckResults($clean_domain);
+        $scan_results = SucuriScanAPI::getSitecheckResults($tld);
 
         // Check for error messages in the request's response.
         if (is_string($scan_results)) {
             if (@preg_match('/^ERROR:(.*)/', $scan_results, $error_m)) {
                 SucuriScanInterface::error(
-                    'The site <code>' . SucuriScan::escape($clean_domain) . '</code>'
+                    'The site <code>' . SucuriScan::escape($tld) . '</code>'
                     . ' was not scanned: ' . SucuriScan::escape($error_m[1])
                 );
             } else {
@@ -8435,6 +8467,7 @@ function sucuriscan_sitecheck_website_details($scan_results = false, $params = a
 function sucuriscan_sitecheck_general_information($scan_results = false, $secvars = array())
 {
     $possible_keys = array(
+        'SITE' => 'Website',
         'DOMAIN' => 'Domain Scanned',
         'IP' => 'Site IP Address',
         'HOSTING' => 'Hosting Company',
