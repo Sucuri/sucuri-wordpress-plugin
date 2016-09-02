@@ -7198,7 +7198,7 @@ class SucuriScanTemplate extends SucuriScanRequest
         foreach ($allowed_values as $option_name => $option_label) {
             $options .= sprintf(
                 "<option %s value='%s'>%s</option>\n",
-                ($option_name === $selected_val ? 'selected="selected"' : ''),
+                ("$option_name" === "$selected_val" ? 'selected="selected"' : ''),
                 SucuriScan::escape($option_name),
                 SucuriScan::escape($option_label)
             );
