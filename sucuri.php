@@ -4,7 +4,7 @@ Plugin Name: Sucuri Security - Auditing, Malware Scanner and Hardening
 Plugin URI: https://wordpress.sucuri.net/
 Description: The <a href="https://sucuri.net/" target="_blank">Sucuri</a> plugin provides the website owner the best Activity Auditing, SiteCheck Remote Malware Scanning, Effective Security Hardening and Post-Hack features. SiteCheck will check for malware, spam, blacklisting and other security issues like .htaccess redirects, hidden eval code, etc. The best thing about it is it's completely free.
 Author: Sucuri, INC
-Version: 1.8.2
+Version: 1.8.3
 Author URI: https://sucuri.net
 */
 
@@ -65,7 +65,7 @@ define('SUCURISCAN', 'sucuriscan');
 /**
  * Current version of the plugin's code.
  */
-define('SUCURISCAN_VERSION', '1.8.2');
+define('SUCURISCAN_VERSION', '1.8.3');
 
 /**
  * The name of the Sucuri plugin main file.
@@ -439,6 +439,31 @@ class SucuriScan
     }
 
     /**
+     * Throw generic exception instead of silent failure for unit-tests.
+     *
+     * @param  string $message Error or information message.
+     * @param  string $type    Either info or error.
+     * @return void
+     */
+    public static function throwException($message, $type = 'error')
+    {
+        if (defined('SUCURISCAN_THROW_EXCEPTIONS')
+            && SUCURISCAN_THROW_EXCEPTIONS === true
+            && is_string($message)
+            && !empty($message)
+        ) {
+            $code = ($type === 'error' ? 157 : 333);
+            $message = str_replace(
+                '<b>Sucuri:</b>',
+                ($type === 'error' ? 'Error:' : 'Info:'),
+                $message
+            );
+
+            throw new Exception($message, $code);
+        }
+    }
+
+    /**
      * Return name of a variable with the plugin's prefix (if needed).
      *
      * To facilitate the development, you can prefix the name of the key in the
@@ -651,9 +676,7 @@ class SucuriScan
             }
         }
 
-        $wp_version = self::escape($wp_version);
-
-        return $wp_version;
+        return self::escape($wp_version);
     }
 
     /**
@@ -726,6 +749,7 @@ class SucuriScan
     public static function run_scheduled_task()
     {
         SucuriScanEvent::filesystem_scan();
+
         sucuriscan_core_files_data(true);
         sucuriscan_posthack_updates_content(true);
     }
@@ -871,7 +895,7 @@ class SucuriScan
         if (function_exists('get_site_url')) {
             $site_url = get_site_url();
             $pattern = '/([fhtps]+:\/\/)?([^:\/]+)(:[0-9:]+)?(\/.*)?/';
-            $replacement = ( $return_tld === true ) ? '$2' : '$2$3$4';
+            $replacement = ($return_tld === true) ? '$2' : '$2$3$4';
             $domain_name = @preg_replace($pattern, $replacement, $site_url);
 
             return $domain_name;
@@ -947,9 +971,7 @@ class SucuriScan
          * the site as protected by a firewall. A fake key can be used to bypass the DNS
          * checking, but that is not something that will affect us, only the client.
          */
-        if ($status === false
-            && SucuriScanAPI::getCloudproxyKey()
-        ) {
+        if (!$status && SucuriScanAPI::getCloudproxyKey()) {
             $status = true;
         }
 
@@ -1010,9 +1032,7 @@ class SucuriScan
     public static function get_admin_users()
     {
         if (function_exists('get_users')) {
-            $args = array( 'role' => 'administrator' );
-
-            return get_users($args);
+            return get_users(array('role' => 'administrator'));
         }
 
         return false;
@@ -1036,7 +1056,7 @@ class SucuriScan
         if ($users !== false) {
             foreach ($users as $user) {
                 if ($user->user_status === '0') {
-                    $valid_users[ $user->ID ] = sprintf(
+                    $valid_users[$user->ID] = sprintf(
                         '%s - %s',
                         $user->user_login,
                         $user->user_email
@@ -2647,6 +2667,8 @@ class SucuriScanCache extends SucuriScan
         $finfo = $this->getDatastoreContent();
 
         if (!empty($finfo['info'])) {
+            $finfo['info']['fpath'] = $this->datastore_path;
+
             return $finfo['info'];
         }
 
@@ -5357,16 +5379,19 @@ class SucuriScanAPI extends SucuriScanOption
             }
 
             $output = curl_exec($curl);
-            $headers = curl_getinfo($curl);
+            $header = curl_getinfo($curl);
+            $errors = curl_error($curl);
 
             curl_close($curl);
 
-            if (array_key_exists('http_code', $headers)
-                && $headers['http_code'] === 200
+            if (array_key_exists('http_code', $header)
+                && $header['http_code'] === 200
                 && !empty($output)
             ) {
                 return $output;
             }
+
+            SucuriScan::throwException($errors);
         }
 
         return false;
@@ -6580,7 +6605,6 @@ class SucuriScanAPI extends SucuriScanOption
  */
 class SucuriScanMail extends SucuriScanOption
 {
-
     /**
      * Check whether the email notifications will be sent in HTML or Plain/Text.
      *
@@ -6656,7 +6680,12 @@ class SucuriScanMail extends SucuriScanOption
              * @var boolean
              */
             if (SucuriScanOption::is_enabled(':use_wpmail')) {
-                $mail_sent = wp_mail($email, $subject, $message, $headers);
+                try {
+                    $mail_sent = wp_mail($email, $subject, $message, $headers);
+                }
+                catch (Exception $e) {
+                    $mail_sent = false;
+                }
             } else {
                 $headers = implode("\r\n", $headers);
                 $mail_sent = @mail($email, $subject, $message, $headers);
@@ -6664,6 +6693,7 @@ class SucuriScanMail extends SucuriScanOption
 
             if ($mail_sent) {
                 $emails_sent_num = (int) self::get_option(':emails_sent');
+
                 self::update_option(':emails_sent', $emails_sent_num + 1);
                 self::update_option(':last_email_at', time());
 
@@ -7949,19 +7979,7 @@ class SucuriScanInterface
 
         // Display the HTML notice to the current user.
         if ($display_notice === true && !empty($message)) {
-            if (defined('SUCURISCAN_THROW_EXCEPTIONS')
-                && SUCURISCAN_THROW_EXCEPTIONS === true
-            ) {
-                $number = (string) crc32($type);
-                $code = (int) substr($number, 0, 3);
-                $message = str_replace(
-                    '<b>Sucuri:</b>',
-                    ($type === 'error' ? 'Error:' : 'Info:'),
-                    $message
-                );
-
-                throw new Exception($message, $code);
-            }
+            SucuriScan::throwException($message, $type);
 
             echo SucuriScanTemplate::getSection(
                 'notification-admin',
@@ -8022,7 +8040,10 @@ class SucuriScanInterface
             '/wp-admin/plugins.php',
         );
 
-        if ($page && array_key_exists($page, $sucuriscan_pages)) {
+        if ($page
+            && is_array($sucuriscan_pages)
+            && array_key_exists($page, $sucuriscan_pages)
+        ) {
             return true;
         }
 
@@ -8196,11 +8217,30 @@ function sucuriscan_scanner_page()
     $cache = new SucuriScanCache('sitecheck');
     $scan_results = $cache->get('scan_results', SUCURISCAN_SITECHECK_LIFETIME, 'array');
     $report_results = (bool) ($scan_results && !empty($scan_results));
+    $nonce = SucuriScanInterface::check_nonce();
 
-    if (SucuriScanInterface::check_nonce()
-        && SucuriScanRequest::post(':malware_scan', '1')
-    ) {
+    // Retrieve SiteCheck scan results if user submits the form.
+    if ($nonce && SucuriScanRequest::post(':malware_scan')) {
         $report_results = true;
+    }
+
+    /**
+     * Retrieve SiteCheck results from custom domain.
+     *
+     * To facilitate the debugging of the code we will allow the existence of a
+     * GET parameter that will force the plugin to scan a specific website
+     * instead of the website where the plugin is running. Since this will be a
+     * semi-hidden feature we can bypass some actions like the recycling of the
+     * data returned by a previous scan.
+     *
+     * Usage: Add "&s=TLD" where TLD is a WordPress or non-WordPress website.
+     */
+    if ($nonce && SucuriScanRequest::get('s')) {
+        $info = $cache->getDatastoreInfo();
+        $report_results = true;
+        $scan_results = false;
+
+        @unlink($info['fpath']);
     }
 
     if ($report_results === true) {
@@ -8241,9 +8281,14 @@ function sucuriscan_scanner_ajax()
  */
 function sucuriscan_sitecheck_info($scan_results = array())
 {
-    $clean_domain = SucuriScan::get_domain();
+    $tld = SucuriScan::get_domain();
+
+    if ($custom = SucuriScanRequest::get('s')) {
+        $tld = SucuriScan::escape($custom);
+    }
+
     $params = array(
-        'ScannedDomainName' => $clean_domain,
+        'ScannedDomainName' => $tld,
         'ScannerResults.CssClass' => '',
         'ScannerResults.Content' => '',
         'WebsiteDetails.CssClass' => '',
@@ -8259,13 +8304,13 @@ function sucuriscan_sitecheck_info($scan_results = array())
 
     // If the results are not cached, then request a new scan and store in cache.
     if ($scan_results === false) {
-        $scan_results = SucuriScanAPI::getSitecheckResults($clean_domain);
+        $scan_results = SucuriScanAPI::getSitecheckResults($tld);
 
         // Check for error messages in the request's response.
         if (is_string($scan_results)) {
             if (@preg_match('/^ERROR:(.*)/', $scan_results, $error_m)) {
                 SucuriScanInterface::error(
-                    'The site <code>' . SucuriScan::escape($clean_domain) . '</code>'
+                    'The site <code>' . SucuriScan::escape($tld) . '</code>'
                     . ' was not scanned: ' . SucuriScan::escape($error_m[1])
                 );
             } else {
@@ -8419,6 +8464,7 @@ function sucuriscan_sitecheck_website_details($scan_results = false, $params = a
 function sucuriscan_sitecheck_general_information($scan_results = false, $secvars = array())
 {
     $possible_keys = array(
+        'SITE' => 'Website',
         'DOMAIN' => 'Domain Scanned',
         'IP' => 'Site IP Address',
         'HOSTING' => 'Hosting Company',
@@ -9228,8 +9274,9 @@ class SucuriScanHardening extends SucuriScan
                 $rules_str = implode("\n", $deny_rules);
                 $content = str_replace($rules_str, '', $content);
                 $written = @file_put_contents($fpath, $content);
+                $trimmed = trim($content);
 
-                if (filesize($fpath) === 0) {
+                if (!filesize($fpath) || empty($trimmed)) {
                     @unlink($fpath);
                 }
 
@@ -9324,7 +9371,7 @@ class SucuriScanHardening extends SucuriScan
 
         if (file_exists($htaccess)) {
             if (is_writable($htaccess)) {
-                $rules = self::whitelist_rule($file);
+                $rules = "\n" . self::whitelist_rule($file);
                 @file_put_contents($htaccess, $rules, FILE_APPEND);
             } else {
                 throw new Exception('Access control file is not writable');
@@ -9345,6 +9392,8 @@ class SucuriScanHardening extends SucuriScan
             $content = file_get_contents($htaccess);
             $rules = self::whitelist_rule($file);
             $content = str_replace($rules, '', $content);
+            $content = rtrim($content) . "\n";
+
             @file_put_contents($htaccess, $content);
         }
     }
@@ -9353,9 +9402,7 @@ class SucuriScanHardening extends SucuriScan
     {
         $htaccess = self::htaccess($folder);
 
-        if (file_exists($htaccess)
-            && is_readable($htaccess)
-        ) {
+        if (file_exists($htaccess) && is_readable($htaccess)) {
             $content = file_get_contents($htaccess);
 
             if (@preg_match_all('/<Files (\S+)>/', $content, $matches)) {
