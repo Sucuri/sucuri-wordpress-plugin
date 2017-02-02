@@ -47,8 +47,8 @@ class SucuriScanInterface
             $asset_version = substr(SUCURISCAN_PLUGIN_CHECKSUM, 0, 7);
         }
 
-        wp_register_style('sucuriscan', SUCURISCAN_URL . '/inc/css/sucuri-scanner.min.css', array(), $asset_version);
-        wp_register_script('sucuriscan', SUCURISCAN_URL . '/inc/js/sucuri-scanner.min.js', array(), $asset_version);
+        wp_register_style('sucuriscan', SUCURISCAN_URL . '/inc/css/sucuri-scanner.css', array(), $asset_version);
+        wp_register_script('sucuriscan', SUCURISCAN_URL . '/inc/js/sucuri-scanner.js', array(), $asset_version);
         wp_enqueue_style('sucuriscan');
         wp_enqueue_script('sucuriscan');
 
