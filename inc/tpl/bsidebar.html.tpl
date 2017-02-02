@@ -37,13 +37,13 @@
         <div class="sucuriscan-ad-footer sucuriscan-clearfix">
             <div class="sucuriscan-pull-left">
                 <ul>
-                    <li>Sucuri Antivirus</li>
+                    <li>Sucuri Website Security</li>
                     <li class="featured">Servicing 250k+ domains</li>
                     <li class="featured">Cleaning 300+ websites a day</li>
                 </ul>
             </div>
             <div class="sucuriscan-pull-right">
-                <img src="%%SUCURI.SucuriURL%%/inc/images/antivirus-logo-x42.png" alt="Sucuri Antivirus" />
+                <img src="%%SUCURI.SucuriURL%%/inc/images/antivirus-logo-x42.png" alt="Sucuri Website Security" />
             </div>
         </div>
 
