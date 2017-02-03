@@ -24,6 +24,15 @@
                     </p>
                 </div>
 
+                <div class="sucuriscan-inline-alert-error">
+                    <p>
+                        <b>WARNING!</b> This procedure can break your website. The reset will not
+                        affect the database nor the settings of each plugin but depending on how they
+                        were written the reset action might break them. Be sure to create a backup of
+                        the plugins directory before the execution of this tool.
+                    </p>
+                </div>
+
                 <table class="wp-list-table widefat sucuriscan-table sucuriscan-reset-plugins-table">
                     <thead>
                         <tr>
