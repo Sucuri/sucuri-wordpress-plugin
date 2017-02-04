@@ -1,5 +1,13 @@
 <?php
 
+if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
+    if (!headers_sent()) {
+        /* Report invalid access if possible. */
+        header('HTTP/1.1 403 Forbidden');
+    }
+    exit(1);
+}
+
 /**
  * Compare the md5sum of the core files in the current site with the hashes hosted
  * remotely in Sucuri servers. These hashes are updated every time a new version

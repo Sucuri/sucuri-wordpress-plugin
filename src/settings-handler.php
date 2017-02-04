@@ -1,5 +1,13 @@
 <?php
 
+if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
+    if (!headers_sent()) {
+        /* Report invalid access if possible. */
+        header('HTTP/1.1 403 Forbidden');
+    }
+    exit(1);
+}
+
 /**
  * Process the requests sent by the form submissions originated in the settings
  * page, all forms must have a nonce field that will be checked against the one
