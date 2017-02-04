@@ -479,6 +479,21 @@ class SucuriScanAPI extends SucuriScanOption
 
                     fclose($socket);
 
+                    /* Follow explicit redirection */
+                    if (stripos($headers, 'location:') !== false) {
+                        if (@preg_match('/ocation:(.+)\r\n/', $headers, $match)) {
+                            return self::apiCallSocket(
+                                trim($match[1]),
+                                $method,
+                                $params,
+                                $args
+                            );
+                        }
+
+                        return false;
+                    }
+
+                    /* Return if we reached the destination */
                     if (strpos($headers, '200 OK')) {
                         return $response;
                     }
