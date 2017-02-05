@@ -209,7 +209,16 @@ class SucuriScanFileInfo extends SucuriScan
             $dir_tree = $this->get_directory_tree($directory);
 
             foreach ($dir_tree as $filepath) {
-                if (stripos($filepath, $filename) !== false) {
+                /**
+                 * Checking the whole file path will result in a list of false
+                 * positive data as the parent directories might contain part of
+                 * the word that is being searched.
+                 *
+                 * @var string
+                 */
+                $basename = basename($filepath);
+
+                if (stripos($basename, $filename) !== false) {
                     $file_paths[] = $filepath;
                 }
             }
