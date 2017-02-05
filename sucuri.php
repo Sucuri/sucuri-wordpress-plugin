@@ -185,9 +185,6 @@ require_once('src/heartbeat.lib.php');
 require_once('src/hardening.lib.php');
 require_once('src/interface.lib.php');
 
-/* Load global variables and triggers */
-require_once('src/globals.php');
-
 /* Load handlers for main pages. */
 require_once('src/modfiles.php');
 require_once('src/sitecheck.php');
@@ -222,3 +219,6 @@ require_once('src/settings-heartbeat.php');
 
 /* Load handlers for main pages (infosys). */
 require_once('src/infosys.php');
+
+/* Load global variables and triggers */
+require_once('src/globals.php');
