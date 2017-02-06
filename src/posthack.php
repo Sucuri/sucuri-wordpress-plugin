@@ -492,29 +492,43 @@ function sucuriscan_posthack_reinstall_plugins($process_form = false)
 
             // Loop through all the installed plugins.
             foreach ($plugin_list as $plugin_path) {
-                if (array_key_exists($plugin_path, $all_plugins)) {
-                    $plugin_data = $all_plugins[ $plugin_path ];
+                if (!array_key_exists($plugin_path, $all_plugins)) {
+                    // Ignore non-installed plugins.
+                    continue;
+                }
 
-                    // Check if the plugin can be downloaded from the free market.
-                    if ($plugin_data['IsFreePlugin'] === true) {
-                        $plugin_info = SucuriScanAPI::getRemotePluginData($plugin_data['RepositoryName']);
+                // Get data associated to the plugin.
+                $plugin_data = $all_plugins[$plugin_path];
 
-                        if ($plugin_info) {
-                            // First, remove all files/sub-folders from the plugin's directory.
-                            if (substr_count($plugin_path, '/') >= 1) {
-                                $plugin_directory = dirname(WP_PLUGIN_DIR . '/' . $plugin_path);
-                                $file_info->remove_directory_tree($plugin_directory);
-                            }
+                // Ignore plugins not listed in the WordPress repository.
+                // This usually applies to premium plugins. They cannot be downloaded from
+                // a reliable source because we can't check the checksum of the files nor
+                // we can verify if the installation of the new code will work or not.
+                if ($plugin_data['IsFreePlugin'] !== true) {
+                    continue;
+                }
 
-                            // Install a fresh copy of the plugin's files.
-                            $upgrader_skin = new Plugin_Installer_Skin();
-                            $upgrader = new Plugin_Upgrader($upgrader_skin);
-                            $upgrader->install($plugin_info->download_link);
-                            SucuriScanEvent::report_notice_event('Plugin re-installed: ' . $plugin_path);
-                        } else {
-                            SucuriScanInterface::error('Connection with the WordPress plugin market failed.');
-                        }
+                $plugin_info = SucuriScanAPI::getRemotePluginData($plugin_data['RepositoryName']);
+
+                if ($plugin_info) {
+                    // First, remove all files/sub-folders from the plugin's directory.
+                    if (substr_count($plugin_path, '/') >= 1) {
+                        $plugin_directory = dirname(WP_PLUGIN_DIR . '/' . $plugin_path);
+                        $file_info->remove_directory_tree($plugin_directory);
                     }
+
+                    // Install a fresh copy of the plugin's files.
+                    try {
+                        $upgrader_skin = new Plugin_Installer_Skin();
+                        $upgrader = new Plugin_Upgrader($upgrader_skin);
+                        $upgrader->install($plugin_info['download_link']);
+
+                        SucuriScanEvent::report_notice_event('Plugin re-installed: ' . $plugin_path);
+                    } catch (Exception $exception) {
+                        SucuriScanEvent::report_exception($exception);
+                    }
+                } else {
+                    SucuriScanInterface::error('Connection with the WordPress plugin market failed.');
                 }
             }
         } else {
