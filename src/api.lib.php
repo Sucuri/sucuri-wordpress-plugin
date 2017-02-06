@@ -290,10 +290,13 @@ class SucuriScanAPI extends SucuriScanOption
     {
         if ($url && ($method === 'GET' || $method === 'POST')) {
             $handler = SucuriScanOption::get_option(':api_handler');
+            $params['ssl'] = self::verifySslCert() ? 'true' : 'false';
 
             if (!function_exists('curl_init') || $handler === 'socket') {
+                $params['socket'] = 'true';
                 $output = self::apiCallSocket($url, $method, $params, $args);
             } else {
+                $params['curl'] = 'true';
                 $output = self::apiCallCurl($url, $method, $params, $args);
             }
 
