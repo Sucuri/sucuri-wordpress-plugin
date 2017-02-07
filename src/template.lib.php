@@ -422,6 +422,8 @@ class SucuriScanTemplate extends SucuriScanRequest
         $html_links = '';
         $page_number = self::pageNumber();
         $max_pages = ceil($total_items / $max_per_page);
+        $final_page = $max_pages;
+        $start_page = 1;
         $extra_url = '';
 
         // Fix for inline anchor URLs.
@@ -430,8 +432,19 @@ class SucuriScanTemplate extends SucuriScanRequest
             $extra_url = $match[2];
         }
 
+        // Keep the number of pagination buttons at limit.
+        if ($max_pages > SUCURISCAN_MAX_PAGINATION_BUTTONS) {
+            $final_page = SUCURISCAN_MAX_PAGINATION_BUTTONS;
+            $middle = $final_page / 2; /* middle point */
+
+            if ($page_number > $middle) {
+                $start_page = $page_number - ($middle - 1);
+                $final_page = $page_number + $middle;
+            }
+        }
+
         // Generate the HTML links for the pagination.
-        for ($j = 1; $j <= $max_pages; $j++) {
+        for ($j = $start_page; $j <= $final_page; $j++) {
             $link_class = 'sucuriscan-pagination-link';
 
             if ($page_number == $j) {
