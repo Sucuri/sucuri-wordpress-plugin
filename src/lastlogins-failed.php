@@ -44,7 +44,7 @@ function sucuriscan_failed_logins_panel()
     $max_failed_logins = SucuriScanOption::get_option(':maximum_failed_logins');
     $notify_bruteforce_attack = SucuriScanOption::get_option(':notify_bruteforce_attack');
     $collect_passwords = sucuriscan_collect_wrong_passwords();
-    $failed_logins = sucuriscan_get_all_failed_logins();
+    $failed_logins = sucuriscan_get_all_failed_logins($page_offset, $max_per_page);
 
     if ($failed_logins) {
         $counter = 0;
@@ -165,13 +165,15 @@ function sucuriscan_failed_logins_default_content()
 /**
  * Returns failed logins data including old entries.
  *
- * @return array Failed logins data.
+ * @param  integer $offset Initial index to start the array.
+ * @param  integer $limit  Number of items in the returned array.
+ * @return array           Failed logins data.
  */
-function sucuriscan_get_all_failed_logins()
+function sucuriscan_get_all_failed_logins($offset = 0, $limit = -1)
 {
     $all = array();
     $new = sucuriscan_get_failed_logins();
-    $old = sucuriscan_get_failed_logins(true);
+    $old = sucuriscan_get_failed_logins(true, $offset, $limit);
 
     if ($new && $old) {
         // Merge the new and old failed logins.
@@ -202,9 +204,11 @@ function sucuriscan_get_all_failed_logins()
  * the site.
  *
  * @param  boolean $get_old_logs Whether the old logs will be retrieved or not.
+ * @param  integer $offset       Array index from where to start collecting the data.
+ * @param  integer $limit        Number of items to insert into the returned array.
  * @return array                 Information and entries gathered from the failed logins datastore file.
  */
-function sucuriscan_get_failed_logins($get_old_logs = false)
+function sucuriscan_get_failed_logins($get_old_logs = false, $offset = 0, $limit = -1)
 {
     $datastore_path = sucuriscan_failed_logins_datastore_path($get_old_logs);
 
@@ -221,11 +225,35 @@ function sucuriscan_get_failed_logins($get_old_logs = false)
             );
 
             // Read and parse all the entries found in the datastore file.
-            $offset = count($lines) - 1;
+            $initial = count($lines) - 1;
+            $processed = 0;
 
-            for ($key = $offset; $key >= 0; $key--) {
+            // Start from the newest entry in the file.
+            for ($key = $initial; $key >= 0; $key--) {
                 $line = trim($lines[ $key ]);
+
+                // Skip lines that are clearly not JSON-encoded.
+                if (substr($line, 0, 1) !== '{') {
+                    continue;
+                }
+
+                // Reduce the memory allocation by skipping unnecessary lines (LEFT).
+                if ($limit > 0 && $failed_logins['count'] < $offset) {
+                    $failed_logins['entries'][] = $line;
+                    $failed_logins['count'] += 1;
+                    continue;
+                }
+
+                // Reduce the memory allocation by skipping unnecessary lines (RIGHT).
+                if ($limit > 0 && $processed > $limit) {
+                    $failed_logins['entries'][] = $line;
+                    $failed_logins['count'] += 1;
+                    continue;
+                }
+
+                // Decode data only if necessary.
                 $login_data = @json_decode($line, true);
+                $processed++; /* count decoded data */
 
                 if (is_array($login_data)) {
                     $login_data['attempt_date'] = date('r', $login_data['attempt_time']);
@@ -246,9 +274,20 @@ function sucuriscan_get_failed_logins($get_old_logs = false)
 
             // Calculate the different time between the first and last attempt.
             if ($failed_logins['count'] > 0) {
-                $z = abs($failed_logins['count'] - 1);
-                $failed_logins['last_attempt'] = $failed_logins['entries'][ $z ]['attempt_time'];
-                $failed_logins['first_attempt'] = $failed_logins['entries'][0]['attempt_time'];
+                $idx = abs($failed_logins['count'] - 1);
+                $last = $failed_logins['entries'][$idx];
+                $first = $failed_logins['entries'][0];
+
+                if (!is_array($last)) {
+                    $last = @json_decode($last, true);
+                }
+
+                if (!is_array($first)) {
+                    $first= @json_decode($first, true);
+                }
+
+                $failed_logins['last_attempt'] = $last['attempt_time'];
+                $failed_logins['first_attempt'] = $first['attempt_time'];
                 $failed_logins['diff_time'] = abs($failed_logins['last_attempt'] - $failed_logins['first_attempt']);
 
                 return $failed_logins;
