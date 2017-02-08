@@ -35,6 +35,11 @@ class SucuriScanEvent extends SucuriScan
     {
         $task_name = 'sucuriscan_scheduled_scan';
 
+        if (SucuriScanOption::get_option(':scan_frequency') === '_oneoff') {
+            /* Stop if the user has disabled the cronjobs. */
+            return;
+        }
+
         if (!wp_next_scheduled($task_name)) {
             wp_schedule_event(time() + 10, 'twicedaily', $task_name);
         }

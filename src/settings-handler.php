@@ -53,9 +53,12 @@ function sucuriscan_settings_form_submissions($page_nonce = null)
         if ($frequency = SucuriScanRequest::post(':scan_frequency')) {
             if (array_key_exists($frequency, $sucuriscan_schedule_allowed)) {
                 SucuriScanOption::update_option(':scan_frequency', $frequency);
+
+                // Remove all the scheduled tasks associated to the plugin.
                 wp_clear_scheduled_hook('sucuriscan_scheduled_scan');
 
-                if ($frequency != '_oneoff') {
+                // Install new cronjob unless the user has selected "Never".
+                if ($frequency !== '_oneoff') {
                     wp_schedule_event(time() + 10, $frequency, 'sucuriscan_scheduled_scan');
                 }
 
