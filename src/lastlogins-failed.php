@@ -212,90 +212,97 @@ function sucuriscan_get_failed_logins($get_old_logs = false, $offset = 0, $limit
 {
     $datastore_path = sucuriscan_failed_logins_datastore_path($get_old_logs);
 
-    if ($datastore_path) {
-        $lines = SucuriScanFileInfo::file_lines($datastore_path);
+    if (!$datastore_path) {
+        return false;
+    }
 
-        if ($lines) {
-            $failed_logins = array(
-                'count' => 0,
-                'first_attempt' => 0,
-                'last_attempt' => 0,
-                'diff_time' => 0,
-                'entries' => array(),
-            );
+    $lines = SucuriScanFileInfo::file_lines($datastore_path);
 
-            // Read and parse all the entries found in the datastore file.
-            $initial = count($lines) - 1;
-            $processed = 0;
+    if (!$lines) {
+        return false;
+    }
 
-            // Start from the newest entry in the file.
-            for ($key = $initial; $key >= 0; $key--) {
-                $line = trim($lines[ $key ]);
+    $failed_logins = array(
+        'count' => 0,
+        'first_attempt' => 0,
+        'last_attempt' => 0,
+        'diff_time' => 0,
+        'entries' => array(),
+    );
 
-                // Skip lines that are clearly not JSON-encoded.
-                if (substr($line, 0, 1) !== '{') {
-                    continue;
-                }
+    // Read and parse all the entries found in the datastore file.
+    $initial = count($lines) - 1;
+    $processed = 0;
 
-                // Reduce the memory allocation by skipping unnecessary lines (LEFT).
-                if ($limit > 0 && $failed_logins['count'] < $offset) {
-                    $failed_logins['entries'][] = $line;
-                    $failed_logins['count'] += 1;
-                    continue;
-                }
+    // Start from the newest entry in the file.
+    for ($key = $initial; $key >= 0; $key--) {
+        $line = trim($lines[ $key ]);
 
-                // Reduce the memory allocation by skipping unnecessary lines (RIGHT).
-                if ($limit > 0 && $processed > $limit) {
-                    $failed_logins['entries'][] = $line;
-                    $failed_logins['count'] += 1;
-                    continue;
-                }
+        // Skip lines that are clearly not JSON-encoded.
+        if (substr($line, 0, 1) !== '{') {
+            continue;
+        }
 
-                // Decode data only if necessary.
-                $login_data = @json_decode($line, true);
-                $processed++; /* count decoded data */
+        // Reduce the memory allocation by skipping unnecessary lines (LEFT).
+        if ($limit > 0 && $failed_logins['count'] < $offset) {
+            $failed_logins['entries'][] = $line;
+            $failed_logins['count'] += 1;
+            continue;
+        }
 
-                if (is_array($login_data)) {
-                    $login_data['attempt_date'] = date('r', $login_data['attempt_time']);
-                    $login_data['attempt_count'] = ( $key + 1 );
+        // Reduce the memory allocation by skipping unnecessary lines (RIGHT).
+        if ($limit > 0 && $processed > $limit) {
+            $failed_logins['entries'][] = $line;
+            $failed_logins['count'] += 1;
+            continue;
+        }
 
-                    if (!$login_data['user_agent']) {
-                        $login_data['user_agent'] = 'Unknown';
-                    }
+        // Decode data only if necessary.
+        $login_data = @json_decode($line, true);
+        $processed++; /* count decoded data */
 
-                    if (!isset($login_data['user_password'])) {
-                        $login_data['user_password'] = '';
-                    }
+        if (is_array($login_data)) {
+            $login_data['attempt_date'] = date('r', $login_data['attempt_time']);
+            $login_data['attempt_count'] = ( $key + 1 );
 
-                    $failed_logins['entries'][] = $login_data;
-                    $failed_logins['count'] += 1;
-                }
+            if (!$login_data['user_agent']) {
+                $login_data['user_agent'] = 'Unknown';
             }
 
-            // Calculate the different time between the first and last attempt.
-            if ($failed_logins['count'] > 0) {
-                $idx = abs($failed_logins['count'] - 1);
-                $last = $failed_logins['entries'][$idx];
-                $first = $failed_logins['entries'][0];
-
-                if (!is_array($last)) {
-                    $last = @json_decode($last, true);
-                }
-
-                if (!is_array($first)) {
-                    $first= @json_decode($first, true);
-                }
-
-                $failed_logins['last_attempt'] = $last['attempt_time'];
-                $failed_logins['first_attempt'] = $first['attempt_time'];
-                $failed_logins['diff_time'] = abs($failed_logins['last_attempt'] - $failed_logins['first_attempt']);
-
-                return $failed_logins;
+            if (!isset($login_data['user_password'])) {
+                $login_data['user_password'] = '';
             }
+
+            $failed_logins['entries'][] = $login_data;
+            $failed_logins['count'] += 1;
         }
     }
 
-    return false;
+    // Stop if the there is no data.
+    if ($failed_logins['count'] <= 0) {
+        return false;
+    }
+
+    // Calculate the different time between the first and last attempt.
+    $idx = abs($failed_logins['count'] - 1);
+    $last = $failed_logins['entries'][$idx];
+    $first = $failed_logins['entries'][0];
+
+    if (!is_array($last)) {
+        /* In case the JSON is not decoded yet */
+        $last = @json_decode($last, true);
+    }
+
+    if (!is_array($first)) {
+        /* In case the JSON is not decoded yet */
+        $first= @json_decode($first, true);
+    }
+
+    $failed_logins['last_attempt'] = $last['attempt_time'];
+    $failed_logins['first_attempt'] = $first['attempt_time'];
+    $failed_logins['diff_time'] = abs($last['attempt_time'] - $first['attempt_time']);
+
+    return $failed_logins;
 }
 
 /**
