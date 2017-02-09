@@ -19,7 +19,7 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  */
 function sucuriscan_page()
 {
-    SucuriScanInterface::check_permissions();
+    SucuriScanInterface::checkPageVisibility();
 
     // Process all form submissions.
     sucuriscan_integrity_form_submissions();
@@ -41,9 +41,9 @@ function sucuriscan_page()
  */
 function sucuriscan_ajax()
 {
-    SucuriScanInterface::check_permissions();
+    SucuriScanInterface::checkPageVisibility();
 
-    if (SucuriScanInterface::check_nonce()) {
+    if (SucuriScanInterface::checkNonce()) {
         sucuriscan_core_files_ajax();
         sucuriscan_audit_logs_ajax();
     }

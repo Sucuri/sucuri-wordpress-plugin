@@ -124,7 +124,7 @@ class SucuriScanCache extends SucuriScan
     private function datastoreFilePath($auto_create = false)
     {
         if (!is_null($this->datastore)) {
-            $folder_path = $this->datastore_folder_path();
+            $folder_path = $this->dataStorePath();
             $file_path = $folder_path . '/sucuri-' . $this->datastore . '.php';
 
             // Create the datastore parent directory.
@@ -223,7 +223,7 @@ class SucuriScanCache extends SucuriScan
         );
 
         if ($this->usable_datastore) {
-            $data_lines = SucuriScanFileInfo::file_lines($this->datastore_path);
+            $data_lines = SucuriScanFileInfo::fileLines($this->datastore_path);
 
             if (!empty($data_lines)) {
                 foreach ($data_lines as $line) {

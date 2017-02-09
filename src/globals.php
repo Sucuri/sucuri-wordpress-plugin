@@ -26,7 +26,7 @@ if (defined('SUCURISCAN')) {
      *
      * @var string
      */
-    $sucuriscan_action_prefix = SucuriScan::is_multisite() ? 'network_' : '';
+    $sucuriscan_action_prefix = SucuriScan::isMultiSite() ? 'network_' : '';
 
     /**
      * List an associative array with the sub-pages of this plugin.
@@ -152,7 +152,7 @@ if (defined('SUCURISCAN')) {
      * information to the Sucuri API service where a security and integrity scan
      * will be performed against the hashes provided and the official versions.
      */
-    add_action('sucuriscan_scheduled_scan', 'SucuriScan::run_scheduled_task');
+    add_action('sucuriscan_scheduled_scan', 'SucuriScan::runScheduledTask');
 
     /**
      * Initialize the execute of the main plugin's functions.
@@ -221,20 +221,25 @@ if (defined('SUCURISCAN')) {
             'xmlrpc_publish_post',
         );
 
-        if (SucuriScanOption::is_enabled(':xhr_monitor')) {
+        if (SucuriScanOption::isEnabled(':xhr_monitor')) {
             $sucuriscan_hooks[] = 'all';
         }
 
         foreach ($sucuriscan_hooks as $hook_name) {
-            $hook_func = 'SucuriScanHook::hook_' . $hook_name;
-            add_action($hook_name, $hook_func, 50, 5);
+            $hook_func = 'hook_' . $hook_name;
+            $hook_func = str_replace('_', "\x20", $hook_func);
+            $hook_func = ucwords($hook_func);
+            $hook_func = lcfirst($hook_func);
+            $hook_func = str_replace("\x20", '', $hook_func);
+
+            add_action($hook_name, 'SucuriScanHook::' . $hook_func, 50, 5);
         }
 
         if (SucuriScan::runAdminInit()) {
-            add_action('admin_init', 'SucuriScanHook::hook_undefined_actions');
+            add_action('admin_init', 'SucuriScanHook::hookUndefinedActions');
         }
 
-        add_action('login_form', 'SucuriScanHook::hook_undefined_actions');
+        add_action('login_form', 'SucuriScanHook::hookUndefinedActions');
     } else {
         SucuriScanInterface::error('Function call interceptors are not working properly.');
     }
@@ -248,7 +253,7 @@ if (defined('SUCURISCAN')) {
      * the plugin to execute the filesystem scans, the project integrity, and the
      * email notifications.
      */
-    add_action($sucuriscan_action_prefix . 'admin_notices', 'SucuriScanInterface::setup_notice');
+    add_action($sucuriscan_action_prefix . 'admin_notices', 'SucuriScanInterface::setupAlert');
 
     /**
      * Heartbeat API
@@ -259,10 +264,10 @@ if (defined('SUCURISCAN')) {
      * cases it may improve the performance of the site by reducing the quantity of
      * requests sent to the server per session.
      */
-    add_filter('init', 'SucuriScanHeartbeat::register_script', 1);
-    add_filter('heartbeat_settings', 'SucuriScanHeartbeat::update_settings');
-    add_filter('heartbeat_send', 'SucuriScanHeartbeat::respond_to_send', 10, 3);
-    add_filter('heartbeat_received', 'SucuriScanHeartbeat::respond_to_received', 10, 3);
-    add_filter('heartbeat_nopriv_send', 'SucuriScanHeartbeat::respond_to_send', 10, 3);
-    add_filter('heartbeat_nopriv_received', 'SucuriScanHeartbeat::respond_to_received', 10, 3);
+    add_filter('init', 'SucuriScanHeartbeat::registerScript', 1);
+    add_filter('heartbeat_settings', 'SucuriScanHeartbeat::updateSettings');
+    add_filter('heartbeat_send', 'SucuriScanHeartbeat::respondToSend', 10, 3);
+    add_filter('heartbeat_received', 'SucuriScanHeartbeat::respondToReceived', 10, 3);
+    add_filter('heartbeat_nopriv_send', 'SucuriScanHeartbeat::respondToSend', 10, 3);
+    add_filter('heartbeat_nopriv_received', 'SucuriScanHeartbeat::respondToReceived', 10, 3);
 }

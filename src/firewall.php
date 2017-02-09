@@ -356,10 +356,10 @@ function sucuriscan_firewall_clearcache($nonce)
  */
 function sucuriscan_firewall_page()
 {
-    SucuriScanInterface::check_permissions();
+    SucuriScanInterface::checkPageVisibility();
 
     // Process all form submissions.
-    $nonce = SucuriScanInterface::check_nonce();
+    $nonce = SucuriScanInterface::checkNonce();
     sucuriscan_firewall_form_submissions($nonce);
 
     // Get the dynamic values for the template variables.
@@ -383,9 +383,9 @@ function sucuriscan_firewall_page()
  */
 function sucuriscan_firewall_ajax()
 {
-    SucuriScanInterface::check_permissions();
+    SucuriScanInterface::checkPageVisibility();
 
-    if (SucuriScanInterface::check_nonce()) {
+    if (SucuriScanInterface::checkNonce()) {
         sucuriscan_firewall_auditlogs_ajax();
     }
 
@@ -410,7 +410,7 @@ function sucuriscan_firewall_form_submissions($nonce)
             $api_key = trim($api_key);
 
             if (SucuriScanAPI::isValidCloudproxyKey($api_key)) {
-                SucuriScanOption::update_option($option_name, $api_key);
+                SucuriScanOption::updateOption($option_name, $api_key);
                 SucuriScanInterface::info('CloudProxy API key saved successfully');
                 SucuriScanOption::setRevProxy('enable');
                 SucuriScanOption::setAddrHeader('HTTP_X_SUCURI_CLIENTIP');
@@ -421,7 +421,7 @@ function sucuriscan_firewall_form_submissions($nonce)
 
         // Delete CloudProxy API key from the plugin.
         if (SucuriScanRequest::post(':delete_wafkey') !== false) {
-            SucuriScanOption::delete_option($option_name);
+            SucuriScanOption::deleteOption($option_name);
             SucuriScanInterface::info('CloudProxy API key removed successfully');
             SucuriScanOption::setRevProxy('disable');
             SucuriScanOption::setAddrHeader('REMOTE_ADDR');

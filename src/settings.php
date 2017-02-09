@@ -19,10 +19,10 @@ class SucuriScanSettings extends SucuriScanOption
  */
 function sucuriscan_settings_page()
 {
-    SucuriScanInterface::check_permissions();
+    SucuriScanInterface::checkPageVisibility();
 
     $params = array();
-    $nonce = SucuriScanInterface::check_nonce();
+    $nonce = SucuriScanInterface::checkNonce();
 
     $params['PageTitle'] = 'Settings';
     $params['Settings.General'] = sucuriscan_settings_general($nonce);
@@ -45,9 +45,9 @@ function sucuriscan_settings_page()
  */
 function sucuriscan_settings_ajax()
 {
-    SucuriScanInterface::check_permissions();
+    SucuriScanInterface::checkPageVisibility();
 
-    if (SucuriScanInterface::check_nonce()) {
+    if (SucuriScanInterface::checkNonce()) {
         sucuriscan_settings_ignorescan_ajax();
         sucuriscan_settings_apiservice_https_ajax();
     }

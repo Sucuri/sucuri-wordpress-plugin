@@ -23,9 +23,9 @@ class SucuriScanMail extends SucuriScanOption
      *
      * @return boolean Whether the emails will be in HTML or Plain/Text.
      */
-    public static function prettify_mails()
+    public static function prettifyMails()
     {
-        return self::is_enabled(':prettify_mails');
+        return self::isEnabled(':prettify_mails');
     }
 
     /**
@@ -37,7 +37,7 @@ class SucuriScanMail extends SucuriScanOption
      * @param  array   $data_set Optional parameter to add more information to the notification.
      * @return boolean           Whether the email contents were sent successfully.
      */
-    public static function send_mail($email = '', $subject = '', $message = '', $data_set = array())
+    public static function sendMail($email = '', $subject = '', $message = '', $data_set = array())
     {
         $headers = array();
         $subject = ucwords(strtolower($subject));
@@ -61,7 +61,7 @@ class SucuriScanMail extends SucuriScanOption
         }
 
         // Check whether the email notifications will be sent in HTML or Plain/Text.
-        if (self::prettify_mails() || (isset($data_set['ForceHTML']) && $data_set['ForceHTML'])) {
+        if (self::prettifyMails() || (isset($data_set['ForceHTML']) && $data_set['ForceHTML'])) {
             $headers = array( 'content-type: text/html' );
             $data_set['PrettifyType'] = 'pretty';
             unset($data_set['ForceHTML']);
@@ -69,14 +69,14 @@ class SucuriScanMail extends SucuriScanOption
             $message = strip_tags($message);
         }
 
-        if (!self::emails_per_hour_reached() || $force || $debug) {
-            $message = self::prettify_mail($subject, $message, $data_set);
+        if (!self::emailsPerHourReached() || $force || $debug) {
+            $message = self::prettifyMail($subject, $message, $data_set);
 
             if ($debug) {
                 die($message);
             }
 
-            $subject = self::get_email_subject($subject);
+            $subject = self::getEmailSubject($subject);
 
             /**
              * WordPress uses a library named PHPMailer [1] to send emails through the
@@ -92,7 +92,7 @@ class SucuriScanMail extends SucuriScanOption
              *
              * @var boolean
              */
-            if (SucuriScanOption::is_enabled(':use_wpmail')) {
+            if (SucuriScanOption::isEnabled(':use_wpmail')) {
                 $mail_sent = wp_mail($email, $subject, $message, $headers);
             } else {
                 $headers = implode("\r\n", $headers);
@@ -100,10 +100,10 @@ class SucuriScanMail extends SucuriScanOption
             }
 
             if ($mail_sent) {
-                $emails_sent_num = (int) self::get_option(':emails_sent');
+                $emails_sent_num = (int) self::getOption(':emails_sent');
 
-                self::update_option(':emails_sent', $emails_sent_num + 1);
-                self::update_option(':last_email_at', time());
+                self::updateOption(':emails_sent', $emails_sent_num + 1);
+                self::updateOption(':last_email_at', time());
 
                 return true;
             }
@@ -118,9 +118,9 @@ class SucuriScanMail extends SucuriScanOption
      * @param  string $event The reason of the message that will be sent.
      * @return string        A text with the subject for the email alert.
      */
-    private static function get_email_subject($event = '')
+    private static function getEmailSubject($event = '')
     {
-        $subject = self::get_option(':email_subject');
+        $subject = self::getOption(':email_subject');
 
         /**
          * Probably a bad value in the options table. Delete the entry from the database
@@ -128,15 +128,15 @@ class SucuriScanMail extends SucuriScanOption
          * loop, but this is the easiest way to control this procedure.
          */
         if (!$subject) {
-            self::delete_option(':email_subject');
+            self::deleteOption(':email_subject');
 
-            return self::get_email_subject($event);
+            return self::getEmailSubject($event);
         }
 
         $subject = strip_tags($subject);
         $subject = str_replace(':event', $event, $subject);
-        $subject = str_replace(':domain', self::get_domain(), $subject);
-        $subject = str_replace(':remoteaddr', self::get_remote_addr(), $subject);
+        $subject = str_replace(':domain', self::getDomain(), $subject);
+        $subject = str_replace(':remoteaddr', self::getRemoteAddr(), $subject);
 
         /**
          * Extract user data from the current session.
@@ -173,7 +173,7 @@ class SucuriScanMail extends SucuriScanOption
      * @param  array  $data_set Optional parameter to add more information to the notification.
      * @return string           The message formatted in a HTML template.
      */
-    private static function prettify_mail($subject = '', $message = '', $data_set = array())
+    private static function prettifyMail($subject = '', $message = '', $data_set = array())
     {
         $prettify_type = isset($data_set['PrettifyType']) ? $data_set['PrettifyType'] : 'simple';
         $template_name = 'notification-' . $prettify_type;
@@ -210,11 +210,11 @@ class SucuriScanMail extends SucuriScanOption
         $mail_variables = array(
             'TemplateTitle' => 'Sucuri Alert',
             'Subject' => $subject,
-            'Website' => self::get_option('siteurl'),
-            'RemoteAddress' => self::get_remote_addr(),
+            'Website' => self::getOption('siteurl'),
+            'RemoteAddress' => self::getRemoteAddr(),
             'Message' => $message,
             'User' => $display_name,
-            'Time' => SucuriScan::current_datetime(),
+            'Time' => SucuriScan::currentDateTime(),
         );
 
         foreach ($data_set as $var_key => $var_value) {
@@ -229,19 +229,19 @@ class SucuriScanMail extends SucuriScanOption
      *
      * @return boolean Whether the quota emails per hour was reached.
      */
-    private static function emails_per_hour_reached()
+    private static function emailsPerHourReached()
     {
-        $max_per_hour = self::get_option(':emails_per_hour');
+        $max_per_hour = self::getOption(':emails_per_hour');
 
         if ($max_per_hour != 'unlimited') {
             // Check if we are still in that sixty minutes.
             $current_time = time();
-            $last_email_at = self::get_option(':last_email_at');
+            $last_email_at = self::getOption(':last_email_at');
             $diff_time = abs($current_time - $last_email_at);
 
             if ($diff_time <= 3600) {
                 // Check if the quantity of emails sent is bigger than the configured.
-                $emails_sent = (int) self::get_option(':emails_sent');
+                $emails_sent = (int) self::getOption(':emails_sent');
                 $max_per_hour = intval($max_per_hour);
 
                 if ($emails_sent >= $max_per_hour) {
@@ -249,7 +249,7 @@ class SucuriScanMail extends SucuriScanOption
                 }
             } else {
                 // Reset the counter of emails sent.
-                self::update_option(':emails_sent', 0);
+                self::updateOption(':emails_sent', 0);
             }
         }
 

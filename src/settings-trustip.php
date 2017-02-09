@@ -53,4 +53,3 @@ function sucuriscan_settings_trust_ip()
 
     return SucuriScanTemplate::getSection('settings-trustip', $params);
 }
-

@@ -30,7 +30,7 @@ function sucuriscan_settings_alert_recipients($nonce)
 {
     $params = array();
     $params['AlertSettings.Recipients'] = '';
-    $notify_to = SucuriScanOption::get_option(':notify_to');
+    $notify_to = SucuriScanOption::getOption(':notify_to');
     $emails = array();
 
     // If the recipient list is not empty, explode.
@@ -44,13 +44,13 @@ function sucuriscan_settings_alert_recipients($nonce)
         if (SucuriScanRequest::post(':save_recipient') !== false) {
             $new_email = SucuriScanRequest::post(':recipient');
 
-            if (SucuriScan::is_valid_email($new_email)) {
+            if (SucuriScan::isValidEmail($new_email)) {
                 $emails[] = $new_email;
                 $message = 'Sucuri will send email alerts to: <code>' . $new_email . '</code>';
 
-                SucuriScanOption::update_option(':notify_to', implode(',', $emails));
-                SucuriScanEvent::report_info_event($message);
-                SucuriScanEvent::notify_event('plugin_change', $message);
+                SucuriScanOption::updateOption(':notify_to', implode(',', $emails));
+                SucuriScanEvent::reportInfoEvent($message);
+                SucuriScanEvent::notifyEvent('plugin_change', $message);
                 SucuriScanInterface::info($message);
             } else {
                 SucuriScanInterface::error('Email format not supported.');
@@ -74,17 +74,17 @@ function sucuriscan_settings_alert_recipients($nonce)
                 $deleted_emails_str = implode(",\x20", $deleted_emails);
                 $message = 'Sucuri will not send email alerts to: <code>' . $deleted_emails_str . '</code>';
 
-                SucuriScanOption::update_option(':notify_to', implode(',', $emails));
-                SucuriScanEvent::report_info_event($message);
-                SucuriScanEvent::notify_event('plugin_change', $message);
+                SucuriScanOption::updateOption(':notify_to', implode(',', $emails));
+                SucuriScanEvent::reportInfoEvent($message);
+                SucuriScanEvent::notifyEvent('plugin_change', $message);
                 SucuriScanInterface::info($message);
             }
         }
 
         // Debug ability of the plugin to send email alerts correctly.
         if (SucuriScanRequest::post(':debug_email')) {
-            $recipients = SucuriScanOption::get_option(':notify_to');
-            SucuriScanMail::send_mail(
+            $recipients = SucuriScanOption::getOption(':notify_to');
+            SucuriScanMail::sendMail(
                 $recipients,
                 'Test Email Alert',
                 sprintf('Test email alert sent at %s', date('r')),
@@ -126,7 +126,7 @@ function sucuriscan_settings_alert_subject($nonce)
     // Process form submission to change the alert settings.
     if ($nonce) {
         if ($email_subject = SucuriScanRequest::post(':email_subject')) {
-            $current_value = SucuriScanOption::get_option(':email_subject');
+            $current_value = SucuriScanOption::getOption(':email_subject');
             $new_email_subject = false;
 
             /**
@@ -160,9 +160,9 @@ function sucuriscan_settings_alert_subject($nonce)
             ) {
                 $message = 'Email subject set to <code>' . $new_email_subject . '</code>';
 
-                SucuriScanOption::update_option(':email_subject', $new_email_subject);
-                SucuriScanEvent::report_info_event($message);
-                SucuriScanEvent::notify_event('plugin_change', $message);
+                SucuriScanOption::updateOption(':email_subject', $new_email_subject);
+                SucuriScanEvent::reportInfoEvent($message);
+                SucuriScanEvent::notifyEvent('plugin_change', $message);
                 SucuriScanInterface::info($message);
             }
         }
@@ -170,7 +170,7 @@ function sucuriscan_settings_alert_subject($nonce)
 
     // Build the HTML code for the interface.
     if (is_array($sucuriscan_email_subjects)) {
-        $email_subject = SucuriScanOption::get_option(':email_subject');
+        $email_subject = SucuriScanOption::getOption(':email_subject');
         $is_official_subject = false;
 
         foreach ($sucuriscan_email_subjects as $subject_format) {
@@ -214,9 +214,9 @@ function sucuriscan_settings_alert_perhour($nonce)
                 $per_hour_label = strtolower($sucuriscan_emails_per_hour[$per_hour]);
                 $message = 'Maximum alerts per hour set to <code>' . $per_hour_label . '</code>';
 
-                SucuriScanOption::update_option(':emails_per_hour', $per_hour);
-                SucuriScanEvent::report_info_event($message);
-                SucuriScanEvent::notify_event('plugin_change', $message);
+                SucuriScanOption::updateOption(':emails_per_hour', $per_hour);
+                SucuriScanEvent::reportInfoEvent($message);
+                SucuriScanEvent::notifyEvent('plugin_change', $message);
                 SucuriScanInterface::info($message);
             } else {
                 SucuriScanInterface::error('Invalid value for the maximum emails per hour.');
@@ -224,7 +224,7 @@ function sucuriscan_settings_alert_perhour($nonce)
         }
     }
 
-    $per_hour = SucuriScanOption::get_option(':emails_per_hour');
+    $per_hour = SucuriScanOption::getOption(':emails_per_hour');
     $per_hour_options = SucuriScanTemplate::selectOptions($sucuriscan_emails_per_hour, $per_hour);
     $params['AlertSettings.PerHour'] = $per_hour_options;
 
@@ -244,9 +244,9 @@ function sucuriscan_settings_alert_bruteforce($nonce)
             if (array_key_exists($maximum, $sucuriscan_maximum_failed_logins)) {
                 $message = 'Consider brute-force attack after <code>' . $maximum . '</code> failed logins per hour';
 
-                SucuriScanOption::update_option(':maximum_failed_logins', $maximum);
-                SucuriScanEvent::report_info_event($message);
-                SucuriScanEvent::notify_event('plugin_change', $message);
+                SucuriScanOption::updateOption(':maximum_failed_logins', $maximum);
+                SucuriScanEvent::reportInfoEvent($message);
+                SucuriScanEvent::notifyEvent('plugin_change', $message);
                 SucuriScanInterface::info($message);
             } else {
                 SucuriScanInterface::error('Invalid value for the brute-force alerts.');
@@ -254,7 +254,7 @@ function sucuriscan_settings_alert_bruteforce($nonce)
         }
     }
 
-    $maximum = SucuriScanOption::get_option(':maximum_failed_logins');
+    $maximum = SucuriScanOption::getOption(':maximum_failed_logins');
     $maximum_options = SucuriScanTemplate::selectOptions($sucuriscan_maximum_failed_logins, $maximum);
     $params['AlertSettings.BruteForce'] = $maximum_options;
 
@@ -278,12 +278,12 @@ function sucuriscan_settings_alert_events($nonce)
                 $option_value = SucuriScanRequest::post($alert_type, '(1|0)');
 
                 if ($option_value !== false) {
-                    $current_value = SucuriScanOption::get_option($alert_type);
+                    $current_value = SucuriScanOption::getOption($alert_type);
                     $option_value = ($option_value == 1) ? 'enabled' : 'disabled';
 
                     // Check that the option value was actually changed.
                     if ($current_value !== $option_value) {
-                        $written = SucuriScanOption::update_option($alert_type, $option_value);
+                        $written = SucuriScanOption::updateOption($alert_type, $option_value);
 
                         if ($written === true) {
                             $ucounter += 1;
@@ -295,8 +295,8 @@ function sucuriscan_settings_alert_events($nonce)
             if ($ucounter > 0) {
                 $message = 'A total of ' . $ucounter . ' alert events were changed';
 
-                SucuriScanEvent::report_info_event($message);
-                SucuriScanEvent::notify_event('plugin_change', $message);
+                SucuriScanEvent::reportInfoEvent($message);
+                SucuriScanEvent::notifyEvent('plugin_change', $message);
                 SucuriScanInterface::info($message);
             }
         }
@@ -308,7 +308,7 @@ function sucuriscan_settings_alert_events($nonce)
         $counter = 0;
 
         foreach ($sucuriscan_notify_options as $alert_type => $alert_label) {
-            $alert_value = SucuriScanOption::get_option($alert_type);
+            $alert_value = SucuriScanOption::getOption($alert_type);
             $checked = ($alert_value == 'enabled') ? 'checked="checked"' : '';
             $css_class = ($counter % 2 === 0) ? 'alternate' : '';
             $alert_icon = '';

@@ -10,7 +10,7 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
 
 function sucuriscan_settings_ignore_rules()
 {
-    $notify_new_site_content = SucuriScanOption::get_option(':notify_post_publication');
+    $notify_new_site_content = SucuriScanOption::getOption(':notify_post_publication');
 
     $template_variables = array(
         'IgnoreRules.MessageVisibility' => 'visible',
@@ -20,7 +20,7 @@ function sucuriscan_settings_ignore_rules()
 
     if ($notify_new_site_content == 'enabled') {
         $post_types = get_post_types();
-        $ignored_events = SucuriScanOption::get_ignored_events();
+        $ignored_events = SucuriScanOption::getIgnoredEvents();
 
         $template_variables['IgnoreRules.MessageVisibility'] = 'hidden';
         $template_variables['IgnoreRules.TableVisibility'] = 'visible';

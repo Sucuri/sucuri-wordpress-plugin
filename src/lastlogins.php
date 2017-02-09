@@ -21,10 +21,10 @@ class SucuriScanLastLogins extends SucuriScan
  */
 function sucuriscan_lastlogins_page()
 {
-    SucuriScanInterface::check_permissions();
+    SucuriScanInterface::checkPageVisibility();
 
     // Reset the file with the last-logins logs.
-    if (SucuriScanInterface::check_nonce()
+    if (SucuriScanInterface::checkNonce()
         && SucuriScanRequest::post(':reset_lastlogins') !== false
     ) {
         $file_path = sucuriscan_lastlogins_datastore_filepath();
@@ -76,7 +76,7 @@ function sucuriscan_lastlogins_admins()
             'AdminUsers.Email' => $admin->user_email,
             'AdminUsers.LastLogins' => '',
             'AdminUsers.RegisteredAt' => 'Unknown',
-            'AdminUsers.UserURL' => SucuriScan::admin_url('user-edit.php?user_id=' . $admin->ID),
+            'AdminUsers.UserURL' => SucuriScan::adminURL('user-edit.php?user_id=' . $admin->ID),
             'AdminUsers.NoLastLogins' => 'visible',
             'AdminUsers.NoLastLoginsTable' => 'hidden',
         );
@@ -165,8 +165,8 @@ function sucuriscan_lastlogins_all()
             'UserList.RemoteAddr' => $user->user_remoteaddr,
             'UserList.Hostname' => $user->user_hostname,
             'UserList.Datetime' => $user->user_lastlogin,
-            'UserList.TimeAgo' => SucuriScan::time_ago($user->user_lastlogin),
-            'UserList.UserURL' => SucuriScan::admin_url('user-edit.php?user_id=' . $user->user_id),
+            'UserList.TimeAgo' => SucuriScan::timeAgo($user->user_lastlogin),
+            'UserList.UserURL' => SucuriScan::adminURL('user-edit.php?user_id=' . $user->user_id),
             'UserList.CssClass' => $css_class,
         );
 
@@ -198,7 +198,7 @@ function sucuriscan_lastlogins_all()
  */
 function sucuriscan_lastlogins_datastore_filepath()
 {
-    return SucuriScan::datastore_folder_path('sucuri-lastlogins.php');
+    return SucuriScan::dataStorePath('sucuri-lastlogins.php');
 }
 
 /**
@@ -275,7 +275,7 @@ if (!function_exists('sucuri_set_lastlogin')) {
 
         if ($datastore_filepath) {
             $current_user = get_user_by('login', $user_login);
-            $remote_addr = SucuriScan::get_remote_addr();
+            $remote_addr = SucuriScan::getRemoteAddr();
 
             $login_info = array(
                 'user_id' => $current_user->ID,
@@ -312,7 +312,7 @@ function sucuriscan_get_logins($limit = 10, $offset = 0, $user_id = 0)
 
     if ($datastore_filepath) {
         $parsed_lines = 0;
-        $data_lines = SucuriScanFileInfo::file_lines($datastore_filepath);
+        $data_lines = SucuriScanFileInfo::fileLines($datastore_filepath);
 
         if ($data_lines) {
             /**
@@ -342,7 +342,7 @@ function sucuriscan_get_logins($limit = 10, $offset = 0, $user_id = 0)
                 $line = $reversed_lines[$i] ? trim($reversed_lines[$i]) : '';
 
                 // Check if the data is serialized (which we will consider as insecure).
-                if (SucuriScan::is_serialized($line)) {
+                if (SucuriScan::isSerialized($line)) {
                     $last_login = false; /* Do not unserialize; is unsafe. */
                 } else {
                     $last_login = @json_decode($line, true);
@@ -409,11 +409,11 @@ if (!function_exists('sucuri_login_redirect')) {
      */
     function sucuriscan_login_redirect($redirect_to = '', $request = null, $user = false)
     {
-        $login_url = !empty($redirect_to) ? $redirect_to : SucuriScan::admin_url();
+        $login_url = !empty($redirect_to) ? $redirect_to : SucuriScan::adminURL();
 
         if ($user instanceof WP_User
             && in_array('administrator', $user->roles)
-            && SucuriScanOption::is_enabled(':lastlogin_redirection')
+            && SucuriScanOption::isEnabled(':lastlogin_redirection')
         ) {
             $login_url = add_query_arg('sucuriscan_lastlogin', 1, $login_url);
         }
@@ -421,7 +421,7 @@ if (!function_exists('sucuri_login_redirect')) {
         return $login_url;
     }
 
-    if (SucuriScanOption::is_enabled(':lastlogin_redirection')) {
+    if (SucuriScanOption::isEnabled(':lastlogin_redirection')) {
         add_filter('login_redirect', 'sucuriscan_login_redirect', 10, 3);
     }
 }

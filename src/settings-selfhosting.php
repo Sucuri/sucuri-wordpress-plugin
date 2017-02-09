@@ -24,8 +24,8 @@ function sucuriscan_settings_selfhosting($nonce)
 
 function sucuriscan_selfhosting_fpath()
 {
-    $monitor = SucuriScanOption::get_option(':selfhosting_monitor');
-    $monitor_fpath = SucuriScanOption::get_option(':selfhosting_fpath');
+    $monitor = SucuriScanOption::getOption(':selfhosting_monitor');
+    $monitor_fpath = SucuriScanOption::getOption(':selfhosting_fpath');
 
     if ($monitor === 'enabled'
         && !empty($monitor_fpath)
@@ -58,10 +58,10 @@ function sucuriscan_settings_selfhosting_monitor($nonce)
             if (empty($monitor_fpath)) {
                 $message = 'Log exporter was disabled.';
 
-                SucuriScanEvent::report_info_event($message);
-                SucuriScanOption::delete_option(':selfhosting_fpath');
-                SucuriScanOption::update_option(':selfhosting_monitor', 'disabled');
-                SucuriScanEvent::notify_event('plugin_change', $message);
+                SucuriScanEvent::reportInfoEvent($message);
+                SucuriScanOption::deleteOption(':selfhosting_fpath');
+                SucuriScanOption::updateOption(':selfhosting_monitor', 'disabled');
+                SucuriScanEvent::notifyEvent('plugin_change', $message);
                 SucuriScanInterface::info($message);
             } elseif (strpos($monitor_fpath, $_SERVER['DOCUMENT_ROOT']) !== false) {
                 SucuriScanInterface::error('File should not be publicly accessible.');
@@ -73,17 +73,17 @@ function sucuriscan_settings_selfhosting_monitor($nonce)
                 @file_put_contents($monitor_fpath, '', LOCK_EX);
                 $message = 'Log exporter file path was set correctly.';
 
-                SucuriScanEvent::report_info_event($message);
-                SucuriScanOption::update_option(':selfhosting_monitor', 'enabled');
-                SucuriScanOption::update_option(':selfhosting_fpath', $monitor_fpath);
-                SucuriScanEvent::notify_event('plugin_change', $message);
+                SucuriScanEvent::reportInfoEvent($message);
+                SucuriScanOption::updateOption(':selfhosting_monitor', 'enabled');
+                SucuriScanOption::updateOption(':selfhosting_fpath', $monitor_fpath);
+                SucuriScanEvent::notifyEvent('plugin_change', $message);
                 SucuriScanInterface::info($message);
             }
         }
     }
 
-    $monitor = SucuriScanOption::get_option(':selfhosting_monitor');
-    $monitor_fpath = SucuriScanOption::get_option(':selfhosting_fpath');
+    $monitor = SucuriScanOption::getOption(':selfhosting_monitor');
+    $monitor_fpath = SucuriScanOption::getOption(':selfhosting_fpath');
 
     if ($monitor === 'disabled') {
         $params['SelfHostingMonitor.Status'] = 'Disabled';

@@ -8,15 +8,9 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     exit(1);
 }
 
-if (!class_exists('SucuriScanSiteCheck')) {
 class SucuriScanSiteCheck extends SucuriScanSettings
 {
-    public static function isEnabled()
-    {
-        return (bool) !self::isDisabled();
-    }
-
-    public static function isDisabled()
+    public static function hasBeenDisabled()
     {
         return (bool) (
             defined('SUCURISCAN_NO_SITECHECK')
@@ -32,14 +26,14 @@ class SucuriScanSiteCheck extends SucuriScanSettings
         $params['SiteCheck.IfEnabled'] = 'visible';
         $params['SiteCheck.IfDisabled'] = 'hidden';
 
-        if (SucuriScanSiteCheck::isDisabled()) {
+        if (self::hasBeenDisabled()) {
             $params['SiteCheck.StatusNum'] = '0';
             $params['SiteCheck.Status'] = 'Disabled';
             $params['SiteCheck.IfEnabled'] = 'hidden';
             $params['SiteCheck.IfDisabled'] = 'visible';
         }
 
-        $params['SiteCheck.Counter'] = SucuriScanOption::get_option(':sitecheck_counter');
+        $params['SiteCheck.Counter'] = SucuriScanOption::getOption(':sitecheck_counter');
 
         return SucuriScanTemplate::getSection('settings-sitecheck-status', $params);
     }
@@ -47,7 +41,7 @@ class SucuriScanSiteCheck extends SucuriScanSettings
     public static function cachePage($nonce)
     {
         $params = array();
-        $fpath = SucuriScan::datastore_folder_path('sucuri-sitecheck.php');
+        $fpath = SucuriScan::dataStorePath('sucuri-sitecheck.php');
 
         if ($nonce) {
             // Reset SiteCheck results cache.
@@ -56,7 +50,7 @@ class SucuriScanSiteCheck extends SucuriScanSettings
                     if (@unlink($fpath)) {
                         $message = 'Malware scanner cache was successfully reset.';
 
-                        SucuriScanEvent::report_debug_event($message);
+                        SucuriScanEvent::reportDebugEvent($message);
                         SucuriScanInterface::info($message);
                     } else {
                         SucuriScanInterface::error('Count not reset the cache, delete manually.');
@@ -67,7 +61,7 @@ class SucuriScanSiteCheck extends SucuriScanSettings
             }
         }
 
-        $params['SiteCheck.CacheSize'] = SucuriScan::human_filesize(@filesize($fpath));
+        $params['SiteCheck.CacheSize'] = SucuriScan::humanFileSize(@filesize($fpath));
         $params['SiteCheck.CacheLifeTime'] = SUCURISCAN_SITECHECK_LIFETIME;
 
         return SucuriScanTemplate::getSection('settings-sitecheck-cache', $params);
@@ -85,9 +79,9 @@ class SucuriScanSiteCheck extends SucuriScanSettings
                 if ($timeout <= SUCURISCAN_MAX_SITECHECK_TIMEOUT) {
                     $message = 'SiteCheck timeout set to <code>' . $timeout . '</code> seconds.';
 
-                    SucuriScanOption::update_option(':sitecheck_timeout', $timeout);
-                    SucuriScanEvent::report_info_event($message);
-                    SucuriScanEvent::notify_event('plugin_change', $message);
+                    SucuriScanOption::updateOption(':sitecheck_timeout', $timeout);
+                    SucuriScanEvent::reportInfoEvent($message);
+                    SucuriScanEvent::notifyEvent('plugin_change', $message);
                     SucuriScanInterface::info($message);
                 } else {
                     SucuriScanInterface::error('SiteCheck timeout in seconds is too high.');
@@ -96,9 +90,8 @@ class SucuriScanSiteCheck extends SucuriScanSettings
         }
 
         $params['MaxRequestTimeout'] = SUCURISCAN_MAX_SITECHECK_TIMEOUT;
-        $params['RequestTimeout'] = SucuriScanOption::get_option(':sitecheck_timeout') . ' seconds';
+        $params['RequestTimeout'] = SucuriScanOption::getOption(':sitecheck_timeout') . ' seconds';
 
         return SucuriScanTemplate::getSection('settings-sitecheck-timeout', $params);
     }
-}
 }

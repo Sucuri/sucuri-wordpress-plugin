@@ -37,8 +37,8 @@ function sucuriscan_core_files_ajax()
 function sucuriscan_core_files_data($send_email = false)
 {
     $affected_files = 0;
-    $site_version = SucuriScan::site_version();
-    $integrity_is_enabled = SucuriScanOption::is_enabled(':scan_checksums');
+    $site_version = SucuriScan::siteVersion();
+    $integrity_is_enabled = SucuriScanOption::isEnabled(':scan_checksums');
 
     $params = array(
         'CoreFiles.List' => '',
@@ -59,7 +59,7 @@ function sucuriscan_core_files_data($send_email = false)
     if ($site_version && $integrity_is_enabled) {
         // Check if there are added, removed, or modified files.
         $latest_hashes = sucuriscan_check_core_integrity($site_version);
-        $language = SucuriScanOption::get_option(':language');
+        $language = SucuriScanOption::getOption(':language');
         $params['CoreFiles.RemoteChecksumsURL'] =
             'https://api.wordpress.org/core/checksums/1.0/'
             . '?version=' . $site_version . '&locale=' . $language;
@@ -108,7 +108,7 @@ function sucuriscan_core_files_data($send_email = false)
                             'CoreFiles.StatusType' => $list_type,
                             'CoreFiles.FilePath' => $file_path,
                             'CoreFiles.FileSize' => $file_size,
-                            'CoreFiles.FileSizeHuman' => SucuriScan::human_filesize($file_size),
+                            'CoreFiles.FileSizeHuman' => SucuriScan::humanFileSize($file_size),
                             'CoreFiles.FileSizeNumber' => number_format($file_size),
                             'CoreFiles.ModifiedAt' => SucuriScan::datetime($file_info['modified_at']),
                             'CoreFiles.IsNotFixable' => $is_fixable_text,
@@ -135,7 +135,7 @@ function sucuriscan_core_files_data($send_email = false)
     if ($send_email === true) {
         if ($affected_files > 0) {
             $content = SucuriScanTemplate::getSection('corefiles-notification', $params);
-            $sent = SucuriScanEvent::notify_event('scan_checksums', $content);
+            $sent = SucuriScanEvent::notifyEvent('scan_checksums', $content);
 
             return $sent;
         }
@@ -155,11 +155,11 @@ function sucuriscan_core_files_data($send_email = false)
  */
 function sucuriscan_integrity_form_submissions()
 {
-    if (SucuriScanInterface::check_nonce()) {
+    if (SucuriScanInterface::checkNonce()) {
         // Force the execution of the filesystem scanner.
         if (SucuriScanRequest::post(':force_scan') !== false) {
-            SucuriScanEvent::notify_event('plugin_change', 'Filesystem scan forced at: ' . date('r'));
-            SucuriScanEvent::filesystem_scan(true);
+            SucuriScanEvent::notifyEvent('plugin_change', 'Filesystem scan forced at: ' . date('r'));
+            SucuriScanEvent::filesystemScan(true);
             sucuriscan_core_files_data(true);
             sucuriscan_posthack_updates_content(true);
         }
@@ -249,13 +249,13 @@ function sucuriscan_integrity_form_submissions()
 
                             switch ($action) {
                                 case 'restore':
-                                    SucuriScanEvent::report_info_event($message);
+                                    SucuriScanEvent::reportInfoEvent($message);
                                     break;
                                 case 'delete':
-                                    SucuriScanEvent::report_notice_event($message);
+                                    SucuriScanEvent::reportNoticeEvent($message);
                                     break;
                                 case 'fixed':
-                                    SucuriScanEvent::report_warning_event($message);
+                                    SucuriScanEvent::reportWarningEvent($message);
                                     break;
                             }
                         }
@@ -292,8 +292,8 @@ function sucuriscan_get_integrity_tree($dir = './', $recursive = false)
     $file_info->ignore_files = false;
     $file_info->ignore_directories = false;
     $file_info->run_recursively = $recursive;
-    $file_info->scan_interface = SucuriScanOption::get_option(':scan_interface');
-    $integrity_tree = $file_info->get_directory_tree_md5($dir, true);
+    $file_info->scan_interface = SucuriScanOption::getOption(':scan_interface');
+    $integrity_tree = $file_info->getDirectoryTreeMd5($dir, true);
 
     if (!$integrity_tree) {
         $integrity_tree = array();

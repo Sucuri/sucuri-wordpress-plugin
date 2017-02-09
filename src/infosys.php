@@ -19,7 +19,7 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  */
 function sucuriscan_infosys_page()
 {
-    SucuriScanInterface::check_permissions();
+    SucuriScanInterface::checkPageVisibility();
 
     // Process all form submissions.
     sucuriscan_infosys_form_submissions();
@@ -44,9 +44,9 @@ function sucuriscan_infosys_page()
  */
 function sucuriscan_infosys_ajax()
 {
-    SucuriScanInterface::check_permissions();
+    SucuriScanInterface::checkPageVisibility();
 
-    if (SucuriScanInterface::check_nonce()) {
+    if (SucuriScanInterface::checkNonce()) {
         sucuriscan_infosys_errorlogs_ajax();
     }
 
@@ -61,7 +61,7 @@ function sucuriscan_infosys_ajax()
  */
 function sucuriscan_infosys_htaccess()
 {
-    $htaccess_path = SucuriScan::get_htaccess_path();
+    $htaccess_path = SucuriScan::getHtaccessPath();
     $params = array(
         'HTAccess.Content' => '',
         'HTAccess.TextareaVisible' => 'hidden',
@@ -103,7 +103,7 @@ function sucuriscan_htaccess_is_standard($rules = false)
 {
     if ($rules === false) {
         $rules = '';
-        $htaccess_path = SucuriScan::get_htaccess_path();
+        $htaccess_path = SucuriScan::getHtaccessPath();
 
         if ($htaccess_path) {
             $rules = @file_get_contents($htaccess_path);
@@ -140,11 +140,11 @@ function sucuriscan_infosys_wpconfig()
     );
 
     $ignore_wp_rules = array('DB_PASSWORD');
-    $wp_config_path = SucuriScan::get_wpconfig_path();
+    $wp_config_path = SucuriScan::getWPConfigPath();
 
     if ($wp_config_path) {
         $wp_config_rules = array();
-        $wp_config_content = SucuriScanFileInfo::file_lines($wp_config_path);
+        $wp_config_content = SucuriScanFileInfo::fileLines($wp_config_path);
 
         // Parse the main configuration file and look for constants and global variables.
         foreach ((array) $wp_config_content as $line) {
@@ -288,7 +288,7 @@ function sucuriscan_show_cronjobs()
  */
 function sucuriscan_infosys_form_submissions()
 {
-    if (SucuriScanInterface::check_nonce()) {
+    if (SucuriScanInterface::checkNonce()) {
         // Modify the scheduled tasks (run now, remove, re-schedule).
         $allowed_actions = '(runnow|hourly|twicedaily|daily|remove)';
 
@@ -301,7 +301,7 @@ function sucuriscan_infosys_form_submissions()
                 // Force execution of the selected scheduled tasks.
                 if ($cronjob_action == 'runnow') {
                     SucuriScanInterface::info($total_tasks . ' tasks were scheduled to run in the next ten seconds.');
-                    SucuriScanEvent::report_notice_event(sprintf(
+                    SucuriScanEvent::reportNoticeEvent(sprintf(
                         'Force execution of scheduled tasks: (multiple entries): %s',
                         @implode(',', $cronjobs)
                     ));
@@ -312,7 +312,7 @@ function sucuriscan_infosys_form_submissions()
                 } // Force deletion of the selected scheduled tasks.
                 elseif ($cronjob_action == 'remove') {
                     SucuriScanInterface::info($total_tasks . ' scheduled tasks were removed.');
-                    SucuriScanEvent::report_notice_event(sprintf(
+                    SucuriScanEvent::reportNoticeEvent(sprintf(
                         'Delete scheduled tasks: (multiple entries): %s',
                         @implode(',', $cronjobs)
                     ));
@@ -326,7 +326,7 @@ function sucuriscan_infosys_form_submissions()
                     || $cronjob_action == 'daily'
                 ) {
                     SucuriScanInterface::info($total_tasks . ' tasks were re-scheduled to run <code>' . $cronjob_action . '</code>.');
-                    SucuriScanEvent::report_notice_event(sprintf(
+                    SucuriScanEvent::reportNoticeEvent(sprintf(
                         'Re-configure scheduled tasks %s: (multiple entries): %s',
                         $cronjob_action,
                         @implode(',', $cronjobs)
@@ -352,7 +352,7 @@ function sucuriscan_infosys_form_submissions()
 function sucuriscan_infosys_errorlogs()
 {
     $params = array();
-    $nonce = SucuriScanInterface::check_nonce();
+    $nonce = SucuriScanInterface::checkNonce();
 
     $params['ErrorLogs.Status'] = sucuriscan_infosys_errorlogs_status($nonce);
     $params['ErrorLogs.FileLimit'] = sucuriscan_infosys_errorlogs_flimit($nonce);
@@ -375,14 +375,14 @@ function sucuriscan_infosys_errorlogs_status($nonce)
             $action_d = $errorlogs . 'd';
             $message = 'Analysis of the error log file was <code>' . $action_d . '</code>';
 
-            SucuriScanOption::update_option(':parse_errorlogs', $action_d);
-            SucuriScanEvent::report_auto_event($message);
-            SucuriScanEvent::notify_event('plugin_change', $message);
+            SucuriScanOption::updateOption(':parse_errorlogs', $action_d);
+            SucuriScanEvent::reportAutoEvent($message);
+            SucuriScanEvent::notifyEvent('plugin_change', $message);
             SucuriScanInterface::info($message);
         }
     }
 
-    if (SucuriScanOption::is_enabled(':parse_errorlogs')) {
+    if (SucuriScanOption::isEnabled(':parse_errorlogs')) {
         $params['ErrorLogs.Status'] = 'Enabled';
         $params['ErrorLogs.SwitchText'] = 'Disable';
         $params['ErrorLogs.SwitchValue'] = 'disable';
@@ -401,14 +401,14 @@ function sucuriscan_infosys_errorlogs_flimit($nonce)
         if ($limit = SucuriScanRequest::post(':errorlogs_limit', '[0-9]+')) {
             $message = 'Error logs file limit set to <code>' . $limit . '</code> lines.';
 
-            SucuriScanOption::update_option(':errorlogs_limit', $limit);
-            SucuriScanEvent::report_auto_event($message);
-            SucuriScanEvent::notify_event('plugin_change', $message);
+            SucuriScanOption::updateOption(':errorlogs_limit', $limit);
+            SucuriScanEvent::reportAutoEvent($message);
+            SucuriScanEvent::notifyEvent('plugin_change', $message);
             SucuriScanInterface::info($message);
         }
     }
 
-    $params['ErrorLogs.LogsLimit'] = SucuriScanOption::get_option(':errorlogs_limit');
+    $params['ErrorLogs.LogsLimit'] = SucuriScanOption::getOption(':errorlogs_limit');
 
     return SucuriScanTemplate::getSection('infosys-errorlogs-flimit', $params);
 }
@@ -426,8 +426,8 @@ function sucuriscan_infosys_errorlogs_ajax()
         $response = '';
 
         // Scan the project and get the ignored paths.
-        if (SucuriScanOption::is_enabled(':parse_errorlogs')) {
-            $fname = SucuriScan::ini_get('error_log');
+        if (SucuriScanOption::isEnabled(':parse_errorlogs')) {
+            $fname = SucuriScan::iniGet('error_log');
             $fpath = $fname ? @realpath(ABSPATH . '/' . $fname) : false;
 
             if ($fpath !== false
@@ -435,9 +435,9 @@ function sucuriscan_infosys_errorlogs_ajax()
                 && file_exists($fpath)
                 && is_readable($fpath)
             ) {
-                $limit = SucuriScanOption::get_option(':errorlogs_limit');
-                $flines = SucuriScanFileInfo::tail_file($fpath, $limit);
-                $error_logs = SucuriScanFSScanner::parse_error_logs($flines);
+                $limit = SucuriScanOption::getOption(':errorlogs_limit');
+                $flines = SucuriScanFileInfo::tailFile($fpath, $limit);
+                $error_logs = SucuriScanFSScanner::parseErrorLogs($flines);
                 $error_logs = array_reverse($error_logs);
                 $counter = 0;
 
@@ -486,7 +486,7 @@ function sucuriscan_server_info()
     $info_vars = array(
         'Plugin_version' => SUCURISCAN_VERSION,
         'Plugin_checksum' => SUCURISCAN_PLUGIN_CHECKSUM,
-        'Last_filesystem_scan' => SucuriScanFSScanner::get_filesystem_runtime(true),
+        'Last_filesystem_scan' => SucuriScanFSScanner::getFilesystemRuntime(true),
         'Datetime_and_Timezone' => '',
         'Operating_system' => sprintf('%s (%d Bit)', PHP_OS, PHP_INT_SIZE * 8),
         'Server' => 'Unknown',
@@ -499,8 +499,8 @@ function sucuriscan_server_info()
 
     $info_vars['Datetime_and_Timezone'] = sprintf(
         '%s (GMT %s)',
-        SucuriScan::current_datetime(),
-        SucuriScanOption::get_option('gmt_offset')
+        SucuriScan::currentDateTime(),
+        SucuriScanOption::getOption('gmt_offset')
     );
 
     if (defined('WP_DEBUG') && WP_DEBUG) {
@@ -536,7 +536,7 @@ function sucuriscan_server_info()
     );
 
     foreach ($field_names as $php_flag) {
-        $php_flag_value = SucuriScan::ini_get($php_flag);
+        $php_flag_value = SucuriScan::iniGet($php_flag);
         $php_flag_name = 'PHP_' . $php_flag;
         $info_vars[$php_flag_name] = $php_flag_value ? $php_flag_value : 'N/A';
     }
@@ -560,4 +560,3 @@ function sucuriscan_server_info()
 
     return SucuriScanTemplate::getSection('infosys-serverinfo', $params);
 }
-

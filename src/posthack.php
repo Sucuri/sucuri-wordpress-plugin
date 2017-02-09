@@ -15,7 +15,7 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  */
 function sucuriscan_posthack_page()
 {
-    SucuriScanInterface::check_permissions();
+    SucuriScanInterface::checkPageVisibility();
 
     $process_form = sucuriscan_posthack_process_form();
 
@@ -36,9 +36,9 @@ function sucuriscan_posthack_page()
  */
 function sucuriscan_posthack_ajax()
 {
-    SucuriScanInterface::check_permissions();
+    SucuriScanInterface::checkPageVisibility();
 
-    if (SucuriScanInterface::check_nonce()) {
+    if (SucuriScanInterface::checkNonce()) {
         sucuriscan_posthack_plugins_ajax();
         sucuriscan_posthack_updates_ajax();
     }
@@ -55,7 +55,7 @@ function sucuriscan_posthack_process_form()
 {
     $process_form = SucuriScanRequest::post(':process_form', '(0|1)');
 
-    if (SucuriScanInterface::check_nonce()
+    if (SucuriScanInterface::checkNonce()
         && $process_form !== false
     ) {
         if ($process_form === '1') {
@@ -84,11 +84,11 @@ function sucuriscan_update_secret_keys($process_form = false)
 
     // Update all WordPress secret keys.
     if ($process_form && SucuriScanRequest::post(':update_wpconfig', '1')) {
-        $wpconfig_process = SucuriScanEvent::set_new_config_keys();
+        $wpconfig_process = SucuriScanEvent::setNewConfigKeys();
 
         if ($wpconfig_process) {
             $params['WPConfigUpdate.Visibility'] = 'visible';
-            SucuriScanEvent::report_notice_event('Generate new security keys');
+            SucuriScanEvent::reportNoticeEvent('Generate new security keys');
 
             if ($wpconfig_process['updated'] === true) {
                 SucuriScanInterface::info('Secret keys updated successfully (summary of the operation bellow).');
@@ -110,7 +110,7 @@ function sucuriscan_update_secret_keys($process_form = false)
     }
 
     // Display the current status of the security keys.
-    $current_keys = SucuriScanOption::get_security_keys();
+    $current_keys = SucuriScanOption::getSecurityKeys();
     $counter = 0;
 
     foreach ($current_keys as $key_status => $key_list) {
@@ -248,7 +248,7 @@ function sucuriscan_reset_user_password($process_form = false)
             foreach ($user_identifiers as $user_id) {
                 $user_id = intval($user_id);
 
-                if (SucuriScanEvent::set_new_password($user_id)) {
+                if (SucuriScanEvent::setNewPassword($user_id)) {
                     $pwd_changed[] = $user_id;
                 } else {
                     $pwd_not_changed[] = $user_id;
@@ -258,7 +258,7 @@ function sucuriscan_reset_user_password($process_form = false)
             if (!empty($pwd_changed)) {
                 $message = 'Password changed for user identifiers <code>' . @implode(', ', $pwd_changed) . '</code>';
 
-                SucuriScanEvent::report_notice_event($message);
+                SucuriScanEvent::reportNoticeEvent($message);
                 SucuriScanInterface::info($message);
             }
 
@@ -437,7 +437,7 @@ function sucuriscan_posthack_updates_content($send_email = false)
     if ($send_email === true) {
         $params = array('AvailableUpdates.Content' => $response);
         $content = SucuriScanTemplate::getSection('posthack-updates-notification', $params);
-        $sent = SucuriScanEvent::notify_event('available_updates', $content);
+        $sent = SucuriScanEvent::notifyEvent('available_updates', $content);
 
         return $sent;
     }
@@ -514,7 +514,7 @@ function sucuriscan_posthack_reinstall_plugins($process_form = false)
                     // First, remove all files/sub-folders from the plugin's directory.
                     if (substr_count($plugin_path, '/') >= 1) {
                         $plugin_directory = dirname(WP_PLUGIN_DIR . '/' . $plugin_path);
-                        $file_info->remove_directory_tree($plugin_directory);
+                        $file_info->removeDirectoryTree($plugin_directory);
                     }
 
                     // Install a fresh copy of the plugin's files.
@@ -523,9 +523,9 @@ function sucuriscan_posthack_reinstall_plugins($process_form = false)
                         $upgrader = new Plugin_Upgrader($upgrader_skin);
                         $upgrader->install($plugin_info['download_link']);
 
-                        SucuriScanEvent::report_notice_event('Plugin re-installed: ' . $plugin_path);
+                        SucuriScanEvent::reportNoticeEvent('Plugin re-installed: ' . $plugin_path);
                     } catch (Exception $exception) {
-                        SucuriScanEvent::report_exception($exception);
+                        SucuriScanEvent::reportException($exception);
                     }
                 } else {
                     SucuriScanInterface::error('Connection with the WordPress plugin market failed.');

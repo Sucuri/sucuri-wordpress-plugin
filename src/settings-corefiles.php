@@ -23,14 +23,14 @@ function sucuriscan_settings_corefiles_status($nonce)
             $action_d = $scan_checksums . 'd';
             $message = 'File system scanner for file integrity was <code>' . $action_d . '</code>';
 
-            SucuriScanOption::update_option(':scan_checksums', $action_d);
-            SucuriScanEvent::report_auto_event($message);
-            SucuriScanEvent::notify_event('plugin_change', $message);
+            SucuriScanOption::updateOption(':scan_checksums', $action_d);
+            SucuriScanEvent::reportAutoEvent($message);
+            SucuriScanEvent::notifyEvent('plugin_change', $message);
             SucuriScanInterface::info($message);
         }
     }
 
-    if (SucuriScanOption::is_enabled(':scan_checksums')) {
+    if (SucuriScanOption::isEnabled(':scan_checksums')) {
         $params['Integrity.StatusNum'] = '1';
         $params['Integrity.Status'] = 'Enabled';
         $params['Integrity.SwitchText'] = 'Disable';
@@ -52,9 +52,9 @@ function sucuriscan_settings_corefiles_language($nonce)
             if (array_key_exists($language, $languages)) {
                 $message = 'Language for the core integrity checks set to <code>' . $language . '</code>';
 
-                SucuriScanOption::update_option(':language', $language);
-                SucuriScanEvent::report_auto_event($message);
-                SucuriScanEvent::notify_event('plugin_change', $message);
+                SucuriScanOption::updateOption(':language', $language);
+                SucuriScanEvent::reportAutoEvent($message);
+                SucuriScanEvent::notifyEvent('plugin_change', $message);
                 SucuriScanInterface::info($message);
             } else {
                 SucuriScanInterface::error('Selected language is not supported.');
@@ -62,7 +62,7 @@ function sucuriscan_settings_corefiles_language($nonce)
         }
     }
 
-    $language = SucuriScanOption::get_option(':language');
+    $language = SucuriScanOption::getOption(':language');
     $params['Integrity.LanguageDropdown'] = SucuriScanTemplate::selectOptions($languages, $language);
     $params['Integrity.WordPressLocale'] = get_locale();
 
@@ -72,7 +72,7 @@ function sucuriscan_settings_corefiles_language($nonce)
 function sucuriscan_settings_corefiles_cache($nonce)
 {
     $params = array();
-    $fpath = SucuriScan::datastore_folder_path('sucuri-integrity.php');
+    $fpath = SucuriScan::dataStorePath('sucuri-integrity.php');
 
     if ($nonce) {
         // Reset core integrity files marked as fixed
@@ -81,7 +81,7 @@ function sucuriscan_settings_corefiles_cache($nonce)
                 if (@unlink($fpath)) {
                     $message = 'Core integrity files marked as fixed were successfully reset.';
 
-                    SucuriScanEvent::report_debug_event($message);
+                    SucuriScanEvent::reportDebugEvent($message);
                     SucuriScanInterface::info($message);
                 } else {
                     SucuriScanInterface::error('Count not reset the cache, delete manually.');
@@ -92,7 +92,7 @@ function sucuriscan_settings_corefiles_cache($nonce)
         }
     }
 
-    $params['CoreFiles.CacheSize'] = SucuriScan::human_filesize(@filesize($fpath));
+    $params['CoreFiles.CacheSize'] = SucuriScan::humanFileSize(@filesize($fpath));
     $params['CoreFiles.CacheLifeTime'] = SUCURISCAN_SITECHECK_LIFETIME;
     $params['CoreFiles.TableVisibility'] = 'hidden';
     $params['CoreFiles.IgnoredFiles'] = '';

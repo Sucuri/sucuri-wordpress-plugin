@@ -16,15 +16,15 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
 function sucuriscan_settings_heartbeat()
 {
     // Current values set in the options table.
-    $heartbeat_status = SucuriScanOption::get_option(':heartbeat');
-    $heartbeat_pulse = SucuriScanOption::get_option(':heartbeat_pulse');
-    $heartbeat_interval = SucuriScanOption::get_option(':heartbeat_interval');
-    $heartbeat_autostart = SucuriScanOption::get_option(':heartbeat_autostart');
+    $heartbeat_status = SucuriScanOption::getOption(':heartbeat');
+    $heartbeat_pulse = SucuriScanOption::getOption(':heartbeat_pulse');
+    $heartbeat_interval = SucuriScanOption::getOption(':heartbeat_interval');
+    $heartbeat_autostart = SucuriScanOption::getOption(':heartbeat_autostart');
 
     // Allowed values for each setting.
-    $statuses_allowed = SucuriScanHeartbeat::statuses_allowed();
-    $pulses_allowed = SucuriScanHeartbeat::pulses_allowed();
-    $intervals_allowed = SucuriScanHeartbeat::intervals_allowed();
+    $statuses_allowed = SucuriScanHeartbeat::statusesAllowed();
+    $pulses_allowed = SucuriScanHeartbeat::pulsesAllowed();
+    $intervals_allowed = SucuriScanHeartbeat::intervalsAllowed();
 
     // HTML select form fields.
     $heartbeat_options = SucuriScanTemplate::selectOptions($statuses_allowed, $heartbeat_status);

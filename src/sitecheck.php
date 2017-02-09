@@ -17,13 +17,13 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  */
 function sucuriscan_scanner_page()
 {
-    SucuriScanInterface::check_permissions();
+    SucuriScanInterface::checkPageVisibility();
 
     $params = array();
     $cache = new SucuriScanCache('sitecheck');
     $scan_results = $cache->get('scan_results', SUCURISCAN_SITECHECK_LIFETIME, 'array');
     $report_results = (bool) ($scan_results && !empty($scan_results));
-    $nonce = SucuriScanInterface::check_nonce();
+    $nonce = SucuriScanInterface::checkNonce();
 
     // Retrieve SiteCheck scan results if user submits the form.
     if ($nonce && SucuriScanRequest::post(':malware_scan')) {
@@ -70,9 +70,9 @@ function sucuriscan_scanner_page()
  */
 function sucuriscan_scanner_ajax()
 {
-    SucuriScanInterface::check_permissions();
+    SucuriScanInterface::checkPageVisibility();
 
-    if (SucuriScanInterface::check_nonce()) {
+    if (SucuriScanInterface::checkNonce()) {
         sucuriscan_scanner_modfiles_ajax();
     }
 
@@ -87,7 +87,7 @@ function sucuriscan_scanner_ajax()
  */
 function sucuriscan_sitecheck_info($scan_results = array())
 {
-    $tld = SucuriScan::get_domain();
+    $tld = SucuriScan::getDomain();
 
     if ($custom = SucuriScanRequest::get('s')) {
         $tld = SucuriScan::escape($custom);
@@ -134,8 +134,8 @@ function sucuriscan_sitecheck_info($scan_results = array())
 
     if (is_array($scan_results) && !empty($scan_results)) {
         // Increase the malware scan counter.
-        $sitecheck_counter = (int) SucuriScanOption::get_option(':sitecheck_counter');
-        SucuriScanOption::update_option(':sitecheck_counter', $sitecheck_counter + 1);
+        $sitecheck_counter = (int) SucuriScanOption::getOption(':sitecheck_counter');
+        SucuriScanOption::updateOption(':sitecheck_counter', $sitecheck_counter + 1);
         add_thickbox();
 
         $params = sucuriscan_sitecheck_scanner_results($scan_results, $params);
@@ -219,7 +219,7 @@ function sucuriscan_sitecheck_website_details($scan_results = false, $params = a
     $secvars = array(
         'UpdateWebsiteButtonVisibility' => 'hidden',
         'VersionNumberOfTheUpdate' => '0.0',
-        'AdminUrlForUpdates' => SucuriScan::admin_url('update-core.php'),
+        'AdminUrlForUpdates' => SucuriScan::adminURL('update-core.php'),
         'GenericInformationList' => '',
         'NoAppDetailsVisibility' => 'visible',
         'ApplicationDetailsList' => '',
@@ -280,7 +280,7 @@ function sucuriscan_sitecheck_general_information($scan_results = false, $secvar
     );
 
     if (isset($scan_results['SCAN'])) {
-        $scan_results['SCAN']['WP_VERSION'] = array(SucuriScan::site_version());
+        $scan_results['SCAN']['WP_VERSION'] = array(SucuriScan::siteVersion());
         $scan_results['SCAN']['PHP_VERSION'] = array(phpversion());
 
         foreach ($possible_keys as $result_key => $result_title) {

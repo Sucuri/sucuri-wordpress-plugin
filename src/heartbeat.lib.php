@@ -22,17 +22,16 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  */
 class SucuriScanHeartbeat extends SucuriScanOption
 {
-
     /**
      * Stop execution of the heartbeat API in certain parts of the site.
      *
      * @return void
      */
-    public static function register_script()
+    public static function registerScript()
     {
         global $pagenow;
 
-        $status = SucuriScanOption::get_option(':heartbeat');
+        $status = SucuriScanOption::getOption(':heartbeat');
 
         // Enable heartbeat everywhere.
         if ($status == 'enabled') {
@@ -64,13 +63,13 @@ class SucuriScanHeartbeat extends SucuriScanOption
      * @param  array $settings Heartbeat settings.
      * @return array           Updated version of the heartbeat settings.
      */
-    public static function update_settings($settings = array())
+    public static function updateSettings($settings = array())
     {
-        $pulse = SucuriScanOption::get_option(':heartbeat_pulse');
-        $autostart = SucuriScanOption::get_option(':heartbeat_autostart');
+        $pulse = SucuriScanOption::getOption(':heartbeat_pulse');
+        $autostart = SucuriScanOption::getOption(':heartbeat_autostart');
 
         if ($pulse < 15 || $pulse > 60) {
-            SucuriScanOption::delete_option(':heartbeat_pulse');
+            SucuriScanOption::deleteOption(':heartbeat_pulse');
             $pulse = 15;
         }
 
@@ -88,9 +87,9 @@ class SucuriScanHeartbeat extends SucuriScanOption
      * @param  string $screen_id Identifier of the screen the heartbeat occurred on.
      * @return array             Response with new data.
      */
-    public static function respond_to_received($response = array(), $data = array(), $screen_id = '')
+    public static function respondToReceived($response = array(), $data = array(), $screen_id = '')
     {
-        $interval = SucuriScanOption::get_option(':heartbeat_interval');
+        $interval = SucuriScanOption::getOption(':heartbeat_interval');
 
         if ($interval == 'slow'
             || $interval == 'fast'
@@ -98,7 +97,7 @@ class SucuriScanHeartbeat extends SucuriScanOption
         ) {
             $response['heartbeat_interval'] = $interval;
         } else {
-            SucuriScanOption::delete_option(':heartbeat_interval');
+            SucuriScanOption::deleteOption(':heartbeat_interval');
         }
 
         return $response;
@@ -111,7 +110,7 @@ class SucuriScanHeartbeat extends SucuriScanOption
      * @param  string $screen_id Identifier of the screen the heartbeat occurred on.
      * @return array             Response with new data.
      */
-    public static function respond_to_send($response = array(), $screen_id = '')
+    public static function respondToSend($response = array(), $screen_id = '')
     {
         return $response;
     }
@@ -121,7 +120,7 @@ class SucuriScanHeartbeat extends SucuriScanOption
      *
      * @return array Allowed values for the heartbeat status.
      */
-    public static function statuses_allowed()
+    public static function statusesAllowed()
     {
         return array(
             'enabled' => 'Enable everywhere',
@@ -136,7 +135,7 @@ class SucuriScanHeartbeat extends SucuriScanOption
      *
      * @return array Allowed values for the heartbeat intervals.
      */
-    public static function intervals_allowed()
+    public static function intervalsAllowed()
     {
         return array(
             'slow' => 'Slow interval',
@@ -150,7 +149,7 @@ class SucuriScanHeartbeat extends SucuriScanOption
      *
      * @return array Allowed values for the heartbeat pulses.
      */
-    public static function pulses_allowed()
+    public static function pulsesAllowed()
     {
         $pulses = array();
 

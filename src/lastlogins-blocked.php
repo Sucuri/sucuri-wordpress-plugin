@@ -16,7 +16,7 @@ class SucuriScanBlockedUsers extends SucuriScanLastLogins
         $output['BlockedUsers.List'] = '';
         $output['BlockedUsers.NoItemsVisibility'] = 'visible';
 
-        if (SucuriScanInterface::check_nonce()) {
+        if (SucuriScanInterface::checkNonce()) {
             $unblockUsers = SucuriScanRequest::post(':unblock_user', '_array');
 
             if (is_array($unblockUsers) && !empty($unblockUsers)) {

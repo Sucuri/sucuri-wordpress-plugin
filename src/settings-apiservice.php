@@ -44,14 +44,14 @@ function sucuriscan_settings_apiservice_status($nonce)
             $action_d = $api_service . 'd';
             $message = 'API service communication was <code>' . $action_d . '</code>';
 
-            SucuriScanEvent::report_info_event($message);
-            SucuriScanEvent::notify_event('plugin_change', $message);
-            SucuriScanOption::update_option(':api_service', $action_d);
+            SucuriScanEvent::reportInfoEvent($message);
+            SucuriScanEvent::notifyEvent('plugin_change', $message);
+            SucuriScanOption::updateOption(':api_service', $action_d);
             SucuriScanInterface::info($message);
         }
     }
 
-    $api_service = SucuriScanOption::get_option(':api_service');
+    $api_service = SucuriScanOption::getOption(':api_service');
 
     if ($api_service === 'disabled') {
         $params['ApiStatus.StatusNum'] = '0';
@@ -92,7 +92,6 @@ function sucuriscan_settings_apiservice_proxy($nonce)
             $params['APIProxy.Password'] = $proxy_password;
             $params['APIProxy.PasswordType'] = 'info';
             $params['APIProxy.PasswordText'] = 'hidden';
-
         }
     }
 
@@ -117,9 +116,9 @@ function sucuriscan_settings_apiservice_ssl($nonce)
             if (array_key_exists($verify_ssl_cert, $sucuriscan_verify_ssl_cert)) {
                 $message = 'SSL certificate verification for API calls set to <code>' . $verify_ssl_cert . '</code>';
 
-                SucuriScanOption::update_option(':verify_ssl_cert', $verify_ssl_cert);
-                SucuriScanEvent::report_warning_event($message);
-                SucuriScanEvent::notify_event('plugin_change', $message);
+                SucuriScanOption::updateOption(':verify_ssl_cert', $verify_ssl_cert);
+                SucuriScanEvent::reportWarningEvent($message);
+                SucuriScanEvent::notifyEvent('plugin_change', $message);
                 SucuriScanInterface::info($message);
             } else {
                 SucuriScanInterface::error('Invalid value for the SSL certificate verification.');
@@ -127,7 +126,7 @@ function sucuriscan_settings_apiservice_ssl($nonce)
         }
     }
 
-    $verify_ssl_cert = SucuriScanOption::get_option(':verify_ssl_cert');
+    $verify_ssl_cert = SucuriScanOption::getOption(':verify_ssl_cert');
     $params['VerifySSLCertOptions'] = SucuriScanTemplate::selectOptions(
         $sucuriscan_verify_ssl_cert,
         $verify_ssl_cert
@@ -158,9 +157,9 @@ function sucuriscan_settings_apiservice_handler($nonce)
             if (array_key_exists($api_handler, $sucuriscan_api_handlers)) {
                 $message = 'API request handler set to <code>' . $api_handler . '</code>';
 
-                SucuriScanOption::update_option(':api_handler', $api_handler);
-                SucuriScanEvent::report_warning_event($message);
-                SucuriScanEvent::notify_event('plugin_change', $message);
+                SucuriScanOption::updateOption(':api_handler', $api_handler);
+                SucuriScanEvent::reportWarningEvent($message);
+                SucuriScanEvent::notifyEvent('plugin_change', $message);
                 SucuriScanInterface::info($message);
             } else {
                 SucuriScanInterface::error('Invalid value for the API request handler.');
@@ -168,7 +167,7 @@ function sucuriscan_settings_apiservice_handler($nonce)
         }
     }
 
-    $api_handler = SucuriScanOption::get_option(':api_handler');
+    $api_handler = SucuriScanOption::getOption(':api_handler');
     $params['ApiHandlerOptions'] = SucuriScanTemplate::selectOptions(
         $sucuriscan_api_handlers,
         $api_handler
@@ -189,9 +188,9 @@ function sucuriscan_settings_apiservice_timeout($nonce)
             if ($timeout <= SUCURISCAN_MAX_REQUEST_TIMEOUT) {
                 $message = 'API request timeout set to <code>' . $timeout . '</code> seconds.';
 
-                SucuriScanOption::update_option(':request_timeout', $timeout);
-                SucuriScanEvent::report_info_event($message);
-                SucuriScanEvent::notify_event('plugin_change', $message);
+                SucuriScanOption::updateOption(':request_timeout', $timeout);
+                SucuriScanEvent::reportInfoEvent($message);
+                SucuriScanEvent::notifyEvent('plugin_change', $message);
                 SucuriScanInterface::info($message);
             } else {
                 SucuriScanInterface::error('API request timeout in seconds is too high.');
@@ -200,7 +199,7 @@ function sucuriscan_settings_apiservice_timeout($nonce)
     }
 
     $params['MaxRequestTimeout'] = SUCURISCAN_MAX_REQUEST_TIMEOUT;
-    $params['RequestTimeout'] = SucuriScanOption::get_option(':request_timeout') . ' seconds';
+    $params['RequestTimeout'] = SucuriScanOption::getOption(':request_timeout') . ' seconds';
 
     return SucuriScanTemplate::getSection('settings-apiservice-timeout', $params);
 }
@@ -223,14 +222,14 @@ function sucuriscan_settings_apiservice_https($nonce)
         if ($api_protocol = SucuriScanRequest::post(':api_protocol', 'http(s)?')) {
             $message = 'API communication protocol was set to <code>' . strtoupper($api_protocol) . '</code>';
 
-            SucuriScanEvent::report_info_event($message);
-            SucuriScanEvent::notify_event('plugin_change', $message);
-            SucuriScanOption::update_option(':api_protocol', $api_protocol);
+            SucuriScanEvent::reportInfoEvent($message);
+            SucuriScanEvent::notifyEvent('plugin_change', $message);
+            SucuriScanOption::updateOption(':api_protocol', $api_protocol);
             SucuriScanInterface::info($message);
         }
     }
 
-    $api_protocol = SucuriScanOption::get_option(':api_protocol');
+    $api_protocol = SucuriScanOption::getOption(':api_protocol');
 
     if ($api_protocol !== 'https') {
         $params['ApiProtocol.StatusNum'] = '0';

@@ -83,13 +83,13 @@ class SucuriScanTemplate extends SucuriScanRequest
         $params['PageTitle'] = isset($params['PageTitle']) ? '('.$params['PageTitle'].')' : '';
         $params['PageNonce'] = wp_create_nonce('sucuriscan_page_nonce');
         $params['PageStyleClass'] = isset($params['PageStyleClass']) ? $params['PageStyleClass'] : 'base';
-        $params['CleanDomain'] = self::get_domain();
+        $params['CleanDomain'] = self::getDomain();
 
         // Get a list of admin users for the API key generation.
         if ($target === 'modal' /* Get API key if required */
             && SucuriScanAPI::getPluginKey() === false
         ) {
-            $admin_users = SucuriScan::get_users_for_api_key();
+            $admin_users = SucuriScan::getUsersForAPIKey();
             $params['AdminEmails'] = self::selectOptions($admin_users);
         }
 
@@ -131,13 +131,13 @@ class SucuriScanTemplate extends SucuriScanRequest
     public static function getUrl($page = '', $ajax = false)
     {
         $suffix = ($ajax === true) ? 'admin-ajax' : 'admin';
-        $url_path = SucuriScan::admin_url($suffix . '.php?page=sucuriscan');
+        $url_path = SucuriScan::adminURL($suffix . '.php?page=sucuriscan');
 
         if (!empty($page)) {
             $url_path .= '_' . strtolower($page);
         }
 
-        if (SucuriScan::is_multisite()) {
+        if (SucuriScan::isMultiSite()) {
             $url_path = str_replace(
                 'wp-admin/network/admin-ajax.php',
                 'wp-admin/admin-ajax.php',
@@ -184,7 +184,7 @@ class SucuriScanTemplate extends SucuriScanRequest
 
         foreach ($sub_pages as $sub_page_func => $sub_page_title) {
             if ($sub_page_func === 'sucuriscan_scanner'
-                && SucuriScanSiteCheck::isDisabled()
+                && SucuriScanSiteCheck::hasBeenDisabled()
             ) {
                 continue;
             }
@@ -276,9 +276,9 @@ class SucuriScanTemplate extends SucuriScanRequest
 
                 // Detect the current page URL.
                 if ($_page = self::get('page', '_page')) {
-                    $params['CurrentURL'] = SucuriScan::admin_url('admin.php?page=' . $_page);
+                    $params['CurrentURL'] = SucuriScan::adminURL('admin.php?page=' . $_page);
                 } else {
-                    $params['CurrentURL'] = SucuriScan::admin_url();
+                    $params['CurrentURL'] = SucuriScan::adminURL();
                 }
 
                 // Replace the global pseudo-variables in the section/snippets templates.

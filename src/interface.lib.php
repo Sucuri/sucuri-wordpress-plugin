@@ -31,14 +31,14 @@ class SucuriScanInterface
      */
     public static function initialize()
     {
-        if (SucuriScan::support_reverse_proxy()
-            || SucuriScan::is_behind_cloudproxy()
+        if (SucuriScan::supportReverseProxy()
+            || SucuriScan::isBehindCloudproxy()
         ) {
             $_SERVER['SUCURIREAL_REMOTE_ADDR'] = $_SERVER['REMOTE_ADDR'];
-            $_SERVER['REMOTE_ADDR'] = SucuriScan::get_remote_addr();
+            $_SERVER['REMOTE_ADDR'] = SucuriScan::getRemoteAddr();
         }
 
-        SucuriScanEvent::schedule_task(false);
+        SucuriScanEvent::scheduleTask(false);
     }
 
     /**
@@ -94,7 +94,7 @@ class SucuriScanInterface
 
             foreach ($sucuriscan_pages as $sub_page_func => $sub_page_title) {
                 if ($sub_page_func == 'sucuriscan_scanner'
-                    && SucuriScanSiteCheck::isDisabled()
+                    && SucuriScanSiteCheck::hasBeenDisabled()
                 ) {
                     continue;
                 }
@@ -141,7 +141,7 @@ class SucuriScanInterface
                         deactivate_plugins($plugin);
                     }
 
-                    $file_info->remove_directory_tree($plugin_directory);
+                    $file_info->removeDirectoryTree($plugin_directory);
                 }
             }
         }
@@ -155,7 +155,7 @@ class SucuriScanInterface
      */
     public static function createStorageFolder()
     {
-        $directory = SucuriScan::datastore_folder_path();
+        $directory = SucuriScan::dataStorePath();
 
         if (!file_exists($directory)) {
             @mkdir($directory, 0755, true);
@@ -166,8 +166,8 @@ class SucuriScanInterface
             sucuriscan_lastlogins_datastore_exists();
 
             // Create a htaccess file to deny access from all.
-            if (!SucuriScanHardening::is_hardened($directory)) {
-                SucuriScanHardening::harden_directory($directory);
+            if (!SucuriScanHardening::isHardened($directory)) {
+                SucuriScanHardening::hardenDirectory($directory);
             }
 
             // Create an index.html to avoid directory listing.
@@ -191,7 +191,7 @@ class SucuriScanInterface
      */
     public static function noticeAfterUpdate()
     {
-        $version = SucuriScanOption::get_option(':plugin_version');
+        $version = SucuriScanOption::getOption(':plugin_version');
 
         // Use simple comparison to force type cast.
         if ($version != SUCURISCAN_VERSION) {
@@ -202,7 +202,7 @@ class SucuriScanInterface
              * the user to enable it once again expecting to see have a better
              * performance with the new code.
              */
-            if (SucuriScanOption::is_disabled(':api_service')) {
+            if (SucuriScanOption::isDisabled(':api_service')) {
                 self::info(
                     'API service communication is disabled, if you just updated '
                     . 'the plugin this might be a good opportunity to test this '
@@ -212,7 +212,7 @@ class SucuriScanInterface
             }
 
             // Update the version number in the plugin settings.
-            SucuriScanOption::update_option(':plugin_version', SUCURISCAN_VERSION);
+            SucuriScanOption::updateOption(':plugin_version', SUCURISCAN_VERSION);
         }
     }
 
@@ -221,14 +221,10 @@ class SucuriScanInterface
      *
      * @return void
      */
-    public static function check_permissions()
+    public static function checkPageVisibility()
     {
-        if (!function_exists('current_user_can')
-            || !current_user_can('manage_options')
-        ) {
-            $page = SucuriScanRequest::get('page', '_page');
-            $page = SucuriScan::escape($page);
-            wp_die(__('Access denied by <b>Sucuri</b> to see <code>' . $page . '</code>'));
+        if (!function_exists('current_user_can') || !current_user_can('manage_options')) {
+            wp_die(__('Access denied by <b>Sucuri Scanner</b>.'));
         }
     }
 
@@ -239,7 +235,7 @@ class SucuriScanInterface
      *
      * @return boolean Either TRUE or FALSE if the nonce is valid or not respectively.
      */
-    public static function check_nonce()
+    public static function checkNonce()
     {
         if (!empty($_POST)) {
             $nonce_name = 'sucuriscan_page_nonce';
@@ -387,7 +383,7 @@ class SucuriScanInterface
      *
      * @return void
      */
-    public static function setup_notice()
+    public static function setupAlert()
     {
         if (current_user_can('manage_options')
             && self::displayNoticesHere()
@@ -397,8 +393,8 @@ class SucuriScanInterface
             && !SucuriScanRequest::post(':manual_api_key')
         ) {
             if (SucuriScanRequest::get(':dismiss_setup') !== false) {
-                SucuriScanOption::update_option(':dismiss_setup', 'enabled');
-            } elseif (SucuriScanOption::is_enabled(':dismiss_setup')) {
+                SucuriScanOption::updateOption(':dismiss_setup', 'enabled');
+            } elseif (SucuriScanOption::isEnabled(':dismiss_setup')) {
                 /* Do not display API key generation form. */
             } else {
                 echo SucuriScanTemplate::getSection('setup-notice');

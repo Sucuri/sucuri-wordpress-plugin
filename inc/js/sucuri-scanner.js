@@ -1,6 +1,9 @@
+/* global jQuery */
+/* jshint unused:false */
 
-function sucuriscan_alert_close (id) {
+function sucuriscanAlertClose (id) {
     var a = document.getElementById('sucuriscan-alert-' + id);
+
     a.parentNode.removeChild(a);
 }
 
@@ -13,7 +16,7 @@ jQuery(document).ready(function ($) {
         $('div.' + modalid).removeClass('sucuriscan-hidden');
     });
 
-    $('.sucuriscan-overlay, .sucuriscan-modal-close').on('click', function(event) {
+    $('.sucuriscan-overlay, .sucuriscan-modal-close').on('click', function (event) {
         event.preventDefault();
 
         $('.sucuriscan-overlay').addClass('sucuriscan-hidden');
@@ -49,7 +52,7 @@ jQuery(document).ready(function ($) {
         $('.sucuriscan-tab-containers > div').addClass(d);
 
         if (a !== undefined) {
-            $('.sucuriscan-tabs > ul li a').each(function(e, f) {
+            $('.sucuriscan-tabs > ul li a').each(function (e, f) {
                 if ($(f).data('tabname') === a) {
                     $(f).trigger('click');
                 }
@@ -67,7 +70,7 @@ jQuery(document).ready(function ($) {
     });
 
     $('body').on('click', '.sucuriscan-corefiles .manage-column :checkbox', function () {
-        $('.sucuriscan-corefiles tbody :checkbox').each(function(key, element) {
+        $('.sucuriscan-corefiles tbody :checkbox').each(function (key, element) {
             var checked = $(element).is(':checked');
             $(element).attr('checked', !checked);
         });

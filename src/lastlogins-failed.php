@@ -26,7 +26,7 @@ function sucuriscan_failed_logins_panel()
         'FailedLogins.PaginationVisibility' => 'hidden',
     );
 
-    if (SucuriScanInterface::check_nonce()) {
+    if (SucuriScanInterface::checkNonce()) {
         $blockUsers = SucuriScanRequest::post(':block_user', '_array');
 
         if (is_array($blockUsers) && !empty($blockUsers)) {
@@ -41,8 +41,8 @@ function sucuriscan_failed_logins_panel()
     $page_offset = ($page_number - 1) * $max_per_page;
     $page_limit = ($page_offset + $max_per_page);
 
-    $max_failed_logins = SucuriScanOption::get_option(':maximum_failed_logins');
-    $notify_bruteforce_attack = SucuriScanOption::get_option(':notify_bruteforce_attack');
+    $max_failed_logins = SucuriScanOption::getOption(':maximum_failed_logins');
+    $notify_bruteforce_attack = SucuriScanOption::getOption(':notify_bruteforce_attack');
     $collect_passwords = sucuriscan_collect_wrong_passwords();
     $failed_logins = sucuriscan_get_all_failed_logins($page_offset, $max_per_page);
 
@@ -118,7 +118,7 @@ function sucuriscan_failed_logins_panel()
  */
 function sucuriscan_collect_wrong_passwords()
 {
-    return SucuriScanOption::is_enabled(':collect_wrong_passwords');
+    return SucuriScanOption::isEnabled(':collect_wrong_passwords');
 }
 
 /**
@@ -136,7 +136,7 @@ function sucuriscan_collect_wrong_passwords()
 function sucuriscan_failed_logins_datastore_path($get_old_logs = false, $reset = false)
 {
     $file_name = $get_old_logs ? 'sucuri-oldfailedlogins.php' : 'sucuri-failedlogins.php';
-    $datastore_path = SucuriScan::datastore_folder_path($file_name);
+    $datastore_path = SucuriScan::dataStorePath($file_name);
     $default_content = sucuriscan_failed_logins_default_content();
 
     // Create the file if it does not exists.
@@ -216,7 +216,7 @@ function sucuriscan_get_failed_logins($get_old_logs = false, $offset = 0, $limit
         return false;
     }
 
-    $lines = SucuriScanFileInfo::file_lines($datastore_path);
+    $lines = SucuriScanFileInfo::fileLines($datastore_path);
 
     if (!$lines) {
         return false;
@@ -328,8 +328,8 @@ function sucuriscan_log_failed_login($user_login = '', $wrong_password = '')
             'user_login' => $user_login,
             'user_password' => $wrong_password,
             'attempt_time' => time(),
-            'remote_addr' => SucuriScan::get_remote_addr(),
-            'user_agent' => SucuriScan::get_user_agent(),
+            'remote_addr' => SucuriScan::getRemoteAddr(),
+            'user_agent' => SucuriScan::getUserAgent(),
         ));
 
         $written = @file_put_contents(
@@ -358,7 +358,7 @@ function sucuriscan_log_failed_login($user_login = '', $wrong_password = '')
 function sucuriscan_report_failed_logins($failed_logins = array())
 {
     if ($failed_logins && $failed_logins['count'] > 0) {
-        $prettify_mails = SucuriScanMail::prettify_mails();
+        $prettify_mails = SucuriScanMail::prettifyMails();
         $collect_wrong_passwords = sucuriscan_collect_wrong_passwords();
         $mail_content = '';
 
@@ -416,7 +416,7 @@ function sucuriscan_report_failed_logins($failed_logins = array())
             $mail_content = $table_html;
         }
 
-        if (SucuriScanEvent::notify_event('bruteforce_attack', $mail_content)) {
+        if (SucuriScanEvent::notifyEvent('bruteforce_attack', $mail_content)) {
             sucuriscan_reset_failed_logins();
 
             return true;
@@ -436,7 +436,7 @@ function sucuriscan_report_failed_logins($failed_logins = array())
  */
 function sucuriscan_reset_failed_logins()
 {
-    $datastore_path = SucuriScan::datastore_folder_path('sucuri-failedlogins.php');
+    $datastore_path = SucuriScan::dataStorePath('sucuri-failedlogins.php');
     $datastore_backup_path = sucuriscan_failed_logins_datastore_path(true, false);
     $default_content = sucuriscan_failed_logins_default_content();
     $current_content = @file_get_contents($datastore_path);

@@ -38,7 +38,7 @@ class SucuriScanAPI extends SucuriScanOption
      */
     public static function verifySslCert()
     {
-        return (self::get_option(':verify_ssl_cert') === 'true');
+        return (self::getOption(':verify_ssl_cert') === 'true');
     }
 
     /**
@@ -55,10 +55,10 @@ class SucuriScanAPI extends SucuriScanOption
      */
     public static function requestTimeout()
     {
-        $timeout = (int) self::get_option(':request_timeout');
+        $timeout = (int) self::getOption(':request_timeout');
 
         if ($timeout > SUCURISCAN_MAX_REQUEST_TIMEOUT) {
-            self::delete_option(':request_timeout');
+            self::deleteOption(':request_timeout');
 
             return self::requestTimeout();
         }
@@ -75,8 +75,8 @@ class SucuriScanAPI extends SucuriScanOption
     {
         return sprintf(
             'WordPress/%s; %s',
-            self::site_version(),
-            self::get_domain()
+            self::siteVersion(),
+            self::getDomain()
         );
     }
 
@@ -135,7 +135,7 @@ class SucuriScanAPI extends SucuriScanOption
 
         if (strpos($url, $pattern) === 0) {
             if (!$protocol) {
-                $protocol = SucuriScanOption::get_option(':api_protocol');
+                $protocol = SucuriScanOption::getOption(':api_protocol');
             }
 
             $protocol = ($protocol === 'https') ? 'https' : 'http';
@@ -200,7 +200,7 @@ class SucuriScanAPI extends SucuriScanOption
                 } elseif ($unique === 'plugindt') {
                     $url = str_replace('/PLUGIN.json', '/sucuri-scanner.json', $url);
                 } elseif ($unique === 'wpvfpath') {
-                    $fpath = sprintf('/%s/wp-load.php', SucuriScan::site_version());
+                    $fpath = sprintf('/%s/wp-load.php', SucuriScan::siteVersion());
                     $url = str_replace('/VERSION/FILEPATH', $fpath, $url);
                 }
 
@@ -289,7 +289,7 @@ class SucuriScanAPI extends SucuriScanOption
     public static function apiCall($url = '', $method = 'GET', $params = array(), $args = array())
     {
         if ($url && ($method === 'GET' || $method === 'POST')) {
-            $handler = SucuriScanOption::get_option(':api_handler');
+            $handler = SucuriScanOption::getOption(':api_handler');
             $params['ssl'] = self::verifySslCert() ? 'true' : 'false';
 
             if (!function_exists('curl_init') || $handler === 'socket') {
@@ -535,10 +535,10 @@ class SucuriScanAPI extends SucuriScanOption
         }
 
         if (!empty($api_key)) {
-            SucuriScanEvent::notify_event('plugin_change', 'API key updated successfully: ' . $api_key);
+            SucuriScanEvent::notifyEvent('plugin_change', 'API key updated successfully: ' . $api_key);
         }
 
-        return self::update_option(':api_key', $api_key);
+        return self::updateOption(':api_key', $api_key);
     }
 
     /**
@@ -548,7 +548,7 @@ class SucuriScanAPI extends SucuriScanOption
      */
     public static function getPluginKey()
     {
-        $api_key = self::get_option(':api_key');
+        $api_key = self::getOption(':api_key');
 
         if (is_string($api_key)
             && self::isValidKey($api_key)
@@ -571,7 +571,7 @@ class SucuriScanAPI extends SucuriScanOption
     public static function getCloudproxyKey()
     {
         $option_name = ':cloudproxy_apikey';
-        $api_key = self::get_option($option_name);
+        $api_key = self::getOption($option_name);
 
         // Check the validity of the API key.
         $match = self::isValidCloudproxyKey($api_key, true);
@@ -745,25 +745,25 @@ class SucuriScanAPI extends SucuriScanOption
 
             // Special response for invalid API keys.
             if (stripos($raw, 'log file not found') !== false) {
-                $key = SucuriScanOption::get_option(':api_key');
+                $key = SucuriScanOption::getOption(':api_key');
                 $msg .= '; this generally happens when you add an invalid API '
                 . 'key, the key will be deleted automatically to hide these w'
                 . 'arnings, if you want to recover it go to the settings page'
                 . ' and use the recover button to send the key to your email '
                 . 'address: ' . SucuriScan::escape($key);
 
-                SucuriScanOption::delete_option(':api_key');
+                SucuriScanOption::deleteOption(':api_key');
             }
 
             // Special response for invalid CloudProxy API keys.
             if (stripos($raw, 'wrong api key') !== false) {
-                $key = SucuriScanOption::get_option(':cloudproxy_apikey');
+                $key = SucuriScanOption::getOption(':cloudproxy_apikey');
                 $msg .= '; invalid CloudProxy API key: ' . SucuriScan::escape($key);
 
                 SucuriScanInterface::error($msg);
                 $msg = ''; /* Force premature error message. */
 
-                SucuriScanOption::delete_option(':cloudproxy_apikey');
+                SucuriScanOption::deleteOption(':cloudproxy_apikey');
                 SucuriScanOption::setAddrHeader('REMOTE_ADDR');
                 SucuriScanOption::setRevProxy('disable');
             }
@@ -773,7 +773,7 @@ class SucuriScanAPI extends SucuriScanOption
                 || stripos($raw, 'error setting certificate')
                 || stripos($raw, 'SSL connect error')
             ) {
-                SucuriScanOption::update_option(':verify_ssl_cert', 'false');
+                SucuriScanOption::updateOption(':verify_ssl_cert', 'false');
 
                 $msg .= 'There were some issues with the SSL certificate eith'
                 . 'er in this server or with the remote API service. The auto'
@@ -805,20 +805,20 @@ class SucuriScanAPI extends SucuriScanOption
     public static function registerSite($email = '')
     {
         if (!is_string($email) || empty($email)) {
-            $email = self::get_site_email();
+            $email = self::getSiteEmail();
         }
 
         $response = self::apiCallWordpress('POST', array(
             'e' => $email,
-            's' => self::get_domain(),
+            's' => self::getDomain(),
             'a' => 'register_site',
         ), false);
 
         if (self::handleResponse($response)) {
             self::setPluginKey($response['output']['api_key']);
 
-            SucuriScanEvent::schedule_task();
-            SucuriScanEvent::notify_event('plugin_change', 'Site registered and API key generated');
+            SucuriScanEvent::scheduleTask();
+            SucuriScanEvent::notifyEvent('plugin_change', 'Site registered and API key generated');
             SucuriScanInterface::info('The API key for your site was successfully generated and saved.');
 
             return true;
@@ -834,16 +834,16 @@ class SucuriScanAPI extends SucuriScanOption
      */
     public static function recoverKey()
     {
-        $clean_domain = self::get_domain();
+        $clean_domain = self::getDomain();
 
         $response = self::apiCallWordpress('GET', array(
-            'e' => self::get_site_email(),
+            'e' => self::getSiteEmail(),
             's' => $clean_domain,
             'a' => 'recover_key',
         ), false);
 
         if (self::handleResponse($response)) {
-            SucuriScanEvent::notify_event('plugin_change', 'API key recovered for domain: ' . $clean_domain);
+            SucuriScanEvent::notifyEvent('plugin_change', 'API key recovered for domain: ' . $clean_domain);
             SucuriScanInterface::info($response['output']['message']);
 
             return true;
@@ -1308,7 +1308,7 @@ class SucuriScanAPI extends SucuriScanOption
     {
         if (!empty($domain)) {
             $params = array();
-            $timeout = (int) SucuriScanOption::get_option(':sitecheck_timeout');
+            $timeout = (int) SucuriScanOption::getOption(':sitecheck_timeout');
             $params['scan'] = $domain;
             $params['fromwp'] = 2;
             $params['json'] = 1;
@@ -1385,7 +1385,7 @@ class SucuriScanAPI extends SucuriScanOption
      */
     public static function getNewSecretKeys()
     {
-        $pattern = self::secret_key_pattern();
+        $pattern = self::secretKeyPattern();
         $response = self::apiCall('sucuri://api.wordpress.org/secret-key/1.1/salt/', 'GET');
 
         if ($response && @preg_match_all($pattern, $response, $match)) {
@@ -1411,7 +1411,7 @@ class SucuriScanAPI extends SucuriScanOption
      */
     public static function getOfficialChecksums($version = 0)
     {
-        $language = SucuriScanOption::get_option(':language');
+        $language = SucuriScanOption::getOption(':language');
         $response = self::apiCall(
             'sucuri://api.wordpress.org/core/checksums/1.0/',
             'GET',
@@ -1580,7 +1580,7 @@ class SucuriScanAPI extends SucuriScanOption
     {
         if (!empty($filepath)) {
             if ($version == 0) {
-                $version = self::site_version();
+                $version = self::siteVersion();
             }
 
             $url = sprintf('sucuri://core.svn.wordpress.org/tags/%s/%s', $version, $filepath);

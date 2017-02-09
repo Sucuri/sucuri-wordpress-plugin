@@ -19,14 +19,14 @@ function sucuriscan_settings_scanner($nonce)
         $sucuriscan_interface_allowed;
 
     // Get initial variables to decide some things bellow.
-    $fs_scanner = SucuriScanOption::get_option(':fs_scanner');
-    $scan_freq = SucuriScanOption::get_option(':scan_frequency');
-    $scan_interface = SucuriScanOption::get_option(':scan_interface');
-    $scan_errorlogs = SucuriScanOption::get_option(':scan_errorlogs');
-    $runtime_scan_human = SucuriScanFSScanner::get_filesystem_runtime(true);
+    $fs_scanner = SucuriScanOption::getOption(':fs_scanner');
+    $scan_freq = SucuriScanOption::getOption(':scan_frequency');
+    $scan_interface = SucuriScanOption::getOption(':scan_interface');
+    $scan_errorlogs = SucuriScanOption::getOption(':scan_errorlogs');
+    $runtime_scan_human = SucuriScanFSScanner::getFilesystemRuntime(true);
 
     // Get the file path of the security logs.
-    $basedir = SucuriScan::datastore_folder_path();
+    $basedir = SucuriScan::dataStorePath();
     $integrity_log_path = $basedir . '/sucuri-integrity.php';
     $lastlogins_log_path = $basedir . '/sucuri-lastlogins.php';
     $failedlogins_log_path = $basedir . '/sucuri-failedlogins.php';
@@ -77,9 +77,9 @@ function sucuriscan_settings_scanner($nonce)
     }
 
     // Determine the age of the security log files.
-    $params['IntegrityLogLife'] = SucuriScan::human_filesize(@filesize($integrity_log_path));
-    $params['LastLoginLogLife'] = SucuriScan::human_filesize(@filesize($lastlogins_log_path));
-    $params['FailedLoginLogLife'] = SucuriScan::human_filesize(@filesize($failedlogins_log_path));
+    $params['IntegrityLogLife'] = SucuriScan::humanFileSize(@filesize($integrity_log_path));
+    $params['LastLoginLogLife'] = SucuriScan::humanFileSize(@filesize($lastlogins_log_path));
+    $params['FailedLoginLogLife'] = SucuriScan::humanFileSize(@filesize($failedlogins_log_path));
 
     $params['Settings.CoreFilesStatus'] = sucuriscan_settings_corefiles_status($nonce);
     $params['Settings.CoreFilesLanguage'] = sucuriscan_settings_corefiles_language($nonce);

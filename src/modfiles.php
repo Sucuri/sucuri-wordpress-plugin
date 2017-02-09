@@ -89,7 +89,7 @@ function sucuriscan_scanner_modfiles_ajax()
                             'ModifiedFiles.FilePath' => $file_path,
                             'ModifiedFiles.CheckSum' => $file_info['checksum'],
                             'ModifiedFiles.FileSize' => $file_info['filesize'],
-                            'ModifiedFiles.FileSizeHuman' => SucuriScan::human_filesize($file_info['filesize']),
+                            'ModifiedFiles.FileSizeHuman' => SucuriScan::humanFileSize($file_info['filesize']),
                             'ModifiedFiles.FileSizeNumber' => number_format($file_info['filesize']),
                             'ModifiedFiles.CssClass' => $css_class,
                         )

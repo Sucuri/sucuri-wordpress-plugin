@@ -26,9 +26,9 @@ class SucuriScanFSScanner extends SucuriScan
      * @param  boolean $format Whether the timestamp must be formatted as date/time or not.
      * @return string          The timestamp of the runtime, or an string with the date/time.
      */
-    public static function get_filesystem_runtime($format = false)
+    public static function getFilesystemRuntime($format = false)
     {
-        $runtime = SucuriScanOption::get_option(':runtime');
+        $runtime = SucuriScanOption::getOption(':runtime');
 
         if ($runtime > 0) {
             if ($format) {
@@ -53,9 +53,9 @@ class SucuriScanFSScanner extends SucuriScan
      *
      * @return boolean Whether the feature to ignore files is enabled or not.
      */
-    public static function will_ignore_scanning()
+    public static function willIgnoreScanning()
     {
-        return SucuriScanOption::is_enabled(':ignore_scanning');
+        return SucuriScanOption::isEnabled(':ignore_scanning');
     }
 
     /**
@@ -64,16 +64,16 @@ class SucuriScanFSScanner extends SucuriScan
      * @param  string  $directory_path The (full) absolute path of a directory.
      * @return boolean                 TRUE if the directory path was added to the list, FALSE otherwise.
      */
-    public static function ignore_directory($directory_path = '')
+    public static function ignoreDirectory($directory_path = '')
     {
         $cache = new SucuriScanCache('ignorescanning');
 
         // Use the checksum of the directory path as the cache key.
         $cache_key = md5($directory_path);
-        $resource_type = SucuriScanFileInfo::get_resource_type($directory_path);
+        $resource_type = SucuriScanFileInfo::getResourceType($directory_path);
         $cache_value = array(
             'directory_path' => $directory_path,
-            'ignored_at' => self::local_time(),
+            'ignored_at' => self::localTime(),
             'resource_type' => $resource_type,
         );
         $cached = $cache->add($cache_key, $cache_value);
@@ -87,7 +87,7 @@ class SucuriScanFSScanner extends SucuriScan
      * @param  string  $directory_path The (full) absolute path of a directory.
      * @return boolean                 TRUE if the directory path was removed to the list, FALSE otherwise.
      */
-    public static function unignore_directory($directory_path = '')
+    public static function unignoreDirectory($directory_path = '')
     {
         $cache = new SucuriScanCache('ignorescanning');
 
@@ -119,7 +119,7 @@ class SucuriScanFSScanner extends SucuriScan
      *
      * @return array List of ignored directory paths.
      */
-    public static function get_ignored_directories()
+    public static function getIgnoredDirectories()
     {
         $response = array(
             'raw' => array(),
@@ -159,7 +159,7 @@ class SucuriScanFSScanner extends SucuriScan
      *
      * @return array List of ignored and not ignored directories.
      */
-    public static function get_ignored_directories_live()
+    public static function getIgnoredDirectoriesLive()
     {
         $response = array(
             'is_ignored' => array(),
@@ -167,7 +167,7 @@ class SucuriScanFSScanner extends SucuriScan
         );
 
         // Get the ignored directories from the cache.
-        $ignored_directories = self::get_ignored_directories();
+        $ignored_directories = self::getIgnoredDirectories();
 
         if ($ignored_directories) {
             $response['is_ignored'] = $ignored_directories['raw'];
@@ -177,8 +177,8 @@ class SucuriScanFSScanner extends SucuriScan
         $file_info = new SucuriScanFileInfo();
         $file_info->ignore_files = true;
         $file_info->ignore_directories = true;
-        $file_info->scan_interface = SucuriScanOption::get_option(':scan_interface');
-        $directory_list = $file_info->get_diretories_only(ABSPATH);
+        $file_info->scan_interface = SucuriScanOption::getOption(':scan_interface');
+        $directory_list = $file_info->getDiretoriesOnly(ABSPATH);
 
         if ($directory_list) {
             $response['is_not_ignored'] = $directory_list;
@@ -193,7 +193,7 @@ class SucuriScanFSScanner extends SucuriScan
      * @param  array $error_logs The content of an error log file, or an array with the lines.
      * @return array             List of valid error logs with their attributes separated.
      */
-    public static function parse_error_logs($error_logs = array())
+    public static function parseErrorLogs($error_logs = array())
     {
         $logs_arr = array();
         $pattern = '/^'

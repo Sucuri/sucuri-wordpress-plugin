@@ -15,7 +15,7 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  */
 function sucuriscan_wordpress_outdated()
 {
-    $site_version = SucuriScan::site_version();
+    $site_version = SucuriScan::siteVersion();
     $updates = get_core_updates();
     $cp = (!is_array($updates) || empty($updates) ? 1 : 0);
 
@@ -23,7 +23,7 @@ function sucuriscan_wordpress_outdated()
         'WordPress.Version' => $site_version,
         'WordPress.NewVersion' => '0.0.0',
         'WordPress.NewLocale' => 'default',
-        'WordPress.UpdateURL' => SucuriScan::admin_url('update-core.php'),
+        'WordPress.UpdateURL' => SucuriScan::adminURL('update-core.php'),
         'WordPress.DownloadURL' => '#',
         'WordPress.UpdateVisibility' => 'hidden',
     );

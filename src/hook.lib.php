@@ -25,14 +25,13 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  */
 class SucuriScanHook extends SucuriScanEvent
 {
-
     /**
      * Send to Sucuri servers an alert notifying that an attachment was added to a post.
      *
      * @param  integer $id The post identifier.
      * @return void
      */
-    public static function hook_add_attachment($id = 0)
+    public static function hookAddAttachment($id = 0)
     {
         if ($data = get_post($id)) {
             $id = $data->ID;
@@ -44,8 +43,8 @@ class SucuriScanHook extends SucuriScanEvent
         }
 
         $message = sprintf('Media file added; identifier: %s; name: %s; type: %s', $id, $title, $mime_type);
-        self::report_notice_event($message);
-        self::notify_event('post_publication', $message);
+        self::reportNoticeEvent($message);
+        self::notifyEvent('post_publication', $message);
     }
 
     /**
@@ -54,7 +53,7 @@ class SucuriScanHook extends SucuriScanEvent
      * @param  integer $id Identifier of the new link created;
      * @return void
      */
-    public static function hook_add_link($id = 0)
+    public static function hookAddLink($id = 0)
     {
         if ($data = get_bookmark($id)) {
             $id = $data->link_id;
@@ -74,8 +73,8 @@ class SucuriScanHook extends SucuriScanEvent
             $url,
             $target
         );
-        self::report_warning_event($message);
-        self::notify_event('post_publication', $message);
+        self::reportWarningEvent($message);
+        self::notifyEvent('post_publication', $message);
     }
 
     /**
@@ -84,13 +83,13 @@ class SucuriScanHook extends SucuriScanEvent
      * @param  integer $id The identifier of the category created.
      * @return void
      */
-    public static function hook_create_category($id = 0)
+    public static function hookCreateCategory($id = 0)
     {
         $title = ( is_int($id) ? get_cat_name($id) : 'Unknown' );
 
         $message = sprintf('Category created; identifier: %s; name: %s', $id, $title);
-        self::report_notice_event($message);
-        self::notify_event('post_publication', $message);
+        self::reportNoticeEvent($message);
+        self::notifyEvent('post_publication', $message);
     }
 
     /**
@@ -99,9 +98,9 @@ class SucuriScanHook extends SucuriScanEvent
      * @param  integer $id The identifier of the post deleted.
      * @return void
      */
-    public static function hook_delete_post($id = 0)
+    public static function hookDeletePost($id = 0)
     {
-        self::report_warning_event('Post deleted; identifier: ' . $id);
+        self::reportWarningEvent('Post deleted; identifier: ' . $id);
     }
 
     /**
@@ -110,7 +109,7 @@ class SucuriScanHook extends SucuriScanEvent
      * @param  integer $id The identifier of the trashed post.
      * @return void
      */
-    public static function hook_wp_trash_post($id = 0)
+    public static function hookWpTrashPost($id = 0)
     {
         if ($data = get_post($id)) {
             $title = $data->post_title;
@@ -126,7 +125,7 @@ class SucuriScanHook extends SucuriScanEvent
             $title,
             $status
         );
-        self::report_warning_event($message);
+        self::reportWarningEvent($message);
     }
 
     /**
@@ -135,9 +134,9 @@ class SucuriScanHook extends SucuriScanEvent
      * @param  integer $id The identifier of the user account deleted.
      * @return void
      */
-    public static function hook_delete_user($id = 0)
+    public static function hookDeleteUser($id = 0)
     {
-        self::report_warning_event('User account deleted; identifier: ' . $id);
+        self::reportWarningEvent('User account deleted; identifier: ' . $id);
     }
 
     /**
@@ -146,11 +145,11 @@ class SucuriScanHook extends SucuriScanEvent
      *
      * @return void
      */
-    public static function hook_login_form_resetpass()
+    public static function hookLoginFormResetpass()
     {
         // Detecting WordPress 2.8.3 vulnerability - $key is array.
         if (isset($_GET['key']) && is_array($_GET['key'])) {
-            self::report_critical_event('Attempt to reset password by attacking WP/2.8.3 bug');
+            self::reportCriticalEvent('Attempt to reset password by attacking WP/2.8.3 bug');
         }
     }
 
@@ -161,7 +160,7 @@ class SucuriScanHook extends SucuriScanEvent
      * @param  integer $id The identifier of the post changed.
      * @return void
      */
-    public static function hook_private_to_published($id = 0)
+    public static function hookPrivateToPublished($id = 0)
     {
         if ($data = get_post($id)) {
             $title = $data->post_title;
@@ -172,15 +171,15 @@ class SucuriScanHook extends SucuriScanEvent
         }
 
         // Check whether the post-type is being ignored to send notifications.
-        if (!SucuriScanOption::is_ignored_event($p_type)) {
+        if (!SucuriScanOption::isIgnoredEvent($p_type)) {
             $message = sprintf(
                 '%s (private to published); identifier: %s; name: %s',
                 $p_type,
                 $id,
                 $title
             );
-            self::report_notice_event($message);
-            self::notify_event('post_publication', $message);
+            self::reportNoticeEvent($message);
+            self::notifyEvent('post_publication', $message);
         }
     }
 
@@ -190,7 +189,7 @@ class SucuriScanHook extends SucuriScanEvent
      * @param  integer $id The identifier of the post or page published.
      * @return void
      */
-    public static function hook_publish($id = 0)
+    public static function hookPublish($id = 0)
     {
         if ($data = get_post($id)) {
             $title = $data->post_title;
@@ -209,52 +208,52 @@ class SucuriScanHook extends SucuriScanEvent
             $id,
             $title
         );
-        self::report_notice_event($message);
-        self::notify_event('post_publication', $message);
+        self::reportNoticeEvent($message);
+        self::notifyEvent('post_publication', $message);
     }
 
     /**
-     * Alias function for hook_publish()
+     * Alias function for hookPublish()
      *
      * @param  integer $id The identifier of the post or page published.
      * @return void
      */
-    public static function hook_publish_page($id = 0)
+    public static function hookPublishPage($id = 0)
     {
-        self::hook_publish($id);
+        self::hookPublish($id);
     }
 
     /**
-     * Alias function for hook_publish()
+     * Alias function for hookPublish()
      *
      * @param  integer $id The identifier of the post or page published.
      * @return void
      */
-    public static function hook_publish_post($id = 0)
+    public static function hookPublishPost($id = 0)
     {
-        self::hook_publish($id);
+        self::hookPublish($id);
     }
 
     /**
-     * Alias function for hook_publish()
+     * Alias function for hookPublish()
      *
      * @param  integer $id The identifier of the post or page published.
      * @return void
      */
-    public static function hook_publish_phone($id = 0)
+    public static function hookPublishPhone($id = 0)
     {
-        self::hook_publish($id);
+        self::hookPublish($id);
     }
 
     /**
-     * Alias function for hook_publish()
+     * Alias function for hookPublish()
      *
      * @param  integer $id The identifier of the post or page published.
      * @return void
      */
-    public static function hook_xmlrpc_publish_post($id = 0)
+    public static function hookXmlrpcPublishPost($id = 0)
     {
-        self::hook_publish($id);
+        self::hookPublish($id);
     }
 
     /**
@@ -264,13 +263,13 @@ class SucuriScanHook extends SucuriScanEvent
      * @param  string $title The name of the user account involved in the trasaction.
      * @return void
      */
-    public static function hook_retrieve_password($title = '')
+    public static function hookRetrievePassword($title = '')
     {
         if (empty($title)) {
             $title = 'unknown';
         }
 
-        self::report_error_event('Password retrieval attempt: ' . $title);
+        self::reportErrorEvent('Password retrieval attempt: ' . $title);
     }
 
     /**
@@ -279,15 +278,15 @@ class SucuriScanHook extends SucuriScanEvent
      * @param  string $title The name of the new theme selected to used through out the site.
      * @return void
      */
-    public static function hook_switch_theme($title = '')
+    public static function hookSwitchTheme($title = '')
     {
         if (empty($title)) {
             $title = 'unknown';
         }
 
         $message = 'Theme activated: ' . $title;
-        self::report_warning_event($message);
-        self::notify_event('theme_activated', $message);
+        self::reportWarningEvent($message);
+        self::notifyEvent('theme_activated', $message);
     }
 
     /**
@@ -296,7 +295,7 @@ class SucuriScanHook extends SucuriScanEvent
      * @param  integer $id The identifier of the new user account created.
      * @return void
      */
-    public static function hook_user_register($id = 0)
+    public static function hookUserRegister($id = 0)
     {
         if ($data = get_userdata($id)) {
             $title = $data->user_login;
@@ -315,8 +314,8 @@ class SucuriScanHook extends SucuriScanEvent
             $email,
             $roles
         );
-        self::report_warning_event($message);
-        self::notify_event('user_registration', $message);
+        self::reportWarningEvent($message);
+        self::notifyEvent('user_registration', $message);
     }
 
     /**
@@ -326,15 +325,15 @@ class SucuriScanHook extends SucuriScanEvent
      * @param  string $title The name of the user account involved in the transaction.
      * @return void
      */
-    public static function hook_wp_login($title = '')
+    public static function hookWpLogin($title = '')
     {
         if (empty($title)) {
             $title = 'Unknown';
         }
 
         $message = 'User authentication succeeded: ' . $title;
-        self::report_notice_event($message);
-        self::notify_event('success_login', $message);
+        self::reportNoticeEvent($message);
+        self::notifyEvent('success_login', $message);
     }
 
     /**
@@ -344,7 +343,7 @@ class SucuriScanHook extends SucuriScanEvent
      * @param  string $title The name of the user account involved in the transaction.
      * @return void
      */
-    public static function hook_wp_login_failed($title = '')
+    public static function hookWpLoginFailed($title = '')
     {
         if (empty($title)) {
             $title = 'Unknown';
@@ -354,13 +353,13 @@ class SucuriScanHook extends SucuriScanEvent
         $password = SucuriScanRequest::post('pwd');
         $message = 'User authentication failed: ' . $title;
 
-        self::report_error_event($message);
+        self::reportErrorEvent($message);
 
         if (sucuriscan_collect_wrong_passwords() === true) {
             $message .= "<br>\nUser wrong password: " . $password;
         }
 
-        self::notify_event('failed_login', $message);
+        self::notifyEvent('failed_login', $message);
 
         // Log the failed login in the internal datastore for future reports.
         $logged = sucuriscan_log_failed_login($title, $password);
@@ -371,7 +370,7 @@ class SucuriScanHook extends SucuriScanEvent
 
             if ($failed_logins) {
                 $max_time = 3600;
-                $maximum_failed_logins = SucuriScanOption::get_option('sucuriscan_maximum_failed_logins');
+                $maximum_failed_logins = SucuriScanOption::getOption('sucuriscan_maximum_failed_logins');
 
                 /**
                  * If the time passed is within the hour, and the quantity of failed logins
@@ -417,13 +416,13 @@ class SucuriScanHook extends SucuriScanEvent
      * @param  object  $comment The comment object.
      * @return void
      */
-    public static function hook_wp_insert_comment($id = 0, $comment = false)
+    public static function hookWpInsertComment($id = 0, $comment = false)
     {
         if ($comment instanceof stdClass
             && property_exists($comment, 'comment_ID')
             && property_exists($comment, 'comment_agent')
             && property_exists($comment, 'comment_author_IP')
-            && SucuriScanOption::is_enabled(':comment_monitor')
+            && SucuriScanOption::isEnabled(':comment_monitor')
         ) {
             $data_set = array(
                 'id' => $comment->comment_ID,
@@ -438,7 +437,7 @@ class SucuriScanHook extends SucuriScanEvent
                 'user_agent' => $comment->comment_agent,
             );
             $message = base64_encode(json_encode($data_set));
-            self::report_notice_event('Base64:' . $message, true);
+            self::reportNoticeEvent('Base64:' . $message, true);
         }
     }
 
@@ -454,7 +453,7 @@ class SucuriScanHook extends SucuriScanEvent
      *
      * @return void
      */
-    public static function hook_all($action = null, $data = false)
+    public static function hookAll($action = null, $data = false)
     {
         global $wp_filter, $wp_actions;
 
@@ -468,7 +467,7 @@ class SucuriScanHook extends SucuriScanEvent
             )
         ) {
             $message = sprintf('Undefined XHR action %s', $action);
-            self::report_error_event($message);
+            self::reportErrorEvent($message);
             header('HTTP/1.1 400 Bad Request');
             exit(1);
         }
@@ -481,26 +480,25 @@ class SucuriScanHook extends SucuriScanEvent
      *
      * @return integer Either one or zero representing the success or fail of the operation.
      */
-    public static function hook_undefined_actions()
+    public static function hookUndefinedActions()
     {
-
         $plugin_activate_actions = '(activate|deactivate)(\-selected)?';
         $plugin_update_actions = '(upgrade-plugin|do-plugin-upgrade|update-selected)';
 
         // Plugin activation and/or deactivation.
         if (current_user_can('activate_plugins')
             && (
-                SucuriScanRequest::get_or_post('action', $plugin_activate_actions)
-                || SucuriScanRequest::get_or_post('action2', $plugin_activate_actions)
+                SucuriScanRequest::getOrPost('action', $plugin_activate_actions)
+                || SucuriScanRequest::getOrPost('action2', $plugin_activate_actions)
             )
         ) {
             $plugin_list = array();
             $items_affected = array();
 
             // Get the action performed through action or action2 params.
-            $action_d = SucuriScanRequest::get_or_post('action');
+            $action_d = SucuriScanRequest::getOrPost('action');
             if ($action_d == '-1') {
-                $action_d = SucuriScanRequest::get_or_post('action2');
+                $action_d = SucuriScanRequest::getOrPost('action2');
             }
             $action_d .= 'd';
 
@@ -541,14 +539,14 @@ class SucuriScanHook extends SucuriScanEvent
                     $action_d,
                     @implode(',', $items_affected)
                 );
-                self::report_warning_event($message);
-                self::notify_event('plugin_' . $action_d, $message);
+                self::reportWarningEvent($message);
+                self::notifyEvent('plugin_' . $action_d, $message);
             }
         } // Plugin update request.
         elseif (current_user_can('update_plugins')
             && (
-                SucuriScanRequest::get_or_post('action', $plugin_update_actions)
-                || SucuriScanRequest::get_or_post('action2', $plugin_update_actions)
+                SucuriScanRequest::getOrPost('action', $plugin_update_actions)
+                || SucuriScanRequest::getOrPost('action2', $plugin_update_actions)
             )
         ) {
             $plugin_list = array();
@@ -589,8 +587,8 @@ class SucuriScanHook extends SucuriScanEvent
                     $message_tpl,
                     @implode(',', $items_affected)
                 );
-                self::report_warning_event($message);
-                self::notify_event('plugin_updated', $message);
+                self::reportWarningEvent($message);
+                self::notifyEvent('plugin_updated', $message);
             }
         } // Plugin installation request.
         elseif (current_user_can('install_plugins')
@@ -607,8 +605,8 @@ class SucuriScanHook extends SucuriScanEvent
             }
 
             $message = 'Plugin installed: ' . self::escape($plugin);
-            SucuriScanEvent::report_warning_event($message);
-            self::notify_event('plugin_installed', $message);
+            SucuriScanEvent::reportWarningEvent($message);
+            self::notifyEvent('plugin_installed', $message);
         } // Plugin deletion request.
         elseif (current_user_can('delete_plugins')
             && SucuriScanRequest::post('action', 'delete-selected')
@@ -641,8 +639,8 @@ class SucuriScanHook extends SucuriScanEvent
                     $message_tpl,
                     @implode(',', $items_affected)
                 );
-                self::report_warning_event($message);
-                self::notify_event('plugin_deleted', $message);
+                self::reportWarningEvent($message);
+                self::notifyEvent('plugin_deleted', $message);
             }
         } // Plugin editor request.
         elseif (current_user_can('edit_plugins')
@@ -653,8 +651,8 @@ class SucuriScanHook extends SucuriScanEvent
         ) {
             $filename = SucuriScanRequest::post('file');
             $message = 'Plugin editor used in: ' . SucuriScan::escape($filename);
-            self::report_error_event($message);
-            self::notify_event('theme_editor', $message);
+            self::reportErrorEvent($message);
+            self::notifyEvent('theme_editor', $message);
         } // Theme editor request.
         elseif (current_user_can('edit_themes')
             && SucuriScanRequest::post('action', 'update')
@@ -665,8 +663,8 @@ class SucuriScanHook extends SucuriScanEvent
             $theme_name = SucuriScanRequest::post('theme');
             $filename = SucuriScanRequest::post('file');
             $message = 'Theme editor used in: ' . SucuriScan::escape($theme_name) . '/' . SucuriScan::escape($filename);
-            self::report_error_event($message);
-            self::notify_event('theme_editor', $message);
+            self::reportErrorEvent($message);
+            self::notifyEvent('theme_editor', $message);
         } // Theme installation request.
         elseif (current_user_can('install_themes')
             && SucuriScanRequest::get('action', 'install-theme')
@@ -678,12 +676,12 @@ class SucuriScanHook extends SucuriScanEvent
             }
 
             $message = 'Theme installed: ' . self::escape($theme);
-            SucuriScanEvent::report_warning_event($message);
-            self::notify_event('theme_installed', $message);
+            SucuriScanEvent::reportWarningEvent($message);
+            self::notifyEvent('theme_installed', $message);
         } // Theme deletion request.
         elseif (current_user_can('delete_themes')
-            && SucuriScanRequest::get_or_post('action', 'delete')
-            && SucuriScanRequest::get_or_post('stylesheet', '.+')
+            && SucuriScanRequest::getOrPost('action', 'delete')
+            && SucuriScanRequest::getOrPost('stylesheet', '.+')
         ) {
             $theme = SucuriScanRequest::get('stylesheet', '.+');
 
@@ -692,8 +690,8 @@ class SucuriScanHook extends SucuriScanEvent
             }
 
             $message = 'Theme deleted: ' . self::escape($theme);
-            SucuriScanEvent::report_warning_event($message);
-            self::notify_event('theme_deleted', $message);
+            SucuriScanEvent::reportWarningEvent($message);
+            self::notifyEvent('theme_deleted', $message);
         } // Theme update request.
         elseif (current_user_can('update_themes')
             && SucuriScanRequest::get('action', '(upgrade-theme|do-theme-upgrade)')
@@ -729,8 +727,8 @@ class SucuriScanHook extends SucuriScanEvent
                     $message_tpl,
                     @implode(',', $items_affected)
                 );
-                self::report_warning_event($message);
-                self::notify_event('theme_updated', $message);
+                self::reportWarningEvent($message);
+                self::notifyEvent('theme_updated', $message);
             }
         } // WordPress update request.
         elseif (current_user_can('update_core')
@@ -738,8 +736,8 @@ class SucuriScanHook extends SucuriScanEvent
             && SucuriScanRequest::post('upgrade')
         ) {
             $message = 'WordPress updated to version: ' . SucuriScanRequest::post('version');
-            self::report_critical_event($message);
-            self::notify_event('website_updated', $message);
+            self::reportCriticalEvent($message);
+            self::notifyEvent('website_updated', $message);
         } // Widget addition or deletion.
         elseif (current_user_can('edit_theme_options')
             && SucuriScanRequest::post('action', 'save-widget')
@@ -765,14 +763,14 @@ class SucuriScanHook extends SucuriScanEvent
                 SucuriScanRequest::post('widget-height')
             );
 
-            self::report_warning_event($message);
-            self::notify_event('widget_' . $action_d, $message);
+            self::reportWarningEvent($message);
+            self::notifyEvent('widget_' . $action_d, $message);
         } // Detect any Wordpress settings modification.
         elseif (current_user_can('manage_options')
-            && SucuriScanOption::check_options_nonce()
+            && SucuriScanOption::checkOptionsNonce()
         ) {
             // Get the settings available in the database and compare them with the submission.
-            $options_changed = SucuriScanOption::what_options_were_changed($_POST);
+            $options_changed = SucuriScanOption::whatOptionsWereChanged($_POST);
             $options_changed_str = '';
             $options_changed_simple = '';
             $options_changed_count = 0;
@@ -818,14 +816,13 @@ class SucuriScanHook extends SucuriScanEvent
 
             if ($page_referer && $options_changed_count > 0) {
                 $message = $page_referer . ' settings changed';
-                SucuriScanEvent::report_error_event(sprintf(
+                SucuriScanEvent::reportErrorEvent(sprintf(
                     '%s: (multiple entries): %s',
                     $message,
                     rtrim($options_changed_simple, ',')
                 ));
-                self::notify_event('settings_updated', $message . "<br>\n" . $options_changed_str);
+                self::notifyEvent('settings_updated', $message . "<br>\n" . $options_changed_str);
             }
         }
-
     }
 }

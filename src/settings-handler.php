@@ -23,7 +23,7 @@ function sucuriscan_settings_form_submissions($page_nonce = null)
 
     // Use this conditional to avoid double checking.
     if (is_null($page_nonce)) {
-        $page_nonce = SucuriScanInterface::check_nonce();
+        $page_nonce = SucuriScanInterface::checkNonce();
     }
 
     if ($page_nonce) {
@@ -32,9 +32,9 @@ function sucuriscan_settings_form_submissions($page_nonce = null)
             $action_d = $fs_scanner . 'd';
             $message = 'Main file system scanner was <code>' . $action_d . '</code>';
 
-            SucuriScanOption::update_option(':fs_scanner', $action_d);
-            SucuriScanEvent::report_auto_event($message);
-            SucuriScanEvent::notify_event('plugin_change', $message);
+            SucuriScanOption::updateOption(':fs_scanner', $action_d);
+            SucuriScanEvent::reportAutoEvent($message);
+            SucuriScanEvent::notifyEvent('plugin_change', $message);
             SucuriScanInterface::info($message);
         }
 
@@ -43,16 +43,16 @@ function sucuriscan_settings_form_submissions($page_nonce = null)
             $action_d = $scan_errorlogs . 'd';
             $message = 'File system scanner for error logs was <code>' . $action_d . '</code>';
 
-            SucuriScanOption::update_option(':scan_errorlogs', $action_d);
-            SucuriScanEvent::report_auto_event($message);
-            SucuriScanEvent::notify_event('plugin_change', $message);
+            SucuriScanOption::updateOption(':scan_errorlogs', $action_d);
+            SucuriScanEvent::reportAutoEvent($message);
+            SucuriScanEvent::notifyEvent('plugin_change', $message);
             SucuriScanInterface::info($message);
         }
 
         // Modify the schedule of the filesystem scanner.
         if ($frequency = SucuriScanRequest::post(':scan_frequency')) {
             if (array_key_exists($frequency, $sucuriscan_schedule_allowed)) {
-                SucuriScanOption::update_option(':scan_frequency', $frequency);
+                SucuriScanOption::updateOption(':scan_frequency', $frequency);
 
                 // Remove all the scheduled tasks associated to the plugin.
                 wp_clear_scheduled_hook('sucuriscan_scheduled_scan');
@@ -65,8 +65,8 @@ function sucuriscan_settings_form_submissions($page_nonce = null)
                 $frequency_title = strtolower($sucuriscan_schedule_allowed[ $frequency ]);
                 $message = 'File system scanning frequency set to <code>' . $frequency_title . '</code>';
 
-                SucuriScanEvent::report_info_event($message);
-                SucuriScanEvent::notify_event('plugin_change', $message);
+                SucuriScanEvent::reportInfoEvent($message);
+                SucuriScanEvent::notifyEvent('plugin_change', $message);
                 SucuriScanInterface::info($message);
             }
         }
@@ -78,9 +78,9 @@ function sucuriscan_settings_form_submissions($page_nonce = null)
             if (in_array($interface, $allowed_values)) {
                 $message = 'File system scanning interface set to <code>' . $interface . '</code>';
 
-                SucuriScanOption::update_option(':scan_interface', $interface);
-                SucuriScanEvent::report_info_event($message);
-                SucuriScanEvent::notify_event('plugin_change', $message);
+                SucuriScanOption::updateOption(':scan_interface', $interface);
+                SucuriScanEvent::reportInfoEvent($message);
+                SucuriScanEvent::notifyEvent('plugin_change', $message);
                 SucuriScanInterface::info($message);
             }
         }
@@ -94,13 +94,13 @@ function sucuriscan_settings_form_submissions($page_nonce = null)
             );
 
             foreach ($files_to_delete as $log_filename) {
-                $log_filepath = SucuriScan::datastore_folder_path($log_filename);
+                $log_filepath = SucuriScan::dataStorePath($log_filename);
 
                 if (@unlink($log_filepath)) {
                     $log_filename_simple = str_replace('.php', '', $log_filename);
                     $message = 'Deleted security log <code>' . $log_filename_simple . '</code>';
 
-                    SucuriScanEvent::report_debug_event($message);
+                    SucuriScanEvent::reportDebugEvent($message);
                     SucuriScanInterface::info($message);
                 }
             }
@@ -111,27 +111,27 @@ function sucuriscan_settings_form_submissions($page_nonce = null)
             $ignore_rule = SucuriScanRequest::post(':ignorerule');
 
             if ($action == 'add') {
-                if (SucuriScanOption::add_ignored_event($ignore_rule)) {
+                if (SucuriScanOption::addIgnoredEvent($ignore_rule)) {
                     SucuriScanInterface::info('Post-type ignored successfully.');
-                    SucuriScanEvent::report_warning_event('Changes in <code>' . $ignore_rule . '</code> post-type will be ignored');
+                    SucuriScanEvent::reportWarningEvent('Changes in <code>' . $ignore_rule . '</code> post-type will be ignored');
                 } else {
                     SucuriScanInterface::error('The post-type is invalid or it may be already ignored.');
                 }
             } elseif ($action == 'remove') {
-                SucuriScanOption::remove_ignored_event($ignore_rule);
+                SucuriScanOption::removeIgnoredEvent($ignore_rule);
                 SucuriScanInterface::info('Post-type removed from the list successfully.');
-                SucuriScanEvent::report_notice_event('Changes in <code>' . $ignore_rule . '</code> post-type will not be ignored');
+                SucuriScanEvent::reportNoticeEvent('Changes in <code>' . $ignore_rule . '</code> post-type will not be ignored');
             }
         }
 
         // Trust and IP address to ignore notifications for a subnet.
         if ($trust_ip = SucuriScanRequest::post(':trust_ip')) {
-            if (SucuriScan::is_valid_ip($trust_ip)
-                || SucuriScan::is_valid_cidr($trust_ip)
+            if (SucuriScan::isValidIP($trust_ip)
+                || SucuriScan::isValidCIDR($trust_ip)
             ) {
                 $cache = new SucuriScanCache('trustip');
-                $ip_info = SucuriScan::get_ip_info($trust_ip);
-                $ip_info['added_at'] = SucuriScan::local_time();
+                $ip_info = SucuriScan::getIPInfo($trust_ip);
+                $ip_info['added_at'] = SucuriScan::localTime();
                 $cache_key = md5($ip_info['remote_addr']);
 
                 if ($cache->exists($cache_key)) {
@@ -139,7 +139,7 @@ function sucuriscan_settings_form_submissions($page_nonce = null)
                 } elseif ($cache->add($cache_key, $ip_info)) {
                     $message = 'Changes from <code>' . $trust_ip . '</code> will be ignored';
 
-                    SucuriScanEvent::report_warning_event($message);
+                    SucuriScanEvent::reportWarningEvent($message);
                     SucuriScanInterface::info($message);
                 } else {
                     SucuriScanInterface::error('The new entry was not saved in the datastore file.');
@@ -160,13 +160,13 @@ function sucuriscan_settings_form_submissions($page_nonce = null)
 
         // Update the settings for the heartbeat API.
         if ($heartbeat_status = SucuriScanRequest::post(':heartbeat_status')) {
-            $statuses_allowed = SucuriScanHeartbeat::statuses_allowed();
+            $statuses_allowed = SucuriScanHeartbeat::statusesAllowed();
 
             if (array_key_exists($heartbeat_status, $statuses_allowed)) {
                 $message = 'Heartbeat status set to <code>' . $heartbeat_status . '</code>';
 
-                SucuriScanOption::update_option(':heartbeat', $heartbeat_status);
-                SucuriScanEvent::report_info_event($message);
+                SucuriScanOption::updateOption(':heartbeat', $heartbeat_status);
+                SucuriScanEvent::reportInfoEvent($message);
                 SucuriScanInterface::info($message);
             } else {
                 SucuriScanInterface::error('Heartbeat status not allowed.');
@@ -175,13 +175,13 @@ function sucuriscan_settings_form_submissions($page_nonce = null)
 
         // Update the value of the heartbeat pulse.
         if ($heartbeat_pulse = SucuriScanRequest::post(':heartbeat_pulse')) {
-            $pulses_allowed = SucuriScanHeartbeat::pulses_allowed();
+            $pulses_allowed = SucuriScanHeartbeat::pulsesAllowed();
 
             if (array_key_exists($heartbeat_pulse, $pulses_allowed)) {
                 $message = 'Heartbeat pulse set to <code>' . $heartbeat_pulse . '</code> seconds.';
 
-                SucuriScanOption::update_option(':heartbeat_pulse', $heartbeat_pulse);
-                SucuriScanEvent::report_info_event($message);
+                SucuriScanOption::updateOption(':heartbeat_pulse', $heartbeat_pulse);
+                SucuriScanEvent::reportInfoEvent($message);
                 SucuriScanInterface::info($message);
             } else {
                 SucuriScanInterface::error('Heartbeat pulse not allowed.');
@@ -190,13 +190,13 @@ function sucuriscan_settings_form_submissions($page_nonce = null)
 
         // Update the value of the heartbeat interval.
         if ($heartbeat_interval = SucuriScanRequest::post(':heartbeat_interval')) {
-            $intervals_allowed = SucuriScanHeartbeat::intervals_allowed();
+            $intervals_allowed = SucuriScanHeartbeat::intervalsAllowed();
 
             if (array_key_exists($heartbeat_interval, $intervals_allowed)) {
                 $message = 'Heartbeat interval set to <code>' . $heartbeat_interval . '</code>';
 
-                SucuriScanOption::update_option(':heartbeat_interval', $heartbeat_interval);
-                SucuriScanEvent::report_info_event($message);
+                SucuriScanOption::updateOption(':heartbeat_interval', $heartbeat_interval);
+                SucuriScanEvent::reportInfoEvent($message);
                 SucuriScanInterface::info($message);
             } else {
                 SucuriScanInterface::error('Heartbeat interval not allowed.');
@@ -208,8 +208,8 @@ function sucuriscan_settings_form_submissions($page_nonce = null)
             $action_d = $heartbeat_autostart . 'd';
             $message = 'Heartbeat auto-start was <code>' . $action_d . '</code>';
 
-            SucuriScanOption::update_option(':heartbeat_autostart', $action_d);
-            SucuriScanEvent::report_info_event($message);
+            SucuriScanOption::updateOption(':heartbeat_autostart', $action_d);
+            SucuriScanEvent::reportInfoEvent($message);
             SucuriScanInterface::info($message);
         }
     }

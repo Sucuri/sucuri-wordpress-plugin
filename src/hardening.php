@@ -18,7 +18,7 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  */
 function sucuriscan_hardening_page()
 {
-    SucuriScanInterface::check_permissions();
+    SucuriScanInterface::checkPageVisibility();
 
     $template_variables = array(
         'Hardening.Panel' => sucuriscan_hardening_panel(),
@@ -31,7 +31,7 @@ function sucuriscan_hardening_page()
 function sucuriscan_hardening_panel()
 {
     if (SucuriScanRequest::post(':run_hardening')
-        && !SucuriScanInterface::check_nonce()
+        && !SucuriScanInterface::checkNonce()
     ) {
         unset($_POST['sucuriscan_run_hardening']);
     }
@@ -54,9 +54,9 @@ function sucuriscan_hardening_panel()
         'Hardening.ErrorLog' => sucuriscan_harden_errorlog(),
     );
 
-    if (SucuriScan::is_nginx_server() === true) {
+    if (SucuriScan::isNginxServer() === true) {
         $template_variables['Hardening.NginxPhpFpm'] = sucuriscan_harden_nginx_phpfpm();
-    } elseif (SucuriScan::is_iis_server() === true) {
+    } elseif (SucuriScan::isIISServer() === true) {
         /* TODO: Include IIS (Internet Information Services) hardening options. */
     } else {
         $template_variables['Hardening.Upload'] = sucuriscan_harden_upload();
@@ -79,39 +79,39 @@ function sucuriscan_hardening_whitelist()
         'wp-content/uploads',
     );
 
-    if (SucuriScanInterface::check_nonce()) {
-    // Add a new file to the hardening whitelist.
-    if ($fwhite = SucuriScanRequest::post(':hardening_whitelist')) {
-        $folder = SucuriScanRequest::post(':hardening_folder');
+    if (SucuriScanInterface::checkNonce()) {
+        // Add a new file to the hardening whitelist.
+        if ($fwhite = SucuriScanRequest::post(':hardening_whitelist')) {
+            $folder = SucuriScanRequest::post(':hardening_folder');
 
-        if (in_array($folder, $allowed_folders)) {
-            try {
-                SucuriScanHardening::whitelist($fwhite, $folder);
-                SucuriScanInterface::info('File was whitelisted from the hardening');
-            } catch (Exception $e) {
-                SucuriScanInterface::error($e->getMessage());
+            if (in_array($folder, $allowed_folders)) {
+                try {
+                    SucuriScanHardening::whitelist($fwhite, $folder);
+                    SucuriScanInterface::info('File was whitelisted from the hardening');
+                } catch (Exception $e) {
+                    SucuriScanInterface::error($e->getMessage());
+                }
+            } else {
+                SucuriScanInterface::error('Specified folder is not hardened by this plugin');
             }
-        } else {
-            SucuriScanInterface::error('Specified folder is not hardened by this plugin');
-        }
-    }
-
-    // Remove a file from the hardening whitelist.
-    if ($rmfwhite = SucuriScanRequest::post(':hardening_rmfwhite', '_array')) {
-        foreach ($rmfwhite as $fpath) {
-            $fpath = str_replace('/.*/', '|', $fpath);
-            $parts = explode('|', $fpath, 2);
-            SucuriScanHardening::dewhitelist($parts[1], $parts[0]);
         }
 
-        SucuriScanInterface::info('Selected files were processed successfully');
-    }
+        // Remove a file from the hardening whitelist.
+        if ($rmfwhite = SucuriScanRequest::post(':hardening_rmfwhite', '_array')) {
+            foreach ($rmfwhite as $fpath) {
+                $fpath = str_replace('/.*/', '|', $fpath);
+                $parts = explode('|', $fpath, 2);
+                SucuriScanHardening::dewhitelist($parts[1], $parts[0]);
+            }
+
+            SucuriScanInterface::info('Selected files were processed successfully');
+        }
     }
 
     // Read the access control file and retrieve the whitelisted files.
     $counter = 0;
     foreach ($allowed_folders as $folder) {
-        $files = SucuriScanHardening::get_whitelisted($folder);
+        $files = SucuriScanHardening::getWhitelisted($folder);
 
         if ($files !== false) {
             $template_variables['HardeningWhitelist.NoItemsVisibility'] = 'hidden';
@@ -210,7 +210,7 @@ function sucuriscan_harden_status($title = '', $status = 0, $type = '', $message
  */
 function sucuriscan_harden_version()
 {
-    $site_version = SucuriScan::site_version();
+    $site_version = SucuriScan::siteVersion();
     $updates = get_core_updates();
     $cp = (!is_array($updates) || empty($updates) ? 1 : 0);
 
@@ -323,21 +323,21 @@ function sucuriscan_harden_upload()
 
     if (SucuriScanRequest::post(':run_hardening')) {
         if (SucuriScanRequest::post(':harden_upload')) {
-            $result = SucuriScanHardening::harden_directory($dpath);
+            $result = SucuriScanHardening::hardenDirectory($dpath);
 
             if ($result === true) {
                 $message = 'Hardening applied to the uploads directory';
-                SucuriScanEvent::report_notice_event($message);
+                SucuriScanEvent::reportNoticeEvent($message);
                 SucuriScanInterface::info($message);
             } else {
                 SucuriScanInterface::error('Error hardening directory, check the permissions.');
             }
         } elseif (SucuriScanRequest::post(':harden_upload_unharden')) {
-            $result = SucuriScanHardening::unharden_directory($dpath);
+            $result = SucuriScanHardening::unhardenDirectory($dpath);
 
             if ($result === true) {
                 $message = 'Hardening reverted in the uploads directory';
-                SucuriScanEvent::report_error_event($message);
+                SucuriScanEvent::reportErrorEvent($message);
                 SucuriScanInterface::info($message);
             } else {
                 SucuriScanInterface::info('Access file is not writable, check the permissions.');
@@ -346,7 +346,7 @@ function sucuriscan_harden_upload()
     }
 
     // Check whether the directory is already hardened or not.
-    $is_hardened = SucuriScanHardening::is_hardened($dpath);
+    $is_hardened = SucuriScanHardening::isHardened($dpath);
     $cp = ( $is_hardened === true ) ? 1 : 0;
 
     $description = 'It checks if the uploads directory of this site allows the direct execution'
@@ -382,21 +382,21 @@ function sucuriscan_harden_wpcontent()
 {
     if (SucuriScanRequest::post(':run_hardening')) {
         if (SucuriScanRequest::post(':harden_wpcontent')) {
-            $result = SucuriScanHardening::harden_directory(WP_CONTENT_DIR);
+            $result = SucuriScanHardening::hardenDirectory(WP_CONTENT_DIR);
 
             if ($result === true) {
                 $message = 'Hardening applied to the content directory';
-                SucuriScanEvent::report_notice_event($message);
+                SucuriScanEvent::reportNoticeEvent($message);
                 SucuriScanInterface::info($message);
             } else {
                 SucuriScanInterface::error('Error hardening directory, check the permissions.');
             }
         } elseif (SucuriScanRequest::post(':harden_wpcontent_unharden')) {
-            $result = SucuriScanHardening::unharden_directory(WP_CONTENT_DIR);
+            $result = SucuriScanHardening::unhardenDirectory(WP_CONTENT_DIR);
 
             if ($result === true) {
                 $message = 'Hardening reverted in the content directory';
-                SucuriScanEvent::report_error_event($message);
+                SucuriScanEvent::reportErrorEvent($message);
                 SucuriScanInterface::info($message);
             } else {
                 SucuriScanInterface::info('Access file is not writable, check the permissions.');
@@ -405,7 +405,7 @@ function sucuriscan_harden_wpcontent()
     }
 
     // Check whether the directory is already hardened or not.
-    $is_hardened = SucuriScanHardening::is_hardened(WP_CONTENT_DIR);
+    $is_hardened = SucuriScanHardening::isHardened(WP_CONTENT_DIR);
     $cp = ( $is_hardened === true ) ? 1 : 0;
 
     $description = 'This option blocks direct access to any PHP file located under the content'
@@ -442,25 +442,25 @@ function sucuriscan_harden_wpincludes()
 
     if (SucuriScanRequest::post(':run_hardening')) {
         if (SucuriScanRequest::post(':harden_wpincludes')) {
-            $result = SucuriScanHardening::harden_directory($dpath);
+            $result = SucuriScanHardening::hardenDirectory($dpath);
 
             if ($result === true) {
                 $message = 'Hardening applied to the library directory';
                 SucuriScanHardening::whitelist('wp-tinymce.php', 'wp-includes');
                 SucuriScanHardening::whitelist('ms-files.php', 'wp-includes');
-                SucuriScanEvent::report_notice_event($message);
+                SucuriScanEvent::reportNoticeEvent($message);
                 SucuriScanInterface::info($message);
             } else {
                 SucuriScanInterface::error('Error hardening directory, check the permissions.');
             }
         } elseif (SucuriScanRequest::post(':harden_wpincludes_unharden')) {
-            $result = SucuriScanHardening::unharden_directory($dpath);
+            $result = SucuriScanHardening::unhardenDirectory($dpath);
 
             if ($result === true) {
                 $message = 'Hardening reverted in the library directory';
                 SucuriScanHardening::dewhitelist('wp-tinymce.php', 'wp-includes');
                 SucuriScanHardening::dewhitelist('ms-files.php', 'wp-includes');
-                SucuriScanEvent::report_error_event($message);
+                SucuriScanEvent::reportErrorEvent($message);
                 SucuriScanInterface::info($message);
             } else {
                 SucuriScanInterface::info('Access file is not writable, check the permissions.');
@@ -469,7 +469,7 @@ function sucuriscan_harden_wpincludes()
     }
 
     // Check whether the directory is already hardened or not.
-    $is_hardened = SucuriScanHardening::is_hardened($dpath);
+    $is_hardened = SucuriScanHardening::isHardened($dpath);
     $cp = ( $is_hardened === true ) ? 1 : 0;
 
     return sucuriscan_harden_status(
@@ -513,7 +513,7 @@ function sucuriscan_harden_phpversion()
 function sucuriscan_cloudproxy_enabled()
 {
     $btn_string = '';
-    $proxy_info = SucuriScan::is_behind_cloudproxy();
+    $proxy_info = SucuriScan::isBehindCloudproxy();
     $status = 1;
 
     $description = 'A WAF is a protection layer for your web site, blocking all sort of attacks (brute force attempts, '
@@ -548,8 +548,8 @@ function sucuriscan_cloudproxy_enabled()
  */
 function sucuriscan_harden_secretkeys()
 {
-    $wp_config_path = SucuriScan::get_wpconfig_path();
-    $current_keys = SucuriScanOption::get_security_keys();
+    $wp_config_path = SucuriScan::getWPConfigPath();
+    $current_keys = SucuriScanOption::getSecurityKeys();
 
     if ($wp_config_path) {
         $cp = 1;
@@ -605,7 +605,7 @@ function sucuriscan_harden_readme()
             } else {
                 $cp = 1;
                 $message = 'Hardening applied to the <code>readme.html</code> file';
-                SucuriScanEvent::report_notice_event($message);
+                SucuriScanEvent::reportNoticeEvent($message);
                 SucuriScanInterface::info($message);
             }
         } elseif (SucuriScanRequest::post(':harden_readme_unharden')) {
@@ -643,7 +643,7 @@ function sucuriscan_harden_adminuser()
 
     if ($account_removed === 0) {
         $upmsg = '<i><strong>Notice.</strong> We do not offer an option to automatically change the user name.
-        Go to the <a href="'.SucuriScan::admin_url('users.php').'" target="_blank">user list</a> and create
+        Go to the <a href="'.SucuriScan::adminURL('users.php').'" target="_blank">user list</a> and create
         a new administrator user. Once created, log in as that user and remove the default <code>admin</code>
         (make sure to assign all the admin posts to the new user too).</i>';
     }
@@ -670,7 +670,7 @@ function sucuriscan_harden_fileeditor()
 
     if (SucuriScanRequest::post(':run_hardening')) {
         $current_time = date('r');
-        $wp_config_path = SucuriScan::get_wpconfig_path();
+        $wp_config_path = SucuriScan::getWPConfigPath();
 
         $wp_config_writable = ( file_exists($wp_config_path) && is_writable($wp_config_path) ) ? true : false;
         $new_wpconfig = $wp_config_writable ? @file_get_contents($wp_config_path) : '';
@@ -685,7 +685,7 @@ function sucuriscan_harden_fileeditor()
                 $file_editor_disabled = true;
                 @file_put_contents($wp_config_path, $new_wpconfig, LOCK_EX);
                 $message = 'Hardening applied to the plugin and theme editor';
-                SucuriScanEvent::report_notice_event($message);
+                SucuriScanEvent::reportNoticeEvent($message);
                 SucuriScanInterface::info($message);
             } else {
                 SucuriScanInterface::error('The <code>wp-config.php</code> file is not in the default location
@@ -699,7 +699,7 @@ function sucuriscan_harden_fileeditor()
                     file_put_contents($wp_config_path, $new_wpconfig, LOCK_EX);
                     $file_editor_disabled = false;
                     $message = 'Hardening reverted in the plugin and theme editor';
-                    SucuriScanEvent::report_error_event($message);
+                    SucuriScanEvent::reportErrorEvent($message);
                     SucuriScanInterface::info($message);
                 } else {
                     SucuriScanInterface::error('The <code>wp-config.php</code> file is not in the default location
@@ -760,8 +760,8 @@ function sucuriscan_harden_dbtables()
 function sucuriscan_harden_errorlog()
 {
     $hardened = 1;
-    $log_filename = SucuriScan::ini_get('error_log');
-    $scan_errorlogs = SucuriScanOption::get_option(':scan_errorlogs');
+    $log_filename = SucuriScan::iniGet('error_log');
+    $scan_errorlogs = SucuriScanOption::getOption(':scan_errorlogs');
 
     $description = 'PHP uses files named as <code>' . $log_filename . '</code> to log errors found in '
         . 'the code, these files may leak sensitive information of your project allowing an attacker '
@@ -773,7 +773,7 @@ function sucuriscan_harden_errorlog()
         $file_info = new SucuriScanFileInfo();
         $file_info->ignore_files = false;
         $file_info->ignore_directories = false;
-        $error_logs = $file_info->find_file($log_filename);
+        $error_logs = $file_info->findFile($log_filename);
         $total_log_files = count($error_logs);
     } else {
         $hardened = 2;
@@ -789,7 +789,7 @@ function sucuriscan_harden_errorlog()
     if (SucuriScanRequest::post(':run_hardening')) {
         if (SucuriScanRequest::post(':harden_errorlog')) {
             $removed_logs = 0;
-            SucuriScanEvent::report_notice_event(sprintf(
+            SucuriScanEvent::reportNoticeEvent(sprintf(
                 'Error log files deleted: (multiple entries): %s',
                 @implode(',', $error_logs)
             ));

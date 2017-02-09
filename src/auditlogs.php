@@ -19,7 +19,7 @@ function sucuriscan_auditlogs()
     $params = array();
     $params['PageTitle'] = 'Audit Logs';
 
-    if (SucuriScanOption::get_option(':api_key')) {
+    if (SucuriScanOption::getOption(':api_key')) {
         return SucuriScanTemplate::getSection('integrity-auditlogs', $params);
     }
 
@@ -57,7 +57,7 @@ function sucuriscan_audit_logs_ajax()
 
             if (array_key_exists('total_entries', $audit_logs)
                 && $audit_logs['total_entries'] >= $max_per_page
-                && SucuriScanOption::is_disabled(':audit_report')
+                && SucuriScanOption::isDisabled(':audit_report')
             ) {
                 $response['enable_report'] = true;
             }
@@ -135,9 +135,9 @@ function sucuriscan_audit_logs_ajax()
 function sucuriscan_auditreport()
 {
     $audit_report = false;
-    $logs4report = SucuriScanOption::get_option(':logs4report');
+    $logs4report = SucuriScanOption::getOption(':logs4report');
 
-    if (SucuriScanOption::is_enabled(':audit_report')) {
+    if (SucuriScanOption::isEnabled(':audit_report')) {
         $audit_report = SucuriScanAPI::getAuditReport($logs4report);
     }
 
