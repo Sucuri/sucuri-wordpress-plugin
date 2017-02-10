@@ -30,18 +30,6 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
 class SucuriScanAPI extends SucuriScanOption
 {
     /**
-     * Check whether the SSL certificates will be verified while executing a HTTP
-     * request or not. This is only for customization of the administrator, in fact
-     * not verifying the SSL certificates can lead to a "Man in the Middle" attack.
-     *
-     * @return boolean Whether the SSL certs will be verified while sending a request.
-     */
-    public static function verifySslCert()
-    {
-        return (self::getOption(':verify_ssl_cert') === 'true');
-    }
-
-    /**
      * Seconds before consider a HTTP request as timeout.
      *
      * As for the 01/Jan/2016 if the number of seconds before a timeout is greater
@@ -120,149 +108,6 @@ class SucuriScanAPI extends SucuriScanOption
     }
 
     /**
-     * Assign the communication protocol.
-     *
-     * @see https://developer.wordpress.org/reference/functions/wp_http_supports/
-     * @see https://developer.wordpress.org/reference/functions/set_url_scheme/
-     *
-     * @param  string $url      Valid URL with or without protocol
-     * @param  string $protocol Optional protocol, we will get it from the config.
-     * @return string           Full URL with the proper protocol.
-     */
-    public static function apiUrlProtocol($url = '', $protocol = false)
-    {
-        $pattern = 'sucuri://'; /* Placeholder for HTTP protocol. */
-
-        if (strpos($url, $pattern) === 0) {
-            if (!$protocol) {
-                $protocol = SucuriScanOption::getOption(':api_protocol');
-            }
-
-            $protocol = ($protocol === 'https') ? 'https' : 'http';
-            $url = str_replace($pattern, '', $url);
-            $url = sprintf('%s://%s', $protocol, $url);
-        }
-
-        return $url;
-    }
-
-    /**
-     * Affected URLs by API protocol setting.
-     *
-     * These URLs are the ones that will be modified when the admin decides to
-     * enable or disable the API communication protocol. If this option is enabled
-     * these URLs will be queried using HTTPS and HTTP otherwise. Find an updated
-     * list of the affected URLs using the Grep command like this:
-     *
-     * Note: The string that identifies each URL is a descriptive unique string used
-     * to differentiate and easily select the URLs from the list. Make sure that
-     * they are different among them all.
-     *
-     * @see    grep -n 'sucuri://' sucuri.php
-     * @return array API URLs affected by the HTTP protocol setting.
-     */
-    public static function ambiguousApiUrls()
-    {
-        return array(
-            'sucuriwp' => 'sucuri://wordpress.sucuri.net/api/',
-            'cproxywp' => 'sucuri://waf.sucuri.net/api',
-            'sitechck' => 'sucuri://sitecheck.sucuri.net/',
-            'wpssalts' => 'sucuri://api.wordpress.org/secret-key/1.1/salt/',
-            'wphashes' => 'sucuri://api.wordpress.org/core/checksums/1.0/',
-            'wpplugin' => 'sucuri://wordpress.org/plugins/PLUGIN/',
-            'plugindt' => 'sucuri://api.wordpress.org/plugins/info/1.0/PLUGIN.json',
-            'wpvfpath' => 'sucuri://core.svn.wordpress.org/tags/VERSION/FILEPATH',
-        );
-    }
-
-    /**
-     * Send test HTTP request to the API URLs.
-     *
-     * @param  string $unique Unique API URL selector.
-     * @return object         WordPress HTTP request response.
-     */
-    public static function debugApiCall($unique = null)
-    {
-        $urls = self::ambiguousApiUrls();
-
-        if (array_key_exists($unique, $urls)) {
-            $params = array();
-            $url = self::apiUrlProtocol($urls[$unique]);
-
-            if ($unique === 'sitechck') {
-                $response = self::getSitecheckResults('sucuri.net', false);
-            } else {
-                if ($unique === 'cproxywp') {
-                    $params['v2'] = 'true';
-                    $params['a'] = 'test';
-                } elseif ($unique === 'wpplugin') {
-                    $url = str_replace('/PLUGIN/', '/sucuri-scanner/', $url);
-                } elseif ($unique === 'plugindt') {
-                    $url = str_replace('/PLUGIN.json', '/sucuri-scanner.json', $url);
-                } elseif ($unique === 'wpvfpath') {
-                    $fpath = sprintf('/%s/wp-load.php', SucuriScan::siteVersion());
-                    $url = str_replace('/VERSION/FILEPATH', $fpath, $url);
-                }
-
-                $response = self::apiCall($url, 'GET', $params);
-            }
-
-            if ($response) {
-                if ($unique === 'sucuriwp'
-                    && array_key_exists('status', $response)
-                    && array_key_exists('action', $response)
-                    && array_key_exists('output', $response)
-                    && is_numeric($response['status'])
-                ) {
-                    return array('unique' => $unique, 'output' => 'OK');
-                } elseif ($unique === 'cproxywp'
-                    && array_key_exists('status', $response)
-                    && array_key_exists('action', $response)
-                    && array_key_exists('output', $response)
-                    && is_numeric($response['status'])
-                ) {
-                    return array('unique' => $unique, 'output' => 'OK');
-                } elseif ($unique === 'sitechck'
-                    && array_key_exists('SCAN', $response)
-                    && array_key_exists('SYSTEM', $response)
-                    && array_key_exists('BLACKLIST', $response)
-                ) {
-                    return array('unique' => $unique, 'output' => 'OK');
-                } elseif ($unique === 'wpssalts'
-                    && strpos($response, 'AUTH_KEY')
-                    && strpos($response, 'AUTH_SALT')
-                    && strpos($response, 'SECURE_AUTH_KEY')
-                ) {
-                    return array('unique' => $unique, 'output' => 'OK');
-                } elseif ($unique === 'wphashes'
-                    && is_array($response)
-                    && array_key_exists('checksums', $response)
-                    && is_array($response['checksums'])
-                ) {
-                    return array('unique' => $unique, 'output' => 'OK');
-                } elseif ($unique === 'wpplugin'
-                    && strpos($response, '<title>Sucuri Security')
-                    && strpos($response, 'wordpress.org/plugin/sucuri-scanner')
-                ) {
-                    return array('unique' => $unique, 'output' => 'OK');
-                } elseif ($unique === 'plugindt'
-                    && array_key_exists('slug', $response)
-                    && $response['slug'] === 'sucuri-scanner'
-                ) {
-                    return array('unique' => $unique, 'output' => 'OK');
-                } elseif ($unique === 'wpvfpath'
-                    && strpos($response, 'ABSPATH')
-                    && strpos($response, 'wp_die')
-                ) {
-                    return array('unique' => $unique, 'output' => 'OK');
-                }
-            }
-        }
-
-        return array('unique' => $unique, 'output' => 'ERROR');
-    }
-
-    /**
      * Communicates with a remote URL and retrieves its content.
      *
      * Curl is a reflective object-oriented programming language for interactive
@@ -290,7 +135,6 @@ class SucuriScanAPI extends SucuriScanOption
     {
         if ($url && ($method === 'GET' || $method === 'POST')) {
             $handler = SucuriScanOption::getOption(':api_handler');
-            $params['ssl'] = self::verifySslCert() ? 'true' : 'false';
 
             if (!function_exists('curl_init') || $handler === 'socket') {
                 $params['socket'] = 'true';
@@ -319,7 +163,6 @@ class SucuriScanAPI extends SucuriScanOption
             && ($method === 'GET' || $method === 'POST')
         ) {
             $curl = curl_init();
-            $url = self::apiUrlProtocol($url);
             $timeout = self::requestTimeout();
 
             if (is_array($args) && isset($args['timeout'])) {
@@ -355,13 +198,8 @@ class SucuriScanAPI extends SucuriScanOption
                 curl_setopt($curl, CURLOPT_POSTFIELDS, self::buildQuery($params));
             }
 
-            if (self::verifySslCert()) {
-                curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
-                curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
-            } else {
-                curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-                curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-            }
+            curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
+            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
 
             $output = curl_exec($curl);
             $header = curl_getinfo($curl);
@@ -385,7 +223,6 @@ class SucuriScanAPI extends SucuriScanOption
     private static function apiCallSocket($url = '', $method = 'GET', $params = array(), $args = array())
     {
         if (function_exists('fsockopen')) {
-            $url = self::apiUrlProtocol($url);
             $timeout = self::requestTimeout();
 
             if (is_array($args) && isset($args['timeout'])) {
@@ -773,13 +610,10 @@ class SucuriScanAPI extends SucuriScanOption
                 || stripos($raw, 'error setting certificate')
                 || stripos($raw, 'SSL connect error')
             ) {
-                SucuriScanOption::updateOption(':verify_ssl_cert', 'false');
-
-                $msg .= 'There were some issues with the SSL certificate eith'
-                . 'er in this server or with the remote API service. The auto'
-                . 'matic verification of the certificates has been deactivate'
-                . 'd to reduce the noise during the execution of the HTTP req'
-                . 'uests.';
+                $msg .= 'Your website seems to use an old version of the Open'
+                . 'SSL library or the CURL extension was compiled without sup'
+                . 'port for the algorithm used on the API service. Contact yo'
+                . 'ur hosting provider to fix this issue.';
             }
 
             // Check if the MX records as missing for API registration.
@@ -1319,7 +1153,7 @@ class SucuriScanAPI extends SucuriScanOption
             }
 
             $response = self::apiCall(
-                'sucuri://sitecheck.sucuri.net/',
+                'https://sitecheck.sucuri.net/',
                 'GET',
                 $params,
                 array(
@@ -1386,7 +1220,7 @@ class SucuriScanAPI extends SucuriScanOption
     public static function getNewSecretKeys()
     {
         $pattern = self::secretKeyPattern();
-        $response = self::apiCall('sucuri://api.wordpress.org/secret-key/1.1/salt/', 'GET');
+        $response = self::apiCall('https://api.wordpress.org/secret-key/1.1/salt/', 'GET');
 
         if ($response && @preg_match_all($pattern, $response, $match)) {
             $new_keys = array();
@@ -1413,7 +1247,7 @@ class SucuriScanAPI extends SucuriScanOption
     {
         $language = SucuriScanOption::getOption(':language');
         $response = self::apiCall(
-            'sucuri://api.wordpress.org/core/checksums/1.0/',
+            'https://api.wordpress.org/core/checksums/1.0/',
             'GET',
             array(
                 'version' => $version,
@@ -1462,7 +1296,7 @@ class SucuriScanAPI extends SucuriScanOption
         // Get the plugin's basic information from WordPress transient data.
         $plugins = get_plugins();
         $pattern = '/^http(s)?:\/\/wordpress\.org\/plugins\/(.*)\/$/';
-        $wp_market = 'sucuri://wordpress.org/plugins/%s/';
+        $wp_market = 'https://wordpress.org/plugins/%s/';
 
         // Loop through each plugin data and complement its information with more attributes.
         foreach ($plugins as $plugin_path => $plugin_data) {
@@ -1493,7 +1327,6 @@ class SucuriScanAPI extends SucuriScanOption
 
                 if (isset($plugin_path_parts[0])) {
                     $possible_repository = sprintf($wp_market, $plugin_path_parts[0]);
-                    $possible_repository = SucuriScanAPI::apiUrlProtocol($possible_repository);
                     $resp = wp_remote_head($possible_repository);
 
                     if (!is_wp_error($resp)
@@ -1552,7 +1385,7 @@ class SucuriScanAPI extends SucuriScanOption
     public static function getRemotePluginData($plugin = '')
     {
         if (!empty($plugin)) {
-            $url = sprintf('sucuri://api.wordpress.org/plugins/info/1.0/%s.json', $plugin);
+            $url = sprintf('https://api.wordpress.org/plugins/info/1.0/%s.json', $plugin);
             $response = self::apiCall($url, 'GET');
 
             if ($response) {
@@ -1583,7 +1416,7 @@ class SucuriScanAPI extends SucuriScanOption
                 $version = self::siteVersion();
             }
 
-            $url = sprintf('sucuri://core.svn.wordpress.org/tags/%s/%s', $version, $filepath);
+            $url = sprintf('https://core.svn.wordpress.org/tags/%s/%s', $version, $filepath);
             $response = self::apiCall($url, 'GET');
 
             if ($response) {

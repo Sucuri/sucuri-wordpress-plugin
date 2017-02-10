@@ -115,11 +115,6 @@ if (defined('SUCURISCAN')) {
         '480' => '480 failed logins per hour',
     );
 
-    $sucuriscan_verify_ssl_cert = array(
-        'true' => 'Verify peer\'s cert',
-        'false' => 'Stop peer\'s cert verification',
-    );
-
     $sucuriscan_api_handlers = array(
         'curl' => 'Curl - libcurl',
         'socket' => 'Socket - fsockopen',

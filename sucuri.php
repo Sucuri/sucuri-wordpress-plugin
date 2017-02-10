@@ -112,7 +112,7 @@ define('SUCURISCAN_PLUGIN_CHECKSUM', @md5_file(SUCURISCAN_PLUGIN_FILEPATH));
 /**
  * Remote URL where the public Sucuri API service is running.
  */
-define('SUCURISCAN_API', 'sucuri://wordpress.sucuri.net/api/');
+define('SUCURISCAN_API', 'https://wordpress.sucuri.net/api/');
 
 /**
  * Latest version of the public Sucuri API.
@@ -122,7 +122,7 @@ define('SUCURISCAN_API_VERSION', 'v1');
 /**
  * Remote URL where the CloudProxy API service is running.
  */
-define('SUCURISCAN_CLOUDPROXY_API', 'sucuri://waf.sucuri.net/api');
+define('SUCURISCAN_CLOUDPROXY_API', 'https://waf.sucuri.net/api');
 
 /**
  * Latest version of the CloudProxy API.

@@ -19,10 +19,8 @@ function sucuriscan_settings_apiservice($nonce)
 
     $params['SettingsSection.ApiStatus'] = sucuriscan_settings_apiservice_status($nonce);
     $params['SettingsSection.ApiProxy'] = sucuriscan_settings_apiservice_proxy($nonce);
-    $params['SettingsSection.ApiSSL'] = sucuriscan_settings_apiservice_ssl($nonce);
     $params['SettingsSection.ApiHandler'] = sucuriscan_settings_apiservice_handler($nonce);
     $params['SettingsSection.ApiTimeout'] = sucuriscan_settings_apiservice_timeout($nonce);
-    $params['SettingsSection.ApiProtocol'] = sucuriscan_settings_apiservice_https($nonce);
 
     return SucuriScanTemplate::getSection('settings-apiservice', $params);
 }
@@ -98,51 +96,6 @@ function sucuriscan_settings_apiservice_proxy($nonce)
     return SucuriScanTemplate::getSection('settings-apiservice-proxy', $params);
 }
 
-function sucuriscan_settings_apiservice_ssl($nonce)
-{
-    global $sucuriscan_verify_ssl_cert;
-
-    $params = array(
-        'VerifySSLCert' => 'Undefined',
-        'VerifySSLCertCssClass' => 0,
-        'VerifySSLCertOptions' => '',
-    );
-
-    // Update the configuration for the SSL certificate verification.
-    if ($nonce) {
-        $verify_ssl_cert = SucuriScanRequest::post(':verify_ssl_cert');
-
-        if ($verify_ssl_cert) {
-            if (array_key_exists($verify_ssl_cert, $sucuriscan_verify_ssl_cert)) {
-                $message = 'SSL certificate verification for API calls set to <code>' . $verify_ssl_cert . '</code>';
-
-                SucuriScanOption::updateOption(':verify_ssl_cert', $verify_ssl_cert);
-                SucuriScanEvent::reportWarningEvent($message);
-                SucuriScanEvent::notifyEvent('plugin_change', $message);
-                SucuriScanInterface::info($message);
-            } else {
-                SucuriScanInterface::error('Invalid value for the SSL certificate verification.');
-            }
-        }
-    }
-
-    $verify_ssl_cert = SucuriScanOption::getOption(':verify_ssl_cert');
-    $params['VerifySSLCertOptions'] = SucuriScanTemplate::selectOptions(
-        $sucuriscan_verify_ssl_cert,
-        $verify_ssl_cert
-    );
-
-    if (array_key_exists($verify_ssl_cert, $sucuriscan_verify_ssl_cert)) {
-        $params['VerifySSLCert'] = $sucuriscan_verify_ssl_cert[$verify_ssl_cert];
-
-        if ($verify_ssl_cert === 'true') {
-            $params['VerifySSLCertCssClass'] = 1;
-        }
-    }
-
-    return SucuriScanTemplate::getSection('settings-apiservice-ssl', $params);
-}
-
 function sucuriscan_settings_apiservice_handler($nonce)
 {
     global $sucuriscan_api_handlers;
@@ -202,73 +155,4 @@ function sucuriscan_settings_apiservice_timeout($nonce)
     $params['RequestTimeout'] = SucuriScanOption::getOption(':request_timeout') . ' seconds';
 
     return SucuriScanTemplate::getSection('settings-apiservice-timeout', $params);
-}
-
-function sucuriscan_settings_apiservice_https($nonce)
-{
-    $params = array();
-
-    $params['ApiProtocol.StatusNum'] = '1';
-    $params['ApiProtocol.Status'] = 'Enabled';
-    $params['ApiProtocol.SwitchText'] = 'Disable';
-    $params['ApiProtocol.SwitchValue'] = 'http';
-    $params['ApiProtocol.SwitchCssClass'] = 'button-danger';
-    $params['ApiProtocol.WarningVisibility'] = 'visible';
-    $params['ApiProtocol.ErrorVisibility'] = 'hidden';
-    $params['ApiProtocol.AffectedUrls'] = '';
-
-    if ($nonce) {
-        // Enable or disable the API service communication.
-        if ($api_protocol = SucuriScanRequest::post(':api_protocol', 'http(s)?')) {
-            $message = 'API communication protocol was set to <code>' . strtoupper($api_protocol) . '</code>';
-
-            SucuriScanEvent::reportInfoEvent($message);
-            SucuriScanEvent::notifyEvent('plugin_change', $message);
-            SucuriScanOption::updateOption(':api_protocol', $api_protocol);
-            SucuriScanInterface::info($message);
-        }
-    }
-
-    $api_protocol = SucuriScanOption::getOption(':api_protocol');
-
-    if ($api_protocol !== 'https') {
-        $params['ApiProtocol.StatusNum'] = '0';
-        $params['ApiProtocol.Status'] = 'Disabled';
-        $params['ApiProtocol.SwitchText'] = 'Enable';
-        $params['ApiProtocol.SwitchValue'] = 'https';
-        $params['ApiProtocol.SwitchCssClass'] = 'button-success';
-        $params['ApiProtocol.WarningVisibility'] = 'hidden';
-        $params['ApiProtocol.ErrorVisibility'] = 'visible';
-    }
-
-    $counter = 0;
-    $affected_urls = SucuriScanAPI::ambiguousApiUrls();
-
-    foreach ($affected_urls as $unique => $url) {
-        $counter++;
-        $url = SucuriScanAPI::apiUrlProtocol($url, $api_protocol);
-        $css_class = ($counter % 2 === 0) ? 'alternate' : '';
-        $params['ApiProtocol.AffectedUrls'] .= SucuriScanTemplate::getSnippet(
-            'settings-apiservice-protocol',
-            array(
-                'ApiProtocol.CssClass' => $css_class,
-                'ApiProtocol.ID' => $unique,
-                'ApiProtocol.URL' => $url,
-            )
-        );
-    }
-
-    return SucuriScanTemplate::getSection('settings-apiservice-protocol', $params);
-}
-
-function sucuriscan_settings_apiservice_https_ajax()
-{
-    if (SucuriScanRequest::post('form_action') == 'debug_api_call') {
-        $unique = SucuriScanRequest::post('api_unique');
-        $response = SucuriScanAPI::debugApiCall($unique);
-
-        header('Content-Type: application/json');
-        print(@json_encode($response));
-        exit(0);
-    }
 }
