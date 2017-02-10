@@ -33,7 +33,6 @@ function sucuriscan_settings_page()
     $params['Settings.IgnoreScanning'] = sucuriscan_settings_ignorescan($nonce);
     $params['Settings.IgnoreRules'] = sucuriscan_settings_ignore_rules();
     $params['Settings.TrustIP'] = sucuriscan_settings_trust_ip();
-    $params['Settings.Heartbeat'] = sucuriscan_settings_heartbeat();
 
     echo SucuriScanTemplate::getTemplate('settings', $params);
 }

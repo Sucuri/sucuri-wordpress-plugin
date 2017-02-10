@@ -249,20 +249,4 @@ if (defined('SUCURISCAN')) {
      * email notifications.
      */
     add_action($sucuriscan_action_prefix . 'admin_notices', 'SucuriScanInterface::setupAlert');
-
-    /**
-     * Heartbeat API
-     *
-     * Update the settings of the Heartbeat API according to the values set by an
-     * administrator. This tool may cause an increase in the CPU usage, a bad
-     * configuration may cause low account to run out of resources, but in better
-     * cases it may improve the performance of the site by reducing the quantity of
-     * requests sent to the server per session.
-     */
-    add_filter('init', 'SucuriScanHeartbeat::registerScript', 1);
-    add_filter('heartbeat_settings', 'SucuriScanHeartbeat::updateSettings');
-    add_filter('heartbeat_send', 'SucuriScanHeartbeat::respondToSend', 10, 3);
-    add_filter('heartbeat_received', 'SucuriScanHeartbeat::respondToReceived', 10, 3);
-    add_filter('heartbeat_nopriv_send', 'SucuriScanHeartbeat::respondToSend', 10, 3);
-    add_filter('heartbeat_nopriv_received', 'SucuriScanHeartbeat::respondToReceived', 10, 3);
 }

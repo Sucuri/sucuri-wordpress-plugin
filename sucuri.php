@@ -181,7 +181,6 @@ require_once('src/api.lib.php');
 require_once('src/mail.lib.php');
 require_once('src/template.lib.php');
 require_once('src/fsscanner.lib.php');
-require_once('src/heartbeat.lib.php');
 require_once('src/hardening.lib.php');
 require_once('src/interface.lib.php');
 
@@ -215,7 +214,6 @@ require_once('src/settings-ignorealerts.php');
 require_once('src/settings-apiservice.php');
 require_once('src/settings-selfhosting.php');
 require_once('src/settings-trustip.php');
-require_once('src/settings-heartbeat.php');
 
 /* Load handlers for main pages (infosys). */
 require_once('src/infosys.php');

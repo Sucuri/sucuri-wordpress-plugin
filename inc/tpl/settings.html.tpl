@@ -25,9 +25,6 @@
         <li>
             <a href="#trustip" data-tabname="trustip">Trust IP</a>
         </li>
-        <li>
-            <a href="#heartbeat" data-tabname="heartbeat">Heartbeat</a>
-        </li>
     </ul>
 
     <div class="sucuriscan-tab-containers">
@@ -61,10 +58,6 @@
 
         <div id="sucuriscan-trustip">
             %%%SUCURI.Settings.TrustIP%%%
-        </div>
-
-        <div id="sucuriscan-heartbeat">
-            %%%SUCURI.Settings.Heartbeat%%%
         </div>
     </div>
 </div>
