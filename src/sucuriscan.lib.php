@@ -129,29 +129,6 @@ class SucuriScan
     }
 
     /**
-     * Generates a lowercase random string with an specific length.
-     *
-     * @param  integer $length Length of the string that will be generated.
-     * @return string          The random string generated.
-     */
-    public static function randChar($length = 4)
-    {
-        $string = '';
-        $offset = 25;
-        $chars = array(
-            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
-            'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
-        );
-
-        for ($i = 0; $i < $length; $i++) {
-            $index = rand(0, $offset);
-            $string .= $chars[$index];
-        }
-
-        return $string;
-    }
-
-    /**
      * Translate a given number in bytes to a human readable file size using the
      * a approximate value in Kylo, Mega, Giga, etc.
      *
@@ -742,23 +719,6 @@ class SucuriScan
     }
 
     /**
-     * Convert an string of characters into a valid variable name.
-     *
-     * @see https://www.php.net/manual/en/language.variables.basics.php
-     *
-     * @param  string $text A text containing alpha-numeric and special characters.
-     * @return string       A valid variable name.
-     */
-    public static function human2var($text = '')
-    {
-        $text = strtolower($text);
-        $pattern = '/[^a-z0-9_]/';
-        $var_name = preg_replace($pattern, '_', $text);
-
-        return $var_name;
-    }
-
-    /**
      * Check whether a variable contains a serialized data or not.
      *
      * @param  string  $data The data that will be checked.
@@ -863,21 +823,6 @@ class SucuriScan
     }
 
     /**
-     * Check whether a regular expression is valid or not.
-     *
-     * @param  string  $pattern The regular expression to check.
-     * @return boolean          True if the regular expression is valid, false otherwise.
-     */
-    public static function isValidPattern($pattern = '')
-    {
-        return (bool) (
-            is_string($pattern)
-            && !empty($pattern)
-            && @preg_match($pattern, null) !== false
-        );
-    }
-
-    /**
      * Cut a long text to the length specified, and append suspensive points at the end.
      *
      * @param  string  $text   String of characters that will be cut.
@@ -893,22 +838,6 @@ class SucuriScan
         }
 
         return $text;
-    }
-
-    /**
-     * Same as the excerpt method but with the string reversed.
-     *
-     * @param  string  $text   String of characters that will be cut.
-     * @param  integer $length Maximum length of the returned string, default is 10.
-     * @return string          Short version of the text specified.
-     */
-    public static function excerptReverse($text = '', $length = 10)
-    {
-        $str_reversed = strrev($text);
-        $str_excerpt = self::excerpt($str_reversed, $length);
-        $text_transformed = strrev($str_excerpt);
-
-        return $text_transformed;
     }
 
     /**

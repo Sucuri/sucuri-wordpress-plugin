@@ -18,7 +18,6 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  */
 class SucuriScanFileInfo extends SucuriScan
 {
-
     /**
      * Define the interface that will be used to execute the file system scans, the
      * available options are SPL, OpenDir, and Glob (all in lowercase). This can be
@@ -526,53 +525,6 @@ class SucuriScanFileInfo extends SucuriScan
     }
 
     /**
-     * Returns a list of lines matching the specified pattern in all the files found
-     * in the specified directory, each entry in the list contains the relative path
-     * of the file and the number of the line where the pattern was found, as well
-     * as the string around the pattern in that line.
-     *
-     * @param  string $directory Directory where the scanner is located at the moment.
-     * @param  string $pattern   Text that will be searched inside each file.
-     * @return array             Associative list with the file path and line number of the match.
-     */
-    public function grepPattern($directory = '', $pattern = '')
-    {
-        $dir_tree = $this->getDirectoryTree($directory);
-        $pattern = '/.*' . str_replace('/', '\/', $pattern) . '.*/';
-        $results = array();
-
-        if (class_exists('SplFileObject')
-            && class_exists('RegexIterator')
-            && SucuriScan::isValidPattern($pattern)
-        ) {
-            foreach ($dir_tree as $file_path) {
-                try {
-                    $fobject = new SplFileObject($file_path);
-                    $fstream = new RegexIterator($fobject, $pattern, RegexIterator::MATCH);
-
-                    foreach ($fstream as $key => $ltext) {
-                        $lnumber = ( $key + 1 );
-                        $ltext = str_replace("\n", '', $ltext);
-                        $fpath = str_replace($directory, '', $file_path);
-                        $loutput = sprintf('%s:%d:%s', $fpath, $lnumber, $ltext);
-                        $results[] = array(
-                            'file_path' => $file_path,
-                            'relative_path' => $fpath,
-                            'line_number' => $lnumber,
-                            'line_text' => $ltext,
-                            'output' => $loutput,
-                        );
-                    }
-                } catch (RuntimeException $exception) {
-                    SucuriScanEvent::reportException($exception);
-                }
-            }
-        }
-
-        return $results;
-    }
-
-    /**
      * Remove a directory recursively.
      *
      * @param  string  $directory Path of the existing directory that will be removed.
@@ -716,38 +668,6 @@ class SucuriScanFileInfo extends SucuriScan
         }
 
         return false;
-    }
-
-    /**
-     * Gets inode change time of file.
-     *
-     * @param  string  $file_path Path to the file.
-     * @return integer            Time the file was last changed.
-     */
-    public static function creationTime($file_path = '')
-    {
-        if (file_exists($file_path)) {
-            clearstatcache($file_path);
-            return filectime($file_path);
-        }
-
-        return 0;
-    }
-
-    /**
-     * Gets file modification time.
-     *
-     * @param  string  $file_path Path to the file.
-     * @return integer            Time the file was last modified.
-     */
-    public static function modificationTime($file_path = '')
-    {
-        if (file_exists($file_path)) {
-            clearstatcache($file_path);
-            return filemtime($file_path);
-        }
-
-        return 0;
     }
 
     /**
