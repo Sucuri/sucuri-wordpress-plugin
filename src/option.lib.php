@@ -105,7 +105,6 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_sitecheck_counter' => 0,
             'sucuriscan_sitecheck_timeout' => 30,
             'sucuriscan_use_wpmail' => 'enabled',
-            'sucuriscan_xhr_monitor' => 'disabled',
         );
 
         return $defaults;

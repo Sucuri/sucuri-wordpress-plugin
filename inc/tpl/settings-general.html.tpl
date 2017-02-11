@@ -12,8 +12,6 @@
 
     %%%SUCURI.SettingsSection.CommentMonitor%%%
 
-    %%%SUCURI.SettingsSection.XhrMonitor%%%
-
     %%%SUCURI.SettingsSection.AuditLogStats%%%
 
     %%%SUCURI.SettingsSection.Datetime%%%

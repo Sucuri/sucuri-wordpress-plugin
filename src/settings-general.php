@@ -30,7 +30,6 @@ function sucuriscan_settings_general($nonce)
     $params['SettingsSection.PasswordCollector'] = sucuriscan_settings_general_pwdcollector($nonce);
     $params['SettingsSection.IPDiscoverer'] = sucuriscan_settings_general_ipdiscoverer($nonce);
     $params['SettingsSection.CommentMonitor'] = sucuriscan_settings_general_commentmonitor($nonce);
-    $params['SettingsSection.XhrMonitor'] = sucuriscan_settings_general_xhrmonitor($nonce);
     $params['SettingsSection.AuditLogStats'] = sucuriscan_settings_general_auditlogstats($nonce);
     $params['SettingsSection.Datetime'] = sucuriscan_settings_general_datetime($nonce);
 
@@ -419,40 +418,6 @@ function sucuriscan_settings_general_commentmonitor($nonce)
     }
 
     return SucuriScanTemplate::getSection('settings-general-commentmonitor', $params);
-}
-
-function sucuriscan_settings_general_xhrmonitor($nonce)
-{
-    $params = array(
-        'XhrMonitorStatus' => 'Enabled',
-        'XhrMonitorSwitchText' => 'Disable',
-        'XhrMonitorSwitchValue' => 'disable',
-        'XhrMonitorSwitchCssClass' => 'button-danger',
-    );
-
-    // Configure the XHR monitor option.
-    if ($nonce) {
-        $monitor = SucuriScanRequest::post(':xhr_monitor', '(en|dis)able');
-
-        if ($monitor) {
-            $action_d = $monitor . 'd';
-            $message = 'XHR (XML HTTP Request) monitor was <code>' . $action_d . '</code>';
-
-            SucuriScanOption::updateOption(':xhr_monitor', $action_d);
-            SucuriScanEvent::reportInfoEvent($message);
-            SucuriScanEvent::notifyEvent('plugin_change', $message);
-            SucuriScanInterface::info($message);
-        }
-    }
-
-    if (SucuriScanOption::isDisabled(':xhr_monitor')) {
-        $params['XhrMonitorStatus'] = 'Disabled';
-        $params['XhrMonitorSwitchText'] = 'Enable';
-        $params['XhrMonitorSwitchValue'] = 'enable';
-        $params['XhrMonitorSwitchCssClass'] = 'button-success';
-    }
-
-    return SucuriScanTemplate::getSection('settings-general-xhrmonitor', $params);
 }
 
 function sucuriscan_settings_general_auditlogstats($nonce)

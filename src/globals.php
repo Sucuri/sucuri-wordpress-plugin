@@ -216,10 +216,6 @@ if (defined('SUCURISCAN')) {
             'xmlrpc_publish_post',
         );
 
-        if (SucuriScanOption::isEnabled(':xhr_monitor')) {
-            $sucuriscan_hooks[] = 'all';
-        }
-
         foreach ($sucuriscan_hooks as $hook_name) {
             $hook_func = 'hook_' . $hook_name;
             $hook_func = str_replace('_', "\x20", $hook_func);

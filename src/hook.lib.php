@@ -449,31 +449,6 @@ class SucuriScanHook extends SucuriScanEvent
     // TODO: Detect auto updates in core, themes, and plugin files.
 
     /**
-     * Placeholder for arbitrary actions.
-     *
-     * @return void
-     */
-    public static function hookAll($action = null, $data = false)
-    {
-        global $wp_filter, $wp_actions;
-
-        if (is_array($wp_filter)
-            && is_array($wp_actions)
-            && array_key_exists($action, $wp_actions)
-            && !array_key_exists($action, $wp_filter)
-            && (
-                substr($action, 0, 11) === 'admin_post_'
-                || substr($action, 0, 8) === 'wp_ajax_'
-            )
-        ) {
-            $message = sprintf('Undefined XHR action %s', $action);
-            self::reportErrorEvent($message);
-            header('HTTP/1.1 400 Bad Request');
-            exit(1);
-        }
-    }
-
-    /**
      * Send a notifications to the administrator of some specific events that are
      * not triggered through an hooked action, but through a simple request in the
      * admin interface.
