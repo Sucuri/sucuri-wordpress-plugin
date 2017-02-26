@@ -355,9 +355,8 @@ class SucuriScanHook extends SucuriScanEvent
 
         self::reportErrorEvent($message);
 
-        if (sucuriscan_collect_wrong_passwords() === true) {
-            $message .= "<br>\nUser wrong password: " . $password;
-        }
+        /* Include wrong password after the event report */
+        $message .= "<br>\nUser wrong password: " . $password;
 
         self::notifyEvent('failed_login', $message);
 

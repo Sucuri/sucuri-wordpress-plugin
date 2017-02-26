@@ -27,7 +27,6 @@ function sucuriscan_settings_general($nonce)
     $params['SettingsSection.ApiKey'] = sucuriscan_settings_general_apikey($nonce);
     $params['SettingsSection.DataStorage'] = sucuriscan_settings_general_datastorage($nonce);
     $params['SettingsSection.ReverseProxy'] = sucuriscan_settings_general_reverseproxy($nonce);
-    $params['SettingsSection.PasswordCollector'] = sucuriscan_settings_general_pwdcollector($nonce);
     $params['SettingsSection.IPDiscoverer'] = sucuriscan_settings_general_ipdiscoverer($nonce);
     $params['SettingsSection.CommentMonitor'] = sucuriscan_settings_general_commentmonitor($nonce);
     $params['SettingsSection.AuditLogStats'] = sucuriscan_settings_general_auditlogstats($nonce);
@@ -265,49 +264,6 @@ function sucuriscan_settings_general_reverseproxy($nonce)
     }
 
     return SucuriScanTemplate::getSection('settings-general-reverseproxy', $params);
-}
-
-function sucuriscan_settings_general_pwdcollector($nonce)
-{
-    $params = array(
-        'PwdCollectorStatus' => 'Disabled',
-        'PwdCollectorSwitchText' => 'Enable',
-        'PwdCollectorSwitchValue' => 'enable',
-        'PwdCollectorSwitchCssClass' => 'button-success',
-    );
-
-    // Update the collection of failed passwords settings.
-    if ($nonce) {
-        $collector = SucuriScanRequest::post(':collect_wrong_passwords');
-
-        if ($collector) {
-            $collector = strtolower($collector);
-            $message = 'Collect failed login passwords set to <code>%s</code>';
-
-            if ($collector == 'enable') {
-                $collect_action = 'enabled';
-                $message = sprintf($message, $collect_action);
-                SucuriScanEvent::reportCriticalEvent($message);
-            } else {
-                $collect_action = 'disabled';
-                $message = sprintf($message, $collect_action);
-                SucuriScanEvent::reportInfoEvent($message);
-            }
-
-            SucuriScanOption::updateOption(':collect_wrong_passwords', $collect_action);
-            SucuriScanEvent::notifyEvent('plugin_change', $message);
-            SucuriScanInterface::info($message);
-        }
-    }
-
-    if (sucuriscan_collect_wrong_passwords() === true) {
-        $params['PwdCollectorStatus'] = 'Enabled';
-        $params['PwdCollectorSwitchText'] = 'Disable';
-        $params['PwdCollectorSwitchValue'] = 'disable';
-        $params['PwdCollectorSwitchCssClass'] = 'button-danger';
-    }
-
-    return SucuriScanTemplate::getSection('settings-general-pwdcollector', $params);
 }
 
 function sucuriscan_settings_general_ipdiscoverer($nonce)

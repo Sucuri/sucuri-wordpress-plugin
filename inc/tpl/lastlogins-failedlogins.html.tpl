@@ -37,16 +37,6 @@
                 </p>
             </div>
 
-            <div class="sucuriscan-inline-alert-error sucuriscan-%%SUCURI.FailedLogins.CollectPasswordsVisibility%%">
-                <p>
-                    If you mistype your password the plugin will log the username and password in
-                    the security logs. If someone get access to your API key, or your server fails
-                    to process the PHP files (which is not usual but may happen) then an attacker
-                    may steal your credentials and get access to your site. Change this from the <a
-                    href="%%SUCURI.URL.Settings%%#general">general settings</a>
-                </p>
-            </div>
-
             <form method="post">
                 <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
 

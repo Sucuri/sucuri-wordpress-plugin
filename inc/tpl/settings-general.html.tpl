@@ -8,8 +8,6 @@
 
     %%%SUCURI.SettingsSection.IPDiscoverer%%%
 
-    %%%SUCURI.SettingsSection.PasswordCollector%%%
-
     %%%SUCURI.SettingsSection.CommentMonitor%%%
 
     %%%SUCURI.SettingsSection.AuditLogStats%%%

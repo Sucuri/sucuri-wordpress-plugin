@@ -49,7 +49,6 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_api_service' => 'enabled',
             'sucuriscan_audit_report' => 'disabled',
             'sucuriscan_cloudproxy_apikey' => '',
-            'sucuriscan_collect_wrong_passwords' => 'disabled',
             'sucuriscan_comment_monitor' => 'disabled',
             'sucuriscan_datastore_path' => dirname(self::optionsFilePath()),
             'sucuriscan_dismiss_setup' => 'disabled',

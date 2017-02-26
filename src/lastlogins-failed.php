@@ -21,7 +21,6 @@ function sucuriscan_failed_logins_panel()
         'FailedLogins.MaxFailedLogins' => 0,
         'FailedLogins.NoItemsVisibility' => 'visible',
         'FailedLogins.WarningVisibility' => 'visible',
-        'FailedLogins.CollectPasswordsVisibility' => 'visible',
         'FailedLogins.PaginationLinks' => '',
         'FailedLogins.PaginationVisibility' => 'hidden',
     );
@@ -43,7 +42,6 @@ function sucuriscan_failed_logins_panel()
 
     $max_failed_logins = SucuriScanOption::getOption(':maximum_failed_logins');
     $notify_bruteforce_attack = SucuriScanOption::getOption(':notify_bruteforce_attack');
-    $collect_passwords = sucuriscan_collect_wrong_passwords();
     $failed_logins = sucuriscan_get_all_failed_logins($page_offset, $max_per_page);
 
     if ($failed_logins) {
@@ -56,14 +54,12 @@ function sucuriscan_failed_logins_panel()
                 $wrong_user_password = 'hidden';
                 $wrong_user_password_color = 'default';
 
-                if ($collect_passwords === true) {
-                    if (isset($login_data['user_password']) && !empty($login_data['user_password'])) {
-                        $wrong_user_password = $login_data['user_password'];
-                        $wrong_user_password_color = 'none';
-                    } else {
-                        $wrong_user_password = 'empty';
-                        $wrong_user_password_color = 'info';
-                    }
+                if (isset($login_data['user_password']) && !empty($login_data['user_password'])) {
+                    $wrong_user_password = $login_data['user_password'];
+                    $wrong_user_password_color = 'danger';
+                } else {
+                    $wrong_user_password = 'empty';
+                    $wrong_user_password_color = 'info';
                 }
 
                 $template_variables['FailedLogins.List'] .= SucuriScanTemplate::getSnippet(
@@ -104,21 +100,7 @@ function sucuriscan_failed_logins_panel()
         $template_variables['FailedLogins.WarningVisibility'] = 'hidden';
     }
 
-    if ($collect_passwords !== true) {
-        $template_variables['FailedLogins.CollectPasswordsVisibility'] = 'hidden';
-    }
-
     return SucuriScanTemplate::getSection('lastlogins-failedlogins', $template_variables);
-}
-
-/**
- * Whether or not to collect the password of failed logins.
- *
- * @return boolean TRUE if the password must be collected, FALSE otherwise.
- */
-function sucuriscan_collect_wrong_passwords()
-{
-    return SucuriScanOption::isEnabled(':collect_wrong_passwords');
 }
 
 /**
@@ -318,11 +300,6 @@ function sucuriscan_log_failed_login($user_login = '', $wrong_password = '')
 {
     $datastore_path = sucuriscan_failed_logins_datastore_path();
 
-    // Do not collect wrong passwords if it is not necessary.
-    if (sucuriscan_collect_wrong_passwords() !== true) {
-        $wrong_password = '';
-    }
-
     if ($datastore_path) {
         $login_data = json_encode(array(
             'user_login' => $user_login,
@@ -359,7 +336,6 @@ function sucuriscan_report_failed_logins($failed_logins = array())
 {
     if ($failed_logins && $failed_logins['count'] > 0) {
         $prettify_mails = SucuriScanMail::prettifyMails();
-        $collect_wrong_passwords = sucuriscan_collect_wrong_passwords();
         $mail_content = '';
 
         if ($prettify_mails) {
@@ -369,11 +345,7 @@ function sucuriscan_report_failed_logins($failed_logins = array())
             $table_html .= '<thead>';
             $table_html .= '<tr>';
             $table_html .= '<th>Username</th>';
-
-            if ($collect_wrong_passwords === true) {
-                $table_html .= '<th>Password</th>';
-            }
-
+            $table_html .= '<th>Password</th>';
             $table_html .= '<th>IP Address</th>';
             $table_html .= '<th>Attempt Timestamp</th>';
             $table_html .= '<th>Attempt Date/Time</th>';
@@ -387,11 +359,7 @@ function sucuriscan_report_failed_logins($failed_logins = array())
             if ($prettify_mails) {
                 $table_html .= '<tr>';
                 $table_html .= '<td>' . esc_attr($login_data['user_login']) . '</td>';
-
-                if ($collect_wrong_passwords === true) {
-                    $table_html .= '<td>' . esc_attr($login_data['user_password']) . '</td>';
-                }
-
+                $table_html .= '<td>' . esc_attr($login_data['user_password']) . '</td>';
                 $table_html .= '<td>' . esc_attr($login_data['remote_addr']) . '</td>';
                 $table_html .= '<td>' . $login_data['attempt_time'] . '</td>';
                 $table_html .= '<td>' . $login_data['attempt_date'] . '</td>';
@@ -399,11 +367,7 @@ function sucuriscan_report_failed_logins($failed_logins = array())
             } else {
                 $mail_content .= "\n";
                 $mail_content .= 'Username: ' . $login_data['user_login'] . "\n";
-
-                if ($collect_wrong_passwords === true) {
-                    $mail_content .= 'Password: ' . $login_data['user_password'] . "\n";
-                }
-
+                $mail_content .= 'Password: ' . $login_data['user_password'] . "\n";
                 $mail_content .= 'IP Address: ' . $login_data['remote_addr'] . "\n";
                 $mail_content .= 'Attempt Timestamp: ' . $login_data['attempt_time'] . "\n";
                 $mail_content .= 'Attempt Date/Time: ' . $login_data['attempt_date'] . "\n";
