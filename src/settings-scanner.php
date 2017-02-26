@@ -22,7 +22,6 @@ function sucuriscan_settings_scanner($nonce)
     $fs_scanner = SucuriScanOption::getOption(':fs_scanner');
     $scan_freq = SucuriScanOption::getOption(':scan_frequency');
     $scan_interface = SucuriScanOption::getOption(':scan_interface');
-    $scan_errorlogs = SucuriScanOption::getOption(':scan_errorlogs');
     $runtime_scan_human = SucuriScanFSScanner::getFilesystemRuntime(true);
 
     // Get the file path of the security logs.
@@ -41,11 +40,6 @@ function sucuriscan_settings_scanner($nonce)
         'FsScannerSwitchText' => 'Disable',
         'FsScannerSwitchValue' => 'disable',
         'FsScannerSwitchCssClass' => 'button-danger',
-        /* Scan error logs. */
-        'ScanErrorlogsStatus' => 'Enabled',
-        'ScanErrorlogsSwitchText' => 'Disable',
-        'ScanErrorlogsSwitchValue' => 'disable',
-        'ScanErrorlogsSwitchCssClass' => 'button-danger',
         /* Filsystem scanning frequency. */
         'ScanningFrequency' => 'Undefined',
         'ScanningFrequencyOptions' => $scan_freq_options,
@@ -63,13 +57,6 @@ function sucuriscan_settings_scanner($nonce)
         $params['FsScannerSwitchText'] = 'Enable';
         $params['FsScannerSwitchValue'] = 'enable';
         $params['FsScannerSwitchCssClass'] = 'button-success';
-    }
-
-    if ($scan_errorlogs == 'disabled') {
-        $params['ScanErrorlogsStatus'] = 'Disabled';
-        $params['ScanErrorlogsSwitchText'] = 'Enable';
-        $params['ScanErrorlogsSwitchValue'] = 'enable';
-        $params['ScanErrorlogsSwitchCssClass'] = 'button-success';
     }
 
     if (array_key_exists($scan_freq, $sucuriscan_schedule_allowed)) {

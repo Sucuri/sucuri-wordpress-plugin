@@ -51,7 +51,6 @@ function sucuriscan_hardening_panel()
         'Hardening.AdminUser' => sucuriscan_harden_adminuser(),
         'Hardening.FileEditor' => sucuriscan_harden_fileeditor(),
         'Hardening.DBTables' => sucuriscan_harden_dbtables(),
-        'Hardening.ErrorLog' => sucuriscan_harden_errorlog(),
     );
 
     if (SucuriScan::isNginxServer() === true) {
@@ -749,82 +748,5 @@ function sucuriscan_harden_dbtables()
         'Database table set to the default value <code>wp_</code>.',
         'It checks whether your database table prefix has been changed from the default <code>wp_</code>',
         '<strong>Be aware that this hardening procedure can cause your site to go down</strong>'
-    );
-}
-
-/**
- * Check whether an error_log file exists in the project.
- *
- * @return void
- */
-function sucuriscan_harden_errorlog()
-{
-    $hardened = 1;
-    $log_filename = SucuriScan::iniGet('error_log');
-    $scan_errorlogs = SucuriScanOption::getOption(':scan_errorlogs');
-
-    $description = 'PHP uses files named as <code>' . $log_filename . '</code> to log errors found in '
-        . 'the code, these files may leak sensitive information of your project allowing an attacker '
-        . 'to find vulnerabilities in the code. You must use these files to fix any bug while using '
-        . 'a development environment, and remove them in production mode.';
-
-    // Search error log files in the project.
-    if ($scan_errorlogs != 'disabled') {
-        $file_info = new SucuriScanFileInfo();
-        $file_info->ignore_files = false;
-        $file_info->ignore_directories = false;
-        $error_logs = $file_info->findFile($log_filename);
-        $total_log_files = count($error_logs);
-    } else {
-        $hardened = 2;
-        $error_logs = array();
-        $total_log_files = 0;
-        $description .= '<div class="sucuriscan-inline-alert-error"><p>The filesystem scan for error '
-            . 'log files is disabled, so even if there are logs in your project they will be not '
-            . 'shown here. You can enable the scanner again from the plugin <em>Settings</em> '
-            . 'page.</p></div>';
-    }
-
-    // Remove every error log file found in the filesystem scan.
-    if (SucuriScanRequest::post(':run_hardening')) {
-        if (SucuriScanRequest::post(':harden_errorlog')) {
-            $removed_logs = 0;
-            SucuriScanEvent::reportNoticeEvent(sprintf(
-                'Error log files deleted: (multiple entries): %s',
-                @implode(',', $error_logs)
-            ));
-
-            foreach ($error_logs as $i => $error_log_path) {
-                if (unlink($error_log_path)) {
-                    unset($error_logs[ $i ]);
-                    $removed_logs += 1;
-                }
-            }
-
-            SucuriScanInterface::info('Error log files deleted <code>' . $removed_logs . ' out of ' . $total_log_files . '</code>');
-        }
-    }
-
-    // List the error log files in a HTML table.
-    if (!empty($error_logs)) {
-        $hardened = 0;
-        $description .= '</p><ul class="sucuriscan-list-as-table">';
-
-        foreach ($error_logs as $error_log_path) {
-            $error_log_path = str_replace(ABSPATH, '/', $error_log_path);
-            $description .= '<li>' . SucuriScan::escape($error_log_path) . '</li>';
-        }
-
-        $description .= '</ul><p>';
-    }
-
-    return sucuriscan_harden_status(
-        'Error logs',
-        $hardened,
-        ( $hardened == 0 ? 'sucuriscan_harden_errorlog' : null ),
-        'There are no error log files in your project.',
-        'There are ' . $total_log_files . ' error log files in your project.',
-        $description,
-        null
     );
 }

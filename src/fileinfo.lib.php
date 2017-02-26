@@ -188,45 +188,6 @@ class SucuriScanFileInfo extends SucuriScan
     }
 
     /**
-     * Find a file under the directory tree specified.
-     *
-     * @param  string $filename  Name of the folder or file being scanned at the moment.
-     * @param  string $directory Directory where the scanner is located at the moment.
-     * @return array             List of file paths where the file was found.
-     */
-    public function findFile($filename = '', $directory = null)
-    {
-        $file_paths = array();
-
-        if (is_null($directory)
-            && defined('ABSPATH')
-        ) {
-            $directory = ABSPATH;
-        }
-
-        if (is_dir($directory)) {
-            $dir_tree = $this->getDirectoryTree($directory);
-
-            foreach ($dir_tree as $filepath) {
-                /**
-                 * Checking the whole file path will result in a list of false
-                 * positive data as the parent directories might contain part of
-                 * the word that is being searched.
-                 *
-                 * @var string
-                 */
-                $basename = basename($filepath);
-
-                if (stripos($basename, $filename) !== false) {
-                    $file_paths[] = $filepath;
-                }
-            }
-        }
-
-        return $file_paths;
-    }
-
-    /**
      * Check whether the built-in class SplFileObject is available in the system
      * or not, it is required to have PHP >= 5.1.0. The SplFileObject class offers
      * an object oriented interface for a file.
@@ -614,60 +575,6 @@ class SucuriScanFileInfo extends SucuriScan
     public static function fileLines($filepath = '')
     {
         return @file($filepath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    }
-
-    /**
-     * Function to emulate the UNIX tail function by displaying the last X number of
-     * lines in a file. Useful for large files, such as logs, when you want to
-     * process lines in PHP or write lines to a database.
-     *
-     * @param  string  $file_path Path to the file.
-     * @param  integer $lines     Number of lines to retrieve from the end of the file.
-     * @param  boolean $adaptive  Whether the buffer will adapt to a specific number of bytes or not.
-     * @return string             Text contained at the end of the file.
-     */
-    public static function tailFile($file_path = '', $lines = 1, $adaptive = true)
-    {
-        $file = @fopen($file_path, 'rb');
-        $limit = $lines;
-
-        if ($file) {
-            fseek($file, -1, SEEK_END);
-
-            if ($adaptive && $lines < 2) {
-                $buffer = 64;
-            } elseif ($adaptive && $lines < 10) {
-                $buffer = 512;
-            } else {
-                $buffer = 4096;
-            }
-
-            if (fread($file, 1) != "\n") {
-                $lines -= 1;
-            }
-
-            $output = '';
-            $chunk = '';
-
-            while (ftell($file) > 0 && $lines >= 0) {
-                $seek = min(ftell($file), $buffer);
-                fseek($file, -$seek, SEEK_CUR);
-                $chunk = fread($file, $seek);
-                $output = $chunk . $output;
-                fseek($file, -mb_strlen($chunk, '8bit'), SEEK_CUR);
-                $lines -= substr_count($chunk, "\n");
-            }
-
-            fclose($file);
-
-            $lines_arr = explode("\n", $output);
-            $lines_count = count($lines_arr);
-            $result = array_slice($lines_arr, ($lines_count - $limit));
-
-            return $result;
-        }
-
-        return false;
     }
 
     /**

@@ -29,7 +29,5 @@
         %%%SUCURI.Hardening.FileEditor%%%
 
         %%%SUCURI.Hardening.DBTables%%%
-
-        %%%SUCURI.Hardening.ErrorLog%%%
     </form>
 </div>

@@ -31,26 +31,9 @@ function sucuriscan_infosys_page()
         'Cronjobs' => sucuriscan_show_cronjobs(),
         'HTAccessIntegrity' => sucuriscan_infosys_htaccess(),
         'WordpressConfig' => sucuriscan_infosys_wpconfig(),
-        'ErrorLogs' => sucuriscan_infosys_errorlogs(),
     );
 
     echo SucuriScanTemplate::getTemplate('infosys', $params);
-}
-
-/**
- * Handle an Ajax request for this specific page.
- *
- * @return mixed.
- */
-function sucuriscan_infosys_ajax()
-{
-    SucuriScanInterface::checkPageVisibility();
-
-    if (SucuriScanInterface::checkNonce()) {
-        sucuriscan_infosys_errorlogs_ajax();
-    }
-
-    wp_die();
 }
 
 /**
@@ -341,132 +324,6 @@ function sucuriscan_infosys_form_submissions()
                 SucuriScanInterface::error('No scheduled tasks were selected from the list.');
             }
         }
-    }
-}
-
-/**
- * Locate, parse and display the latest error logged in the main error_log file.
- *
- * @return array A list of pseudo-variables and values that will replace them in the HTML template.
- */
-function sucuriscan_infosys_errorlogs()
-{
-    $params = array();
-    $nonce = SucuriScanInterface::checkNonce();
-
-    $params['ErrorLogs.Status'] = sucuriscan_infosys_errorlogs_status($nonce);
-    $params['ErrorLogs.FileLimit'] = sucuriscan_infosys_errorlogs_flimit($nonce);
-    $params['ErrorLogs.FileReader'] = sucuriscan_infosys_errorlogs_freader();
-
-    return SucuriScanTemplate::getSection('infosys-errorlogs', $params);
-}
-
-function sucuriscan_infosys_errorlogs_status($nonce)
-{
-    $params = array();
-    $params['ErrorLogs.Status'] = 'Disabled';
-    $params['ErrorLogs.SwitchText'] = 'Enable';
-    $params['ErrorLogs.SwitchValue'] = 'enable';
-    $params['ErrorLogs.SwitchCssClass'] = 'button-success';
-
-    if ($nonce) {
-        // Enable or disable the error logs parsing.
-        if ($errorlogs = SucuriScanRequest::post(':parse_errorlogs', '(en|dis)able')) {
-            $action_d = $errorlogs . 'd';
-            $message = 'Analysis of the error log file was <code>' . $action_d . '</code>';
-
-            SucuriScanOption::updateOption(':parse_errorlogs', $action_d);
-            SucuriScanEvent::reportAutoEvent($message);
-            SucuriScanEvent::notifyEvent('plugin_change', $message);
-            SucuriScanInterface::info($message);
-        }
-    }
-
-    if (SucuriScanOption::isEnabled(':parse_errorlogs')) {
-        $params['ErrorLogs.Status'] = 'Enabled';
-        $params['ErrorLogs.SwitchText'] = 'Disable';
-        $params['ErrorLogs.SwitchValue'] = 'disable';
-        $params['ErrorLogs.SwitchCssClass'] = 'button-danger';
-    }
-
-    return SucuriScanTemplate::getSection('infosys-errorlogs-status', $params);
-}
-
-function sucuriscan_infosys_errorlogs_flimit($nonce)
-{
-    $params = array();
-
-    if ($nonce) {
-        // Update the limit of error log lines to parse.
-        if ($limit = SucuriScanRequest::post(':errorlogs_limit', '[0-9]+')) {
-            $message = 'Error logs file limit set to <code>' . $limit . '</code> lines.';
-
-            SucuriScanOption::updateOption(':errorlogs_limit', $limit);
-            SucuriScanEvent::reportAutoEvent($message);
-            SucuriScanEvent::notifyEvent('plugin_change', $message);
-            SucuriScanInterface::info($message);
-        }
-    }
-
-    $params['ErrorLogs.LogsLimit'] = SucuriScanOption::getOption(':errorlogs_limit');
-
-    return SucuriScanTemplate::getSection('infosys-errorlogs-flimit', $params);
-}
-
-function sucuriscan_infosys_errorlogs_freader()
-{
-    $params = array();
-
-    return SucuriScanTemplate::getSection('infosys-errorlogs-freader', $params);
-}
-
-function sucuriscan_infosys_errorlogs_ajax()
-{
-    if (SucuriScanRequest::post('form_action') == 'get_error_logs') {
-        $response = '';
-
-        // Scan the project and get the ignored paths.
-        if (SucuriScanOption::isEnabled(':parse_errorlogs')) {
-            $fname = SucuriScan::iniGet('error_log');
-            $fpath = $fname ? @realpath(ABSPATH . '/' . $fname) : false;
-
-            if ($fpath !== false
-                && is_file($fpath)
-                && file_exists($fpath)
-                && is_readable($fpath)
-            ) {
-                $limit = SucuriScanOption::getOption(':errorlogs_limit');
-                $flines = SucuriScanFileInfo::tailFile($fpath, $limit);
-                $error_logs = SucuriScanFSScanner::parseErrorLogs($flines);
-                $error_logs = array_reverse($error_logs);
-                $counter = 0;
-
-                foreach ($error_logs as $log) {
-                    $css_class = ($counter % 2 === 0) ? '' : 'alternate';
-                    $response .= SucuriScanTemplate::getSnippet(
-                        'infosys-errorlogs',
-                        array(
-                            'ErrorLog.CssClass' => $css_class,
-                            'ErrorLog.DateTime' => SucuriScan::datetime($log->timestamp),
-                            'ErrorLog.ErrorType' => $log->error_type,
-                            'ErrorLog.ErrorCode' => $log->error_code,
-                            'ErrorLog.ErrorAbbr' => strtoupper(substr($log->error_code, 0, 1)),
-                            'ErrorLog.ErrorMessage' => $log->error_message,
-                            'ErrorLog.FilePath' => $log->file_path,
-                            'ErrorLog.LineNumber' => $log->line_number,
-                        )
-                    );
-                    $counter++;
-                }
-            }
-        }
-
-        if (empty($response)) {
-            $response = '<tr><td colspan="5">List is empty.</td></tr>';
-        }
-
-        print($response);
-        exit(0);
     }
 }
 

@@ -38,17 +38,6 @@ function sucuriscan_settings_form_submissions($page_nonce = null)
             SucuriScanInterface::info($message);
         }
 
-        // Enable or disable the filesystem scanner for error logs.
-        if ($scan_errorlogs = SucuriScanRequest::post(':scan_errorlogs', '(en|dis)able')) {
-            $action_d = $scan_errorlogs . 'd';
-            $message = 'File system scanner for error logs was <code>' . $action_d . '</code>';
-
-            SucuriScanOption::updateOption(':scan_errorlogs', $action_d);
-            SucuriScanEvent::reportAutoEvent($message);
-            SucuriScanEvent::notifyEvent('plugin_change', $message);
-            SucuriScanInterface::info($message);
-        }
-
         // Modify the schedule of the filesystem scanner.
         if ($frequency = SucuriScanRequest::post(':scan_frequency')) {
             if (array_key_exists($frequency, $sucuriscan_schedule_allowed)) {

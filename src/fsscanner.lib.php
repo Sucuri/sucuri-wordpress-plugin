@@ -19,7 +19,6 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  */
 class SucuriScanFSScanner extends SucuriScan
 {
-
     /**
      * Retrieve the last time when the filesystem scan was ran.
      *
@@ -185,79 +184,5 @@ class SucuriScanFSScanner extends SucuriScan
         }
 
         return $response;
-    }
-
-    /**
-     * Read and parse the lines inside a PHP error log file.
-     *
-     * @param  array $error_logs The content of an error log file, or an array with the lines.
-     * @return array             List of valid error logs with their attributes separated.
-     */
-    public static function parseErrorLogs($error_logs = array())
-    {
-        $logs_arr = array();
-        $pattern = '/^'
-            . '(\[(\S+) ([0-9:]{5,8})( \S+)?\] )?' // Detect date, time, and timezone.
-            . '(PHP )?([a-zA-Z ]+):\s'             // Detect PHP error severity.
-            . '(.+) in (.+)'                       // Detect error message, and file path.
-            . '(:| on line )([0-9]+)'              // Detect line number.
-            . '$/';
-
-        if (is_string($error_logs)) {
-            $error_logs = explode("\n", $error_logs);
-        }
-
-        foreach ((array) $error_logs as $line) {
-            if (!is_string($line) || empty($line)) {
-                continue;
-            }
-
-            if (preg_match($pattern, $line, $match)) {
-                $data_set = array(
-                    'date' => '',
-                    'time' => '',
-                    'timestamp' => 0,
-                    'date_time' => '',
-                    'time_zone' => '',
-                    'error_type' => '',
-                    'error_code' => 'unknown',
-                    'error_message' => '',
-                    'file_path' => '',
-                    'line_number' => 0,
-                );
-
-                // Basic attributes from the scrapping.
-                $data_set['date'] = $match[2];
-                $data_set['time'] = $match[3];
-                $data_set['time_zone'] = trim($match[4]);
-                $data_set['error_type'] = trim($match[6]);
-                $data_set['error_message'] = trim($match[7]);
-                $data_set['file_path'] = trim($match[8]);
-                $data_set['line_number'] = (int) $match[10];
-
-                // Additional data from the attributes.
-                if ($data_set['date']) {
-                    $data_set['date_time'] = $data_set['date']
-                        . "\x20" . $data_set['time']
-                        . "\x20" . $data_set['time_zone'];
-                    $data_set['timestamp'] = strtotime($data_set['date_time']);
-                }
-
-                if ($data_set['error_type']) {
-                    $valid_types = array( 'warning', 'notice', 'error' );
-
-                    foreach ($valid_types as $valid_type) {
-                        if (stripos($data_set['error_type'], $valid_type) !== false) {
-                            $data_set['error_code'] = $valid_type;
-                            break;
-                        }
-                    }
-                }
-
-                $logs_arr[] = (object) $data_set;
-            }
-        }
-
-        return $logs_arr;
     }
 }

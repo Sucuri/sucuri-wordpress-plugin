@@ -92,18 +92,6 @@
         </tr>
 
         <tr class="alternate">
-            <td>FS Scanner, Error log files</td>
-            <td>%%SUCURI.ScanErrorlogsStatus%%</td>
-            <td class="td-with-button">
-                <form action="%%SUCURI.URL.Settings%%#scanner" method="post">
-                    <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
-                    <input type="hidden" name="sucuriscan_scan_errorlogs" value="%%SUCURI.ScanErrorlogsSwitchValue%%" />
-                    <button type="submit" class="button-primary %%SUCURI.ScanErrorlogsSwitchCssClass%%">%%SUCURI.ScanErrorlogsSwitchText%%</button>
-                </form>
-            </td>
-        </tr>
-
-        <tr class="alternate">
             <td>Reset last login logs</td>
             <td><span class="sucuriscan-monospace">%%SUCURI.LastLoginLogLife%% of data</span></td>
             <td class="td-with-button">
