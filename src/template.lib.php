@@ -267,7 +267,12 @@ class SucuriScanTemplate extends SucuriScanRequest
 
         if ($fpath_pattern !== null) {
             $output = '';
-            $fpath = sprintf($fpath_pattern, WP_PLUGIN_DIR, SUCURISCAN_PLUGIN_FOLDER, $template);
+            $fpath = sprintf(
+                $fpath_pattern,
+                WP_PLUGIN_DIR,
+                SUCURISCAN_PLUGIN_FOLDER,
+                $template
+            );
 
             if (file_exists($fpath) && is_readable($fpath)) {
                 $output = @file_get_contents($fpath);

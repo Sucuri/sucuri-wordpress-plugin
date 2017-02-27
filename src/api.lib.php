@@ -207,14 +207,14 @@ class SucuriScanAPI extends SucuriScanOption
 
             curl_close($curl);
 
-            if (array_key_exists('http_code', $header)
-                && $header['http_code'] === 200
-                && !empty($output)
-            ) {
-                return $output;
+            if (empty($output) && !empty($errors)) {
+                /* report errors to the unit-tests */
+                SucuriScan::throwException($errors);
+
+                $output = $errors;
             }
 
-            SucuriScan::throwException($errors);
+            return $output;
         }
 
         return false;
@@ -457,8 +457,8 @@ class SucuriScanAPI extends SucuriScanOption
      */
     public static function apiCallWordpress($method = 'GET', $params = array(), $send_api_key = true, $args = array())
     {
-        $url = SUCURISCAN_API;
-        $params[ SUCURISCAN_API_VERSION ] = 1;
+        $url = SUCURISCAN_API_URL;
+        $params[SUCURISCAN_API_VERSION] = 1;
         $params['p'] = 'wordpress';
 
         if ($send_api_key) {
