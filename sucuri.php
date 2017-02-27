@@ -92,22 +92,17 @@ define('SUCURISCAN_PLUGIN_FOLDER', basename(dirname(__FILE__)));
 /**
  * The fullpath where the plugin's files will be located.
  */
-define('SUCURISCAN_PLUGIN_PATH', WP_PLUGIN_DIR.'/'.SUCURISCAN_PLUGIN_FOLDER);
+define('SUCURISCAN_PLUGIN_PATH', WP_PLUGIN_DIR . '/' . SUCURISCAN_PLUGIN_FOLDER);
 
 /**
  * The fullpath of the main plugin file.
  */
-define('SUCURISCAN_PLUGIN_FILEPATH', SUCURISCAN_PLUGIN_PATH.'/'.SUCURISCAN_PLUGIN_FILE);
+define('SUCURISCAN_PLUGIN_FILEPATH', SUCURISCAN_PLUGIN_PATH . '/' . SUCURISCAN_PLUGIN_FILE);
 
 /**
  * The local URL where the plugin's files and assets are served.
  */
 define('SUCURISCAN_URL', rtrim(plugin_dir_url(SUCURISCAN_PLUGIN_FILEPATH), '/'));
-
-/**
- * Checksum of this file to check the integrity of the plugin.
- */
-define('SUCURISCAN_PLUGIN_CHECKSUM', @md5_file(SUCURISCAN_PLUGIN_FILEPATH));
 
 /**
  * Remote URL where the public Sucuri API service is running.

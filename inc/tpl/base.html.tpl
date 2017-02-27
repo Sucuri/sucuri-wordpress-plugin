@@ -5,7 +5,7 @@
 
     <div class="sucuriscan-header sucuriscan-clearfix">
         <a href="https://sucuri.net/signup" target="_blank" title="Sucuri Security" class="sucuriscan-logo">
-            <img src="%%SUCURI.SucuriURL%%/inc/images/logo.png" alt="Sucuri Security" />
+            <img src="%%SUCURI.SucuriURL%%/inc/images/pluginlogo.png" alt="Sucuri Security" />
         </a>
         <h2>Sucuri Security %%SUCURI.PageTitle%%</h2>
         <a class="button button-hero button-primary sucuriscan-review-hero"
@@ -30,7 +30,7 @@
 
     <div class="sucuriscan-footer sucuriscan-clearfix">
         <a href="https://sucuri.net/signup" target="_blank" title="Sucuri Security" class="sucuriscan-logo">
-            <img src="%%SUCURI.SucuriURL%%/inc/images/logo.png" alt="Sucuri Security" />
+            <img src="%%SUCURI.SucuriURL%%/inc/images/pluginlogo.png" alt="Sucuri Security" />
         </a>
         <div class="sucuriscan-help">
             <p>

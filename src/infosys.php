@@ -342,7 +342,6 @@ function sucuriscan_server_info()
 
     $info_vars = array(
         'Plugin_version' => SUCURISCAN_VERSION,
-        'Plugin_checksum' => SUCURISCAN_PLUGIN_CHECKSUM,
         'Last_filesystem_scan' => SucuriScanFSScanner::getFilesystemRuntime(true),
         'Datetime_and_Timezone' => '',
         'Operating_system' => sprintf('%s (%d Bit)', PHP_OS, PHP_INT_SIZE * 8),

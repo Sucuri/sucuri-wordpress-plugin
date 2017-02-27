@@ -49,20 +49,16 @@ class SucuriScanInterface
      */
     public static function enqueueScripts()
     {
-        $asset_version = '';
+        $asset = substr(md5(microtime(true)), 0, 7);
 
-        if (strlen(SUCURISCAN_PLUGIN_CHECKSUM) >= 7) {
-            $asset_version = substr(SUCURISCAN_PLUGIN_CHECKSUM, 0, 7);
-        }
-
-        wp_register_style('sucuriscan', SUCURISCAN_URL . '/inc/css/sucuri-scanner.css', array(), $asset_version);
-        wp_register_script('sucuriscan', SUCURISCAN_URL . '/inc/js/sucuri-scanner.js', array(), $asset_version);
+        wp_register_style('sucuriscan', SUCURISCAN_URL . '/inc/css/styles.css', array(), $asset);
+        wp_register_script('sucuriscan', SUCURISCAN_URL . '/inc/js/scripts.js', array(), $asset);
         wp_enqueue_style('sucuriscan');
         wp_enqueue_script('sucuriscan');
 
         if (SucuriScanRequest::get('page', 'sucuriscan') !== false) {
-            wp_register_script('sucuriscan2', SUCURISCAN_URL . '/inc/js/d3.min.js', array(), $asset_version);
-            wp_register_script('sucuriscan3', SUCURISCAN_URL . '/inc/js/c3.min.js', array(), $asset_version);
+            wp_register_script('sucuriscan2', SUCURISCAN_URL . '/inc/js/d3.min.js', array(), $asset);
+            wp_register_script('sucuriscan3', SUCURISCAN_URL . '/inc/js/c3.min.js', array(), $asset);
             wp_enqueue_script('sucuriscan2');
             wp_enqueue_script('sucuriscan3');
         }
@@ -89,7 +85,7 @@ class SucuriScanInterface
                 'manage_options',
                 'sucuriscan',
                 'sucuriscan_page',
-                SUCURISCAN_URL . '/inc/images/menu-icon.png'
+                SUCURISCAN_URL . '/inc/images/menuicon.png'
             );
 
             foreach ($sucuriscan_pages as $sub_page_func => $sub_page_title) {

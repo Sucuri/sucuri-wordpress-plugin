@@ -1,37 +1,37 @@
 .sucuriscan-malware-payload,
-.sucuriscan-request-summary td+td,
+.sucuriscan-request-summary td + td,
 .sucuriscan-wraptext {
     word-break: break-all;
 }
 .sucuriscan-wrap *,
-.sucuriscan-wrap:after,
-.sucuriscan-wrap:before {
+.sucuriscan-wrap::after,
+.sucuriscan-wrap::before {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
-.sucuriscan-clearfix:after,
-.sucuriscan-clearfix:before {
-    display: table;
+.sucuriscan-clearfix::after,
+.sucuriscan-clearfix::before {
     content: ' ';
+    display: table;
 }
-.sucuriscan-clearfix:after {
+.sucuriscan-clearfix::after {
     clear: both;
 }
 .sucuriscan-hidden {
     display: none !important;
 }
 .sucuriscan-opacity {
-    opacity: .6;
+    opacity: 0.6;
 }
 .sucuriscan-monospace {
     font-family: Menlo, Monaco, monospace, courier;
 }
 .sucuriscan-ellipsis {
-    overflow: hidden;
     display: inline-block;
-    white-space: nowrap;
+    overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .sucuriscan-pull-left {
     float: left;
@@ -46,7 +46,7 @@
 .sucuriscan-gradient,
 .sucuriscan-leftside #poststuff h3,
 .sucuriscan-leftside .sucuriscan-panelstuff h3,
-.sucuriscan-maincontent .sucuriscan-table tr>th,
+.sucuriscan-maincontent .sucuriscan-table tr > th,
 .sucuriscan-modal-header {
     background-color: #f1f1f1;
     background-image: -webkit-gradient(linear, left top, left bottom, from(#f9f9f9), to(#ececec));
@@ -54,7 +54,6 @@
     background-image: -moz-linear-gradient(top, #f9f9f9, #ececec);
     background-image: -ms-linear-gradient(top, #f9f9f9, #ececec);
     background-image: -o-linear-gradient(top, #f9f9f9, #ececec);
-    background-image: linear-gradient(top, #f9f9f9, #ececec);
     filter: "progid: DXImageTransform.Microsoft.Gradient(startColorstr=#f9f9f9, endColorstr=#ececec)";
     -ms-filter: "progid: DXImageTransform.Microsoft.Gradient(startColorstr=#f9f9f9, endColorstr=#ececec)";
 }
@@ -99,9 +98,9 @@
 .wp-core-ui .button-success.disabled,
 .wp-core-ui .button-success:disabled,
 .wp-core-ui .button-success[disabled] {
-    color: #b2e794 !important;
     background: #74ba29 !important;
     border-color: #3f7f1b !important;
+    color: #b2e794 !important;
 }
 .wp-core-ui .button-danger,
 .wp-core-ui .button-danger.focus,
@@ -143,80 +142,80 @@
 .wp-core-ui .button-danger.disabled,
 .wp-core-ui .button-danger:disabled,
 .wp-core-ui .button-danger[disabled] {
-    color: #e79494 !important;
     background: #ba2929 !important;
     border-color: #7f1b1b !important;
+    color: #e79494 !important;
 }
 .wp-core-ui .sucuriscan-btnblock {
     display: block;
-    width: 100%;
     text-align: center;
+    width: 100%;
 }
 .sucuriscan-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    z-index: 9990;
     background: #666;
-    background: rgba(0, 0, 0, .5);
+    background: rgba(0, 0, 0, 0.5);
+    bottom: 0;
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+    z-index: 9990;
 }
 .sucuriscan-modal {
+    left: 15%;
     position: absolute;
     top: 25px;
-    left: 15%;
-    z-index: 9990;
     width: 65%;
+    z-index: 9990;
 }
 .sucuriscan-modal-outside {
-    position: relative;
-    left: 0;
     border: 1px solid #ddd;
+    left: 0;
+    position: relative;
 }
 .sucuriscan-modal-inside {
     background: #fff;
     padding: 20px;
 }
 .sucuriscan-modal-header {
-    padding: 0;
     border-bottom: 1px solid #ddd;
+    padding: 0;
 }
 #poststuff h3.sucuriscan-modal-title,
 .sucuriscan-leftside #poststuff h3.sucuriscan-modal-title,
 .sucuriscan-modal-header .sucuriscan-modal-title {
-    margin: 0 0 0 10px;
-    padding: 0;
+    border-bottom: 0;
     float: left;
     line-height: 38px;
-    border-bottom: 0;
+    margin: 0 0 0 10px;
+    padding: 0;
 }
 .sucuriscan-modal-header .sucuriscan-modal-logo {
-    display: inline-block;
     float: left;
-    margin-top: 8px;
     margin-left: 18px;
+    margin-top: 8px;
 }
 .sucuriscan-modal-header .sucuriscan-modal-logo img {
     height: 22px;
 }
 .sucuriscan-modal-close {
+    border-left: 1px solid #ddd;
     display: inline-block;
-    position: absolute;
-    top: 0;
-    right: 0;
     font-size: 16px;
     font-weight: 700;
-    text-decoration: none;
     line-height: 38px;
     padding: 0 15px;
-    border-left: 1px solid #ddd;
+    position: absolute;
+    right: 0;
+    text-decoration: none;
+    top: 0;
 }
 .sucuriscan-modal-inside p:first-child {
     margin-top: 0;
 }
 .sucuriscan-panelstuff .inside {
-    margin: 6px 0 0 0;
+    margin: 0;
+    margin-top: 6px;
 }
 .postbox .inside p:last-child,
 .sucuriscan-modal-inside p:last-child {
@@ -232,16 +231,16 @@
 .sucuriscan-label-success,
 .sucuriscan-label-unknown,
 .sucuriscan-label-warning {
+    border-radius: 0.25em;
+    color: #fff;
     display: inline;
     font-size: 75%;
     font-weight: 700;
     line-height: 1;
-    color: #fff;
+    padding: 0.2em 0.6em 0.3em;
     text-align: center;
-    white-space: nowrap;
     vertical-align: baseline;
-    padding: .2em .6em .3em;
-    border-radius: .25em;
+    white-space: nowrap;
 }
 .sucuriscan-label-default,
 .sucuriscan-label-unknown {
@@ -271,35 +270,35 @@
     margin: 20px 0;
 }
 .sucuriscan-wrap .sucuriscan-leftside {
-    width: 73.5%;
     float: left;
+    width: 73.5%;
 }
 .sucuriscan-wrap .sucuriscan-onecolumn {
     width: 100%;
 }
 .sucuriscan-wrap .sucuriscan-sidebar {
-    width: 25%;
     float: right;
+    width: 25%;
 }
 .sucuriscan-wrap #warnings_hook {
     line-height: normal;
     padding: 0;
 }
 .sucuriscan-wrap .sucuriscan-navbar {
-    padding-top: 20px;
     padding-left: 6px;
+    padding-top: 20px;
 }
 .sucuriscan-wrap .sucuriscan-navbar .nav-tab {
     margin-right: 0;
 }
 .sucuriscan-footer,
 .sucuriscan-header {
-    position: relative;
-    min-width: 255px;
     background: #333;
-    margin: 0;
-    padding: 10px;
     border-radius: 4px;
+    margin: 0;
+    min-width: 255px;
+    padding: 10px;
+    position: relative;
 }
 .sucuriscan-footer .sucuriscan-help {
     color: #fff;
@@ -337,23 +336,23 @@
 }
 .sucuriscan-leftside #poststuff .postbox h3,
 .sucuriscan-leftside .sucuriscan-panelstuff .postbox h3 {
+    border-bottom: 1px solid #ddd;
     margin: 0;
     padding: 10px;
-    border-bottom: 1px solid #ddd;
 }
 .sucuriscan-maincontent abbr {
-    text-decoration: underline;
     cursor: help;
+    text-decoration: underline;
 }
 .wrap div.sucuriscan-setup-notice {
     background: #bbe8f5;
-    margin: 0 0 20px;
-    padding: 0;
     border: 1px solid #bbb;
     border-radius: 3px;
-    -webkit-box-shadow: none;
     -moz-box-shadow: none;
+    -webkit-box-shadow: none;
     box-shadow: none;
+    margin: 0 0 20px;
+    padding: 0;
 }
 .wrap div.sucuriscan-setup-notice .sucuriscan-setup-image,
 .wrap div.sucuriscan-setup-notice .sucuriscan-setup-image img {
@@ -361,9 +360,9 @@
 }
 .wrap div.sucuriscan-setup-notice .sucuriscan-setup-image {
     background: #333;
+    border-right: 1px solid transparent;
     margin: -1px 0 -1px -1px;
     padding: 7px 10px;
-    border-right: 1px solid transparent;
 }
 .wrap div.sucuriscan-setup-notice .sucuriscan-setup-form {
     padding: 4px 4px 4px 0;
@@ -380,25 +379,24 @@
 }
 .wp-core-ui .button.sucuriscan-review-hero,
 .wp-core-ui .sucuriscan-review-hero {
+    float: right;
     height: initial;
     line-height: 36px;
-    float: right;
     padding: 0 20px;
 }
-.sucuriscan-input-group>label {
-    display: inline-block;
-    border: 1px solid #ddd;
-    border-right: 0;
-    line-height: 26px;
-    float: left;
-    padding: 0 10px;
+.sucuriscan-input-group > label {
     background: #eee;
+    border-right: 0;
+    border: 1px solid #ddd;
+    float: left;
+    line-height: 26px;
+    padding: 0 10px;
 }
-.sucuriscan-input-group>input[type=text] {
+.sucuriscan-input-group > input[type=text] {
     margin: 0;
     padding-bottom: 4px;
 }
-.sucuriscan-input-group>select {
+.sucuriscan-input-group > select {
     vertical-align: initial;
     margin: 0;
 }
@@ -416,7 +414,7 @@
 .sucuriscan-maincontent .sucuriscan-table {
     margin-top: 12px;
 }
-.sucuriscan-maincontent .sucuriscan-table tr>th {
+.sucuriscan-maincontent .sucuriscan-table tr > th {
     border-top: 1px solid #e5e5e5;
     border-bottom: 1px solid #e5e5e5;
 }
@@ -431,10 +429,10 @@
 }
 .sucuriscan-table-double-title tr:first-child th,
 .sucuriscan-table-quad-title tr:first-child th,
-.sucuriscan-table-quad-title tr:first-child+tr th,
-.sucuriscan-table-quad-title tr:first-child+tr+tr th,
+.sucuriscan-table-quad-title tr:first-child + tr th,
+.sucuriscan-table-quad-title tr:first-child + tr + tr th,
 .sucuriscan-table-triple-title tr:first-child th,
-.sucuriscan-table-triple-title tr:first-child+tr th {
+.sucuriscan-table-triple-title tr:first-child + tr th {
     border-bottom: 0;
 }
 .sucuriscan-table-description {
@@ -486,7 +484,7 @@
 .sucuriscan-maincontent .thead-with-button {
     padding: 5px 5px 5px 10px;
 }
-.sucuriscan-maincontent .thead-with-button>span {
+.sucuriscan-maincontent .thead-with-button > span {
     display: inline-block;
     line-height: 28px;
 }
@@ -614,7 +612,6 @@
     background-image: -moz-linear-gradient(top, #e8840a, #ef7f02);
     background-image: -ms-linear-gradient(top, #e8840a, #ef7f02);
     background-image: -o-linear-gradient(top, #e8840a, #ef7f02);
-    background-image: linear-gradient(top, #e8840a, #ef7f02);
     filter: "progid: DXImageTransform.Microsoft.Gradient(startColorstr=#e8840a, endColorstr=#ef7f02)";
     -ms-filter: "progid: DXImageTransform.Microsoft.Gradient(startColorstr=#e8840a, endColorstr=#ef7f02)";
     box-shadow: inset 0 1px 1px #eaac3a;
@@ -624,7 +621,7 @@ div.sucuriscan-alert {
     position: relative;
     margin: 0 0 20px;
 }
-div.sucuriscan-alert>a.close {
+div.sucuriscan-alert > a.close {
     position: absolute;
     top: 10px;
     right: 10px;
@@ -638,15 +635,15 @@ div.sucuriscan-alert>a.close {
 .sucuriscan-inline-alert-updated,
 .sucuriscan-inline-alert-warning {
     background: #fff;
-    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .1);
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
     padding: 0;
     border-left: 4px solid #ddd;
 }
-.sucuriscan-inline-alert-error>p,
-.sucuriscan-inline-alert-info>p,
-.sucuriscan-inline-alert-updated>p,
-.sucuriscan-inline-alert-warning>p,
-.sucuriscan-inline-alert>p {
+.sucuriscan-inline-alert-error > p,
+.sucuriscan-inline-alert-info > p,
+.sucuriscan-inline-alert-updated > p,
+.sucuriscan-inline-alert-warning > p,
+.sucuriscan-inline-alert > p {
     margin: 0;
     padding: 8px 12px;
     border: 1px solid #ddd;
@@ -664,7 +661,7 @@ div.sucuriscan-alert>a.close {
 .postbox .inside .sucuriscan-inline-alert-updated:last-child,
 .postbox .inside .sucuriscan-inline-alert-warning:last-child,
 .postbox .inside .sucuriscan-inline-alert:last-child,
-.sucuriscan-tabs>ul li {
+.sucuriscan-tabs > ul li {
     margin-bottom: 0;
 }
 .sucuriscan-inline-alert-updated {
@@ -679,14 +676,14 @@ div.sucuriscan-alert>a.close {
 .sucuriscan-inline-alert-info {
     border-left-color: #2ea2cc;
 }
-.sucuriscan-tabs>ul {
+.sucuriscan-tabs > ul {
     margin: 0;
 }
-.sucuriscan-tabs>ul li,
-.sucuriscan-tabs>ul li>a {
+.sucuriscan-tabs > ul li,
+.sucuriscan-tabs > ul li > a {
     display: inline-block;
 }
-.sucuriscan-tabs>ul li>a {
+.sucuriscan-tabs > ul li > a {
     background: #e5e5e5;
     font-size: 13px;
     font-weight: 700;
@@ -695,22 +692,22 @@ div.sucuriscan-alert>a.close {
     text-decoration: none;
     padding: 0 10px;
 }
-.sucuriscan-tabs>ul li>a.sucuriscan-tab-active {
+.sucuriscan-tabs > ul li > a.sucuriscan-tab-active {
     background: #fff;
     border: 1px solid #e1e1e1;
     border-bottom: 0;
 }
-.sucuriscan-tabs>ul li.sucuriscan-red-tab a {
+.sucuriscan-tabs > ul li.sucuriscan-red-tab a {
     background: #ff8a83;
     color: #fff;
 }
-.sucuriscan-tabs>ul li.sucuriscan-red-tab a.sucuriscan-tab-active {
+.sucuriscan-tabs > ul li.sucuriscan-red-tab a.sucuriscan-tab-active {
     background: #dd3d36;
     border-color: #dd3d36;
 }
 .sucuriscan-panelstuff,
-.sucuriscan-maincontent .sucuriscan-tab-containers>div>#poststuff,
-.sucuriscan-maincontent .sucuriscan-tab-containers>div>table {
+.sucuriscan-maincontent .sucuriscan-tab-containers > div > #poststuff,
+.sucuriscan-maincontent .sucuriscan-tab-containers > div > table {
     margin-top: 0;
 }
 .sucuriscan-getapi-div {
@@ -754,10 +751,10 @@ div.sucuriscan-alert>a.close {
     font-size: 16px;
 }
 .sucuriscan-sitelogo {
-    width: 190px;
+    background: url("https://sitecheck.sucuri.net/images/sucuri-sprite.png") no-repeat;
     height: 100px;
-    background: url(https://sitecheck.sucuri.net/images/sucuri-sprite.png) no-repeat;
     margin: 0 auto;
+    width: 190px;
 }
 .sucuriscan-sitecheck-form {
     margin: 20px 0 0;
@@ -766,9 +763,9 @@ div.sucuriscan-alert>a.close {
     padding: 0 46px;
 }
 .sucuriscan-loading .sucuriscan-sitecheck-disclaimer {
-    text-align: justify;
-    padding-top: 20px;
     border-top: 1px solid #ddd;
+    padding-top: 20px;
+    text-align: justify;
 }
 .sucuriscan-auditlogs .sucuriscan-maxper-page,
 .sucuriscan-scanner-results .sucuriscan-malware-link {
@@ -781,15 +778,15 @@ div.sucuriscan-alert>a.close {
     border: 0;
     border-left: 4px solid #ddd;
 }
-.sucuriscan-maincontent .sucuriscan-border>.inside,
-.sucuriscan-maincontent .sucuriscan-border>h3 {
+.sucuriscan-maincontent .sucuriscan-border > .inside,
+.sucuriscan-maincontent .sucuriscan-border > h3 {
     border-top: 1px solid #e5e5e5;
     border-right: 1px solid #e5e5e5;
 }
-.sucuriscan-maincontent .sucuriscan-border>h3 {
+.sucuriscan-maincontent .sucuriscan-border > h3 {
     border-bottom: 0;
 }
-.sucuriscan-maincontent .sucuriscan-border>.inside {
+.sucuriscan-maincontent .sucuriscan-border > .inside {
     margin-top: 0 !important;
     border-bottom: 1px solid #ddd;
 }
@@ -826,24 +823,24 @@ div.sucuriscan-alert>a.close {
 .sucuriscan-maincontent .sucuriscan-auditlogs,
 .sucuriscan-maincontent .sucuriscan-corefiles,
 .sucuriscan-maincontent .sucuriscan-wordpress-outdated {
-    margin-top: 0;
     margin-bottom: 20px;
+    margin-top: 0;
 }
 .sucuriscan-auditlogs .sucuriscan-list-as-table,
 .sucuriscan-maincontent .sucuriscan-auditlogs {
     margin-bottom: 0;
 }
 .sucuriscan-auditlogs .sucuriscan-pagination-loading {
-    line-height: 32px;
     color: #666;
+    line-height: 32px;
 }
 .sucuriscan-auditlogs .sucuriscan-label {
-    display: inline-block;
-    width: 18px;
-    text-transform: uppercase;
-    line-height: 13px;
-    cursor: pointer;
     border-radius: 50%;
+    cursor: pointer;
+    display: inline-block;
+    line-height: 13px;
+    text-transform: uppercase;
+    width: 18px;
 }
 .sucuriscan-auditlogs .sucuriscan-auditlog-success,
 .sucuriscan-label-added {
@@ -880,14 +877,14 @@ div.sucuriscan-alert>a.close {
     margin-bottom: 0;
 }
 .sucuriscan-audit-report .sucuriscan-report-chart {
-    width: 49%;
     border: 1px solid #ddd;
+    width: 49%;
 }
 .sucuriscan-audit-report .sucuriscan-report-chart h4,
 .sucuriscan-audit-report .sucuriscan-report-chart h5 {
     font-weight: 400;
-    text-align: center;
     margin: 0;
+    text-align: center;
 }
 .sucuriscan-firewall-accesslog .sucuriscan-accesslog-label,
 .sucuriscan-request-summary tr td:first-child {
@@ -909,15 +906,15 @@ div.sucuriscan-alert>a.close {
     margin-top: 10px;
 }
 .sucuriscan-status-type {
-    display: inline-block;
-    width: 20px;
     background: #ddd;
-    text-align: center;
-    text-transform: uppercase;
-    margin-right: 10px;
-    padding: 0 3px;
     border: 1px solid transparent;
     border-radius: 3px;
+    display: inline-block;
+    margin-right: 10px;
+    padding: 0 3px;
+    text-align: center;
+    text-transform: uppercase;
+    width: 20px;
 }
 .sucuriscan-maincontent .sucuriscan-corefiles .sucuriscan-label {
     text-transform: capitalize;
@@ -932,8 +929,8 @@ div.sucuriscan-alert>a.close {
     margin-bottom: 10px;
 }
 .sucuriscan-firewall-settings .sucuriscan-list-as-table {
-    margin-top: 4px;
     margin-bottom: 4px;
+    margin-top: 4px;
 }
 .sucuriscan-firewall-auditlogs .thead-with-button .button {
     width: 65px;
@@ -943,8 +940,8 @@ div.sucuriscan-alert>a.close {
     width: 250px;
 }
 .sucuriscan-firewall-auditlogs .sucuriscan-denial-type-date {
-    font-style: italic;
     color: #999;
+    font-style: italic;
 }
 .sucuriscan-firewall-auditlogs .sucuriscan-alert,
 .wrap .sucuriscan-firewall-auditlogs .error,
@@ -974,43 +971,43 @@ div.sucuriscan-alert>a.close {
     margin: -3px -15px -15px;
 }
 .sucuriscan-hstatus {
-    position: relative;
+    border: 1px solid transparent;
     margin: 0 -12px;
     padding: 10px 12px;
-    border: 1px solid transparent;
+    position: relative;
 }
 .sucuriscan-hstatus-0 {
     background-color: #f2dede;
-    color: #a94442;
     border-color: #ebccd1;
+    color: #a94442;
 }
 .sucuriscan-hstatus-1 {
     background-color: #dff0d8;
-    color: #3c763d;
     border-color: #d6e9c6;
+    color: #3c763d;
 }
 .sucuriscan-hstatus-2 {
     background-color: #dee4f2;
-    color: #4263a9;
     border-color: #ccd0eb;
+    color: #4263a9;
 }
 .sucuriscan-hstatus .button-primary,
 .sucuriscan-hstatus .button-secondary {
     position: absolute;
-    top: 5px;
     right: 5px;
+    top: 5px;
 }
 .sucuriscan-hardening-whitelist form {
     margin-top: 15px;
 }
 .sucuriscan-hardening-whitelist form label {
-    line-height: 29px;
-    font-size: 12px;
     background-color: #eee;
-    padding: 0 10px;
-    display: inline-block;
     border: 1px solid #ddd;
     border-right: 0;
+    display: inline-block;
+    font-size: 12px;
+    line-height: 29px;
+    padding: 0 10px;
 }
 .sucuriscan-hardening-whitelist form input[type=text] {
     margin: 0;
@@ -1018,8 +1015,8 @@ div.sucuriscan-alert>a.close {
 }
 .sucuriscan-hardening-whitelist form select {
     height: initial;
-    padding: 4px;
     margin: 0;
+    padding: 4px;
 }
 .sucuriscan-hardening-whitelist form .button,
 .sucuriscan-hardening-whitelist form input[type=text],
@@ -1030,8 +1027,8 @@ div.sucuriscan-alert>a.close {
     margin-top: 0;
 }
 .sucuriscan-lastlogin-outof {
-    font-style: italic;
     color: #999;
+    font-style: italic;
     margin-right: 10px;
 }
 .sucuriscan-admins-lastlogins .sucuriscan-ellipsis {
@@ -1044,14 +1041,14 @@ div.sucuriscan-alert>a.close {
     margin-top: 12px;
 }
 .sucuriscan-pattern-search-inputbox .input-text {
-    width: 84.7777%;
     line-height: 30px;
     margin: 0 6px 0 0;
+    width: 84.7777%;
 }
 .sucuriscan-pattern-search-inputbox .input-button {
-    width: 14%;
     height: initial;
     line-height: 35px;
+    width: 14%;
 }
 .sucuriscan-pattern-search .sucuriscan-cleanup-btn {
     margin-top: 12px;
@@ -1062,7 +1059,7 @@ div.sucuriscan-alert>a.close {
 .sucuriscan-pattern-search .sucuriscan-grep-text em {
     color: #ea3838;
 }
-.sucuriscan-updates .dashicons-before:before {
+.sucuriscan-updates .dashicons-before::before {
     margin-right: 10px;
 }
 .sucuriscan-updates .dashicons-admin-plugins {
@@ -1098,71 +1095,71 @@ div.sucuriscan-alert>a.close {
     max-width: 400px;
 }
 .sucuriscan-pagination {
+    border-radius: 4px;
     display: inline-block;
     margin: 0;
     padding: 0;
-    border-radius: 4px;
 }
-.sucuriscan-pagination>li {
+.sucuriscan-pagination > li {
     display: inline;
 }
-.c3-tooltip td>span,
+.c3-tooltip td > span,
 .sucuriscan-maincontent .sucuriscan-settings form {
     display: inline-block;
 }
-.sucuriscan-pagination>li>a,
-.sucuriscan-pagination>li>span {
-    position: relative;
+.sucuriscan-pagination > li > a,
+.sucuriscan-pagination > li > span {
     background: #fff;
+    border: 1px solid #ddd;
     color: #428bca;
-    line-height: 1.42857143;
-    text-decoration: none;
     float: left;
+    line-height: 1.42857143;
     margin-left: -1px;
     padding: 6px 12px;
-    border: 1px solid #ddd;
+    position: relative;
+    text-decoration: none;
 }
-.sucuriscan-pagination>li:first-child>a,
-.sucuriscan-pagination>li:first-child>span {
-    margin-left: 0;
+.sucuriscan-pagination > li:first-child > a,
+.sucuriscan-pagination > li:first-child > span {
     border-radius: 4px 0 0 4px;
+    margin-left: 0;
 }
-.sucuriscan-pagination>li:last-child>a,
-.sucuriscan-pagination>li:last-child>span {
+.sucuriscan-pagination > li:last-child > a,
+.sucuriscan-pagination > li:last-child > span {
     border-radius: 0 4px 4px 0;
 }
-.sucuriscan-pagination>li>a.sucuriscan-pagination-active,
-.sucuriscan-pagination>li>a:hover {
+.sucuriscan-pagination > li > a.sucuriscan-pagination-active,
+.sucuriscan-pagination > li > a:hover {
     background: #0074a2;
     color: #fff;
 }
 .sucuriscan_wpconfig_keys_updated textarea {
-    width: 100%;
-    height: 250px;
     background: #f5f5f5;
     font-size: 12px;
-    resize: vertical;
+    height: 250px;
     margin: 20px 0 0;
+    resize: vertical;
+    width: 100%;
 }
 .sucuriscan-maincontent .sucuriscan-last-logins,
 .sucuriscan-maincontent .sucuriscan-settings {
     margin-top: 0;
 }
 .sucuriscan-maincontent .sucuriscan-last-logins .sucuriscan-ellipsis {
-    width: 150px;
     line-height: inherit;
+    width: 150px;
 }
 .sucuriscan-maincontent .sucuriscan-full-textarea {
-    width: 100%;
     height: 400px;
     line-height: normal;
-    resize: vertical;
     padding: 10px;
+    resize: vertical;
+    width: 100%;
 }
 .sucuriscan-maincontent .sucuriscan-settings .input-text,
 .sucuriscan-maincontent .sucuriscan-settings select {
-    width: 220px;
     margin: 0;
+    width: 220px;
 }
 .sucuriscan-maincontent .sucuriscan-infosys-htaccess .inside .sucuriscan-inline-alert-updated,
 .sucuriscan-maincontent .sucuriscan-monitor-fpath {
@@ -1177,7 +1174,7 @@ div.sucuriscan-alert>a.close {
 .sucuriscan-maincontent .sucuriscan-wpcron-list {
     margin-top: 0;
 }
-.sucuriscan-maincontent .sucuriscan-settings-notifications .dashicons-before:before {
+.sucuriscan-maincontent .sucuriscan-settings-notifications .dashicons-before::before {
     margin-right: 5px;
 }
 .sucuriscan-maincontent .sucuriscan-infosys-htaccess .inside {
@@ -1187,13 +1184,34 @@ div.sucuriscan-alert>a.close {
     margin: 0;
 }
 .sucuriscan-maincontent .sucuriscan-subject-formats input[type=text] {
-    width: 40%;
     margin-left: 10px;
+    width: 40%;
+}
+.sucuriscan-panelstuff,
+.sucuriscan-maincontent #poststuff {
+    min-width: initial;
+    padding-top: 0;
+}
+.sucuriscan-maincontent .widefat tbody th.check-column {
+    padding: 6px 0 3px;
+}
+.sucuriscan-maincontent .hardening-box .primary-secondary {
+    margin: 0 0 0 10px;
+}
+.sucuriscan-maincontent hr {
+    border: none;
+    border-top: 1px solid #999;
+}
+.sucuriscan-maincontent table td > table {
+    background: #fff;
+}
+.sucuriscan-maincontent table td > table th {
+    padding: 4px 8px;
 }
 .sucuriscan-flag {
-    width: 16px;
+    background: url("../images/flags.sprite.png") no-repeat;
     height: 11px;
-    background: url(../images/flags.sprite.png) no-repeat;
+    width: 16px;
 }
 .sucuriscan-flag-ad {
     background-position: -16px 0;
@@ -2005,7 +2023,7 @@ div.sucuriscan-alert>a.close {
     stroke-width: 0;
 }
 .c3-bar._expanded_ {
-    fill-opacity: .75;
+    fill-opacity: 0.75;
 }
 .c3-chart-arcs-title {
     dominant-baseline: middle;
@@ -2019,23 +2037,23 @@ div.sucuriscan-alert>a.close {
     stroke-width: 2px;
 }
 .c3-target.c3-defocused {
-    opacity: .3 !important;
+    opacity: 0.3 !important;
 }
 .c3-region {
     fill: #4682b4;
-    fill-opacity: .1;
+    fill-opacity: 0.1;
 }
 .c3-brush .extent {
-    fill-opacity: .1;
+    fill-opacity: 0.1;
 }
 .c3-legend-item {
     font-size: 12px;
 }
 .c3-legend-item-hidden {
-    opacity: .15;
+    opacity: 0.15;
 }
 .c3-legend-background {
-    opacity: .75;
+    opacity: 0.75;
     fill: #fff;
     stroke: #d3d3d3;
     stroke-width: 1;
@@ -2053,14 +2071,14 @@ div.sucuriscan-alert>a.close {
     box-shadow: 7px 7px 12px -9px #777;
 }
 .c3-tooltip tr {
-    border: 1px solid #CCC;
+    border: 1px solid #ccc;
 }
 .c3-tooltip th {
     background-color: #aaa;
     font-size: 14px;
     padding: 2px 5px;
     text-align: left;
-    color: #FFF;
+    color: #fff;
 }
 .c3-tooltip td {
     font-size: 13px;
@@ -2068,7 +2086,7 @@ div.sucuriscan-alert>a.close {
     background-color: #fff;
     border-left: 1px dotted #999;
 }
-.c3-tooltip td>span {
+.c3-tooltip td > span {
     width: 10px;
     height: 10px;
     margin-right: 6px;
@@ -2078,7 +2096,7 @@ div.sucuriscan-alert>a.close {
 }
 .c3-area {
     stroke-width: 0;
-    opacity: .2;
+    opacity: 0.2;
 }
 .c3-chart-arcs .c3-chart-arcs-background {
     fill: #e0e0e0;
@@ -2095,99 +2113,84 @@ div.sucuriscan-alert>a.close {
 .c3-chart-arc .c3-gauge-value {
     fill: #000;
 }
+
 @media (max-width: 510px) {
     .wp-core-ui .button.sucuriscan-review-hero,
     .wp-core-ui .sucuriscan-review-hero {
-        display: none
+        display: none;
     }
 }
+
 @media (max-width: 620px) {
-    .sucuriscan-tabs>ul li,
-    .sucuriscan-tabs>ul li>a {
-        display: block
+    .sucuriscan-tabs > ul li,
+    .sucuriscan-tabs > ul li > a {
+        display: block;
     }
     .sucuriscan-getapi-form button.button-primary {
-        line-height: 40px
+        line-height: 40px;
     }
 }
+
 @media (max-width: 768px) {
     .sucuriscan-wrap .sucuriscan-footer .sucuriscan-help,
     .sucuriscan-wrap .sucuriscan-footer .sucuriscan-logo,
     .sucuriscan-wrap .sucuriscan-leftside,
     .sucuriscan-wrap .sucuriscan-sidebar {
-        float: none
+        float: none;
     }
     .sucuriscan-wrap .sucuriscan-leftside,
     .sucuriscan-wrap .sucuriscan-sidebar {
-        width: 100%
+        width: 100%;
     }
     .sucuriscan-wrap .sucuriscan-sidebar {
-        margin-top: 20px
+        margin-top: 20px;
     }
     .sucuriscan-wrap .sucuriscan-footer .sucuriscan-logo {
         display: table;
-        margin: 0 auto
+        margin: 0 auto;
     }
 }
+
 @media (max-width: 920px) {
     .sucuriscan-wrap .sucuriscan-navbar {
         padding-left: 0;
-        padding-right: 0
+        padding-right: 0;
     }
     .sucuriscan-wrap .sucuriscan-navbar .nav-tab {
         display: block;
         line-height: 20px;
-        margin: 0
+        margin: 0;
     }
     .sucuriscan-wrap .sucuriscan-navbar .nav-tab:last-child {
-        border-bottom: 1px solid #ccc
+        border-bottom: 1px solid #ccc;
     }
 }
+
 @media (max-width: 1170px) {
     .sucuriscan-modal {
+        left: 10%;
         width: 76%;
-        left: 10%
     }
 }
+
 @media (min-width: 600px) and (max-width: 1060px) {
     .sucuriscan-wrap .sucuriscan-leftside,
     .sucuriscan-wrap .sucuriscan-sidebar {
+        float: none;
         width: initial;
-        float: none
     }
     .sucuriscan-wrap .sucuriscan-sidebar {
-        margin-top: 20px
+        margin-top: 20px;
     }
-    .sucuriscan-wrap .sucuriscan-sidebar>div {
-        width: 49%;
+    .sucuriscan-wrap .sucuriscan-sidebar > div {
         float: left;
-        min-height: 339px
+        min-height: 339px;
+        width: 49%;
     }
     .sucuriscan-wrap .sucuriscan-sidebar .sucuriscan-ad-antivirus {
-        margin-left: 2%
+        margin-left: 2%;
     }
     .sucuriscan-wrap .sucuriscan-scanner-video {
-        height: 450px
+        height: 450px;
     }
-}
-.sucuriscan-panelstuff,
-.sucuriscan-maincontent #poststuff {
-    min-width: initial;
-    padding-top: 0;
-}
-.sucuriscan-maincontent .widefat tbody th.check-column {
-    padding: 6px 0 3px;
-}
-.sucuriscan-maincontent .hardening-box .primary-secondary {
-    margin: 0 0 0 10px;
-}
-.sucuriscan-maincontent hr {
-    border: none;
-    border-top: 1px solid #999;
-}
-.sucuriscan-maincontent table td>table {
-    background: #fff;
-}
-.sucuriscan-maincontent table td>table th {
-    padding: 4px 8px;
 }
