@@ -236,6 +236,17 @@ if (defined('SUCURISCAN')) {
     }
 
     /**
+     * Clear CloudProxy cache if necessary.
+     *
+     * Every time a page or post is modified and saved into the database the
+     * plugin will send a HTTP request to the CloudProxy API service and except
+     * that, if the API key is valid, the cache is reset. Notice that the cache
+     * of certain files is going to stay as it is due to the configuration on the
+     * edge of the servers.
+     */
+    add_action('save_post', 'sucuriscanFirewallClearCacheSavePost');
+
+    /**
      * Display a message if the plugin is not activated.
      *
      * Display a message at the top of the administration panel with a button that

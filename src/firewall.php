@@ -346,6 +346,27 @@ function sucuriscan_firewall_clearcache($nonce)
 }
 
 /**
+ * Clear CloudProxy cache if necessary.
+ *
+ * Every time a page or post is modified and saved into the database the
+ * plugin will send a HTTP request to the CloudProxy API service and except
+ * that, if the API key is valid, the cache is reset. Notice that the cache
+ * of certain files is going to stay as it is due to the configuration on the
+ * edge of the servers.
+ *
+ * @param  integer $post_id The post ID.
+ * @return void
+ */
+function sucuriscanFirewallClearCacheSavePost($post_id = 0)
+{
+    if (wp_is_post_revision($post_id) || wp_is_post_autosave($post_id)) {
+        return; /* Prevent double execution of the save_post action */
+    }
+
+    SucuriScanAPI::clearCloudproxyCache(); /* ignore errors */
+}
+
+/**
  * CloudProxy firewall page.
  *
  * It checks whether the WordPress core files are the original ones, and the state
