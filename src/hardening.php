@@ -490,15 +490,13 @@ function sucuriscan_harden_wpincludes()
  */
 function sucuriscan_harden_phpversion()
 {
-    $phpv = phpversion();
-    $cp = ( strncmp($phpv, '5.', 2) < 0 ) ? 0 : 1;
-
     return sucuriscan_harden_status(
         'Verify PHP version',
-        $cp,
+        intval(version_compare(PHP_VERSION, '5.6.0') >= 0),
         null,
-        'Using an updated version of PHP (' . $phpv . ')',
-        'The version of PHP you are using (' . $phpv . ') is not current, not recommended, and/or not supported',
+        'Using an updated version of PHP &mdash; <code>' . PHP_VERSION . '</code>',
+        'You are using an outdated version of PHP &mdash; <code>' . PHP_VERSION . '</code>'
+        . '<a href="http://php.net/supported-versions.php" target="_blank" class="button-primary">Update Now</a>',
         'This checks if you have the latest version of PHP installed.',
         null
     );
