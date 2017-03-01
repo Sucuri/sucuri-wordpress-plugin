@@ -33,7 +33,7 @@ class SucuriScanAPI extends SucuriScanOption
      * Seconds before consider a HTTP request as timeout.
      *
      * As for the 01/Jan/2016 if the number of seconds before a timeout is greater
-     * than sixty (which is one minute) the function will reset the option to its
+     * than sixty (which is one minute) the method will reset the option to its
      * default value to keep the latency of the HTTP requests in a minimum to
      * minimize the interruptions in the admins workflow. The normal connection
      * timeout should be in the range of ten seconds, or fifteen if the DNS lookups
@@ -69,7 +69,7 @@ class SucuriScanAPI extends SucuriScanOption
     }
 
     /**
-     * Alternative to the built-in PHP function http_build_query.
+     * Alternative to the built-in PHP method http_build_query.
      *
      * Some PHP installations with different encoding or with different language
      * (German for example) might produce an unwanted behavior when building an
@@ -116,10 +116,10 @@ class SucuriScanAPI extends SucuriScanOption
      * in simple documents without needing to switch between programming
      * languages or development platforms.
      *
-     * Using Curl instead of the custom WordPress HTTP functions allow us to
+     * Using Curl instead of the custom WordPress HTTP methods allow us to
      * control the functionality at 100% without expecting breaking changes in
      * newer versions of the code. For exampe, as of WordPress 4.6.x the result
-     * of executing the functions prefixed with "wp_remote_" returns an object
+     * of executing the methods prefixed with "wp_remote_" returns an object
      * WP_HTTP_Requests_Response that is not compatible with older implementations
      * of the plugin.
      *
@@ -724,7 +724,7 @@ class SucuriScanAPI extends SucuriScanOption
      * Retry the HTTP calls for the logs that were not sent to the API service
      * because of a connection failure or misconfiguration. Each successful call
      * will remove the log from the queue and the failures will keep them until the
-     * next function call is executed.
+     * next method call is executed.
      *
      * @return void
      */
@@ -1019,7 +1019,7 @@ class SucuriScanAPI extends SucuriScanOption
 
     /**
      * Retrieve the public settings of the account associated with the API keys
-     * registered by the administrator of the site. This function will send a HTTP
+     * registered by the administrator of the site. This method will send a HTTP
      * request to the remote API service and process its response, when successful
      * it will return an array/object containing the public attributes of the site.
      *
@@ -1068,7 +1068,7 @@ class SucuriScanAPI extends SucuriScanOption
 
     /**
      * Retrieve the audit logs of the account associated with the API keys
-     * registered b the administrator of the site. This function will send a HTTP
+     * registered b the administrator of the site. This method will send a HTTP
      * request to the remote API service and process its response, when successful
      * it will return an array/object containing a list of requests blocked by our
      * CloudProxy.
@@ -1252,7 +1252,7 @@ class SucuriScanAPI extends SucuriScanOption
 
     /**
      * Check the plugins directory and retrieve all plugin files with plugin data.
-     * This function will also retrieve the URL and name of the repository/page
+     * This method will also retrieve the URL and name of the repository/page
      * where it is being published at the WordPress plugins market.
      *
      * @return array Key is the plugin file path and the value is an array of the plugin data.

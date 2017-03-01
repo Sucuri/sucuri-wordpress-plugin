@@ -13,14 +13,13 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  *
  * The term hooking covers a range of techniques used to alter or augment the
  * behavior of an operating system, of applications, or of other software
- * components by intercepting function calls or messages or events passed
- * between software components. Code that handles such intercepted function
- * calls, events or messages is called a "hook".
+ * components by intercepting method calls or messages or events passed
+ * between software components. Code that handles such intercepted functionmethods, events or messages is called a "hook".
  *
  * Hooking is used for many purposes, including debugging and extending
  * functionality. Examples might include intercepting keyboard or mouse event
  * messages before they reach an application, or intercepting operating system
- * calls in order to monitor behavior or modify the function of an application
+ * calls in order to monitor behavior or modify the method of an application
  * or other component; it is also widely used in benchmarking programs.
  */
 class SucuriScanHook extends SucuriScanEvent
@@ -213,7 +212,7 @@ class SucuriScanHook extends SucuriScanEvent
     }
 
     /**
-     * Alias function for hookPublish()
+     * Alias method for hookPublish()
      *
      * @param  integer $id The identifier of the post or page published.
      * @return void
@@ -224,7 +223,7 @@ class SucuriScanHook extends SucuriScanEvent
     }
 
     /**
-     * Alias function for hookPublish()
+     * Alias method for hookPublish()
      *
      * @param  integer $id The identifier of the post or page published.
      * @return void
@@ -235,7 +234,7 @@ class SucuriScanHook extends SucuriScanEvent
     }
 
     /**
-     * Alias function for hookPublish()
+     * Alias method for hookPublish()
      *
      * @param  integer $id The identifier of the post or page published.
      * @return void
@@ -246,7 +245,7 @@ class SucuriScanHook extends SucuriScanEvent
     }
 
     /**
-     * Alias function for hookPublish()
+     * Alias method for hookPublish()
      *
      * @param  integer $id The identifier of the post or page published.
      * @return void

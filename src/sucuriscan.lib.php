@@ -11,8 +11,8 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
 /**
  * Miscellaneous library.
  *
- * Multiple and generic functions that will be used through out the code of
- * other libraries extending from this and functions defined in other files, be
+ * Multiple and generic methods that will be used through out the code of
+ * other libraries extending from this and methods defined in other files, be
  * aware of the hierarchy and check the other libraries for duplicated methods.
  */
 class SucuriScan
@@ -53,7 +53,7 @@ class SucuriScan
      * Return name of a variable with the plugin's prefix (if needed).
      *
      * To facilitate the development, you can prefix the name of the key in the
-     * request (when accessing it) with a single colon, this function will
+     * request (when accessing it) with a single colon, this method will
      * automatically replace that character with the unique identifier of the
      * plugin.
      *
@@ -118,14 +118,11 @@ class SucuriScan
      */
     public static function escape($text = '')
     {
-        // Escape the value of the variable using a built-in function if possible.
         if (function_exists('esc_attr')) {
-            $text = esc_attr($text);
-        } else {
-            $text = htmlspecialchars($text);
+            return esc_attr($text);
         }
 
-        return $text;
+        return htmlspecialchars($text);
     }
 
     /**
@@ -803,14 +800,14 @@ class SucuriScan
     /**
      * Validate email address.
      *
-     * This use the native PHP function filter_var which is available in PHP >=
-     * 5.2.0 if it is not found in the interpreter this function will sue regular
+     * This use the native PHP method filter_var which is available in PHP >=
+     * 5.2.0 if it is not found in the interpreter this method will sue regular
      * expressions to check whether the email address passed is valid or not.
      *
      * @see https://www.php.net/manual/en/function.filter-var.php
      *
      * @param  string $email The string that will be validated as an email address.
-     * @return boolean       TRUE if the email address passed to the function is valid, FALSE if not.
+     * @return boolean       TRUE if the email address passed to the method is valid, FALSE if not.
      */
     public static function isValidEmail($email = '')
     {

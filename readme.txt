@@ -236,7 +236,7 @@ This version adds support for the latest version of WordPress. Introduces new fe
 * Added development option to keep using the database
 * Added panel with information about the plugin settings
 * Added conditional to prevent redeclaration of class
-* Fixed cache flush function used to delete datastore
+* Fixed cache flush method used to delete datastore
 
 = 1.8.1 =
 * Modified default setting for the core integrity alerts
@@ -254,7 +254,7 @@ This version adds support for the latest version of WordPress. Introduces new fe
 * Fixed htaccess standard rules checker with no WP_Rewrite
 
 = 1.7.19 =
-* Added function to rescue HTTP requests using sockets
+* Added method to rescue HTTP requests using sockets
 * Fixed mishandled JSON data in audit logs Ajax request
 * Modified list of CloudProxy features and promo video
 

@@ -12,7 +12,7 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  * Plugin's global variables.
  *
  * These variables will be defined globally to allow the inclusion in multiple
- * functions and classes defined in the libraries loaded by this plugin. The
+ * methods and classes defined in the libraries loaded by this plugin. The
  * conditional will act as a container helping in the readability of the code
  * considering the total number of lines that this file will have.
  */
@@ -142,7 +142,7 @@ if (defined('SUCURISCAN')) {
     remove_action('wp_head', 'wp_generator');
 
     /**
-     * Run a specific function defined in the plugin's code to locate every
+     * Run a specific method defined in the plugin's code to locate every
      * directory and file, collect their checksum and file size, and send this
      * information to the Sucuri API service where a security and integrity scan
      * will be performed against the hashes provided and the official versions.
@@ -153,7 +153,7 @@ if (defined('SUCURISCAN')) {
      * Initialize the execute of the main plugin's functions.
      *
      * This will load the menu options in the WordPress administrator panel, and
-     * execute the bootstrap function of the plugin.
+     * execute the bootstrap method of the plugin.
      */
     add_action('init', 'SucuriScanInterface::initialize', 1);
     add_action('init', 'SucuriScanBlockedUsers::blockUserLogin', 1);
@@ -187,7 +187,7 @@ if (defined('SUCURISCAN')) {
     /**
      * Function call interceptors.
      *
-     * Define the names for the hooks that will intercept specific function calls in
+     * Define the names for the hooks that will intercept specific method calls in
      * the admin interface and parts of the external site, an event report will be
      * sent to the API service and an email notification to the administrator of the
      * site.

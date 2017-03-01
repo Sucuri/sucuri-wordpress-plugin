@@ -46,7 +46,7 @@ class SucuriScanFSScanner extends SucuriScan
 
     /**
      * Check whether the administrator enabled the feature to ignore some
-     * directories during the file system scans. This function is overwritten by a
+     * directories during the file system scans. This method is overwritten by a
      * GET parameter in the settings page named no_scan which must be equal to the
      * number one.
      *
@@ -105,7 +105,7 @@ class SucuriScanFSScanner extends SucuriScan
      * skipped automatically and will not be used to detect malware or modifications
      * in the site.
      *
-     * The structure of the array returned by the function will always be composed
+     * The structure of the array returned by the method will always be composed
      * by four (4) indexes which will facilitate the execution of common conditions
      * in the implementation code.
      *

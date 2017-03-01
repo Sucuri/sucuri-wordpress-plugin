@@ -13,7 +13,7 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  *
  * In computing, hardening is usually the process of securing a system by
  * reducing its surface of vulnerability. A system has a larger vulnerability
- * surface the more functions it fulfills; in principle a single-function system
+ * surface the more functions it fulfills; in principle a single-method system
  * is more secure than a multipurpose one. Reducing available vectors of attack
  * typically includes the removal of unnecessary software, unnecessary usernames
  * or logins and the disabling or removal of unnecessary services.
@@ -28,7 +28,6 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  */
 class SucuriScanHardening extends SucuriScan
 {
-
     /**
      * Returns a list of access control rules for the Apache web server that can be
      * used to deny and allow certain files to be accessed by certain network nodes.
@@ -56,7 +55,7 @@ class SucuriScanHardening extends SucuriScan
      * Adds some rules to an existing access control file (or creates it if does not
      * exists) to deny access to all files with certain extension in any mixed case.
      * The permissions to modify the file are checked before anything else, this
-     * function is self-contained.
+     * method is self-contained.
      *
      * @param  string  $directory Valid directory path where to place the access rules.
      * @return boolean            True if the rules are successfully added, false otherwise.

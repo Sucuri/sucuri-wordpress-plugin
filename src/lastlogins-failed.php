@@ -106,7 +106,7 @@ function sucuriscan_failed_logins_panel()
 /**
  * Find the full path of the file where the information of the failed logins
  * will be stored, it will be created automatically if does not exists (and if
- * the destination folder has permissions to write). This function can also be
+ * the destination folder has permissions to write). This method can also be
  * used to reset the content of the datastore file.
  *
  * @see sucuriscan_reset_failed_logins()
@@ -179,7 +179,7 @@ function sucuriscan_get_all_failed_logins($offset = 0, $limit = -1)
 
 /**
  * Read and parse the content of the datastore file where the failed logins are
- * being kept. This function will also calculate the difference in time between
+ * being kept. This method will also calculate the difference in time between
  * the first and last login attempt registered in the file to later decide if
  * there is a brute-force attack in progress (and send an email notification
  * with the report) or reset the file after considering it a normal behavior of
@@ -392,9 +392,9 @@ function sucuriscan_report_failed_logins($failed_logins = array())
 
 /**
  * Remove all the entries in the datastore file where the failed logins are
- * being kept. The execution of this function will not delete the file (which is
+ * being kept. The execution of this method will not delete the file (which is
  * likely the best move) but rather will clean its content and append the
- * default code defined by another function above.
+ * default code defined by another method above.
  *
  * @return boolean Whether the datastore file was resetted or not.
  */

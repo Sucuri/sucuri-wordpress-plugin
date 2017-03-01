@@ -115,7 +115,7 @@ class SucuriScanCache extends SucuriScan
 
     /**
      * Check if the datastore file exists, if it's writable and readable by the same
-     * user running the server, in case that it does not exists the function will
+     * user running the server, in case that it does not exists the method will
      * tries to create it by itself with the right permissions to use it.
      *
      * @param  boolean $auto_create Automatically create the file if not exists or not.
@@ -154,7 +154,7 @@ class SucuriScanCache extends SucuriScan
 
     /**
      * Define the pattern for the regular expression that will check if a cache key
-     * is valid or not, and also will help the function that parses the file to see
+     * is valid or not, and also will help the method that parses the file to see
      * which characters of each line are the keys are which are the values.
      *
      * @param  string $action Either "valid", "content", or "header".
@@ -248,7 +248,7 @@ class SucuriScanCache extends SucuriScan
      *
      * Each datastore file has a list of attributes at the beginning of the it with
      * information like the creation and last update time. If you are extending the
-     * functionality of these headers please refer to the function that contains the
+     * functionality of these headers please refer to the method that contains the
      * default attributes and their values [1].
      *
      * [1] SucuriScanCache::datastoreDefaultInfo()
@@ -285,7 +285,7 @@ class SucuriScanCache extends SucuriScan
 
     /**
      * Check whether the last update time of the datastore file has surpassed the
-     * lifetime specified for a key name. This function is the only one related with
+     * lifetime specified for a key name. This method is the only one related with
      * the caching process, any others besides this are just methods used to handle
      * the data inside those files.
      *

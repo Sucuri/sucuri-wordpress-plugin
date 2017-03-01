@@ -80,7 +80,7 @@ class SucuriScanMail extends SucuriScanOption
 
             /**
              * WordPress uses a library named PHPMailer [1] to send emails through the
-             * provided function wp_mail [2], unfortunately the debug information is
+             * provided method wp_mail [2], unfortunately the debug information is
              * completely removed and this makes it difficult to troubleshoots issues
              * reported by users when the SMTP server in their sites is misconfigured. To
              * reduce the number of tickets related with this issue we will provide an
@@ -124,7 +124,7 @@ class SucuriScanMail extends SucuriScanOption
 
         /**
          * Probably a bad value in the options table. Delete the entry from the database
-         * and call this function to try again, it will probably fall in an infinite
+         * and call this method to try again, it will probably fall in an infinite
          * loop, but this is the easiest way to control this procedure.
          */
         if (!$subject) {

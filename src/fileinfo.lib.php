@@ -11,7 +11,7 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
 /**
  * Class to process files and folders.
  *
- * Here are implemented the functions needed to open, scan, read, create files
+ * Here are implemented the methods needed to open, scan, read, create files
  * and folders using the built-in PHP class SplFileInfo. The SplFileInfo class
  * offers a high-level object oriented interface to information for an individual
  * file.
@@ -547,7 +547,7 @@ class SucuriScanFileInfo extends SucuriScan
     /**
      * Returns the content of a file.
      *
-     * If the file does not exists or is not readable the function will return
+     * If the file does not exists or is not readable the method will return
      * false. Make sure that you double check this with a condition using triple
      * equals in order to avoid ambiguous results when the file exists, is
      * readable, but is empty.

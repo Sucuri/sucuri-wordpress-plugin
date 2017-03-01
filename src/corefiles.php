@@ -11,7 +11,7 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
 /**
  * Compare the md5sum of the core files in the current site with the hashes hosted
  * remotely in Sucuri servers. These hashes are updated every time a new version
- * of WordPress is released. If the "Send Email" parameter is set the function will
+ * of WordPress is released. If the "Send Email" parameter is set the method will
  * send a notification to the administrator with a list of files that were added,
  * modified and/or deleted so far.
  *
@@ -304,7 +304,7 @@ function sucuriscan_get_integrity_tree($dir = './', $recursive = false)
 
 /**
  * Check whether the core WordPress files where modified, removed or if any file
- * was added to the core folders. This function returns an associative array with
+ * was added to the core folders. This method returns an associative array with
  * these keys:
  *
  * <ul>

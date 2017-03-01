@@ -23,7 +23,7 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  * name. This page contains the technical documentation needed to use the
  * Options API. A list of default options can be found in the Option Reference.
  *
- * Note that the _site_ functions are essentially the same as their
+ * Note that the _site_ methods are essentially the same as their
  * counterparts. The only differences occur for WP Multisite, when the options
  * apply network-wide and the data is stored in the wp_sitemeta table under the
  * given custom name.
@@ -233,7 +233,7 @@ class SucuriScanOption extends SucuriScanRequest
         $options = array();
         $fpath = self::optionsFilePath();
 
-        /* Use this over SucuriScanCache to prevent nested function calls */
+        /* Use this over SucuriScanCache to prevent nested method calls */
         $content = SucuriScanFileInfo::fileContent($fpath);
 
         if ($content !== false) {
@@ -271,16 +271,16 @@ class SucuriScanOption extends SucuriScanRequest
      * Returns data from the settings file or the database.
      *
      * To facilitate the development, you can prefix the name of the key in the
-     * request (when accessing it) with a single colon, this function will
+     * request (when accessing it) with a single colon, this method will
      * automatically replace that character with the unique identifier of the
      * plugin.
      *
      * NOTE: The SucuriScanCache library is a better interface to read the
      * content of a configuration file following the same standard in the other
      * files associated to the plugin. However, this library makes use of this
-     * function to retrieve the directory where the files are stored, if we use
+     * method to retrieve the directory where the files are stored, if we use
      * this library for this specific task we will end up provoking a maximum
-     * nesting function call warning.
+     * nesting method call warning.
      *
      * @param  string $option Name of the setting that will be retrieved.
      * @return string         Option value, or default value if empty.
@@ -307,7 +307,7 @@ class SucuriScanOption extends SucuriScanRequest
          * the name starts with the same prefix used by the plugin then we must
          * return the default value defined by the author.
          *
-         * Note that if the plain text file is not writable the function should
+         * Note that if the plain text file is not writable the method should
          * not delete the option from the database to keep backward compatibility
          * with previous installations of the plugin.
          */
@@ -337,7 +337,7 @@ class SucuriScanOption extends SucuriScanRequest
     /**
      * Update the value of an database' option.
      *
-     * Use the function to update a named option/value pair to the options database
+     * Use the method to update a named option/value pair to the options database
      * table. The option name value is escaped with a special database method before
      * the insert SQL statement but not the option value, this value should always
      * be properly sanitized.
@@ -452,8 +452,7 @@ class SucuriScanOption extends SucuriScanRequest
 
     /**
      * Retrieve all the options stored by Wordpress in the database. The options
-     * containing the word "transient" are excluded from the results, this function
-     * is compatible with multisite instances.
+     * containing the word "transient" are excluded from the results, this functionmethodis compatible with multisite instances.
      *
      * @return array All the options stored by Wordpress in the database, except the transient options.
      */

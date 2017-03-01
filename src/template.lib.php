@@ -121,7 +121,7 @@ class SucuriScanTemplate extends SucuriScanRequest
     }
 
     /**
-     * Generate an URL pointing to the page indicated in the function and that must
+     * Generate an URL pointing to the page indicated in the method and that must
      * be loaded through the administrator panel.
      *
      * @param  string  $page Short name of the page that will be generated.
@@ -149,7 +149,7 @@ class SucuriScanTemplate extends SucuriScanRequest
     }
 
     /**
-     * Generate an URL pointing to the page indicated in the function and that must
+     * Generate an URL pointing to the page indicated in the method and that must
      * be loaded through the Ajax handler of the administrator panel.
      *
      * @param  string $page Short name of the page that will be generated.
