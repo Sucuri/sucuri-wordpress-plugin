@@ -175,10 +175,15 @@ class SucuriScanMail extends SucuriScanOption
      */
     private static function prettifyMail($subject = '', $message = '', $data_set = array())
     {
-        $prettify_type = isset($data_set['PrettifyType']) ? $data_set['PrettifyType'] : 'simple';
-        $template_name = 'notification-' . $prettify_type;
-        $user = wp_get_current_user();
+        $params = array();
         $display_name = '';
+        $prettify_type = 'simple';
+        $user = wp_get_current_user();
+        $website = self::getDomain();
+
+        if (isset($data_set['PrettifyType'])) {
+            $prettify_type = $data_set['PrettifyType'];
+        }
 
         if ($user instanceof WP_User
             && isset($user->user_login)
@@ -207,21 +212,19 @@ class SucuriScanMail extends SucuriScanOption
             }
         }
 
-        $mail_variables = array(
-            'TemplateTitle' => 'Sucuri Alert',
-            'Subject' => $subject,
-            'Website' => self::getOption('siteurl'),
-            'RemoteAddress' => self::getRemoteAddr(),
-            'Message' => $message,
-            'User' => $display_name,
-            'Time' => SucuriScan::currentDateTime(),
-        );
+        $params['TemplateTitle'] = 'Sucuri Alert';
+        $params['Subject'] = $subject;
+        $params['Website'] = $website;
+        $params['RemoteAddress'] = self::getRemoteAddr();
+        $params['Message'] = $message;
+        $params['User'] = $display_name;
+        $params['Time'] = SucuriScan::currentDateTime();
 
         foreach ($data_set as $var_key => $var_value) {
-            $mail_variables[ $var_key ] = $var_value;
+            $params[ $var_key ] = $var_value;
         }
 
-        return SucuriScanTemplate::getSection($template_name, $mail_variables);
+        return SucuriScanTemplate::getSection('notification-' . $prettify_type, $params);
     }
 
     /**
