@@ -1155,6 +1155,7 @@ div.sucuriscan-alert > a.close {
     padding: 10px;
     resize: vertical;
     width: 100%;
+    word-break: break-all;
 }
 .sucuriscan-maincontent .sucuriscan-settings .input-text,
 .sucuriscan-maincontent .sucuriscan-settings select {

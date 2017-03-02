@@ -30,6 +30,7 @@ function sucuriscan_settings_general($nonce)
     $params['SettingsSection.IPDiscoverer'] = sucuriscan_settings_general_ipdiscoverer($nonce);
     $params['SettingsSection.CommentMonitor'] = sucuriscan_settings_general_commentmonitor($nonce);
     $params['SettingsSection.AuditLogStats'] = sucuriscan_settings_general_auditlogstats($nonce);
+    $params['SettingsSection.ImportExport'] = sucuriscan_settings_general_importexport($nonce);
     $params['SettingsSection.Datetime'] = sucuriscan_settings_general_datetime($nonce);
 
     return SucuriScanTemplate::getSection('settings-general', $params);
@@ -423,6 +424,117 @@ function sucuriscan_settings_general_auditlogstats($nonce)
     }
 
     return SucuriScanTemplate::getSection('settings-general-auditlogstats', $params);
+}
+
+function sucuriscan_settings_general_importexport($nonce)
+{
+    $settings = array();
+    $params = array();
+    $allowed = array(
+        ':addr_header',
+        ':api_handler',
+        ':api_key',
+        ':api_protocol',
+        ':api_service',
+        ':audit_report',
+        ':cloudproxy_apikey',
+        ':comment_monitor',
+        ':dismiss_setup',
+        ':dns_lookups',
+        ':email_subject',
+        ':emails_per_hour',
+        ':fs_scanner',
+        ':ignore_scanning',
+        ':ignored_events',
+        ':language',
+        ':lastlogin_redirection',
+        ':logs4report',
+        ':maximum_failed_logins',
+        ':notify_available_updates',
+        ':notify_bruteforce_attack',
+        ':notify_failed_login',
+        ':notify_plugin_activated',
+        ':notify_plugin_change',
+        ':notify_plugin_deactivated',
+        ':notify_plugin_deleted',
+        ':notify_plugin_installed',
+        ':notify_plugin_updated',
+        ':notify_post_publication',
+        ':notify_scan_checksums',
+        ':notify_settings_updated',
+        ':notify_success_login',
+        ':notify_theme_activated',
+        ':notify_theme_deleted',
+        ':notify_theme_editor',
+        ':notify_theme_installed',
+        ':notify_theme_updated',
+        ':notify_to',
+        ':notify_user_registration',
+        ':notify_website_updated',
+        ':notify_widget_added',
+        ':notify_widget_deleted',
+        ':prettify_mails',
+        ':request_timeout',
+        ':revproxy',
+        ':scan_checksums',
+        ':scan_frequency',
+        ':scan_interface',
+        ':selfhosting_fpath',
+        ':selfhosting_monitor',
+        ':sitecheck_timeout',
+        ':use_wpmail',
+    );
+
+    if ($nonce && SucuriScanRequest::post(':import') !== false) {
+        $process = SucuriScanRequest::post(':process_form');
+
+        if (intval($process) === 1) {
+            $json = SucuriScanRequest::post(':settings');
+            $json = str_replace('\&quot;', '"', $json);
+            $data = @json_decode($json, true);
+
+            if ($data) {
+                $count = 0;
+                $valid = array();
+                $total = count($data);
+
+                /* minimum length for option name */
+                $minLength = strlen(SUCURISCAN . '_');
+
+                foreach ($data as $option => $value) {
+                    if (strlen($option) <= $minLength) {
+                        continue;
+                    }
+
+                    $option_name = ':' . substr($option, $minLength);
+
+                    /* check if the option can be imported */
+                    if (!in_array($option_name, $allowed)) {
+                        continue;
+                    }
+
+                    SucuriScanOption::updateOption($option_name, $value);
+
+                    $count++;
+                }
+
+                SucuriScanInterface::info($count . ' out of ' . $total . ' option were imported');
+            } else {
+                SucuriScanInterface::error('Data is incorrectly encoded');
+            }
+        } else {
+            SucuriScanInterface::error('You need to confirm that you understand the risk of this operation.');
+        }
+    }
+
+    foreach ($allowed as $option) {
+        $option_name = SucuriScan::varPrefix($option);
+        $settings[$option_name] = SucuriScanOption::getOption($option);
+    }
+
+    $params['Export'] = @json_encode($settings);
+
+    return SucuriScanTemplate::getSection('settings-general-importexport', $params);
 }
 
 function sucuriscan_settings_general_datetime($nonce)

@@ -12,6 +12,8 @@
 
     %%%SUCURI.SettingsSection.AuditLogStats%%%
 
+    %%%SUCURI.SettingsSection.ImportExport%%%
+
     %%%SUCURI.SettingsSection.Datetime%%%
 
     %%%SUCURI.SettingsSection.ResetOptions%%%
