@@ -14,7 +14,5 @@
 
     %%%SUCURI.SettingsSection.ImportExport%%%
 
-    %%%SUCURI.SettingsSection.Datetime%%%
-
     %%%SUCURI.SettingsSection.ResetOptions%%%
 </div>

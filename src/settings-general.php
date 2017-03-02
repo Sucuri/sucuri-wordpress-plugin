@@ -31,7 +31,6 @@ function sucuriscan_settings_general($nonce)
     $params['SettingsSection.CommentMonitor'] = sucuriscan_settings_general_commentmonitor($nonce);
     $params['SettingsSection.AuditLogStats'] = sucuriscan_settings_general_auditlogstats($nonce);
     $params['SettingsSection.ImportExport'] = sucuriscan_settings_general_importexport($nonce);
-    $params['SettingsSection.Datetime'] = sucuriscan_settings_general_datetime($nonce);
 
     return SucuriScanTemplate::getSection('settings-general', $params);
 }
@@ -535,22 +534,4 @@ function sucuriscan_settings_general_importexport($nonce)
     $params['Export'] = @json_encode($settings);
 
     return SucuriScanTemplate::getSection('settings-general-importexport', $params);
-}
-
-function sucuriscan_settings_general_datetime($nonce)
-{
-    $params = array();
-    $params['Datetime.AdminURL'] = SucuriScan::adminURL('options-general.php');
-    $params['Datetime.HumanReadable'] = SucuriScan::currentDateTime();
-    $params['Datetime.Timestamp'] = SucuriScan::localTime();
-    $params['Datetime.Timezone'] = 'Unknown';
-
-    if (function_exists('wp_timezone_choice')) {
-        $gmt_offset = SucuriScanOption::getOption('gmt_offset');
-        $tzstring = SucuriScanOption::getOption('timezone_string');
-
-        $params['Datetime.Timezone'] = empty($tzstring) ? 'UTC' . $gmt_offset : $tzstring;
-    }
-
-    return SucuriScanTemplate::getSection('settings-general-datetime', $params);
 }
