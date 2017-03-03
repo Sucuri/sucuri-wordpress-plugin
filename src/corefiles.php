@@ -443,6 +443,7 @@ function sucuriscan_ignore_integrity_filepath($file_path = '')
         '^([^\/]*)\.(pdf|css|txt|jpg|gif|png|jpeg)$',
         '^google[0-9a-z]{16}\.html$',
         '^pinterest-[0-9a-z]{5}\.html$',
+        'healthcheck\.html',
         '(^|\/)error_log$',
     );
 
