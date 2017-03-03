@@ -18,7 +18,7 @@ function sucuriscan_settings_apiservice($nonce)
     $params = array();
 
     $params['SettingsSection.ApiStatus'] = sucuriscan_settings_apiservice_status($nonce);
-    $params['SettingsSection.ApiProxy'] = sucuriscan_settings_apiservice_proxy($nonce);
+    $params['SettingsSection.ApiProxy'] = sucuriscan_settings_apiservice_proxy();
     $params['SettingsSection.ApiHandler'] = sucuriscan_settings_apiservice_handler($nonce);
     $params['SettingsSection.ApiTimeout'] = sucuriscan_settings_apiservice_timeout($nonce);
 
@@ -64,7 +64,7 @@ function sucuriscan_settings_apiservice_status($nonce)
     return SucuriScanTemplate::getSection('settings-apiservice-status', $params);
 }
 
-function sucuriscan_settings_apiservice_proxy($nonce)
+function sucuriscan_settings_apiservice_proxy()
 {
     $params = array(
         'APIProxy.Host' => 'no_proxy_host',

@@ -18,13 +18,6 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
 class SucuriScan
 {
     /**
-     * Class constructor.
-     */
-    public function __construct()
-    {
-    }
-
-    /**
      * Throw generic exception instead of silent failure for unit-tests.
      *
      * @param  string $message Error or information message.
@@ -637,9 +630,9 @@ class SucuriScan
     {
         if (function_exists('current_time')) {
             return current_time('timestamp');
-        } else {
-            return time();
         }
+
+        return time();
     }
 
     /**
@@ -736,18 +729,6 @@ class SucuriScan
     {
         if (function_exists('filter_var')) {
             return (bool) filter_var($remote_addr, FILTER_VALIDATE_IP);
-        } elseif (strlen($remote_addr) >= 7) {
-            $pattern = '/^([0-9]{1,3}\.) {3}[0-9]{1,3}$/';
-
-            if (preg_match($pattern, $remote_addr, $match)) {
-                for ($i = 0; $i < 4; $i++) {
-                    if ($match[ $i ] > 255) {
-                        return false;
-                    }
-                }
-
-                return true;
-            }
         }
 
         return false;
@@ -782,10 +763,9 @@ class SucuriScan
         if ($remote_addr) {
             $ip_parts = explode('/', $remote_addr);
 
-            if (array_key_exists(0, $ip_parts)
-                && self::isValidIP($ip_parts[0])
-            ) {
+            if (isset($ip_parts[0]) && self::isValidIP($ip_parts[0])) {
                 $addr_info = array();
+
                 $addr_info['remote_addr'] = $ip_parts[0];
                 $addr_info['cidr_range'] = isset($ip_parts[1]) ? $ip_parts[1] : '32';
                 $addr_info['cidr_format'] = $addr_info['remote_addr'] . '/' . $addr_info['cidr_range'];
@@ -813,10 +793,9 @@ class SucuriScan
     {
         if (function_exists('filter_var')) {
             return (bool) filter_var($email, FILTER_VALIDATE_EMAIL);
-        } else {
-            $pattern = '/^([a-z0-9\+_\-]+)(\.[a-z0-9\+_\-]+)*@([a-z0-9\-]+\.)+[a-z]{2,6}$/ix';
-            return (bool) preg_match($pattern, $email);
         }
+
+        return false;
     }
 
     /**
@@ -872,12 +851,10 @@ class SucuriScan
                 $pieces[] = @implode($separator, $items);
             }
 
-            $joined_pieces = '(' . implode('), (', $pieces) . ')';
-
-            return $joined_pieces;
-        } else {
-            return implode($separator, $list);
+            return '(' . implode('), (', $pieces) . ')';
         }
+
+        return implode($separator, $list);
     }
 
     /**

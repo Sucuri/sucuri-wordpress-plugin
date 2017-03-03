@@ -26,7 +26,7 @@ function sucuriscan_settings_ignore_rules()
         $template_variables['IgnoreRules.TableVisibility'] = 'visible';
         $counter = 0;
 
-        foreach ($post_types as $post_type => $post_type_object) {
+        foreach ($post_types as $post_type) {
             $counter++;
             $css_class = ($counter % 2 === 0) ? 'alternate' : '';
             $post_type_title = ucwords(str_replace('_', chr(32), $post_type));

@@ -202,7 +202,6 @@ class SucuriScanAPI extends SucuriScanOption
             curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
 
             $output = curl_exec($curl);
-            $header = curl_getinfo($curl);
             $errors = curl_error($curl);
 
             curl_close($curl);

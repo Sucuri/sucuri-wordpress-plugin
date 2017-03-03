@@ -142,7 +142,8 @@ function sucuriscan_sitecheck_info($scan_results = array())
         $params = sucuriscan_sitecheck_website_details($scan_results, $params);
         $params = sucuriscan_sitecheck_website_links($scan_results, $params);
         $params = sucuriscan_sitecheck_blacklist_status($scan_results, $params);
-        $params = sucuriscan_sitecheck_modified_files($scan_results, $params);
+
+        $params['ModifiedFiles.Content'] = sucuriscan_modified_files();
 
         if (isset($scan_results['MALWARE']['WARN'])
             || isset($scan_results['BLACKLIST']['WARN'])
@@ -317,27 +318,35 @@ function sucuriscan_sitecheck_general_information($scan_results = false, $secvar
 function sucuriscan_sitecheck_application_details($scan_results = false, $secvars = array())
 {
     if (isset($scan_results['WEBAPP'])) {
-        foreach ($scan_results['WEBAPP'] as $webapp_key => $webapp_details) {
-            if (is_array($webapp_details)) {
-                foreach ($webapp_details as $i => $details) {
-                    $secvars['NoAppDetailsVisibility'] = 'hidden';
+        foreach ($scan_results['WEBAPP'] as $key => $webapp_details) {
+            if ($key !== 'INFO' && $key !== 'VERSION' && $key !== 'NOTICE') {
+                /* skip details for unsupported data schema */
+                continue;
+            }
 
-                    if (is_array($details)) {
-                        $details = isset($details[0]) ? $details[0] : '';
-                    }
+            /* skip if no data is available */
+            if (!is_array($webapp_details)) {
+                continue;
+            }
 
-                    $details_parts = explode(':', $details, 2);
-                    $result_title = isset($details_parts[0]) ? trim($details_parts[0]) : '';
-                    $result_value = isset($details_parts[1]) ? trim($details_parts[1]) : '';
+            foreach ($webapp_details as $i => $details) {
+                $secvars['NoAppDetailsVisibility'] = 'hidden';
 
-                    $secvars['ApplicationDetailsList'] .= SucuriScanTemplate::getSnippet(
-                        'malwarescan-appdetail',
-                        array(
-                            'InformationTitle' => $result_title,
-                            'InformationValue' => $result_value,
-                        )
-                    );
+                if (is_array($details)) {
+                    $details = isset($details[0]) ? $details[0] : '';
                 }
+
+                $details_parts = explode(':', $details, 2);
+                $result_title = isset($details_parts[0]) ? trim($details_parts[0]) : '';
+                $result_value = isset($details_parts[1]) ? trim($details_parts[1]) : '';
+
+                $secvars['ApplicationDetailsList'] .= SucuriScanTemplate::getSnippet(
+                    'malwarescan-appdetail',
+                    array(
+                        'InformationTitle' => $result_title,
+                        'InformationValue' => $result_value,
+                    )
+                );
             }
         }
     }
@@ -538,22 +547,6 @@ function sucuriscan_sitecheck_blacklist_status($scan_results = false, $params = 
     }
 
     $params['BlacklistStatus.Content'] = SucuriScanTemplate::getSection('malwarescan-resblacklist', $secvars);
-
-    return $params;
-}
-
-/**
- * Process the data returned from the results of a SiteCheck scan and generate
- * the HTML code to display the information in the malware scan page inside the
- * modified files tab.
- *
- * @param  array $scan_results Array with information of the scanning.
- * @param  array $params       Array with psuedo-variables to build the template.
- * @return array               Psuedo-variables to build the template including extra info.
- */
-function sucuriscan_sitecheck_modified_files($scan_results = false, $params = array())
-{
-    $params['ModifiedFiles.Content'] = sucuriscan_modified_files();
 
     return $params;
 }

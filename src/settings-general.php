@@ -25,7 +25,7 @@ function sucuriscan_settings_general($nonce)
 
     // Build HTML code for the additional general settings panels.
     $params['SettingsSection.ApiKey'] = sucuriscan_settings_general_apikey($nonce);
-    $params['SettingsSection.DataStorage'] = sucuriscan_settings_general_datastorage($nonce);
+    $params['SettingsSection.DataStorage'] = sucuriscan_settings_general_datastorage();
     $params['SettingsSection.ReverseProxy'] = sucuriscan_settings_general_reverseproxy($nonce);
     $params['SettingsSection.IPDiscoverer'] = sucuriscan_settings_general_ipdiscoverer($nonce);
     $params['SettingsSection.CommentMonitor'] = sucuriscan_settings_general_commentmonitor($nonce);
@@ -178,7 +178,7 @@ function sucuriscan_settings_general_apikey($nonce)
     return SucuriScanTemplate::getSection('settings-general-apikey', $params);
 }
 
-function sucuriscan_settings_general_datastorage($nonce)
+function sucuriscan_settings_general_datastorage()
 {
     $params = array();
     $files = array(
@@ -494,7 +494,6 @@ function sucuriscan_settings_general_importexport($nonce)
 
             if ($data) {
                 $count = 0;
-                $valid = array();
                 $total = count($data);
 
                 /* minimum length for option name */

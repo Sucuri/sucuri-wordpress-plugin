@@ -402,9 +402,9 @@ if (!function_exists('sucuri_login_redirect')) {
      * Hook for the wp-login action to redirect the user to a specific URL after
      * his successfully login to the administrator interface.
      *
-     * @param  string  $redirect_to URL where the browser must be originally redirected to, set by WordPress itself.
-     * @param  object  $request     Optional parameter set by WordPress itself through the event triggered.
-     * @param  boolean $user        WordPress user object with the information of the account involved in the operation.
+     * @param  string  $redirect_to The redirect destination URL.
+     * @param  object  $request     The requested redirect destination URL passed as a parameter.
+     * @param  boolean $user        WP_User object if login was successful, WP_Error object otherwise.
      * @return string               URL where the browser must be redirected to.
      */
     function sucuriscan_login_redirect($redirect_to = '', $request = null, $user = false)
