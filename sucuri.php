@@ -222,3 +222,32 @@ require_once('src/infosys.php');
 
 /* Load global variables and triggers */
 require_once('src/globals.php');
+
+function sucuriscan_deactivate()
+{
+    /* Remove settings from the database if they exist */
+    $options = SucuriScanOption::getDefaultOptionNames();
+    foreach ($options as $option_name) {
+        delete_site_option($option_name);
+        delete_option($option_name);
+    }
+
+    /* Remove hardening in standard directories */
+    SucuriScanHardening::dewhitelist('ms-files.php', 'wp-includes');
+    SucuriScanHardening::dewhitelist('wp-tinymce.php', 'wp-includes');
+    SucuriScanHardening::unhardenDirectory(WP_CONTENT_DIR);
+    SucuriScanHardening::unhardenDirectory(WP_CONTENT_DIR . '/uploads');
+    SucuriScanHardening::unhardenDirectory(ABSPATH . '/wp-includes');
+    SucuriScanHardening::unhardenDirectory(ABSPATH . '/wp-admin');
+
+    /* Remove cache files from disk */
+    $fifo = new SucuriScanFileInfo();
+    $fifo->ignore_files = false;
+    $fifo->ignore_directories = false;
+    $fifo->run_recursively = false;
+    $directory = SucuriScanOption::getOption(':datastore_path');
+    $fifo->scan_interface = SucuriScanOption::getOption(':scan_interface');
+    $fifo->removeDirectoryTree($directory);
+}
+
+register_deactivation_hook(__FILE__, 'sucuriscan_deactivate');

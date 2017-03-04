@@ -111,7 +111,7 @@ class SucuriScanOption extends SucuriScanRequest
      *
      * @return array Name of all valid plugin's options.
      */
-    private static function getDefaultOptionNames()
+    public static function getDefaultOptionNames()
     {
         $options = self::getDefaultOptionValues();
         $names = array_keys($options);
