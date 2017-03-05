@@ -167,11 +167,12 @@ class SucuriScanInterface
             }
 
             // Create an index.html to avoid directory listing.
-            @file_put_contents(
-                $directory . '/index.html',
-                '<!-- Prevent the directory listing. -->',
-                LOCK_EX
-            );
+            if (!file_exists($directory . '/index.html')) {
+                @file_put_contents(
+                    $directory . '/index.html',
+                    '<!-- Prevent the directory listing. -->'
+                );
+            }
         }
     }
 
