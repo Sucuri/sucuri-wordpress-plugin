@@ -56,6 +56,9 @@ function sucuriscan_core_files_data($send_email = false)
         $params['CoreFiles.DisabledVisibility'] = 'visible';
     }
 
+    /* Check if we have already ignored irrelevant files */
+    sucuriscan_ignore_irrelevant_corefiles();
+
     if ($site_version && $integrity_is_enabled) {
         // Check if there are added, removed, or modified files.
         $latest_hashes = sucuriscan_check_core_integrity($site_version);
@@ -422,44 +425,16 @@ function sucuriscan_check_core_integrity($version = 0)
  */
 function sucuriscan_ignore_integrity_filepath($file_path = '')
 {
-    global $wp_local_package;
-
     // List of files that will be ignored from the integrity checking.
     $ignore_files = array(
         '^sucuri-[0-9a-z\-]+\.php$',
         '^\S+-sucuri-db-dump-gzip-[0-9]{10}-[0-9a-z]{32}\.gz$',
-        '\.ico$',
-        '^php\.ini$',
-        '^\.(htaccess|htpasswd|ftpquota)$',
-        '^wp-includes\/\.htaccess$',
-        '^wp-admin\/setup-config\.php$',
-        '^wp-(config|pass|rss|feed|register|atom|commentsrss2|rss2|rdf)\.php$',
-        '^wp-content\/(themes|plugins)\/.+', // TODO: Add the popular themes/plugins integrity checks.
-        '^sitemap\.xml($|\.gz)$',
-        '^readme(\.[a-z0-9]{32})?\.html$',
-        '^(503|404)\.php$',
-        '^500\.(shtml|php)$',
-        '^40[0-9]\.shtml$',
         '^([^\/]*)\.(pdf|css|txt|jpg|gif|png|jpeg)$',
+        '^wp-content\/(themes|plugins)\/.+',
         '^google[0-9a-z]{16}\.html$',
         '^pinterest-[0-9a-z]{5}\.html$',
-        'healthcheck\.html',
-        '(^|\/)error_log$',
+        '\.ico$',
     );
-
-    /**
-     * Ignore i18n files.
-     *
-     * Sites with i18n have differences compared with the official English version
-     * of the project, basically they have files with new variables specifying the
-     * language that will be used in the admin panel, site options, and emails.
-     */
-    if (isset($wp_local_package)
-        && $wp_local_package != 'en_US'
-    ) {
-        $ignore_files[] = 'wp-includes\/version\.php';
-        $ignore_files[] = 'wp-config-sample\.php';
-    }
 
     // Determine whether a file must be ignored from the integrity checks or not.
     foreach ($ignore_files as $ignore_pattern) {
@@ -469,4 +444,88 @@ function sucuriscan_ignore_integrity_filepath($file_path = '')
     }
 
     return false;
+}
+
+/**
+ * Includes some irrelevant files into the integrity cache.
+ *
+ * @return void
+ */
+function sucuriscan_ignore_irrelevant_corefiles()
+{
+    global $wp_local_package;
+
+    if (SucuriScanOption::getOption(':integrity_startup') === 'done') {
+        return;
+    }
+
+    /* ignore files no matter if they do not exist */
+    sucuriscan_ignore_irrelevant_corefile('php.ini', false);
+    sucuriscan_ignore_irrelevant_corefile('.htaccess', false);
+    sucuriscan_ignore_irrelevant_corefile('.htpasswd', false);
+    sucuriscan_ignore_irrelevant_corefile('.ftpquota', false);
+    sucuriscan_ignore_irrelevant_corefile('wp-includes/.htaccess', false);
+    sucuriscan_ignore_irrelevant_corefile('wp-admin/setup-config.php', false);
+    sucuriscan_ignore_irrelevant_corefile('wp-config.php', false);
+    sucuriscan_ignore_irrelevant_corefile('sitemap.xml', false);
+    sucuriscan_ignore_irrelevant_corefile('sitemap.xml.gz', false);
+    sucuriscan_ignore_irrelevant_corefile('readme.html', false);
+    sucuriscan_ignore_irrelevant_corefile('error_log', false);
+
+    /* ignore irrelevant files only if they exist */
+    sucuriscan_ignore_irrelevant_corefile('wp-pass.php');
+    sucuriscan_ignore_irrelevant_corefile('wp-rss.php');
+    sucuriscan_ignore_irrelevant_corefile('wp-feed.php');
+    sucuriscan_ignore_irrelevant_corefile('wp-register.php');
+    sucuriscan_ignore_irrelevant_corefile('wp-atom.php');
+    sucuriscan_ignore_irrelevant_corefile('wp-commentsrss2.php');
+    sucuriscan_ignore_irrelevant_corefile('wp-rss2.php');
+    sucuriscan_ignore_irrelevant_corefile('wp-rdf.php');
+    sucuriscan_ignore_irrelevant_corefile('404.php');
+    sucuriscan_ignore_irrelevant_corefile('503.php');
+    sucuriscan_ignore_irrelevant_corefile('500.php');
+    sucuriscan_ignore_irrelevant_corefile('500.shtml');
+    sucuriscan_ignore_irrelevant_corefile('400.shtml');
+    sucuriscan_ignore_irrelevant_corefile('401.shtml');
+    sucuriscan_ignore_irrelevant_corefile('402.shtml');
+    sucuriscan_ignore_irrelevant_corefile('403.shtml');
+    sucuriscan_ignore_irrelevant_corefile('404.shtml');
+    sucuriscan_ignore_irrelevant_corefile('405.shtml');
+    sucuriscan_ignore_irrelevant_corefile('406.shtml');
+    sucuriscan_ignore_irrelevant_corefile('407.shtml');
+    sucuriscan_ignore_irrelevant_corefile('408.shtml');
+    sucuriscan_ignore_irrelevant_corefile('409.shtml');
+    sucuriscan_ignore_irrelevant_corefile('healthcheck.html');
+
+    /**
+     * Ignore i18n files.
+     *
+     * Sites with i18n have differences compared with the official English version
+     * of the project, basically they have files with new variables specifying the
+     * language that will be used in the admin panel, site options, and emails.
+     */
+    if (isset($wp_local_package) && $wp_local_package != 'en_US') {
+        sucuriscan_ignore_irrelevant_corefile('wp-includes/version.php');
+        sucuriscan_ignore_irrelevant_corefile('wp-config-sample.php');
+    }
+
+    SucuriScanOption::updateOption(':integrity_startup', 'done');
+}
+
+function sucuriscan_ignore_irrelevant_corefile($path = '', $checkExistence = true)
+{
+    if ($checkExistence && !file_exists(ABSPATH . '/' . $path)) {
+        return; /* skip if the file does not exists */
+    }
+
+    $cache = new SucuriScanCache('integrity');
+
+    $cache_key = md5($path);
+    $cache_value = array(
+        'file_path' => $path,
+        'file_status' => 'added',
+        'ignored_at' => time(),
+    );
+
+    return $cache->add($cache_key, $cache_value);
 }

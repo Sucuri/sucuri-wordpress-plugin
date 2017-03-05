@@ -72,48 +72,44 @@ function sucuriscan_settings_corefiles_language($nonce)
 function sucuriscan_settings_corefiles_cache($nonce)
 {
     $params = array();
+    $cache = new SucuriScanCache('integrity');
     $fpath = SucuriScan::dataStorePath('sucuri-integrity.php');
 
-    if ($nonce) {
-        // Reset core integrity files marked as fixed
-        if (SucuriScanRequest::post(':corefiles_cache')) {
-            if (file_exists($fpath)) {
-                if (@unlink($fpath)) {
-                    $message = 'Core integrity files marked as fixed were successfully reset.';
+    if ($nonce && SucuriScanRequest::post(':reset_corefiles_cache')) {
+        $deletedFiles = array();
+        $files = SucuriScanRequest::post(':corefile_path', '_array');
 
-                    SucuriScanEvent::reportDebugEvent($message);
-                    SucuriScanInterface::info($message);
-                } else {
-                    SucuriScanInterface::error('Count not reset the cache, delete manually.');
-                }
-            } else {
-                SucuriScanInterface::error('The cache file does not exists.');
+        foreach ($files as $path) {
+            if ($cache->delete(md5($path))) {
+                $deletedFiles[] = $path;
             }
+        }
+
+        if (!empty($deletedFiles)) {
+            $message = 'Core files that will not be ignored anymore: '
+            . '(multiple entries): ' . implode(',', $deletedFiles);
+            SucuriScanInterface::info('Selected files will not be ignored anymore.');
+            SucuriScanEvent::reportDebugEvent($message);
         }
     }
 
-    $params['CoreFiles.CacheSize'] = SucuriScan::humanFileSize(@filesize($fpath));
-    $params['CoreFiles.CacheLifeTime'] = SUCURISCAN_SITECHECK_LIFETIME;
-    $params['CoreFiles.TableVisibility'] = 'hidden';
-    $params['CoreFiles.IgnoredFiles'] = '';
-    $cache = new SucuriScanCache('integrity');
-    $ignored_files = $cache->getAll();
-    $counter = 0;
+    $params['IgnoredFiles'] = '';
+    $params['CacheSize'] = SucuriScan::humanFileSize(@filesize($fpath));
+    $params['CacheLifeTime'] = SUCURISCAN_SITECHECK_LIFETIME;
+    $params['NoFilesVisibility'] = 'visible';
 
-    if ($ignored_files) {
-        $params['CoreFiles.TableVisibility'] = 'visible';
+    if ($ignored_files = $cache->getAll()) {
+        $counter = 0; /* number of files */
+        $params['NoFilesVisibility'] = 'hidden';
 
         foreach ($ignored_files as $hash => $data) {
-            $params['CoreFiles.IgnoredFiles'] .= SucuriScanTemplate::getSnippet(
-                'settings-corefiles-cache',
-                array(
-                    'IgnoredFile.CssClass' => ($counter % 2 === 0) ? '' : 'alternate',
-                    'IgnoredFile.UniqueId' => substr($hash, 0, 8),
-                    'IgnoredFile.FilePath' => $data->file_path,
-                    'IgnoredFile.StatusType' => $data->file_status,
-                    'IgnoredFile.IgnoredAt' => SucuriScan::datetime($data->ignored_at),
-                )
-            );
+            $params['IgnoredFiles'] .= SucuriScanTemplate::getSnippet('settings-corefiles-cache', array(
+                'CssClass' => ($counter % 2 === 0) ? '' : 'alternate',
+                'UniqueId' => substr($hash, 0, 8),
+                'FilePath' => $data->file_path,
+                'StatusType' => $data->file_status,
+                'IgnoredAt' => SucuriScan::datetime($data->ignored_at),
+            ));
             $counter++;
         }
     }

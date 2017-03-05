@@ -16,27 +16,37 @@
             will force the plugin to ignore them in future scans.
         </p>
 
-        <div class="sucuriscan-hstatus sucuriscan-hstatus-2">
-            <span>Core Files Marked As Fixed: %%SUCURI.CoreFiles.CacheSize%% of data</span>
-            <form action="%%SUCURI.URL.Settings%%#scanner" method="post">
-                <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
-                <input type="hidden" name="sucuriscan_corefiles_cache" value="1" />
-                <button type="submit" class="button-primary">Reset Cache</button>
-            </form>
-        </div>
+        <form action="%%SUCURI.URL.Settings%%#scanner" method="post">
+            <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
+            <input type="hidden" name="sucuriscan_reset_corefiles_cache" value="1" />
 
-        <table class="wp-list-table widefat sucuriscan-table sucuriscan-%%SUCURI.CoreFiles.TableVisibility%%">
-            <thead>
-                <tr>
-                    <th>Reason</th>
-                    <th>Ignored At</th>
-                    <th>Line</th>
-                </tr>
-            </thead>
+            <table class="wp-list-table widefat sucuriscan-table">
+                <thead>
+                    <tr>
+                        <th class="manage-column column-cb check-column">
+                            <label class="screen-reader-text" for="cb-select-all-1">Select All</label>
+                            <input id="cb-select-all-1" type="checkbox">
+                        </th>
+                        <th>Reason</th>
+                        <th>Ignored At</th>
+                        <th>Line</th>
+                    </tr>
+                </thead>
 
-            <tbody>
-                %%%SUCURI.CoreFiles.IgnoredFiles%%%
-            </tbody>
-        </table>
+                <tbody>
+                    %%%SUCURI.IgnoredFiles%%%
+
+                    <tr class="sucuriscan-%%SUCURI.NoFilesVisibility%%">
+                        <td colspan="4">
+                            <em>No files are being ignored.</em>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>
+                <button type="submit" class="button-primary">Stop Ignoring the Selected Files</button>
+            </p>
+        </form>
     </div>
 </div>

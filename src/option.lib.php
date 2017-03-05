@@ -59,6 +59,7 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_fs_scanner' => 'enabled',
             'sucuriscan_ignore_scanning' => 'disabled',
             'sucuriscan_ignored_events' => '',
+            'sucuriscan_integrity_startup' => '',
             'sucuriscan_language' => 'en_US',
             'sucuriscan_last_email_at' => time(),
             'sucuriscan_lastlogin_redirection' => 'enabled',
