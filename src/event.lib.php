@@ -222,6 +222,9 @@ class SucuriScanEvent extends SucuriScan
 
     public static function sendEventLog($event_message = '')
     {
+        /* create storage directory if necessary */
+        SucuriScanInterface::createStorageFolder();
+
         /**
          * Self-hosted Monitor.
          *

@@ -210,10 +210,8 @@ class SucuriScanOption extends SucuriScanRequest
             : ABSPATH . '/wp-content';
         $folder = $content_dir . '/uploads/sucuri';
 
-        if (defined('SUCURI_DATA_STORAGE')
-            && file_exists(SUCURI_DATA_STORAGE)
-            && is_dir(SUCURI_DATA_STORAGE)
-        ) {
+        /* custom path no matter its existence */
+        if (defined('SUCURI_DATA_STORAGE')) {
             $folder = SUCURI_DATA_STORAGE;
         }
 
