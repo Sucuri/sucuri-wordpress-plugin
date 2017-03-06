@@ -56,6 +56,8 @@ if (defined('SUCURISCAN')) {
      * @var array
      */
 
+    $sucuriscan_schedule_allowed = SucuriScanEvent::availableSchedules();
+
     $sucuriscan_notify_options = array(
         'sucuriscan_notify_plugin_change' => 'Receive email alerts for <b>Sucuri</b> plugin changes',
         'sucuriscan_prettify_mails' => 'Receive email alerts in HTML <em>(there may be issues with some mail services)</em>',
@@ -82,13 +84,6 @@ if (defined('SUCURISCAN')) {
         'sucuriscan_notify_theme_activated' => 'theme:Receive email alerts when a <b>theme is activated</b>',
         'sucuriscan_notify_theme_updated' => 'theme:Receive email alerts when a <b>theme is updated</b>',
         'sucuriscan_notify_theme_deleted' => 'theme:Receive email alerts when a <b>theme is deleted</b>',
-    );
-
-    $sucuriscan_schedule_allowed = array(
-        'hourly' => 'Every three hours (3 hours)',
-        'twicedaily' => 'Twice daily (12 hours)',
-        'daily' => 'Once daily (24 hours)',
-        '_oneoff' => 'Never',
     );
 
     $sucuriscan_interface_allowed = array(

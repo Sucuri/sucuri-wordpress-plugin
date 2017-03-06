@@ -49,6 +49,28 @@ class SucuriScanEvent extends SucuriScan
         }
     }
 
+    public static function availableSchedules()
+    {
+        if (!function_exists('wp_get_schedules')) {
+            return array(/* empty */);
+        }
+
+        $schedules = array();
+        $jobs = wp_get_schedules();
+
+        foreach ($jobs as $unique => $info) {
+            $schedules[$unique] = sprintf(
+                '%s (every %d seconds)',
+                $info['display'],
+                $info['interval']
+            );
+        }
+
+        $schedules['_oneoff'] = 'Never (no execution)';
+
+        return $schedules;
+    }
+
     /**
      * Checks last time we ran to avoid running twice (or too often).
      *

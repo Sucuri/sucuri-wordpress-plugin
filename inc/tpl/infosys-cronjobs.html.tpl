@@ -47,11 +47,7 @@
                     <label>
                         <select name="sucuriscan_cronjob_action">
                             <option value="">Choose action</option>
-                            <option value="runnow">Execute now</option>
-                            <option value="hourly">Re-schedule to hourly</option>
-                            <option value="twicedaily">Re-schedule to twicedaily</option>
-                            <option value="daily">Re-schedule to daily</option>
-                            <option value="remove">Remove</option>
+                            %%%SUCURI.Cronjob.Schedules%%%
                         </select>
                     </label>
                     <button type="submit" class="button button-primary">Send action</button>

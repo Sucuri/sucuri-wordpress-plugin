@@ -230,10 +230,19 @@ function sucuriscan_show_cronjobs()
     $params = array(
         'Cronjobs.List' => '',
         'Cronjobs.Total' => 0,
+        'Cronjob.Schedules' => '',
     );
 
-    $cronjobs = _get_cron_array();
     $counter = 0;
+    $cronjobs = _get_cron_array();
+    $available = SucuriScanEvent::availableSchedules();
+
+    /* Hardcode the first one to allow the immediate execution of the cronjob(s) */
+    $params['Cronjob.Schedules'] .= '<option value="runnow">Execute Now (in +10 seconds)</option>';
+
+    foreach ($available as $freq => $name) {
+        $params['Cronjob.Schedules'] .= sprintf('<option value="%s">%s</option>', $freq, $name);
+    }
 
     foreach ($cronjobs as $timestamp => $cronhooks) {
         foreach ((array) $cronhooks as $hook => $events) {
@@ -273,7 +282,11 @@ function sucuriscan_infosys_form_submissions()
 {
     if (SucuriScanInterface::checkNonce()) {
         // Modify the scheduled tasks (run now, remove, re-schedule).
-        $allowed_actions = '(runnow|hourly|twicedaily|daily|remove)';
+        $available = SucuriScanEvent::availableSchedules();
+        $allowed_actions = array_keys($available);
+        $allowed_actions[] = 'runnow';
+        $allowed_actions[] = 'remove';
+        $allowed_actions = sprintf('(%s)', implode('|', $allowed_actions));
 
         if ($cronjob_action = SucuriScanRequest::post(':cronjob_action', $allowed_actions)) {
             $cronjobs = SucuriScanRequest::post(':cronjobs', '_array');
@@ -281,8 +294,8 @@ function sucuriscan_infosys_form_submissions()
             if (!empty($cronjobs)) {
                 $total_tasks = count($cronjobs);
 
-                // Force execution of the selected scheduled tasks.
                 if ($cronjob_action == 'runnow') {
+                    /* Force execution of the selected scheduled tasks. */
                     SucuriScanInterface::info($total_tasks . ' tasks were scheduled to run in the next ten seconds.');
                     SucuriScanEvent::reportNoticeEvent(sprintf(
                         'Force execution of scheduled tasks: (multiple entries): %s',
@@ -292,8 +305,8 @@ function sucuriscan_infosys_form_submissions()
                     foreach ($cronjobs as $task_name) {
                         wp_schedule_single_event(time() + 10, $task_name);
                     }
-                } // Force deletion of the selected scheduled tasks.
-                elseif ($cronjob_action == 'remove') {
+                } elseif ($cronjob_action == 'remove' || $cronjob_action == '_oneoff') {
+                    /* Force deletion of the selected scheduled tasks. */
                     SucuriScanInterface::info($total_tasks . ' scheduled tasks were removed.');
                     SucuriScanEvent::reportNoticeEvent(sprintf(
                         'Delete scheduled tasks: (multiple entries): %s',
@@ -303,11 +316,7 @@ function sucuriscan_infosys_form_submissions()
                     foreach ($cronjobs as $task_name) {
                         wp_clear_scheduled_hook($task_name);
                     }
-                } // Re-schedule the selected scheduled tasks.
-                elseif ($cronjob_action == 'hourly'
-                    || $cronjob_action == 'twicedaily'
-                    || $cronjob_action == 'daily'
-                ) {
+                } else {
                     SucuriScanInterface::info($total_tasks . ' tasks were re-scheduled to run <code>' . $cronjob_action . '</code>.');
                     SucuriScanEvent::reportNoticeEvent(sprintf(
                         'Re-configure scheduled tasks %s: (multiple entries): %s',
