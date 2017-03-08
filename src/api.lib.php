@@ -847,7 +847,9 @@ class SucuriScanAPI extends SucuriScanOption
                         $log_data['file_list_count'] = count($log_data['file_list']);
                     }
 
-                    $response['output_data'][] = $log_data;
+                    if ($log_data = self::getLogsHotfix($log_data)) {
+                        $response['output_data'][] = $log_data;
+                    }
                 }
             }
 
@@ -855,6 +857,36 @@ class SucuriScanAPI extends SucuriScanOption
         }
 
         return false;
+    }
+
+    private static function getLogsHotfix($data)
+    {
+        if (!isset($data['message'])) {
+            return false;
+        }
+
+        /**
+         * PHP Compatibility Checker
+         *
+         * The WP Engine PHP Compatibility Checker can be used by any WordPress
+         * website on any web host to check PHP version compatibility. This
+         * plugin will lint theme and plugin code inside your WordPress file
+         * system and give you back a report of compatibility issues for you to
+         * fix.
+         *
+         * @see https://wordpress.org/plugins/php-compatibility-checker/
+         */
+        if (strpos($data['message'], 'Wpephpcompat_jobs') === 0
+            && preg_match('/identifier: ([0-9]+); name: (.+)/', $data['message'], $match)
+        ) {
+            $data['message'] = sprintf(
+                'WP Engine PHP Compatibility Checker: %s (created post #%d as cache)',
+                $match[2], /* plugin or theme name */
+                $match[1] /* unique post or page identifier */
+            );
+        }
+
+        return $data;
     }
 
     /**
@@ -1168,7 +1200,7 @@ class SucuriScanAPI extends SucuriScanOption
 
             if (isset($alert_parts[1])) {
                 $data_set['alert_message'] = $alert_parts[0];
-                $data_set['infected_url'] = $alert_parts[1];
+                $data_set['infected_url'] = trim($alert_parts[1]);
             }
 
             // Extract the information from the malware message.
