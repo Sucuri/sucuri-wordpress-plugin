@@ -51,16 +51,56 @@ class SucuriScanInterface
     {
         $asset = substr(md5(microtime(true)), 0, 7);
 
-        wp_register_style('sucuriscan', SUCURISCAN_URL . '/inc/css/styles.css', array(), $asset);
-        wp_register_script('sucuriscan', SUCURISCAN_URL . '/inc/js/scripts.js', array(), $asset);
-        wp_enqueue_style('sucuriscan');
-        wp_enqueue_script('sucuriscan');
+        wp_register_style(
+            'sucuriscan1',
+            SUCURISCAN_URL . '/inc/css/styles.css',
+            array(/* empty*/),
+            $asset
+        );
+        wp_enqueue_style('sucuriscan1');
+
+        wp_register_script(
+            'sucuriscan1',
+            SUCURISCAN_URL . '/inc/js/scripts.js',
+            array(/* empty*/),
+            $asset
+        );
+        wp_enqueue_script('sucuriscan1');
 
         if (SucuriScanRequest::get('page', 'sucuriscan') !== false) {
-            wp_register_script('sucuriscan2', SUCURISCAN_URL . '/inc/js/d3.min.js', array(), $asset);
-            wp_register_script('sucuriscan3', SUCURISCAN_URL . '/inc/js/c3.min.js', array(), $asset);
+            wp_register_style(
+                'sucuriscan2',
+                SUCURISCAN_URL . '/inc/css/c3.min.css',
+                array(/* empty*/),
+                $asset
+            );
+            wp_enqueue_style('sucuriscan2');
+
+            wp_register_script(
+                'sucuriscan2',
+                SUCURISCAN_URL . '/inc/js/d3.min.js',
+                array(/* empty*/),
+                $asset
+            );
             wp_enqueue_script('sucuriscan2');
+
+            wp_register_script(
+                'sucuriscan3',
+                SUCURISCAN_URL . '/inc/js/c3.min.js',
+                array(/* empty*/),
+                $asset
+            );
             wp_enqueue_script('sucuriscan3');
+        }
+
+        if (SucuriScanRequest::get('page', 'sucuriscan_firewall') !== false) {
+            wp_register_style(
+                'sucuriscan3',
+                SUCURISCAN_URL . '/inc/css/flags.min.css',
+                array(/* empty*/),
+                $asset
+            );
+            wp_enqueue_style('sucuriscan3');
         }
     }
 

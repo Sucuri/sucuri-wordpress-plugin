@@ -49,9 +49,10 @@
 </div>
 
 <script type="text/javascript">
-jQuery(document).ready(function($){
-
-    var sucuriscan_pie_chart = function( element, series, colors ){
+/* global c3 */
+/* global jQuery */
+jQuery(document).ready(function () {
+    var sucuriscanPieChart = function (element, series, colors) {
         c3.generate({
             bindto: element,
             size: { height: 250 },
@@ -62,7 +63,7 @@ jQuery(document).ready(function($){
         });
     };
 
-    var sucuriscan_bar_chart = function( element, categories, series ){
+    var sucuriscanBarChart = function (element, categories, series) {
         c3.generate({
             bindto: element,
             size: { height: 320 },
@@ -78,32 +79,31 @@ jQuery(document).ready(function($){
     };
 
     /* Pie-chart with number of audit logs per event type. */
-    sucuriscan_pie_chart(
+    sucuriscanPieChart(
         '#sucuriscan-report-events-per-type',
         [ %%%SUCURI.AuditReport.EventsPerType%%% ],
         [ %%%SUCURI.AuditReport.EventColors%%% ]
     );
 
     /* Column-chart with number of audit logs per event login. */
-    sucuriscan_pie_chart(
+    sucuriscanPieChart(
         '#sucuriscan-report-events-per-login',
         [ %%%SUCURI.AuditReport.EventsPerLogin%%% ],
         [ '#5cb85c', '#f27d7d' ]
     );
 
     /* Bar-chart with number of audit logs per user account. */
-    sucuriscan_bar_chart(
+    sucuriscanBarChart(
         '#sucuriscan-report-events-per-user',
         [ %%%SUCURI.AuditReport.EventsPerUserCategories%%% ],
         [ 'data', %%%SUCURI.AuditReport.EventsPerUserSeries%%% ]
     );
 
     /* Bar-chart with number of audit logs per remote address. */
-    sucuriscan_bar_chart(
+    sucuriscanBarChart(
         '#sucuriscan-report-events-per-ipaddress',
         [ %%%SUCURI.AuditReport.EventsPerIPAddressCategories%%% ],
         [ 'data', %%%SUCURI.AuditReport.EventsPerIPAddressSeries%%% ]
     );
-
 });
 </script>
