@@ -16,7 +16,7 @@
             <td style="padding:20px 20px 10px 20px;border:1px solid #ccc;border-top:none">
                 <h4 style="text-transform:uppercase;margin:0">Information:</h4>
                 <p style="margin:0 0 10px 0">
-                    Website: <a href="%%SUCURI.Website%%">%%SUCURI.Website%%</a><br>
+                    Website: <a href="http://%%SUCURI.Website%%">%%SUCURI.Website%%</a><br>
                     IP Address: %%SUCURI.RemoteAddress%%<br>
                     Alert Time: %%SUCURI.Time%%<br>
                     %%SUCURI.User%%
