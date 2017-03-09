@@ -1,5 +1,5 @@
 
-<tr class="%%SUCURI.Cronjob.CssClass%%">
+<tr>
     <td class="check-column">
         <input type="checkbox" name="sucuriscan_cronjobs[]" value="%%SUCURI.Cronjob.Hook%%" />
     </td>

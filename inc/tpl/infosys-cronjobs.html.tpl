@@ -24,7 +24,7 @@
             <form action="%%SUCURI.URL.Infosys%%#wordpress-cronjobs" method="post">
                 <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
 
-                <table class="wp-list-table widefat sucuriscan-table sucuriscan-wpcron-list">
+                <table class="wp-list-table widefat sucuriscan-table sucuriscan-striped-table sucuriscan-wpcron-list">
                     <thead>
                         <tr>
                             <th class="manage-column column-cb check-column">

@@ -227,15 +227,18 @@ function sucuriscan_infosys_wpconfig()
  */
 function sucuriscan_show_cronjobs()
 {
+    global $sucuriscan_schedule_allowed;
+
     $params = array(
         'Cronjobs.List' => '',
         'Cronjobs.Total' => 0,
         'Cronjob.Schedules' => '',
     );
 
-    $counter = 0;
     $cronjobs = _get_cron_array();
-    $available = SucuriScanEvent::availableSchedules();
+    $available = ($sucuriscan_schedule_allowed === null)
+        ? SucuriScanEvent::availableSchedules()
+        : $sucuriscan_schedule_allowed;
 
     /* Hardcode the first one to allow the immediate execution of the cronjob(s) */
     $params['Cronjob.Schedules'] .= '<option value="runnow">Execute Now (in +10 seconds)</option>';
@@ -259,10 +262,8 @@ function sucuriscan_show_cronjobs()
                         'Cronjob.Schedule' => $event['schedule'],
                         'Cronjob.NextTime' => SucuriScan::datetime($timestamp),
                         'Cronjob.Arguments' => SucuriScan::implode(', ', $event['args']),
-                        'Cronjob.CssClass' => ($counter % 2 === 0) ? '' : 'alternate',
                     )
                 );
-                $counter++;
             }
         }
     }
@@ -280,9 +281,13 @@ function sucuriscan_show_cronjobs()
  */
 function sucuriscan_infosys_form_submissions()
 {
+    global $sucuriscan_schedule_allowed;
+
     if (SucuriScanInterface::checkNonce()) {
         // Modify the scheduled tasks (run now, remove, re-schedule).
-        $available = SucuriScanEvent::availableSchedules();
+        $available = ($sucuriscan_schedule_allowed === null)
+            ? SucuriScanEvent::availableSchedules()
+            : $sucuriscan_schedule_allowed;
         $allowed_actions = array_keys($available);
         $allowed_actions[] = 'runnow';
         $allowed_actions[] = 'remove';
