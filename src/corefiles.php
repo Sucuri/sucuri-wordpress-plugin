@@ -49,6 +49,7 @@ function sucuriscan_core_files_data($send_email = false)
         'CoreFiles.FailureVisibility' => 'hidden',
         'CoreFiles.NotFixableVisibility' => 'hidden',
         'CoreFiles.DisabledVisibility' => 'hidden',
+        'CoreFiles.FalsePositivesVisibility' => 'hidden',
     );
 
     if ($integrity_is_enabled !== true) {
@@ -87,6 +88,7 @@ function sucuriscan_core_files_data($send_email = false)
                         $file_path_checksum = md5($file_path);
 
                         if (array_key_exists($file_path_checksum, $ignored_files)) {
+                            $params['CoreFiles.FalsePositivesVisibility'] = 'visible';
                             continue;
                         }
                     }

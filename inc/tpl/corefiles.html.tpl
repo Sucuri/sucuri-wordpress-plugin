@@ -5,6 +5,16 @@
     </p>
 </div>
 
+<div class="sucuriscan-inline-alert-warning sucuriscan-%%SUCURI.CoreFiles.FalsePositivesVisibility%%">
+    <p>
+        Some files in the core directories were added, modified, or deleted but
+        they were chosen to be ignored by the scanner as false/positives. Be
+        sure to check them manually to guarantee that the website is completely
+        clean &mdash; <a href="%%SUCURI.URL.Settings%%#scanner">Review files
+        marked as fixed</a>.
+    </p>
+</div>
+
 <div class="sucuriscan-inline-alert-warning sucuriscan-%%SUCURI.CoreFiles.NotFixableVisibility%%">
     <p>
         Files marked with the text <em>"not fixable"</em> are files without write
