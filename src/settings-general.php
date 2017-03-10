@@ -15,9 +15,6 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  */
 function sucuriscan_settings_general($nonce)
 {
-    // Process all form submissions.
-    sucuriscan_settings_form_submissions($nonce);
-
     $params = array();
 
     // Keep the reset options panel and form submission processor before anything else.
@@ -442,7 +439,6 @@ function sucuriscan_settings_general_importexport($nonce)
         ':dns_lookups',
         ':email_subject',
         ':emails_per_hour',
-        ':fs_scanner',
         ':ignore_scanning',
         ':ignored_events',
         ':language',
@@ -475,7 +471,6 @@ function sucuriscan_settings_general_importexport($nonce)
         ':prettify_mails',
         ':request_timeout',
         ':revproxy',
-        ':scan_checksums',
         ':scan_frequency',
         ':scan_interface',
         ':selfhosting_fpath',

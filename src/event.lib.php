@@ -84,13 +84,6 @@ class SucuriScanEvent extends SucuriScan
         $last_run = SucuriScanOption::getOption($option_name);
         $current_time = time();
 
-        // The filesystem scanner can be disabled from the settings page.
-        if (SucuriScanOption::isDisabled(':fs_scanner')
-            && $force_scan === false
-        ) {
-            return false;
-        }
-
         // Check if the last runtime is too near the current time.
         if ($last_run && !$force_scan) {
             $runtime_diff = $current_time - $runtime;

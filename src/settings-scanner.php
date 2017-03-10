@@ -15,65 +15,81 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  */
 function sucuriscan_settings_scanner($nonce)
 {
+    $params = array();
+
+    $params['Settings.Options'] = sucuriscan_settings_scanner_options();
+    $params['Settings.CoreFilesLanguage'] = sucuriscan_settings_corefiles_language($nonce);
+    $params['Settings.CoreFilesCache'] = sucuriscan_settings_corefiles_cache($nonce);
+    $params['Settings.SiteCheckStatus'] = SucuriScanSiteCheck::statusPage();
+    $params['Settings.SiteCheckTimeout'] = SucuriScanSiteCheck::timeoutPage($nonce);
+
+    return SucuriScanTemplate::getSection('settings-scanner', $params);
+}
+
+function sucuriscan_settings_scanner_options()
+{
     global $sucuriscan_schedule_allowed,
         $sucuriscan_interface_allowed;
 
-    // Get initial variables to decide some things bellow.
-    $fs_scanner = SucuriScanOption::getOption(':fs_scanner');
-    $scan_freq = SucuriScanOption::getOption(':scan_frequency');
-    $scan_interface = SucuriScanOption::getOption(':scan_interface');
-    $runtime_scan_human = SucuriScanFSScanner::getFilesystemRuntime(true);
+    $params = array();
 
-    // Get the file path of the security logs.
-    $basedir = SucuriScan::dataStorePath();
-    $integrity_log_path = $basedir . '/sucuri-integrity.php';
-    $lastlogins_log_path = $basedir . '/sucuri-lastlogins.php';
-    $failedlogins_log_path = $basedir . '/sucuri-failedlogins.php';
+    if (SucuriScanInterface::checkNonce()) {
+        // Modify the schedule of the filesystem scanner.
+        if ($frequency = SucuriScanRequest::post(':scan_frequency')) {
+            if (array_key_exists($frequency, $sucuriscan_schedule_allowed)) {
+                SucuriScanOption::updateOption(':scan_frequency', $frequency);
+
+                // Remove all the scheduled tasks associated to the plugin.
+                wp_clear_scheduled_hook('sucuriscan_scheduled_scan');
+
+                // Install new cronjob unless the user has selected "Never".
+                if ($frequency !== '_oneoff') {
+                    wp_schedule_event(time() + 10, $frequency, 'sucuriscan_scheduled_scan');
+                }
+
+                $frequency_title = strtolower($sucuriscan_schedule_allowed[ $frequency ]);
+                $message = 'File system scanning frequency set to <code>' . $frequency_title . '</code>';
+
+                SucuriScanEvent::reportInfoEvent($message);
+                SucuriScanEvent::notifyEvent('plugin_change', $message);
+                SucuriScanInterface::info($message);
+            }
+        }
+
+        // Set the method (aka. interface) that will be used to scan the site.
+        if ($interface = SucuriScanRequest::post(':scan_interface')) {
+            $allowed_values = array_keys($sucuriscan_interface_allowed);
+
+            if (in_array($interface, $allowed_values)) {
+                $message = 'File system scanning interface set to <code>' . $interface . '</code>';
+
+                SucuriScanOption::updateOption(':scan_interface', $interface);
+                SucuriScanEvent::reportInfoEvent($message);
+                SucuriScanEvent::notifyEvent('plugin_change', $message);
+                SucuriScanInterface::info($message);
+            }
+        }
+    }
+
+    $scan_freq = SucuriScanOption::getOption(':scan_frequency');
+    $scan_algo = SucuriScanOption::getOption(':scan_interface');
 
     // Generate the HTML code for the option list in the form select fields.
-    $scan_freq_options = SucuriScanTemplate::selectOptions($sucuriscan_schedule_allowed, $scan_freq);
-    $scan_interface_options = SucuriScanTemplate::selectOptions($sucuriscan_interface_allowed, $scan_interface);
+    $freq_options = SucuriScanTemplate::selectOptions($sucuriscan_schedule_allowed, $scan_freq);
+    $algo_options = SucuriScanTemplate::selectOptions($sucuriscan_interface_allowed, $scan_algo);
 
-    $params = array(
-        /* Filesystem scanner */
-        'FsScannerStatus' => 'Enabled',
-        'FsScannerSwitchText' => 'Disable',
-        'FsScannerSwitchValue' => 'disable',
-        'FsScannerSwitchCssClass' => 'button-danger',
-        /* Filsystem scanning frequency. */
-        'ScanningFrequency' => 'Undefined',
-        'ScanningFrequencyOptions' => $scan_freq_options,
-        'ScanningInterface' => ( $scan_interface ? $sucuriscan_interface_allowed[ $scan_interface ] : 'Undefined' ),
-        'ScanningInterfaceOptions' => $scan_interface_options,
-        /* Filesystem scanning runtime. */
-        'ScanningRuntimeHuman' => $runtime_scan_human,
-        'IntegrityLogLife' => '0B',
-        'LastLoginLogLife' => '0B',
-        'FailedLoginLogLife' => '0B',
-    );
+    $params['ScanningFrequency'] = 'Undefined';
+    $params['ScanningInterface'] = 'Undefined';
+    $params['ScanningFrequencyOptions'] = $freq_options;
+    $params['ScanningInterfaceOptions'] = $algo_options;
 
-    if ($fs_scanner == 'disabled') {
-        $params['FsScannerStatus'] = 'Disabled';
-        $params['FsScannerSwitchText'] = 'Enable';
-        $params['FsScannerSwitchValue'] = 'enable';
-        $params['FsScannerSwitchCssClass'] = 'button-success';
+    if ($scan_algo && array_key_exists($scan_algo, $sucuriscan_interface_allowed)) {
+        $params['ScanningInterface'] = $sucuriscan_interface_allowed[$scan_algo];
     }
 
     if (array_key_exists($scan_freq, $sucuriscan_schedule_allowed)) {
         $params['ScanningFrequency'] = $sucuriscan_schedule_allowed[ $scan_freq ];
     }
 
-    // Determine the age of the security log files.
-    $params['IntegrityLogLife'] = SucuriScan::humanFileSize(@filesize($integrity_log_path));
-    $params['LastLoginLogLife'] = SucuriScan::humanFileSize(@filesize($lastlogins_log_path));
-    $params['FailedLoginLogLife'] = SucuriScan::humanFileSize(@filesize($failedlogins_log_path));
-
-    $params['Settings.CoreFilesStatus'] = sucuriscan_settings_corefiles_status($nonce);
-    $params['Settings.CoreFilesLanguage'] = sucuriscan_settings_corefiles_language($nonce);
-    $params['Settings.CoreFilesCache'] = sucuriscan_settings_corefiles_cache($nonce);
-    $params['Settings.SiteCheckStatus'] = SucuriScanSiteCheck::statusPage();
-    $params['Settings.SiteCheckCache'] = SucuriScanSiteCheck::cachePage($nonce);
-    $params['Settings.SiteCheckTimeout'] = SucuriScanSiteCheck::timeoutPage($nonce);
-
-    return SucuriScanTemplate::getSection('settings-scanner', $params);
+    return SucuriScanTemplate::getSection('settings-scanner-options', $params);
 }

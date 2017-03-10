@@ -8,39 +8,6 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     exit(1);
 }
 
-function sucuriscan_settings_corefiles_status($nonce)
-{
-    $params = array();
-    $params['Integrity.StatusNum'] = '0';
-    $params['Integrity.Status'] = 'Disabled';
-    $params['Integrity.SwitchText'] = 'Enable';
-    $params['Integrity.SwitchValue'] = 'enable';
-    $params['Integrity.SwitchCssClass'] = 'button-success';
-
-    if ($nonce) {
-        // Enable or disable the filesystem scanner for file integrity.
-        if ($scan_checksums = SucuriScanRequest::post(':scan_checksums', '(en|dis)able')) {
-            $action_d = $scan_checksums . 'd';
-            $message = 'File system scanner for file integrity was <code>' . $action_d . '</code>';
-
-            SucuriScanOption::updateOption(':scan_checksums', $action_d);
-            SucuriScanEvent::reportAutoEvent($message);
-            SucuriScanEvent::notifyEvent('plugin_change', $message);
-            SucuriScanInterface::info($message);
-        }
-    }
-
-    if (SucuriScanOption::isEnabled(':scan_checksums')) {
-        $params['Integrity.StatusNum'] = '1';
-        $params['Integrity.Status'] = 'Enabled';
-        $params['Integrity.SwitchText'] = 'Disable';
-        $params['Integrity.SwitchValue'] = 'disable';
-        $params['Integrity.SwitchCssClass'] = 'button-danger';
-    }
-
-    return SucuriScanTemplate::getSection('settings-corefiles-status', $params);
-}
-
 function sucuriscan_settings_corefiles_language($nonce)
 {
     $params = array();

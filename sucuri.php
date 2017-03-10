@@ -205,7 +205,6 @@ require_once('src/lastlogins-blocked.php');
 
 /* Load handlers for main pages (settings). */
 require_once('src/settings.php');
-require_once('src/settings-handler.php');
 require_once('src/settings-general.php');
 require_once('src/settings-scanner.php');
 require_once('src/settings-corefiles.php');

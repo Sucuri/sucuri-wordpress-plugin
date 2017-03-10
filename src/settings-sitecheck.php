@@ -38,35 +38,6 @@ class SucuriScanSiteCheck extends SucuriScanSettings
         return SucuriScanTemplate::getSection('settings-sitecheck-status', $params);
     }
 
-    public static function cachePage($nonce)
-    {
-        $params = array();
-        $fpath = SucuriScan::dataStorePath('sucuri-sitecheck.php');
-
-        if ($nonce) {
-            // Reset SiteCheck results cache.
-            if (SucuriScanRequest::post(':sitecheck_cache')) {
-                if (file_exists($fpath)) {
-                    if (@unlink($fpath)) {
-                        $message = 'Malware scanner cache was successfully reset.';
-
-                        SucuriScanEvent::reportDebugEvent($message);
-                        SucuriScanInterface::info($message);
-                    } else {
-                        SucuriScanInterface::error('Count not reset the cache, delete manually.');
-                    }
-                } else {
-                    SucuriScanInterface::error('The cache file does not exists.');
-                }
-            }
-        }
-
-        $params['SiteCheck.CacheSize'] = SucuriScan::humanFileSize(@filesize($fpath));
-        $params['SiteCheck.CacheLifeTime'] = SUCURISCAN_SITECHECK_LIFETIME;
-
-        return SucuriScanTemplate::getSection('settings-sitecheck-cache', $params);
-    }
-
     public static function timeoutPage($nonce)
     {
         $params = array();

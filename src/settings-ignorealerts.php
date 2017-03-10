@@ -18,6 +18,26 @@ function sucuriscan_settings_ignore_rules()
         'IgnoreRules.PostTypes' => '',
     );
 
+    if (SucuriScanInterface::checkNonce()) {
+        // Ignore a new event for email notifications.
+        if ($action = SucuriScanRequest::post(':ignorerule_action', '(add|remove)')) {
+            $ignore_rule = SucuriScanRequest::post(':ignorerule');
+
+            if ($action == 'add') {
+                if (SucuriScanOption::addIgnoredEvent($ignore_rule)) {
+                    SucuriScanInterface::info('Post-type ignored successfully.');
+                    SucuriScanEvent::reportWarningEvent('Changes in <code>' . $ignore_rule . '</code> post-type will be ignored');
+                } else {
+                    SucuriScanInterface::error('The post-type is invalid or it may be already ignored.');
+                }
+            } elseif ($action == 'remove') {
+                SucuriScanOption::removeIgnoredEvent($ignore_rule);
+                SucuriScanInterface::info('Post-type removed from the list successfully.');
+                SucuriScanEvent::reportNoticeEvent('Changes in <code>' . $ignore_rule . '</code> post-type will not be ignored');
+            }
+        }
+    }
+
     if ($notify_new_site_content == 'enabled') {
         $post_types = get_post_types();
         $ignored_events = SucuriScanOption::getIgnoredEvents();
