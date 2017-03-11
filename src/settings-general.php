@@ -194,36 +194,77 @@ function sucuriscan_settings_general_datastorage()
     );
 
     $counter = 0;
-    $params['DataStorage.Files'] = '';
-    $params['DatastorePath'] = SucuriScanOption::getOption(':datastore_path');
+    $params['Storage.Files'] = '';
+    $params['Storage.Path'] = SucuriScanOption::getOption(':datastore_path');
+
+    if (SucuriScanInterface::checkNonce()) {
+        if ($filenames = SucuriScanRequest::post(':filename', '_array')) {
+            $deleted = 0;
+
+            foreach ($filenames as $filename) {
+                $short = substr($filename, 7); /* drop directroy path */
+                $short = substr($short, 0, -4); /* drop file extension */
+
+                if (!$short || empty($short) || !in_array($short, $files)) {
+                    continue; /* prevent path traversal */
+                }
+
+                $filepath = SucuriScan::dataStorePath($filename);
+
+                if (!file_exists($filepath) || is_dir($filepath)) {
+                    continue; /* there is nothing to reset */
+                }
+
+                /* ignore write permissions */
+                if (@unlink($filepath)) {
+                    $deleted++;
+                }
+            }
+
+            SucuriScanInterface::info(sprintf('%d out of %d files were deleted', $deleted, count($filenames)));
+        }
+    }
 
     foreach ($files as $name) {
         $counter++;
         $fname = ($name ? sprintf('sucuri-%s.php', $name) : '');
         $fpath = SucuriScan::dataStorePath($fname);
-        $exists = (file_exists($fpath) ? 'Yes' : 'No');
-        $iswritable = (is_writable($fpath) ? 'Yes' : 'No');
         $css_class = ($counter % 2 === 0) ? 'alternate' : '';
         $disabled = 'disabled="disabled"';
+        $iswritable = 'No Writable';
+        $exists = 'Does Not Exists';
+        $labelExistence = 'danger';
+        $labelWritability = 'default';
 
-        if ($exists === 'Yes' && $iswritable === 'Yes') {
-            $disabled = ''; /* Allow file deletion */
+        if (file_exists($fpath)) {
+            $fsize = @filesize($fpath);
+            $exists = 'Exists';
+            $labelExistence = 'success';
+            $labelWritability = 'danger';
+
+            if (is_writable($fpath)) {
+                $disabled = ''; /* Allow file deletion */
+                $iswritable = 'Writable';
+                $labelWritability = 'success';
+            }
         }
 
-        // Remove unnecessary parts from the file path.
-        $fpath = str_replace(ABSPATH, '/', $fpath);
+        $params['Storage.Filename'] = $fname;
+        $params['Storage.Filepath'] = str_replace(ABSPATH, '', $fpath);
+        $params['Storage.Filesize'] = SucuriScan::humanFileSize($fsize);
+        $params['Storage.Exists'] = $exists;
+        $params['Storage.IsWritable'] = $iswritable;
+        $params['Storage.DisabledInput'] = $disabled;
+        $params['Storage.Existence'] = $labelExistence;
+        $params['Storage.Writability'] = $labelWritability;
+        $params['Storage.CssClass'] = $css_class;
 
-        $params['DataStorage.Files'] .= SucuriScanTemplate::getSnippet(
-            'settings-datastorage-files',
-            array(
-                'DataStorage.CssClass' => $css_class,
-                'DataStorage.Fname' => $fname,
-                'DataStorage.Fpath' => $fpath,
-                'DataStorage.Exists' => $exists,
-                'DataStorage.IsWritable' => $iswritable,
-                'DataStorage.DisabledInput' => $disabled,
-            )
-        );
+        if (is_dir($fpath)) {
+            $params['Storage.DisabledInput'] = 'disabled="disabled"';
+            $params['Storage.Filesize'] = '' /* empty */;
+        }
+
+        $params['Storage.Files'] .= SucuriScanTemplate::getSnippet('settings-general-datastorage', $params);
     }
 
     return SucuriScanTemplate::getSection('settings-general-datastorage', $params);

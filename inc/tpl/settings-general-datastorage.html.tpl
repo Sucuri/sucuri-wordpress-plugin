@@ -24,7 +24,7 @@
         </div>
 
         <div class="sucuriscan-hstatus sucuriscan-hstatus-2">
-            <span class="sucuriscan-monospace">%%SUCURI.DatastorePath%%</span>
+            <span class="sucuriscan-monospace">%%SUCURI.Storage.Path%%</span>
         </div>
 
         <p>
@@ -47,22 +47,32 @@
             </p>
         </div>
 
-        <table class="wp-list-table widefat sucuriscan-table">
-            <thead>
-                <tr>
-                    <th class="manage-column column-cb check-column">
-                        <label class="screen-reader-text" for="cb-select-all-1">Select All</label>
-                        <input id="cb-select-all-1" type="checkbox">
-                    </th>
-                    <th class="manage-column">File</th>
-                    <th width="70" class="manage-column">Exists?</th>
-                    <th width="90" class="manage-column">Writable?</th>
-                </tr>
-            </thead>
+        <form action="%%SUCURI.URL.Settings%%#general" method="post">
+            <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
+            <input type="hidden" name="sucuriscan_reset_storage" value="1" />
 
-            <tbody>
-                %%%SUCURI.DataStorage.Files%%%
-            </tbody>
-        </table>
+            <table class="wp-list-table widefat sucuriscan-table">
+                <thead>
+                    <tr>
+                        <th class="manage-column column-cb check-column">
+                            <label class="screen-reader-text" for="cb-select-all-1">Select All</label>
+                            <input id="cb-select-all-1" type="checkbox">
+                        </th>
+                        <th class="manage-column">File</th>
+                        <th class="manage-column">Size</th>
+                        <th class="manage-column">Existence</th>
+                        <th class="manage-column">Write Permission</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    %%%SUCURI.Storage.Files%%%
+                </tbody>
+            </table>
+
+            <p>
+                <button type="submit" class="button-primary">Reset Files</button>
+            </p>
+        </form>
     </div>
 </div>
