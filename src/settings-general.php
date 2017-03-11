@@ -39,38 +39,13 @@ function sucuriscan_settings_general_resetoptions($nonce)
         $process = SucuriScanRequest::post(':process_form');
 
         if (intval($process) === 1) {
-            // Notify the event before the API key is removed.
-            $message = 'Sucuri plugin options were reset';
+            $message = 'Local security logs, hardening and settings were deleted';
+
+            sucuriscan_deactivate(); /* simulate plugin deactivation */
+
             SucuriScanEvent::reportCriticalEvent($message);
             SucuriScanEvent::notifyEvent('plugin_change', $message);
-
-            // Remove all plugin options from the database.
-            SucuriScanOption::deletePluginOptions();
-
-            // Remove the scheduled tasks.
-            wp_clear_scheduled_hook('sucuriscan_scheduled_scan');
-
-            // Remove all the local security logs.
-            @unlink(SucuriScan::dataStorePath('.htaccess'));
-            @unlink(SucuriScan::dataStorePath('index.html'));
-            @unlink(SucuriScan::dataStorePath('sucuri-failedlogins.php'));
-            @unlink(SucuriScan::dataStorePath('sucuri-integrity.php'));
-            @unlink(SucuriScan::dataStorePath('sucuri-lastlogins.php'));
-            @unlink(SucuriScan::dataStorePath('sucuri-oldfailedlogins.php'));
-            @unlink(SucuriScan::dataStorePath('sucuri-plugindata.php'));
-            @unlink(SucuriScan::dataStorePath('sucuri-sitecheck.php'));
-            @unlink(SucuriScan::dataStorePath('sucuri-settings.php'));
-            @unlink(SucuriScan::dataStorePath('sucuri-trustip.php'));
-            @rmdir(SucuriScan::dataStorePath());
-
-            // Revert hardening of core directories (includes, content, uploads).
-            SucuriScanHardening::dewhitelist('ms-files.php', 'wp-includes');
-            SucuriScanHardening::dewhitelist('wp-tinymce.php', 'wp-includes');
-            SucuriScanHardening::unhardenDirectory(ABSPATH . '/wp-includes');
-            SucuriScanHardening::unhardenDirectory(WP_CONTENT_DIR . '/uploads');
-            SucuriScanHardening::unhardenDirectory(WP_CONTENT_DIR);
-
-            SucuriScanInterface::info('Plugin options, core directory hardening, and security logs were reset');
+            SucuriScanInterface::info($message);
         } else {
             SucuriScanInterface::error('You need to confirm that you understand the risk of this operation.');
         }

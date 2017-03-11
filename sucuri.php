@@ -224,6 +224,9 @@ require_once('src/globals.php');
 
 function sucuriscan_deactivate()
 {
+    /* Remove scheduled task from the system */
+    wp_clear_scheduled_hook('sucuriscan_scheduled_scan');
+
     /* Remove settings from the database if they exist */
     $options = SucuriScanOption::getDefaultOptionNames();
     foreach ($options as $option_name) {
