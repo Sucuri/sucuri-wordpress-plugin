@@ -1,9 +1,8 @@
 
-<div class="postbox">
-    <h3>Scanner Settings</h3>
+<div class="sucuriscan-panel">
+    <h3 class="sucuriscan-title">Scanner Settings</h3>
 
     <div class="inside">
-
         <p>
             There are multiple scanners implemented in the code of the plugin, all of them
             are enabled by default and you can deactivate them separately without affect the
@@ -27,21 +26,21 @@
         <form action="%%SUCURI.URL.Settings%%#scanner" method="post">
             <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
 
-            <div class="sucuriscan-input-group">
+            <fieldset class="sucuriscan-clearfix">
                 <label>Scanning Algorithm</label>
                 <select name="sucuriscan_scan_interface">
                     %%%SUCURI.ScanningInterfaceOptions%%%
                 </select>
-                <button type="submit" class="button-primary">Change</button>
-            </div>
+                <button type="submit" class="button button-primary">Change</button>
+            </fieldset>
 
-            <div class="sucuriscan-input-group">
+            <fieldset class="sucuriscan-clearfix">
                 <label>Scanning Frequency</label>
                 <select name="sucuriscan_scan_frequency">
                     %%%SUCURI.ScanningFrequencyOptions%%%
                 </select>
-                <button type="submit" class="button-primary">Change</button>
-            </div>
+                <button type="submit" class="button button-primary">Change</button>
+            </fieldset>
         </form>
     </div>
 </div>

@@ -20,10 +20,10 @@
 
     <form action="%%SUCURI.URL.Settings%%" method="post">
         <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
-        <span class="sucuriscan-input-group">
+        <fieldset class="sucuriscan-clearfix">
             <label>Plugin API Key:</label>
-            <input type="text" name="sucuriscan_manual_api_key" class="input-text" />
-        </span>
-        <button type="submit" class="button-primary">Proceed</button>
+            <input type="text" name="sucuriscan_manual_api_key" />
+            <button type="submit" class="button button-primary">Proceed</button>
+        </fieldset>
     </form>
 </div>

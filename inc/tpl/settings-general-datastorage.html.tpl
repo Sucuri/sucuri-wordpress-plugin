@@ -1,6 +1,6 @@
 
-<div class="postbox">
-    <h3>Data Storage Path</h3>
+<div class="sucuriscan-panel">
+    <h3 class="sucuriscan-title">Data Storage Path</h3>
 
     <div class="inside">
         <p>
@@ -37,16 +37,6 @@
             remain in the database until the user grants write permissions.
         </p>
 
-        <div class="sucuriscan-inline-alert-info">
-            <p>
-                Add this <code>define('SUCURI_SETTINGS_IN', 'database');</code>
-                in the configuration file if you want to keep using the database.
-                However, we encourage you to keep using the plain text files as
-                this guarantees that the automated tests will cover all the code
-                that powers the plugin.
-            </p>
-        </div>
-
         <form action="%%SUCURI.URL.Settings%%#general" method="post">
             <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
             <input type="hidden" name="sucuriscan_reset_storage" value="1" />
@@ -54,10 +44,10 @@
             <table class="wp-list-table widefat sucuriscan-table">
                 <thead>
                     <tr>
-                        <th class="manage-column column-cb check-column">
+                        <td id="cb" class="manage-column column-cb check-column">
                             <label class="screen-reader-text" for="cb-select-all-1">Select All</label>
                             <input id="cb-select-all-1" type="checkbox">
-                        </th>
+                        </td>
                         <th class="manage-column">File</th>
                         <th class="manage-column">Size</th>
                         <th class="manage-column">Existence</th>
@@ -71,7 +61,7 @@
             </table>
 
             <p>
-                <button type="submit" class="button-primary">Reset Files</button>
+                <button type="submit" class="button button-primary">Reset Files</button>
             </p>
         </form>
     </div>

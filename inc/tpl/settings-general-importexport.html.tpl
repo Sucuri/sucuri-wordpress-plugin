@@ -1,6 +1,6 @@
 
-<div class="postbox">
-    <h3>Import &amp; Export Settings</h3>
+<div class="sucuriscan-panel">
+    <h3 class="sucuriscan-title">Import &amp; Export Settings</h3>
 
     <div class="inside">
         <form action="%%SUCURI.URL.Settings%%" method="post">
@@ -31,6 +31,7 @@
                     <span>I understand that this operation can not be reverted.</span>
                 </label>
             </p>
+
             <button type="submit" name="sucuriscan_import" class="button button-primary">Import</button>
         </form>
     </div>

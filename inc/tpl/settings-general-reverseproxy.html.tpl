@@ -1,6 +1,6 @@
 
-<div class="postbox">
-    <h3>Reverse Proxy and IP Address</h3>
+<div class="sucuriscan-panel">
+    <h3 class="sucuriscan-title">Reverse Proxy and IP Address</h3>
 
     <div class="inside">
         <p>
@@ -38,9 +38,7 @@
             <form action="%%SUCURI.URL.Settings%%" method="post">
                 <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
                 <input type="hidden" name="sucuriscan_revproxy" value="%%SUCURI.ReverseProxySwitchValue%%" />
-                <button type="submit" class="button-primary %%SUCURI.ReverseProxySwitchCssClass%%">
-                    %%SUCURI.ReverseProxySwitchText%%
-                </button>
+                <button type="submit" class="button button-primary">%%SUCURI.ReverseProxySwitchText%%</button>
             </form>
         </div>
     </div>

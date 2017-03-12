@@ -1,8 +1,8 @@
 
-<tr class="%%SUCURI.Storage.CssClass%%">
-    <td class="check-column">
+<tr>
+    <th class="check-column">
         <input type="checkbox" name="sucuriscan_filename[]" %%SUCURI.Storage.DisabledInput%% value="%%SUCURI.Storage.Filename%%" />
-    </td>
+    </th>
 
     <td>
         <span class="sucuriscan-monospace">%%SUCURI.Storage.Filepath%%</span>

@@ -1,6 +1,6 @@
 
-<div class="postbox">
-    <h3>Reset Security Logs, Hardening and Settings</h3>
+<div class="sucuriscan-panel">
+    <h3 class="sucuriscan-title">Reset Security Logs, Hardening and Settings</h3>
 
     <div class="inside">
         <p>
@@ -21,7 +21,7 @@
                     <span>I understand that this operation can not be reverted.</span>
                 </label>
             </p>
-            <button type="submit" name="sucuriscan_reset_options" class="button-primary button-danger">Reset Everything</button>
+            <button type="submit" name="sucuriscan_reset_options" class="button button-primary">Reset Everything</button>
         </form>
     </div>
 </div>

@@ -1,6 +1,6 @@
 
-<div class="postbox">
-    <h3>User Comment Monitor</h3>
+<div class="sucuriscan-panel">
+    <h3 class="sucuriscan-title">User Comment Monitor</h3>
 
     <div class="inside">
         <p>
@@ -15,13 +15,11 @@
             usually falls under the category of not approved, and the message itself.
         </p>
 
-        <div class="sucuriscan-inline-alert-info">
-            <p>
-                We also use this information in an anonymous way to generate <a target="_blank"
-                href="https://sucuri.net/security-reports/brute-force/">statistics</a> of usage
-                that help us improve our service.
-            </p>
-        </div>
+        <p>
+            We also use this information in an anonymous way to generate <a target="_blank"
+            href="https://sucuri.net/security-reports/brute-force/">statistics</a> of usage
+            that help us improve our service.
+        </p>
 
         <div class="sucuriscan-hstatus sucuriscan-hstatus-2">
             <span>User Comment Monitor is %%SUCURI.CommentMonitorStatus%%</span>
@@ -29,9 +27,7 @@
             <form action="%%SUCURI.URL.Settings%%" method="post">
                 <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
                 <input type="hidden" name="sucuriscan_comment_monitor" value="%%SUCURI.CommentMonitorSwitchValue%%" />
-                <button type="submit" class="button-primary %%SUCURI.CommentMonitorSwitchCssClass%%">
-                    %%SUCURI.CommentMonitorSwitchText%%
-                </button>
+                <button type="submit" class="button button-primary">%%SUCURI.CommentMonitorSwitchText%%</button>
             </form>
         </div>
     </div>
