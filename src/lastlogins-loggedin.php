@@ -25,10 +25,8 @@ function sucuriscan_loggedin_users_panel()
 
     if (is_array($logged_in_users) && !empty($logged_in_users)) {
         $params['LoggedInUsers.Total'] = count($logged_in_users);
-        $counter = 0;
 
         foreach ((array) $logged_in_users as $logged_in_user) {
-            $counter++;
             $logged_in_user['last_activity_datetime'] = SucuriScan::datetime($logged_in_user['last_activity']);
             $logged_in_user['user_registered_datetime'] = SucuriScan::datetime(strtotime($logged_in_user['user_registered']));
 
@@ -42,7 +40,6 @@ function sucuriscan_loggedin_users_panel()
                     'LoggedInUsers.LastActivity' => $logged_in_user['last_activity_datetime'],
                     'LoggedInUsers.Registered' => $logged_in_user['user_registered_datetime'],
                     'LoggedInUsers.RemoveAddr' => $logged_in_user['remote_addr'],
-                    'LoggedInUsers.CssClass' => ($counter % 2 === 0) ? '' : 'alternate',
                 )
             );
         }

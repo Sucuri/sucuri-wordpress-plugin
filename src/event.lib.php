@@ -80,9 +80,9 @@ class SucuriScanEvent extends SucuriScan
      */
     private static function verifyRun($runtime = 0, $force_scan = false)
     {
+        $current_time = time();
         $option_name = ':runtime';
         $last_run = SucuriScanOption::getOption($option_name);
-        $current_time = time();
 
         // Check if the last runtime is too near the current time.
         if ($last_run && !$force_scan) {
@@ -93,9 +93,7 @@ class SucuriScanEvent extends SucuriScan
             }
         }
 
-        SucuriScanOption::updateOption($option_name, $current_time);
-
-        return true;
+        return SucuriScanOption::updateOption($option_name, $current_time);
     }
 
     /**
@@ -130,33 +128,38 @@ class SucuriScanEvent extends SucuriScan
      */
     public static function filesystemScan($force_scan = false)
     {
-        $minimum_runtime = SUCURISCAN_MINIMUM_RUNTIME;
-
-        if (self::verifyRun($minimum_runtime, $force_scan)
-            && class_exists('SucuriScanFileInfo')
-            && SucuriScanAPI::getPluginKey()
-        ) {
-            self::reportSiteVersion();
-
-            $file_info = new SucuriScanFileInfo();
-            $file_info->scan_interface = SucuriScanOption::getOption(':scan_interface');
-            $signatures = $file_info->getDirectoryTreeMd5(ABSPATH);
-
-            if ($signatures) {
-                $hashes_sent = SucuriScanAPI::sendHashes($signatures);
-
-                if ($hashes_sent) {
-                    SucuriScanOption::updateOption(':runtime', time());
-                    return true;
-                } else {
-                    SucuriScanInterface::error('The file hashes could not be stored.');
-                }
-            } else {
-                SucuriScanInterface::error('The file hashes could not be retrieved, the filesystem scan failed.');
-            }
+        if (!class_exists('SucuriScanFileInfo')) {
+            SucuriScan::throwException('FileInfo class does not exists');
+            return;
         }
 
-        return false;
+        if (!SucuriScanAPI::getPluginKey()) {
+            SucuriScan::throwException('API key is not available');
+            return;
+        }
+
+        if (!self::verifyRun(SUCURISCAN_MINIMUM_RUNTIME, $force_scan)) {
+            SucuriScan::throwException('Background scanner was executed just now');
+            return false;
+        }
+
+        self::reportSiteVersion();
+
+        $file_info = new SucuriScanFileInfo();
+        $file_info->scan_interface = SucuriScanOption::getOption(':scan_interface');
+        $signatures = $file_info->getDirectoryTreeMd5(ABSPATH);
+
+        if (!$signatures) {
+            SucuriScanInterface::error('The file hashes could not be retrieved.');
+            return false;
+        }
+
+        if (!SucuriScanAPI::sendHashes($signatures)) {
+            SucuriScanInterface::error('The file hashes could not be stored.');
+            return false;
+        }
+
+        return SucuriScanOption::updateOption(':runtime', time());
     }
 
     /**
@@ -540,32 +543,41 @@ class SucuriScanEvent extends SucuriScan
     {
         $user_id = intval($user_id);
 
-        if ($user_id > 0 && function_exists('wp_generate_password')) {
-            $user = get_userdata($user_id);
-
-            if ($user instanceof WP_User) {
-                $website = SucuriScan::getDomain();
-                $user_login = $user->user_login;
-                $display_name = $user->display_name;
-                $new_password = wp_generate_password(15, true, false);
-
-                $message = SucuriScanTemplate::getSection('notification-resetpwd', array(
-                    'ResetPassword.UserName' => $user_login,
-                    'ResetPassword.DisplayName' => $display_name,
-                    'ResetPassword.Password' => $new_password,
-                    'ResetPassword.Website' => $website,
-                ));
-
-                $data_set = array( 'Force' => true ); // Skip limit for emails per hour.
-                SucuriScanMail::sendMail($user->user_email, 'Password changed', $message, $data_set);
-
-                wp_set_password($new_password, $user_id);
-
-                return true;
-            }
+        if (!$user_id || !function_exists('wp_generate_password')) {
+            return false;
         }
 
-        return false;
+        $user = get_userdata($user_id);
+
+        if (!($user instanceof WP_User)) {
+            return false;
+        }
+
+        $website = SucuriScan::getDomain();
+        $user_login = $user->user_login;
+        $display_name = $user->display_name;
+        $new_password = wp_generate_password(15, true, false);
+
+        $message = SucuriScanTemplate::getSection('settings-posthack-reset-password-alert', array(
+            'ResetPassword.UserName' => $user_login,
+            'ResetPassword.DisplayName' => $display_name,
+            'ResetPassword.Password' => $new_password,
+            'ResetPassword.Website' => $website,
+        ));
+
+        /* Skip per hour alert limit and force text/html content-type */
+        $data_set = array('Force' => true, 'ForceHTML' => true);
+
+        SucuriScanMail::sendMail(
+            $user->user_email,
+            'Password Changed',
+            $message,
+            $data_set
+        );
+
+        wp_set_password($new_password, $user_id);
+
+        return true;
     }
 
     /**
@@ -582,47 +594,60 @@ class SucuriScanEvent extends SucuriScan
         $new_wpconfig = '';
         $config_path = self::getWPConfigPath();
 
-        if ($config_path) {
-            $pattern = self::secretKeyPattern();
-            $define_tpl = "define('%s',%s'%s');";
-            $config_lines = SucuriScanFileInfo::fileLines($config_path);
-            $new_keys = SucuriScanAPI::getNewSecretKeys();
-            $old_keys = array();
-            $old_keys_string = '';
-            $new_keys_string = '';
+        if (!$config_path) {
+            return false;
+        }
 
-            foreach ((array) $config_lines as $config_line) {
-                if (preg_match($pattern, $config_line, $match)) {
+        $pattern = self::secretKeyPattern();
+        $define_tpl = "define('%s',%s'%s');";
+        $content = SucuriScanFileInfo::fileContent($config_path);
+        $config_lines = explode("\n", $content); /* maintain new lines */
+        $new_keys = SucuriScanAPI::getNewSecretKeys();
+        $new_keys_string = '';
+        $old_keys_string = '';
+        $old_keys = array();
+
+        if (is_array($config_lines) && is_array($new_keys)) {
+            foreach ($config_lines as $config_line) {
+                if (@preg_match($pattern, $config_line, $match)) {
                     $key_name = $match[1];
 
                     if (array_key_exists($key_name, $new_keys)) {
                         $white_spaces = $match[2];
-                        $old_keys[ $key_name ] = $match[3];
-                        $config_line = sprintf($define_tpl, $key_name, $white_spaces, $new_keys[ $key_name ]);
-                        $old_keys_string .= sprintf($define_tpl, $key_name, $white_spaces, $old_keys[ $key_name ]) . "\n";
+                        $old_keys[$key_name] = $match[3];
+                        $config_line = sprintf(
+                            $define_tpl,
+                            $key_name,
+                            $white_spaces,
+                            $new_keys[$key_name]
+                        );
+                        $old_keys_string .= sprintf(
+                            $define_tpl . "\n",
+                            $key_name,
+                            $white_spaces,
+                            $old_keys[$key_name]
+                        );
                         $new_keys_string .= $config_line . "\n";
                     }
                 }
 
                 $new_wpconfig .= $config_line . "\n";
             }
-
-            $response = array(
-                'updated' => is_writable($config_path),
-                'old_keys' => $old_keys,
-                'old_keys_string' => $old_keys_string,
-                'new_keys' => $new_keys,
-                'new_keys_string' => $new_keys_string,
-                'new_wpconfig' => $new_wpconfig,
-            );
-
-            if ($response['updated']) {
-                file_put_contents($config_path, $new_wpconfig, LOCK_EX);
-            }
-
-            return $response;
         }
 
-        return false;
+        $response = array(
+            'updated' => is_writable($config_path),
+            'old_keys' => $old_keys,
+            'old_keys_string' => $old_keys_string,
+            'new_keys' => $new_keys,
+            'new_keys_string' => $new_keys_string,
+            'new_wpconfig' => $new_wpconfig,
+        );
+
+        if ($response['updated']) {
+            @file_put_contents($config_path, $new_wpconfig, LOCK_EX);
+        }
+
+        return $response;
     }
 }

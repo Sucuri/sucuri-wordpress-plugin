@@ -19,7 +19,7 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
 class SucuriScanMail extends SucuriScanOption
 {
     /**
-     * Check whether the email notifications will be sent in HTML or Plain/Text.
+     * Check whether the email alerts will be sent in HTML or Plain/Text.
      *
      * @return boolean Whether the emails will be in HTML or Plain/Text.
      */
@@ -60,7 +60,7 @@ class SucuriScanMail extends SucuriScanOption
             unset($data_set['Force']);
         }
 
-        // Check whether the email notifications will be sent in HTML or Plain/Text.
+        // Check whether the email alerts will be sent in HTML or Plain/Text.
         if (self::prettifyMails() || (isset($data_set['ForceHTML']) && $data_set['ForceHTML'])) {
             $headers = array( 'content-type: text/html' );
             $data_set['PrettifyType'] = 'pretty';
@@ -85,7 +85,7 @@ class SucuriScanMail extends SucuriScanOption
              * reported by users when the SMTP server in their sites is misconfigured. To
              * reduce the number of tickets related with this issue we will provide an
              * option to allow the users to choose which technique will be used to send the
-             * notifications.
+             * alerts.
              *
              * [1] https://github.com/PHPMailer/PHPMailer
              * [2] https://developer.wordpress.org/reference/functions/wp_mail/

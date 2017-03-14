@@ -94,12 +94,12 @@ class SucuriScanFileInfo extends SucuriScan
      */
     public function getDirectoryTreeMd5($directory = '', $as_array = false)
     {
-        $project_signatures = '';
+        $signatures = '';
         $abspath = self::fixPath(ABSPATH);
         $files = $this->getDirectoryTree($directory);
 
         if ($as_array) {
-            $project_signatures = array();
+            $signatures = array();
         }
 
         if ($files) {
@@ -111,7 +111,7 @@ class SucuriScanFileInfo extends SucuriScan
 
                 if ($as_array) {
                     $basename = str_replace($abspath . '/', '', $filepath);
-                    $project_signatures[ $basename ] = array(
+                    $signatures[ $basename ] = array(
                         'filepath' => $filepath,
                         'checksum' => $file_checksum,
                         'filesize' => $filesize,
@@ -120,18 +120,12 @@ class SucuriScanFileInfo extends SucuriScan
                     );
                 } else {
                     $filepath = str_replace($abspath, $abspath . '/', $filepath);
-                    $project_signatures .= sprintf(
-                        "%s%s%s%s\n",
-                        $file_checksum,
-                        $filesize,
-                        chr(32),
-                        $filepath
-                    );
+                    $signatures .= $file_checksum . $filesize . "\x20" . $filepath . "\n";
                 }
             }
         }
 
-        return $project_signatures;
+        return $signatures;
     }
 
     /**
@@ -147,10 +141,7 @@ class SucuriScanFileInfo extends SucuriScan
         if (file_exists($directory) && is_dir($directory)) {
             $tree = array();
 
-            // Check whether the ignore scanning feature is enabled or not.
-            if (SucuriScanFSScanner::willIgnoreScanning()) {
-                $this->ignored_directories = SucuriScanFSScanner::getIgnoredDirectories();
-            }
+            $this->ignored_directories = SucuriScanFSScanner::getIgnoredDirectories();
 
             switch ($this->scan_interface) {
                 case 'spl':

@@ -8,36 +8,8 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     exit(1);
 }
 
-class SucuriScanSiteCheck extends SucuriScanSettings
+class SucuriScanSettingsSiteCheck extends SucuriScanSettings
 {
-    public static function hasBeenDisabled()
-    {
-        return (bool) (
-            defined('SUCURISCAN_NO_SITECHECK')
-            && SUCURISCAN_NO_SITECHECK === true
-        );
-    }
-
-    public static function statusPage()
-    {
-        $params = array();
-        $params['SiteCheck.StatusNum'] = '1';
-        $params['SiteCheck.Status'] = 'Enabled';
-        $params['SiteCheck.IfEnabled'] = 'visible';
-        $params['SiteCheck.IfDisabled'] = 'hidden';
-
-        if (self::hasBeenDisabled()) {
-            $params['SiteCheck.StatusNum'] = '0';
-            $params['SiteCheck.Status'] = 'Disabled';
-            $params['SiteCheck.IfEnabled'] = 'hidden';
-            $params['SiteCheck.IfDisabled'] = 'visible';
-        }
-
-        $params['SiteCheck.Counter'] = SucuriScanOption::getOption(':sitecheck_counter');
-
-        return SucuriScanTemplate::getSection('settings-sitecheck-status', $params);
-    }
-
     public static function timeoutPage($nonce)
     {
         $params = array();
@@ -63,6 +35,6 @@ class SucuriScanSiteCheck extends SucuriScanSettings
         $params['MaxRequestTimeout'] = SUCURISCAN_MAX_SITECHECK_TIMEOUT;
         $params['RequestTimeout'] = SucuriScanOption::getOption(':sitecheck_timeout') . ' seconds';
 
-        return SucuriScanTemplate::getSection('settings-sitecheck-timeout', $params);
+        return SucuriScanTemplate::getSection('settings-scanner-sitecheck-timeout', $params);
     }
 }

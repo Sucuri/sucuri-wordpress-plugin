@@ -105,51 +105,6 @@ class SucuriScanInterface
     }
 
     /**
-     * Generate the menu and submenus for the plugin in the admin interface.
-     *
-     * @return void
-     */
-    public static function addInterfaceMenu()
-    {
-        global $sucuriscan_pages;
-
-        if (function_exists('add_menu_page')
-            && $sucuriscan_pages
-            && is_array($sucuriscan_pages)
-            && array_key_exists('sucuriscan', $sucuriscan_pages)
-        ) {
-            // Add main menu link.
-            add_menu_page(
-                'Sucuri Security',
-                'Sucuri Security',
-                'manage_options',
-                'sucuriscan',
-                'sucuriscan_page',
-                SUCURISCAN_URL . '/inc/images/menuicon.png'
-            );
-
-            foreach ($sucuriscan_pages as $sub_page_func => $sub_page_title) {
-                if ($sub_page_func == 'sucuriscan_scanner'
-                    && SucuriScanSiteCheck::hasBeenDisabled()
-                ) {
-                    continue;
-                }
-
-                $page_func = $sub_page_func . '_page';
-
-                add_submenu_page(
-                    'sucuriscan',
-                    $sub_page_title,
-                    $sub_page_title,
-                    'manage_options',
-                    $sub_page_func,
-                    $page_func
-                );
-            }
-        }
-    }
-
-    /**
      * Remove the old Sucuri plugins considering that with the new version (after
      * 1.6.0) all the functionality of the others will be merged here, this will
      * remove duplicated functionality, duplicated bugs and/or duplicated
@@ -320,37 +275,34 @@ class SucuriScanInterface
         if ($display_notice === true && !empty($message)) {
             SucuriScan::throwException($message, $type);
 
-            echo SucuriScanTemplate::getSection(
-                'notification-admin',
-                array(
-                    'AlertType' => $type,
-                    'AlertUnique' => rand(100, 999),
-                    'AlertMessage' => $message,
-                )
-            );
+            echo SucuriScanTemplate::getSection('notification-admin', array(
+                'AlertType' => $type,
+                'AlertUnique' => rand(100, 999),
+                'AlertMessage' => $message,
+            ));
         }
     }
 
     /**
      * Prints a HTML alert of type ERROR in the WordPress admin interface.
      *
-     * @param  string $error_msg The message that will be printed in the alert.
+     * @param  string $msg The message that will be printed in the alert.
      * @return void
      */
-    public static function error($error_msg = '')
+    public static function error($msg = '')
     {
-        self::adminNotice('error', '<b>Sucuri:</b> ' . $error_msg);
+        self::adminNotice('error', SUCURISCAN_ADMIN_NOTICE_PREFIX . "\x20" . $msg);
     }
 
     /**
      * Prints a HTML alert of type INFO in the WordPress admin interface.
      *
-     * @param  string $info_msg The message that will be printed in the alert.
+     * @param  string $msg The message that will be printed in the alert.
      * @return void
      */
-    public static function info($info_msg = '')
+    public static function info($msg = '')
     {
-        self::adminNotice('updated', '<b>Sucuri:</b> ' . $info_msg);
+        self::adminNotice('updated', SUCURISCAN_ADMIN_NOTICE_PREFIX . "\x20" . $msg);
     }
 
     /**
@@ -411,36 +363,5 @@ class SucuriScanInterface
         }
 
         return false;
-    }
-
-    /**
-     * Display a notice message with instructions to continue the setup of the
-     * plugin, this includes the generation of the API key and other steps that need
-     * to be done to fully activate this plugin.
-     *
-     * @return void
-     */
-    public static function setupAlert()
-    {
-        if (current_user_can('manage_options')
-            && self::displayNoticesHere()
-            && !SucuriScanAPI::getPluginKey()
-            && SucuriScanRequest::post(':plugin_api_key') === false
-            && SucuriScanRequest::post(':recover_key') === false
-            && !SucuriScanRequest::post(':manual_api_key')
-        ) {
-            if (SucuriScanRequest::get(':dismiss_setup') !== false) {
-                SucuriScanOption::updateOption(':dismiss_setup', 'enabled');
-            } elseif (SucuriScanOption::isEnabled(':dismiss_setup')) {
-                /* Do not display API key generation form. */
-            } else {
-                echo SucuriScanTemplate::getSection('setup-notice');
-                echo SucuriScanTemplate::getModal('setup-form', array(
-                    'Visibility' => 'hidden',
-                    'Title' => 'Sucuri API key generation',
-                    'CssClass' => 'sucuriscan-setup-instructions',
-                ));
-            }
-        }
     }
 }

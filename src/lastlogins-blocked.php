@@ -29,26 +29,17 @@ class SucuriScanBlockedUsers extends SucuriScanLastLogins
         $blocked = $cache->getAll();
 
         if (is_array($blocked) && !empty($blocked)) {
-            $counter = 0;
-
             foreach ($blocked as $data) {
-                $css_class = ($counter % 2 === 0) ? '' : 'alternate';
-                $output['BlockedUsers.List'] .= SucuriScanTemplate::getSnippet(
-                    'lastlogins-blockedusers',
-                    array(
-                        'BlockedUsers.CssClass' => $css_class,
-                        'BlockedUsers.Username' => $data->username,
-                        'BlockedUsers.BlockedAt' => self::datetime($data->blocked_at),
-                        'BlockedUsers.FirstAttempt' => self::datetime($data->first_attempt),
-                        'BlockedUsers.LastAttempt' => self::datetime($data->last_attempt),
-                    )
-                );
-                $counter++;
+                $output['BlockedUsers.List'] .=
+                SucuriScanTemplate::getSnippet('lastlogins-blockedusers', array(
+                    'BlockedUsers.Username' => $data->username,
+                    'BlockedUsers.BlockedAt' => self::datetime($data->blocked_at),
+                    'BlockedUsers.FirstAttempt' => self::datetime($data->first_attempt),
+                    'BlockedUsers.LastAttempt' => self::datetime($data->last_attempt),
+                ));
             }
 
-            if ($counter > 0) {
-                $output['BlockedUsers.NoItemsVisibility'] = 'hidden';
-            }
+            $output['BlockedUsers.NoItemsVisibility'] = 'hidden';
         }
 
         return SucuriScanTemplate::getSection('lastlogins-blockedusers', $output);

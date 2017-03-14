@@ -47,7 +47,6 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_api_key' => false,
             'sucuriscan_api_protocol' => 'https',
             'sucuriscan_api_service' => 'enabled',
-            'sucuriscan_audit_report' => 'disabled',
             'sucuriscan_cloudproxy_apikey' => '',
             'sucuriscan_comment_monitor' => 'disabled',
             'sucuriscan_datastore_path' => dirname(self::optionsFilePath()),
@@ -56,7 +55,6 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_email_subject' => 'Sucuri Alert, :domain, :event',
             'sucuriscan_emails_per_hour' => 5,
             'sucuriscan_emails_sent' => 0,
-            'sucuriscan_ignore_scanning' => 'disabled',
             'sucuriscan_ignored_events' => '',
             'sucuriscan_integrity_startup' => '',
             'sucuriscan_language' => 'en_US',
@@ -97,7 +95,6 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_selfhosting_fpath' => '',
             'sucuriscan_selfhosting_monitor' => 'disabled',
             'sucuriscan_site_version' => '0.0',
-            'sucuriscan_sitecheck_counter' => 0,
             'sucuriscan_sitecheck_timeout' => 30,
             'sucuriscan_use_wpmail' => 'enabled',
         );
@@ -153,41 +150,6 @@ class SucuriScanOption extends SucuriScanRequest
         }
 
         return false;
-    }
-
-    /**
-     * Check if the settings will be stored in the database.
-     *
-     * Since version 1.7.18 the plugin started using plain text files to store
-     * its settings as a security measure to reduce the scope of the attacks
-     * against the database and to simplify the management of the settings for
-     * multisite installations. Some users complained about this and suggested
-     * to create an option to allow them to keep using the database instead of
-     * plain text files.
-     *
-     * We will not add an explicit option in the settings page, but users can go
-     * around this defining a constant in the configuration file named
-     * "SUCURI_SETTINGS_IN" with value "database" to force the plugin to store
-     * its settings in the database instead of the plain text files.
-     *
-     * @return boolean True if the settings will be stored in the database.
-     */
-    public static function settingsInDatabase()
-    {
-        return (bool) (
-            defined('SUCURI_SETTINGS_IN')
-            && SUCURI_SETTINGS_IN === 'database'
-        );
-    }
-
-    /**
-     * Check if the settings will be stored in a plain text file.
-     *
-     * @return boolean True if the settings will be stored in a file.
-     */
-    public static function settingsInTextFile()
-    {
-        return (bool) (self::settingsInDatabase() === false);
     }
 
     /**
@@ -352,10 +314,7 @@ class SucuriScanOption extends SucuriScanRequest
             $option = self::varPrefix($option);
             $options[$option] = $value;
 
-            // Skip if user wants to use the database.
-            if (self::settingsInTextFile() && self::writeNewOptions($options)) {
-                return true;
-            }
+            return self::writeNewOptions($options);
         }
 
         if (function_exists('update_option')) {
@@ -551,10 +510,10 @@ class SucuriScanOption extends SucuriScanRequest
     }
 
     /**
-     * Get a list of the post types ignored to receive email notifications when the
+     * Get a list of the post types ignored to receive email alerts when the
      * "new site content" hook is triggered.
      *
-     * @return array List of ignored posts-types to send notifications.
+     * @return array List of ignored posts-types to send alerts.
      */
     public static function getIgnoredEvents()
     {
@@ -573,7 +532,7 @@ class SucuriScanOption extends SucuriScanRequest
     }
 
     /**
-     * Add a new post type to the list of ignored events to send notifications.
+     * Add a new post type to the list of ignored events to send alerts.
      *
      * @param  string  $event_name Unique post-type name.
      * @return boolean             Whether the event was ignored or not.
@@ -601,7 +560,7 @@ class SucuriScanOption extends SucuriScanRequest
     }
 
     /**
-     * Remove a post type from the list of ignored events to send notifications.
+     * Remove a post type from the list of ignored events to send alerts.
      *
      * @param  string  $event Unique post-type name.
      * @return boolean        Whether the event was removed from the list or not.
@@ -623,7 +582,7 @@ class SucuriScanOption extends SucuriScanRequest
     }
 
     /**
-     * Check whether an event is being ignored to send notifications or not.
+     * Check whether an event is being ignored to send alerts or not.
      *
      * @param  string  $event Unique post-type name.
      * @return boolean        Whether an event is being ignored or not.

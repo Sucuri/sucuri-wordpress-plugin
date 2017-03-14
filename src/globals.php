@@ -35,13 +35,9 @@ if (defined('SUCURISCAN')) {
      */
     $sucuriscan_pages = array(
         'sucuriscan' => 'Dashboard',
-        'sucuriscan_scanner' => 'Malware Scan',
         'sucuriscan_firewall' => 'Firewall (WAF)',
-        'sucuriscan_hardening' => 'Hardening',
-        'sucuriscan_posthack' => 'Post-Hack',
         'sucuriscan_lastlogins' => 'Last Logins',
         'sucuriscan_settings' => 'Settings',
-        'sucuriscan_infosys' => 'Site Info',
     );
 
     /**
@@ -69,7 +65,7 @@ if (defined('SUCURISCAN')) {
         'sucuriscan_notify_success_login' => 'user:Receive email alerts for successful login attempts',
         'sucuriscan_notify_failed_login' => 'user:Receive email alerts for failed login attempts <em>(you may receive tons of emails)</em>',
         'sucuriscan_notify_bruteforce_attack' => 'user:Receive email alerts for password guessing attacks <em>(summary of failed logins per hour)</em>',
-        'sucuriscan_notify_post_publication' => 'Receive email alerts for Post-Type changes <em>(configure from Ignore Alerts)</em>',
+        'sucuriscan_notify_post_publication' => 'Receive email alerts for Post-Type changes <em>(configure from Ignore Posts Changes)</em>',
         'sucuriscan_notify_website_updated' => 'Receive email alerts when the WordPress version is updated',
         'sucuriscan_notify_settings_updated' => 'Receive email alerts when your website settings are updated',
         'sucuriscan_notify_theme_editor' => 'Receive email alerts when a file is modified with theme/plugin editor',
@@ -166,17 +162,42 @@ if (defined('SUCURISCAN')) {
      * multisite installations the menu items must be available only in the network
      * panel and hidden in the administration panel of the subsites.
      */
-    add_action($sucuriscan_action_prefix . 'admin_menu', 'SucuriScanInterface::addInterfaceMenu');
+    if (function_exists('add_action')) {
+        function sucuriscan_add_menu_page()
+        {
+            global $sucuriscan_pages;
 
-    /**
-     * Attach Ajax requests to a custom page handler.
-     */
-    foreach ($sucuriscan_pages as $page_func => $page_title) {
-        $ajax_func = $page_func . '_ajax';
+            add_menu_page(
+                'Sucuri Security',
+                'Sucuri Security',
+                'manage_options',
+                'sucuriscan',
+                'sucuriscan_page',
+                SUCURISCAN_URL . '/inc/images/menuicon.png'
+            );
 
-        if (function_exists($ajax_func)) {
-            add_action('wp_ajax_' . $ajax_func, $ajax_func);
+            /* exit if no pages were defined */
+            if (!is_array($sucuriscan_pages)) {
+                return;
+            }
+
+            foreach ($sucuriscan_pages as $sub_page_func => $sub_page_title) {
+                add_submenu_page(
+                    'sucuriscan',
+                    $sub_page_title,
+                    $sub_page_title,
+                    'manage_options',
+                    $sub_page_func,
+                    $sub_page_func . '_page'
+                );
+            }
         }
+
+        /* Attach HTTP request handlers for the internal plugin pages */
+        add_action($sucuriscan_action_prefix . 'admin_menu', 'sucuriscan_add_menu_page');
+
+        /* Attach HTTP request handlers for the AJAX requests */
+        add_action('wp_ajax_sucuriscan_ajax', 'sucuriscan_ajax');
     }
 
     /**
@@ -190,36 +211,25 @@ if (defined('SUCURISCAN')) {
      * @see Class SucuriScanHook
      */
     if (class_exists('SucuriScanHook')) {
-        $sucuriscan_hooks = array(
-            'add_attachment',
-            'add_link',
-            'create_category',
-            'delete_post',
-            'delete_user',
-            'login_form_resetpass',
-            'private_to_published',
-            'publish_page',
-            'publish_phone',
-            'publish_post',
-            'retrieve_password',
-            'switch_theme',
-            'user_register',
-            'wp_insert_comment',
-            'wp_login',
-            'wp_login_failed',
-            'wp_trash_post',
-            'xmlrpc_publish_post',
-        );
-
-        foreach ($sucuriscan_hooks as $hook_name) {
-            $hook_func = 'hook_' . $hook_name;
-            $hook_func = str_replace('_', "\x20", $hook_func);
-            $hook_func = ucwords($hook_func);
-            $hook_func = lcfirst($hook_func);
-            $hook_func = str_replace("\x20", '', $hook_func);
-
-            add_action($hook_name, 'SucuriScanHook::' . $hook_func, 50, 5);
-        }
+        add_action('add_attachment', 'SucuriScanHook::hookAddAttachment', 50, 5);
+        add_action('add_link', 'SucuriScanHook::hookAddLink', 50, 5);
+        add_action('edit_link', 'SucuriScanHook::hookEditLink', 50, 5);
+        add_action('create_category', 'SucuriScanHook::hookCreateCategory', 50, 5);
+        add_action('delete_post', 'SucuriScanHook::hookDeletePost', 50, 5);
+        add_action('delete_user', 'SucuriScanHook::hookDeleteUser', 50, 5);
+        add_action('login_form_resetpass', 'SucuriScanHook::hookLoginFormResetpass', 50, 5);
+        add_action('private_to_published', 'SucuriScanHook::hookPrivateToPublished', 50, 5);
+        add_action('publish_page', 'SucuriScanHook::hookPublishPage', 50, 5);
+        add_action('publish_phone', 'SucuriScanHook::hookPublishPhone', 50, 5);
+        add_action('publish_post', 'SucuriScanHook::hookPublishPost', 50, 5);
+        add_action('retrieve_password', 'SucuriScanHook::hookRetrievePassword', 50, 5);
+        add_action('switch_theme', 'SucuriScanHook::hookSwitchTheme', 50, 5);
+        add_action('user_register', 'SucuriScanHook::hookUserRegister', 50, 5);
+        add_action('wp_insert_comment', 'SucuriScanHook::hookWPInsertComment', 50, 5);
+        add_action('wp_login', 'SucuriScanHook::hookWPLogin', 50, 5);
+        add_action('wp_login_failed', 'SucuriScanHook::hookWPLoginFailed', 50, 5);
+        add_action('wp_trash_post', 'SucuriScanHook::hookWPTrashPost', 50, 5);
+        add_action('xmlrpc_publish_post', 'SucuriScanHook::hookXMLRPCPublishPost', 50, 5);
 
         if (SucuriScan::runAdminInit()) {
             add_action('admin_init', 'SucuriScanHook::hookUndefinedActions');
@@ -240,15 +250,4 @@ if (defined('SUCURISCAN')) {
      * edge of the servers.
      */
     add_action('save_post', 'sucuriscanFirewallClearCacheSavePost');
-
-    /**
-     * Display a message if the plugin is not activated.
-     *
-     * Display a message at the top of the administration panel with a button that
-     * once clicked will send the site's email and domain name to the Sucuri API
-     * service where an API key will be generated for the site, this key will allow
-     * the plugin to execute the filesystem scans, the project integrity, and the
-     * email notifications.
-     */
-    add_action($sucuriscan_action_prefix . 'admin_notices', 'SucuriScanInterface::setupAlert');
 }

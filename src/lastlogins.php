@@ -13,44 +13,6 @@ class SucuriScanLastLogins extends SucuriScan
 }
 
 /**
- * Generate and print the HTML code for the Last Logins page.
- *
- * This page will contains information of all the logins of the registered users.
- *
- * @return string Last-logings for the administrator accounts.
- */
-function sucuriscan_lastlogins_page()
-{
-    SucuriScanInterface::checkPageVisibility();
-
-    // Reset the file with the last-logins logs.
-    if (SucuriScanInterface::checkNonce()
-        && SucuriScanRequest::post(':reset_lastlogins') !== false
-    ) {
-        $file_path = sucuriscan_lastlogins_datastore_filepath();
-
-        if (@unlink($file_path)) {
-            sucuriscan_lastlogins_datastore_exists();
-            SucuriScanInterface::info('Last-Logins logs were reset successfully.');
-        } else {
-            SucuriScanInterface::error('Could not reset the last-logins logs.');
-        }
-    }
-
-    // Page pseudo-variables initialization.
-    $params = array(
-        'PageTitle' => 'Last Logins',
-        'LastLogins.Admins' => sucuriscan_lastlogins_admins(),
-        'LastLogins.AllUsers' => sucuriscan_lastlogins_all(),
-        'LoggedInUsers' => sucuriscan_loggedin_users_panel(),
-        'FailedLogins' => sucuriscan_failed_logins_panel(),
-        'BlockedUsers' => SucuriScanBlockedUsers::page(),
-    );
-
-    echo SucuriScanTemplate::getTemplate('lastlogins', $params);
-}
-
-/**
  * List all the user administrator accounts.
  *
  * @see https://codex.wordpress.org/Class_Reference/WP_User_Query
@@ -85,7 +47,6 @@ function sucuriscan_lastlogins_admins()
             $user_snippet['AdminUsers.NoLastLogins'] = 'hidden';
             $user_snippet['AdminUsers.NoLastLoginsTable'] = 'visible';
             $user_snippet['AdminUsers.RegisteredAt'] = 'Unknown';
-            $counter = 0;
 
             foreach ($admin->lastlogins as $i => $lastlogin) {
                 if ($i == 0) {
@@ -94,16 +55,13 @@ function sucuriscan_lastlogins_admins()
                     );
                 }
 
-                $css_class = ($counter % 2 === 0) ? '' : 'alternate';
                 $user_snippet['AdminUsers.LastLogins'] .= SucuriScanTemplate::getSnippet(
                     'lastlogins-admins-lastlogin',
                     array(
                         'AdminUsers.RemoteAddr' => $lastlogin->user_remoteaddr,
                         'AdminUsers.Datetime' => SucuriScan::datetime($lastlogin->user_lastlogin_timestamp),
-                        'AdminUsers.CssClass' => $css_class,
                     )
                 );
-                $counter++;
             }
         }
 
@@ -140,7 +98,6 @@ function sucuriscan_lastlogins_all()
         SucuriScanInterface::error('Last-logins datastore file is not writable: <code>' . $fpath . '</code>');
     }
 
-    $counter = 0;
     $last_logins = sucuriscan_get_logins($max_per_page, $offset);
     $params['UserList.Total'] = $last_logins['total'];
 
@@ -153,8 +110,6 @@ function sucuriscan_lastlogins_all()
     }
 
     foreach ($last_logins['entries'] as $user) {
-        $css_class = ($counter % 2 === 0) ? '' : 'alternate';
-
         $user_dataset = array(
             'UserList.Number' => $user->line_num,
             'UserList.UserId' => $user->user_id,
@@ -167,7 +122,6 @@ function sucuriscan_lastlogins_all()
             'UserList.Datetime' => $user->user_lastlogin,
             'UserList.TimeAgo' => SucuriScan::timeAgo($user->user_lastlogin),
             'UserList.UserURL' => SucuriScan::adminURL('user-edit.php?user_id=' . $user->user_id),
-            'UserList.CssClass' => $css_class,
         );
 
         if ($user->user_exists) {
@@ -178,7 +132,6 @@ function sucuriscan_lastlogins_all()
         }
 
         $params['UserList'] .= SucuriScanTemplate::getSnippet('lastlogins-all', $user_dataset);
-        $counter++;
     }
 
     // Generate the pagination for the list.

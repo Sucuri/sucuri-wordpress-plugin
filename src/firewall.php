@@ -32,12 +32,10 @@ function sucuriscan_firewall_settings($api_key = '')
         $params['Firewall.APIKey'] = $api_key['string'];
 
         if ($settings) {
-            $counter = 0;
             $params['Firewall.SettingsVisibility'] = 'visible';
             $settings = sucuriscan_explain_firewall_settings($settings);
 
             foreach ($settings as $option_name => $option_value) {
-                $css_class = ($counter % 2 === 0) ? 'alternate' : '';
                 $option_title = ucwords(str_replace('_', "\x20", $option_name));
 
                 // Generate a HTML list when the option's value is an array.
@@ -64,12 +62,10 @@ function sucuriscan_firewall_settings($api_key = '')
                 $params['Firewall.SettingOptions'] .= SucuriScanTemplate::getSnippet(
                     'firewall-settings',
                     array(
-                        'Firewall.OptionCssClass' => $css_class,
                         'Firewall.OptionName' => $option_title,
                         'Firewall.OptionValue' => $option_value,
                     )
                 );
-                $counter++;
             }
         }
     }
@@ -131,7 +127,7 @@ function sucuriscan_firewall_auditlogs()
 
 function sucuriscan_firewall_auditlogs_ajax()
 {
-    if (SucuriScanRequest::post('form_action') == 'get_audit_logs') {
+    if (SucuriScanRequest::post('form_action') == 'get_firewall_logs') {
         $response = '';
         $api_key = SucuriScanAPI::getCloudproxyKey();
 
@@ -195,12 +191,9 @@ function sucuriscan_firewall_auditlogs_entries($entries = array())
     );
 
     if (is_array($entries) && !empty($entries)) {
-        $counter = 0;
-
         foreach ($entries as $entry) {
             if (array_key_exists('is_usable', $entry) && $entry['is_usable']) {
                 $data_set = array();
-                $data_set['AccessLog.CssClass'] = ($counter % 2 == 0) ? '' : 'alternate';
 
                 foreach ($attributes as $attr) {
                     // Generate variable name for the template pseudo-tags.
@@ -227,7 +220,6 @@ function sucuriscan_firewall_auditlogs_entries($entries = array())
                 }
 
                 $output .= SucuriScanTemplate::getSnippet('firewall-auditlogs', $data_set);
-                $counter++;
             }
         }
     }
@@ -364,53 +356,6 @@ function sucuriscanFirewallClearCacheSavePost($post_id = 0)
     }
 
     SucuriScanAPI::clearCloudproxyCache(); /* ignore errors */
-}
-
-/**
- * CloudProxy firewall page.
- *
- * It checks whether the WordPress core files are the original ones, and the state
- * of the themes and plugins reporting the availability of updates. It also checks
- * the user accounts under the administrator group.
- *
- * @return void
- */
-function sucuriscan_firewall_page()
-{
-    SucuriScanInterface::checkPageVisibility();
-
-    // Process all form submissions.
-    $nonce = SucuriScanInterface::checkNonce();
-    sucuriscan_firewall_form_submissions($nonce);
-
-    // Get the dynamic values for the template variables.
-    $api_key = SucuriScanAPI::getCloudproxyKey();
-
-    // Page pseudo-variables initialization.
-    $params = array(
-        'PageTitle' => 'Firewall WAF',
-        'Firewall.Settings' => sucuriscan_firewall_settings($api_key),
-        'Firewall.AuditLogs' => sucuriscan_firewall_auditlogs($api_key),
-        'Firewall.ClearCache' => sucuriscan_firewall_clearcache($nonce),
-    );
-
-    echo SucuriScanTemplate::getTemplate('firewall', $params);
-}
-
-/**
- * Handle an Ajax request for this specific page.
- *
- * @return mixed.
- */
-function sucuriscan_firewall_ajax()
-{
-    SucuriScanInterface::checkPageVisibility();
-
-    if (SucuriScanInterface::checkNonce()) {
-        sucuriscan_firewall_auditlogs_ajax();
-    }
-
-    wp_die();
 }
 
 /**

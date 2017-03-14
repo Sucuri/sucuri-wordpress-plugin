@@ -33,7 +33,7 @@ class SucuriScan
         ) {
             $code = ($type === 'error' ? 157 : 333);
             $message = str_replace(
-                '<b>Sucuri:</b>',
+                SUCURISCAN_ADMIN_NOTICE_PREFIX,
                 ($type === 'error' ? 'Error:' : 'Info:'),
                 $message
             );
@@ -303,8 +303,8 @@ class SucuriScan
     {
         SucuriScanEvent::filesystemScan();
 
-        sucuriscan_core_files_data(true);
-        sucuriscan_posthack_updates_content(true);
+        SucuriScanIntegrity::getIntegrityStatus(true);
+        SucuriScanPosthackPage::availableUpdatesContent(true);
     }
 
     /**
@@ -541,7 +541,7 @@ class SucuriScan
     }
 
     /**
-     * Get the email address set by the administrator to receive the notifications
+     * Get the email address set by the administrator to receive the alerts
      * sent by the plugin, if the email is missing the WordPress email address is
      * chosen by default.
      *

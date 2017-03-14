@@ -45,19 +45,6 @@ class SucuriScanFSScanner extends SucuriScan
     }
 
     /**
-     * Check whether the administrator enabled the feature to ignore some
-     * directories during the file system scans. This method is overwritten by a
-     * GET parameter in the settings page named no_scan which must be equal to the
-     * number one.
-     *
-     * @return boolean Whether the feature to ignore files is enabled or not.
-     */
-    public static function willIgnoreScanning()
-    {
-        return SucuriScanOption::isEnabled(':ignore_scanning');
-    }
-
-    /**
      * Add a new directory path to the list of ignored paths.
      *
      * @param  string  $directory_path The (full) absolute path of a directory.

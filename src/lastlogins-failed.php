@@ -50,7 +50,6 @@ function sucuriscan_failed_logins_panel()
         for ($key = $page_offset; $key < $page_limit; $key++) {
             if (array_key_exists($key, $failed_logins['entries'])) {
                 $login_data = $failed_logins['entries'][ $key ];
-                $css_class = ( $counter % 2 == 0 ) ? '' : 'alternate';
                 $wrong_user_password = 'hidden';
                 $wrong_user_password_color = 'default';
 
@@ -62,19 +61,17 @@ function sucuriscan_failed_logins_panel()
                     $wrong_user_password_color = 'info';
                 }
 
-                $template_variables['FailedLogins.List'] .= SucuriScanTemplate::getSnippet(
-                    'lastlogins-failedlogins',
-                    array(
-                        'FailedLogins.CssClass' => $css_class,
-                        'FailedLogins.Num' => $login_data['attempt_count'],
-                        'FailedLogins.Username' => $login_data['user_login'],
-                        'FailedLogins.RemoteAddr' => $login_data['remote_addr'],
-                        'FailedLogins.UserAgent' => $login_data['user_agent'],
-                        'FailedLogins.Password' => $wrong_user_password,
-                        'FailedLogins.PasswordColor' => $wrong_user_password_color,
-                        'FailedLogins.Datetime' => SucuriScan::datetime($login_data['attempt_time']),
-                    )
-                );
+                $template_variables['FailedLogins.List'] .=
+                SucuriScanTemplate::getSnippet('lastlogins-failedlogins', array(
+                    'FailedLogins.Num' => $login_data['attempt_count'],
+                    'FailedLogins.Username' => $login_data['user_login'],
+                    'FailedLogins.RemoteAddr' => $login_data['remote_addr'],
+                    'FailedLogins.UserAgent' => $login_data['user_agent'],
+                    'FailedLogins.Password' => $wrong_user_password,
+                    'FailedLogins.PasswordColor' => $wrong_user_password_color,
+                    'FailedLogins.Datetime' => SucuriScan::datetime($login_data['attempt_time']),
+                ));
+
                 $counter++;
             }
         }
@@ -327,7 +324,7 @@ function sucuriscan_log_failed_login($user_login = '', $wrong_password = '')
  * Read and parse all the entries in the datastore file where the failed logins
  * are being kept, this will loop through all these items and generate a table
  * in HTML code to send as a report via email according to the plugin settings
- * for the email notifications.
+ * for the email alerts.
  *
  * @param  array   $failed_logins Information and entries gathered from the failed logins datastore file.
  * @return boolean                Whether the report was sent via email or not.

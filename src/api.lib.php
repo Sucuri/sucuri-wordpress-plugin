@@ -136,6 +136,15 @@ class SucuriScanAPI extends SucuriScanOption
         if ($url && ($method === 'GET' || $method === 'POST')) {
             $handler = SucuriScanOption::getOption(':api_handler');
 
+            if (getenv('SUCURISCAN_API_DEBUG') !== false) {
+                printf(
+                    "curl -X%s \"%s?%s\"\n",
+                    $method,
+                    $url, /* request target */
+                    self::buildQuery($params)
+                );
+            }
+
             if (!function_exists('curl_init') || $handler === 'socket') {
                 $params['socket'] = 'true';
                 $output = self::apiCallSocket($url, $method, $params, $args);
@@ -158,188 +167,206 @@ class SucuriScanAPI extends SucuriScanOption
 
     private static function apiCallCurl($url = '', $method = 'GET', $params = array(), $args = array())
     {
-        if ($url
-            && function_exists('curl_init')
-            && ($method === 'GET' || $method === 'POST')
-        ) {
-            $curl = curl_init();
-            $timeout = self::requestTimeout();
-
-            if (is_array($args) && isset($args['timeout'])) {
-                $timeout = $args['timeout'];
-            }
-
-            // Add random request parameter to avoid request reset.
-            if (!empty($params) && !array_key_exists('time', $params)) {
-                $params['time'] = time();
-            }
-
-            if ($method === 'GET'
-                && is_array($params)
-                && !empty($params)
-            ) {
-                $url .= '?' . self::buildQuery($params);
-            }
-
-            curl_setopt($curl, CURLOPT_URL, $url);
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($curl, CURLOPT_USERAGENT, self::userAgent());
-            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
-            curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $timeout);
-            curl_setopt($curl, CURLOPT_TIMEOUT, $timeout * 2);
-
-            if (self::canCurlFollowRedirection()) {
-                curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
-                curl_setopt($curl, CURLOPT_MAXREDIRS, 2);
-            }
-
-            if ($method === 'POST') {
-                curl_setopt($curl, CURLOPT_POST, true);
-                curl_setopt($curl, CURLOPT_POSTFIELDS, self::buildQuery($params));
-            }
-
-            curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
-            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
-
-            $output = curl_exec($curl);
-            $errors = curl_error($curl);
-
-            curl_close($curl);
-
-            if (empty($output) && !empty($errors)) {
-                /* report errors to the unit-tests */
-                SucuriScan::throwException($errors);
-
-                $output = $errors;
-            }
-
-            return $output;
+        if (!$url) {
+            SucuriScan::throwException('URL is invalid');
+            return false;
         }
 
-        return false;
+        if (!function_exists('curl_init')) {
+            SucuriScan::throwException('CURL is not available');
+            return false;
+        }
+
+        if ($method !== 'GET' && $method !== 'POST') {
+            SucuriScan::throwException('Only GET and POST methods allowed');
+            return false;
+        }
+
+        $curl = curl_init();
+        $timeout = self::requestTimeout();
+
+        if (is_array($args) && isset($args['timeout'])) {
+            $timeout = $args['timeout'];
+        }
+
+        // Add random request parameter to avoid request reset.
+        if (!empty($params) && !array_key_exists('time', $params)) {
+            $params['time'] = time();
+        }
+
+        if ($method === 'GET'
+            && is_array($params)
+            && !empty($params)
+        ) {
+            $url .= '?' . self::buildQuery($params);
+        }
+
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_USERAGENT, self::userAgent());
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $timeout);
+        curl_setopt($curl, CURLOPT_TIMEOUT, $timeout * 2);
+
+        if (self::canCurlFollowRedirection()) {
+            curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($curl, CURLOPT_MAXREDIRS, 2);
+        }
+
+        if ($method === 'POST') {
+            curl_setopt($curl, CURLOPT_POST, true);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, self::buildQuery($params));
+        }
+
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
+
+        $output = curl_exec($curl);
+        $errors = curl_error($curl);
+
+        curl_close($curl);
+
+        if (empty($output) && !empty($errors)) {
+            /* report errors to the unit-tests */
+            SucuriScan::throwException($errors);
+            $output = $errors;
+        }
+
+        return $output;
     }
 
     private static function apiCallSocket($url = '', $method = 'GET', $params = array(), $args = array())
     {
-        if (function_exists('fsockopen')) {
-            $timeout = self::requestTimeout();
-
-            if (is_array($args) && isset($args['timeout'])) {
-                $timeout = $args['timeout'];
-            }
-
-            // Add random request parameter to avoid request reset.
-            if (!empty($params) && !array_key_exists('time', $params)) {
-                $params['time'] = time();
-            }
-
-            if ($method === 'GET'
-                && is_array($params)
-                && !empty($params)
-            ) {
-                $url .= '?' . self::buildQuery($params);
-            }
-
-            $url_parts = parse_url($url);
-
-            if (is_array($url_parts)
-                && array_key_exists('host', $url_parts)
-                && array_key_exists('scheme', $url_parts)
-            ) {
-                $host = $url_parts['host'];
-                $path = '/';
-                $port = 80;
-
-                if ($url_parts['scheme'] === 'https') {
-                    $host = sprintf('ssl://%s', $url_parts['host']);
-                    $port = 443;
-                }
-
-                if (array_key_exists('path', $url_parts)) {
-                    $path = $url_parts['path'];
-                }
-
-                if (array_key_exists('query', $url_parts)) {
-                    $path .= '?' . $url_parts['query'];
-                }
-
-                $socket = fsockopen($host, $port, $errno, $errstr, $timeout);
-
-                if ($socket) {
-                    $headers = '';
-                    $response = '';
-
-                    $out = sprintf("%s %s HTTP/1.1\r\n", $method, $path);
-                    $out .= "Accept: */*\r\n";
-                    $out .= sprintf("Host: %s\r\n", $url_parts['host']);
-                    $out .= sprintf("User-Agent: %s\r\n", self::userAgent());
-                    $out .= "Connection: Close\r\n";
-
-                    if ($method === 'POST') {
-                        $query = self::buildQuery($params);
-                        $out .= sprintf("Content-Length: %s\r\n", strlen($query));
-                        $out .= "Content-Type: application/x-www-form-urlencoded; charset=utf-8\r\n";
-                        $out .= "\r\n" . $query;
-                    }
-
-                    fwrite($socket, $out . "\r\n");
-
-                    while (strpos($headers, "\r\n\r\n") === false) {
-                        $headers .= fread($socket, 1);
-                    }
-
-                    $chunk = '';
-                    $segmented = false;
-
-                    while (!feof($socket)) {
-                        $byte = fread($socket, 1);
-
-                        if ($byte === "\r") { /* CR */
-                            fread($socket, 1); /* LF */
-
-                            if (strlen($chunk) <= 4) {
-                                /* Chunk size, ignore */
-                            } else {
-                                $segmented = true;
-                                $response .= $chunk;
-                            }
-
-                            /* Reset and continue */
-                            $chunk = '';
-                            continue;
-                        }
-
-                        $chunk .= $byte;
-                    }
-
-                    if ($segmented === false) {
-                        $response = $chunk;
-                    }
-
-                    fclose($socket);
-
-                    /* Follow explicit redirection */
-                    if (stripos($headers, 'location:') !== false) {
-                        if (@preg_match('/ocation:(.+)\r\n/', $headers, $match)) {
-                            return self::apiCallSocket(
-                                trim($match[1]),
-                                $method,
-                                $params,
-                                $args
-                            );
-                        }
-
-                        return false;
-                    }
-
-                    /* Return if we reached the destination */
-                    if (strpos($headers, '200 OK')) {
-                        return $response;
-                    }
-                }
-            }
+        if (!function_exists('fsockopen')) {
+            SucuriScan::throwException('fsockopen is not available');
+            return false;
         }
 
+        $timeout = self::requestTimeout();
+
+        if (is_array($args) && isset($args['timeout'])) {
+            $timeout = $args['timeout'];
+        }
+
+        // Add random request parameter to avoid request reset.
+        if (!empty($params) && !array_key_exists('time', $params)) {
+            $params['time'] = time();
+        }
+
+        if ($method === 'GET'
+            && is_array($params)
+            && !empty($params)
+        ) {
+            $url .= '?' . self::buildQuery($params);
+        }
+
+        $url_parts = parse_url($url);
+
+        if (!is_array($url_parts)
+            || !array_key_exists('host', $url_parts)
+            || !array_key_exists('scheme', $url_parts)
+        ) {
+            SucuriScan::throwException('URL is invalid; no host or scheme: ' . $url);
+            return false;
+        }
+
+        $host = $url_parts['host'];
+        $path = '/';
+        $port = 80;
+
+        if ($url_parts['scheme'] === 'https') {
+            $host = sprintf('ssl://%s', $url_parts['host']);
+            $port = 443;
+        }
+
+        if (array_key_exists('path', $url_parts)) {
+            $path = $url_parts['path'];
+        }
+
+        if (array_key_exists('query', $url_parts)) {
+            $path .= '?' . $url_parts['query'];
+        }
+
+        $socket = fsockopen($host, $port, $errno, $errstr, $timeout);
+
+        if (!$socket) {
+            SucuriScan::throwException('socket could not be opened');
+            return false;
+        }
+
+        $headers = '';
+        $response = '';
+
+        $out = sprintf("%s %s HTTP/1.1\r\n", $method, $path);
+        $out .= "Accept: */*\r\n";
+        $out .= sprintf("Host: %s\r\n", $url_parts['host']);
+        $out .= sprintf("User-Agent: %s\r\n", self::userAgent());
+        $out .= "Connection: Close\r\n";
+
+        if ($method === 'POST') {
+            $query = self::buildQuery($params);
+            $out .= sprintf("Content-Length: %s\r\n", strlen($query));
+            $out .= "Content-Type: application/x-www-form-urlencoded; charset=utf-8\r\n";
+            $out .= "\r\n" . $query;
+        }
+
+        fwrite($socket, $out . "\r\n");
+
+        while (strpos($headers, "\r\n\r\n") === false) {
+            $headers .= fread($socket, 1);
+        }
+
+        $chunk = '';
+        $segmented = false;
+
+        while (!feof($socket)) {
+            $byte = fread($socket, 1);
+
+            if ($byte === "\r") { /* CR */
+                fread($socket, 1); /* LF */
+
+                if (strlen($chunk) <= 4) {
+                    /* Chunk size, ignore */
+                } else {
+                    $segmented = true;
+                    $response .= $chunk;
+                }
+
+                /* Reset and continue */
+                $chunk = '';
+                continue;
+            }
+
+            $chunk .= $byte;
+        }
+
+        if ($segmented === false) {
+            $response = $chunk;
+        }
+
+        fclose($socket);
+
+        /* Follow explicit redirection */
+        if (stripos($headers, 'location:') !== false) {
+            if (@preg_match('/ocation:(.+)\r\n/', $headers, $match)) {
+                return self::apiCallSocket(
+                    trim($match[1]),
+                    $method,
+                    $params,
+                    $args
+                );
+            }
+
+            SucuriScan::throwException('redirection without next target');
+            return false;
+        }
+
+        /* Return if we reached the destination */
+        if (strpos($headers, '200 OK')) {
+            return $response;
+        }
+
+        SucuriScan::throwException('unexpected http status code');
         return false;
     }
 
@@ -518,23 +545,27 @@ class SucuriScanAPI extends SucuriScanOption
      */
     private static function handleResponse($response = array(), $enqueue = true)
     {
-        if ($response !== false) {
-            if (is_array($response)
-                && array_key_exists('status', $response)
-                && intval($response['status']) === 1
-            ) {
-                return true;
-            }
-
-            if (is_array($response)
-                && array_key_exists('messages', $response)
-                && !empty($response['messages'])
-            ) {
-                return self::handleErrorResponse($response, $enqueue);
-            }
+        if (!$response) {
+            return false;
         }
 
-        return false;
+        if (is_array($response)
+            && array_key_exists('status', $response)
+            && intval($response['status']) === 1
+        ) {
+            return true;
+        }
+
+        if (is_array($response)
+            && array_key_exists('messages', $response)
+            && !empty($response['messages'])
+        ) {
+            return self::handleErrorResponse($response, $enqueue);
+        }
+
+        if (is_string($response) && !empty($response)) {
+            SucuriScanInterface::error($response);
+        }
     }
 
     /**
@@ -764,7 +795,7 @@ class SucuriScanAPI extends SucuriScanOption
      * @param  integer $lines How many lines from the log file will be retrieved.
      * @return string         The response of the API service.
      */
-    public static function getLogs($lines = 50)
+    public static function getAuditLogs($lines = 50)
     {
         $response = self::apiCallWordpress('GET', array(
             'a' => 'get_logs',
@@ -932,7 +963,7 @@ class SucuriScanAPI extends SucuriScanOption
      */
     public static function getAuditReport($lines = 50)
     {
-        $audit_logs = self::getLogs($lines);
+        $audit_logs = self::getAuditLogs($lines);
 
         if (is_array($audit_logs)
             && array_key_exists('total_entries', $audit_logs)
@@ -958,7 +989,7 @@ class SucuriScanAPI extends SucuriScanOption
             $event_types = self::getAuditEventTypes();
             foreach ($event_types as $event => $event_color) {
                 $report['events_per_type'][$event] = 0;
-                $report['event_colors'][] = sprintf("'%s'", $event_color);
+                $report['event_colors'][] = $event_color;
             }
 
             // Collect information for each report chart.
@@ -1150,32 +1181,32 @@ class SucuriScanAPI extends SucuriScanOption
      */
     public static function getSitecheckResults($domain = '', $clear = true)
     {
-        if (!empty($domain)) {
-            $params = array();
-            $timeout = (int) SucuriScanOption::getOption(':sitecheck_timeout');
-            $params['scan'] = $domain;
-            $params['fromwp'] = 2;
-            $params['json'] = 1;
-
-            // Request a fresh scan or not.
-            if ($clear === true) {
-                $params['clear'] = 1;
-            }
-
-            $response = self::apiCall(
-                'https://sitecheck.sucuri.net/',
-                'GET',
-                $params,
-                array(
-                    'assoc' => true,
-                    'timeout' => $timeout,
-                )
-            );
-
-            return $response;
+        if (empty($domain)) {
+            return false;
         }
 
-        return false;
+        $params = array();
+        $timeout = (int) SucuriScanOption::getOption(':sitecheck_timeout');
+        $params['scan'] = $domain;
+        $params['fromwp'] = 2;
+        $params['json'] = 1;
+
+        // Request a fresh scan or not.
+        if ($clear === true) {
+            $params['clear'] = 1;
+        }
+
+        $response = self::apiCall(
+            'https://sitecheck.sucuri.net/',
+            'GET',
+            $params,
+            array(
+                'assoc' => true,
+                'timeout' => $timeout,
+            )
+        );
+
+        return $response;
     }
 
     /**
