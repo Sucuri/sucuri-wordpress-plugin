@@ -49,6 +49,8 @@ $sucuriscan_dependencies = array(
 // Terminate execution if any of the functions mentioned above is not defined.
 foreach ($sucuriscan_dependencies as $dependency) {
     if (!function_exists($dependency)) {
+        /* Report invalid access if possible. */
+        header('HTTP/1.1 403 Forbidden');
         exit(0);
     }
 }
@@ -102,7 +104,7 @@ define('SUCURISCAN_PLUGIN_FILEPATH', SUCURISCAN_PLUGIN_PATH . '/' . SUCURISCAN_P
 /**
  * The local URL where the plugin's files and assets are served.
  */
-define('SUCURISCAN_URL', rtrim(plugin_dir_url(SUCURISCAN_PLUGIN_FILEPATH), '/'));
+define('SUCURISCAN_URL', site_url(dirname(str_replace(ABSPATH, '', SUCURISCAN_PLUGIN_FILEPATH))));
 
 /**
  * Remote URL where the public Sucuri API service is running.
@@ -135,6 +137,11 @@ define('SUCURISCAN_CLOUDPROXY_API_VERSION', 'v2');
  * The maximum quantity of entries that will be displayed in the last login page.
  */
 define('SUCURISCAN_LASTLOGINS_USERSLIMIT', 25);
+
+/**
+ * The life time of the cache for the audit logs to help API perforamnce.
+ */
+define('SUCURISCAN_AUDITLOGS_LIFETIME', 600);
 
 /**
  * The maximum quantity of entries that will be displayed in the audit logs page.
@@ -171,6 +178,21 @@ define('SUCURISCAN_MAX_REQUEST_TIMEOUT', 15);
  */
 define('SUCURISCAN_MAX_SITECHECK_TIMEOUT', 60);
 
+/**
+ * Sets the text that will preceed the admin notices.
+ *
+ * If you have defined SUCURISCAN_THROW_EXCEPTIONS to throw a generic exception
+ * when an info or error alert is triggered, this text will be replaced by the
+ * type of alert that was fired (either Info or Error respectively) which is
+ * useful when you are executing code in a testing environment.
+ */
+define('SUCURISCAN_ADMIN_NOTICE_PREFIX', '<b>SUCURI:</b>');
+
+/* Fix missing server name in non-webview context */
+if (!array_key_exists('SERVER_NAME', $_SERVER)) {
+    $_SERVER['SERVER_NAME'] = 'localhost';
+}
+
 /* Load all classes before anything else. */
 require_once('src/sucuriscan.lib.php');
 require_once('src/request.lib.php');
@@ -185,17 +207,16 @@ require_once('src/template.lib.php');
 require_once('src/fsscanner.lib.php');
 require_once('src/hardening.lib.php');
 require_once('src/interface.lib.php');
+require_once('src/auditlogs.lib.php');
+require_once('src/sitecheck.lib.php');
+require_once('src/integrity.lib.php');
+require_once('src/installer-skin.lib.php');
+
+/* Load page and ajax handlers */
+require_once('src/pagehandler.php');
 
 /* Load handlers for main pages. */
-require_once('src/modfiles.php');
-require_once('src/sitecheck.php');
 require_once('src/firewall.php');
-require_once('src/hardening.php');
-require_once('src/homepage.php');
-require_once('src/auditlogs.php');
-require_once('src/outdated.php');
-require_once('src/corefiles.php');
-require_once('src/posthack.php');
 
 /* Load handlers for main pages (lastlogins). */
 require_once('src/lastlogins.php');
@@ -207,17 +228,13 @@ require_once('src/lastlogins-blocked.php');
 require_once('src/settings.php');
 require_once('src/settings-general.php');
 require_once('src/settings-scanner.php');
-require_once('src/settings-corefiles.php');
+require_once('src/settings-integrity.php');
 require_once('src/settings-sitecheck.php');
-require_once('src/settings-ignorescan.php');
+require_once('src/settings-hardening.php');
+require_once('src/settings-posthack.php');
 require_once('src/settings-alerts.php');
-require_once('src/settings-ignorealerts.php');
 require_once('src/settings-apiservice.php');
-require_once('src/settings-selfhosting.php');
-require_once('src/settings-trustip.php');
-
-/* Load handlers for main pages (infosys). */
-require_once('src/infosys.php');
+require_once('src/settings-webinfo.php');
 
 /* Load global variables and triggers */
 require_once('src/globals.php');

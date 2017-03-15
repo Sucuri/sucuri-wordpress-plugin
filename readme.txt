@@ -94,7 +94,7 @@ Regardless of how good your security posture is, sometimes it’s impossible to 
 
 = Security Notifications =
 
-Having all these security features would be useless unless you were notified of the issues. This is why we have made available security notifications. We have also expanded the various security related events, to provide website owners more flexibility in regards to what they want to know about. As a website owner, you have the option to make these security alerts as quiet or noisy as you would like.
+Having all these security features would be useless unless you were notified of the issues. This is why we have made available security alerts. We have also expanded the various security related events, to provide website owners more flexibility in regards to what they want to know about. As a website owner, you have the option to make these security alerts as quiet or noisy as you would like.
 
 
 = Sucuri CloudProxy Website Firewall (Add On Security Service) =
@@ -149,7 +149,7 @@ To configure the Sucuri WordPress Security plugin for your specific Security nee
 2. Hover or click on the name,
 3. Click on <strong>Settings</strong>.
 
-The <strong>Settings</strong> page allows you to configure the website to your preferred security needs. Some of it’s features include changing the email notifications, via the <strong>notification settings</strong> tab or disabling integrity checking. We encourage you to visit this section and tune your security needs as you see fit.
+The <strong>Settings</strong> page allows you to configure the website to your preferred security needs. Some of it’s features include changing the email alerts, via the <strong>alert settings</strong> tab or disabling integrity checking. We encourage you to visit this section and tune your security needs as you see fit.
 
 
 == Frequently Asked Questions ==
@@ -263,7 +263,7 @@ This version adds support for the latest version of WordPress. Introduces new fe
 * Modified API calls using custom HTTP request using Curl
 * Fixed core files marked as broken in a Windows server
 * Fixed pagination links in last and failed logins page
-* Fixed password with ampersands in email notification
+* Fixed password with ampersands in email alert
 * Fixed whitelist hardening using the authz_core module
 * Removed unnecessary emails to reduce spam
 * Added constant to stop execution of admin init hooks
