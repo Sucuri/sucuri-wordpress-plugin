@@ -4,7 +4,7 @@ Plugin Name: Sucuri Security - Auditing, Malware Scanner and Hardening
 Plugin URI: https://wordpress.sucuri.net/
 Description: The <a href="https://sucuri.net/" target="_blank">Sucuri</a> plugin provides the website owner the best Activity Auditing, SiteCheck Remote Malware Scanning, Effective Security Hardening and Post-Hack features. SiteCheck will check for malware, spam, blacklisting and other security issues like .htaccess redirects, hidden eval code, etc. The best thing about it is it's completely free.
 Author: Sucuri, INC
-Version: 1.8.2
+Version: 1.8.3
 Author URI: https://sucuri.net
 */
 
@@ -65,7 +65,7 @@ define('SUCURISCAN', 'sucuriscan');
 /**
  * Current version of the plugin's code.
  */
-define('SUCURISCAN_VERSION', '1.8.2');
+define('SUCURISCAN_VERSION', '1.8.3');
 
 /**
  * The name of the Sucuri plugin main file.
@@ -6680,7 +6680,12 @@ class SucuriScanMail extends SucuriScanOption
              * @var boolean
              */
             if (SucuriScanOption::is_enabled(':use_wpmail')) {
-                $mail_sent = wp_mail($email, $subject, $message, $headers);
+                try {
+                    $mail_sent = wp_mail($email, $subject, $message, $headers);
+                }
+                catch (Exception $e) {
+                    $mail_sent = false;
+                }
             } else {
                 $headers = implode("\r\n", $headers);
                 $mail_sent = @mail($email, $subject, $message, $headers);
@@ -7223,7 +7228,7 @@ class SucuriScanTemplate extends SucuriScanRequest
         foreach ($allowed_values as $option_name => $option_label) {
             $options .= sprintf(
                 "<option %s value='%s'>%s</option>\n",
-                ($option_name === $selected_val ? 'selected="selected"' : ''),
+                ("$option_name" === "$selected_val" ? 'selected="selected"' : ''),
                 SucuriScan::escape($option_name),
                 SucuriScan::escape($option_label)
             );
@@ -8279,13 +8284,7 @@ function sucuriscan_sitecheck_info($scan_results = array())
     $tld = SucuriScan::get_domain();
 
     if ($custom = SucuriScanRequest::get('s')) {
-        $pattern = '/^[0-9a-z_\.\-\/]+$/';
-
-        if (preg_match($pattern, $custom)) {
-            $tld = SucuriScan::escape($custom);
-        } else {
-            SucuriScanInterface::error('Invalid website, using default: ' . SucuriScan::escape($tld));
-        }
+        $tld = SucuriScan::escape($custom);
     }
 
     $params = array(
