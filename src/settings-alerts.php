@@ -136,15 +136,13 @@ function sucuriscan_settings_alerts_trustedips()
                 $ip_info->cidr_format = 'n/a';
             }
 
-            $params['TrustedIPs.List'] .= SucuriScanTemplate::getSnippet(
-                'settings-trustip',
-                array(
-                    'TrustIP.CacheKey' => $cache_key,
-                    'TrustIP.RemoteAddr' => SucuriScan::escape($ip_info->remote_addr),
-                    'TrustIP.CIDRFormat' => SucuriScan::escape($ip_info->cidr_format),
-                    'TrustIP.AddedAt' => SucuriScan::datetime($ip_info->added_at),
-                )
-            );
+            $params['TrustedIPs.List'] .=
+            SucuriScanTemplate::getSnippet('settings-alerts-trustedips', array(
+                'TrustIP.CacheKey' => $cache_key,
+                'TrustIP.RemoteAddr' => SucuriScan::escape($ip_info->remote_addr),
+                'TrustIP.CIDRFormat' => SucuriScan::escape($ip_info->cidr_format),
+                'TrustIP.AddedAt' => SucuriScan::datetime($ip_info->added_at),
+            ));
         }
 
         $params['TrustedIPs.NoItems.Visibility'] = 'hidden';
@@ -262,7 +260,7 @@ function sucuriscan_settings_alerts_perhour($nonce)
         }
     }
 
-    $per_hour = SucuriScanOption::getOption(':emails_per_hour');
+    $per_hour = (int) SucuriScanOption::getOption(':emails_per_hour');
     $per_hour_options = SucuriScanTemplate::selectOptions($sucuriscan_emails_per_hour, $per_hour);
     $params['Alerts.PerHour'] = $per_hour_options;
 
@@ -292,7 +290,7 @@ function sucuriscan_settings_alerts_bruteforce($nonce)
         }
     }
 
-    $maximum = SucuriScanOption::getOption(':maximum_failed_logins');
+    $maximum = (int) SucuriScanOption::getOption(':maximum_failed_logins');
     $maximum_options = SucuriScanTemplate::selectOptions($sucuriscan_maximum_failed_logins, $maximum);
     $params['Alerts.BruteForce'] = $maximum_options;
 

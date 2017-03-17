@@ -34,6 +34,8 @@
 
         <div class="sucuriscan-hstatus sucuriscan-hstatus-%%SUCURI.ApiStatus.StatusNum%%">
             <span>API Service Communication is %%SUCURI.ApiStatus.Status%%</span>
+            &mdash;
+            <span class="sucuriscan-monospace">%%SUCURI.ApiStatus.ServiceURL%%</span>
             <form action="%%SUCURI.URL.Settings%%#apiservice" method="post">
                 <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
                 <input type="hidden" name="sucuriscan_api_service" value="%%SUCURI.ApiStatus.SwitchValue%%" />

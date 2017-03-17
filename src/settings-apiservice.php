@@ -20,6 +20,7 @@ function sucuriscan_settings_apiservice_status($nonce)
     $params['ApiStatus.SwitchValue'] = 'disable';
     $params['ApiStatus.WarningVisibility'] = 'visible';
     $params['ApiStatus.ErrorVisibility'] = 'hidden';
+    $params['ApiStatus.ServiceURL'] = SUCURISCAN_API_URL;
 
     if ($nonce) {
         // Enable or disable the API service communication.

@@ -37,6 +37,9 @@ body.sucuri-security_page_sucuriscan_hardening {
 .sucuriscan-monospace {
     font-family: Menlo, Monaco, monospace, serif;
 }
+.sucuriscan-wraptext {
+    word-break: break-all;
+}
 .sucuriscan-container select {
     margin: 0;
     padding: 0;

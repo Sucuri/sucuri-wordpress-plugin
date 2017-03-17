@@ -1,6 +1,6 @@
 
 <div class="sucuriscan-panel">
-    <h3>Reset User Password</h3>
+    <h3 class="sucuriscan-title">Reset User Password</h3>
 
     <script type="text/javascript">
     /* global jQuery */
