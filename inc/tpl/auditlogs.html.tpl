@@ -25,6 +25,10 @@ jQuery(function ($) {
                 $('.sucuriscan-auditlog-response').html(data.content);
                 $('.sucuriscan-pagination-loading').html('');
 
+                if (data.selfhosting) {
+                    $('#sucuriscan-auditlog-selfhosting').removeClass('sucuriscan-hidden');
+                }
+
                 if (data.pagination !== '') {
                     $('.sucuriscan-auditlog-table .sucuriscan-pagination').html(data.pagination);
                 }
@@ -50,6 +54,17 @@ jQuery(function ($) {
 </script>
 
 <div class="sucuriscan-auditlog-table">
+    <div id="sucuriscan-auditlog-selfhosting" class="sucuriscan-inline-alert-info sucuriscan-hidden">
+        <p>
+            You don't have a valid API key to communicate with the remote API
+            service. However, the self-hosting monitor is enabled, the plugin
+            will read the logs from that file and display the data here. Notice
+            that only the latest logs will be processed to keep a low memory
+            footprint. Consider to generate a free API key to get a better
+            coverage of the activity in your website.
+        </p>
+    </div>
+
     <div class="sucuriscan-auditlog-response">
         <em>Loading...</em>
     </div>

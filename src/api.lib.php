@@ -802,92 +802,150 @@ class SucuriScanAPI extends SucuriScanOption
             'l' => $lines,
         ));
 
-        if (self::handleResponse($response)) {
-            $response['output_data'] = array();
-            $log_pattern = '/^([0-9\-]+) ([0-9:]+) (\S+) : (.+)/';
-            $extra_pattern = '/(.+ \(multiple entries\):) (.+)/';
-            $generic_pattern = '/^@?([A-Z][a-z]{3,7}): ([^;]+; )?(.+)/';
-            $auth_pattern = '/^User authentication (succeeded|failed): ([^<;]+)/';
-
-            foreach ($response['output'] as $log) {
-                if (@preg_match($log_pattern, $log, $log_match)) {
-                    $log_data = array(
-                        'event' => 'notice',
-                        'date' => '',
-                        'time' => '',
-                        'datetime' => '',
-                        'timestamp' => 0,
-                        'account' => $log_match[3],
-                        'username' => 'system',
-                        'remote_addr' => '127.0.0.1',
-                        'message' => $log_match[4],
-                        'file_list' => false,
-                        'file_list_count' => 0,
-                    );
-
-                    // Extract and fix the date and time using the Eastern time zone.
-                    $datetime = sprintf('%s %s EDT', $log_match[1], $log_match[2]);
-                    $log_data['timestamp'] = strtotime($datetime);
-                    $log_data['datetime'] = date('Y-m-d H:i:s', $log_data['timestamp']);
-                    $log_data['date'] = date('Y-m-d', $log_data['timestamp']);
-                    $log_data['time'] = date('H:i:s', $log_data['timestamp']);
-
-                    // Extract more information from the generic audit logs.
-                    $log_data['message'] = str_replace('<br>', '; ', $log_data['message']);
-
-                    if (@preg_match($generic_pattern, $log_data['message'], $log_extra)) {
-                        $log_data['event'] = strtolower($log_extra[1]);
-                        $log_data['message'] = trim($log_extra[3]);
-
-                        // Extract the username and remote address from the log.
-                        if (!empty($log_extra[2])) {
-                            $username_address = rtrim($log_extra[2], ";\x20");
-
-                            // Separate the username from the remote address.
-                            if (strpos($username_address, ",\x20") !== false) {
-                                $usip_parts = explode(",\x20", $username_address, 2);
-
-                                if (count($usip_parts) == 2) {
-                                    // Separate the username from the display name.
-                                    $log_data['username'] = @preg_replace('/^.+ \((.+)\)$/', '$1', $usip_parts[0]);
-                                    $log_data['remote_addr'] = $usip_parts[1];
-                                }
-                            } else {
-                                $log_data['remote_addr'] = $username_address;
-                            }
-                        }
-
-                        // Fix old user authentication logs for backward compatibility.
-                        $log_data['message'] = str_replace(
-                            'logged in',
-                            'authentication succeeded',
-                            $log_data['message']
-                        );
-
-                        if (@preg_match($auth_pattern, $log_data['message'], $user_match)) {
-                            $log_data['username'] = $user_match[2];
-                        }
-                    }
-
-                    // Extract more information from the special formatted logs.
-                    if (@preg_match($extra_pattern, $log_data['message'], $log_extra)) {
-                        $log_data['message'] = $log_extra[1];
-                        $log_extra[2] = str_replace(', new size', '; new size', $log_extra[2]);
-                        $log_extra[2] = str_replace(",\x20", ";\x20", $log_extra[2]);
-                        $log_data['file_list'] = explode(',', $log_extra[2]);
-                        $log_data['file_list_count'] = count($log_data['file_list']);
-                    }
-
-                    if ($log_data = self::getLogsHotfix($log_data)) {
-                        $response['output_data'][] = $log_data;
-                    }
-                }
-            }
-
-            return $response;
+        if (!self::handleResponse($response)) {
+            return false;
         }
 
-        return false;
+        return self::parseAuditLogs($response);
+    }
+
+    public static function getSelfHostingLogs($limit = 0)
+    {
+        if (SucuriScanOption::isDisabled(':selfhosting_monitor')) {
+            SucuriScan::throwException('Self-hosting monitor is disabled');
+            return false;
+        }
+
+        if (!class_exists('SplFileObject')) {
+            SucuriScan::throwException('SplFileObject is not available');
+            return false;
+        }
+
+        $fpath = SucuriScanOption::getOption(':selfhosting_fpath');
+
+        if (!is_readable($fpath)) {
+            SucuriScan::throwException('Self-hosting log file is not readable');
+            return false;
+        }
+
+        $auditlogs = array();
+        $domain = SucuriScan::getDomain(true);
+        $category = sprintf("\x20WordPressAudit %s", $domain);
+        $file = new SplFileObject($fpath);
+        $file->seek(PHP_INT_MAX);
+        $total = $file->key();
+
+        if ($total > $limit) {
+            $file->seek($total - $limit);
+        } else {
+            $file->seek(0);
+        }
+
+        while (!$file->eof()) {
+            $line = $file->current();
+            $line = str_replace($category, '', $line);
+            $auditlogs[] = trim($line);
+            $file->next();
+        }
+
+        return self::parseAuditLogs(array(
+            'status' => 1,
+            'action' => 'get_logs',
+            'request_time' => time(),
+            'verbose' => 0,
+            'output' => array_reverse($auditlogs),
+            'total_entries' => count($auditlogs),
+        ));
+    }
+
+    private static function parseAuditLogs($response)
+    {
+        if (!is_array($response) || !array_key_exists('output', $response)) {
+            return false; /* missing data; stop response parser */
+        }
+
+        $response['output_data'] = array();
+        $log_pattern = '/^([0-9\-]+) ([0-9:]+) (\S+) : (.+)/';
+        $extra_pattern = '/(.+ \(multiple entries\):) (.+)/';
+        $generic_pattern = '/^@?([A-Z][a-z]{3,7}): ([^;]+; )?(.+)/';
+        $auth_pattern = '/^User authentication (succeeded|failed): ([^<;]+)/';
+
+        foreach ($response['output'] as $log) {
+            if (@preg_match($log_pattern, $log, $log_match)) {
+                $log_data = array(
+                    'event' => 'notice',
+                    'date' => '',
+                    'time' => '',
+                    'datetime' => '',
+                    'timestamp' => 0,
+                    'account' => $log_match[3],
+                    'username' => 'system',
+                    'remote_addr' => '127.0.0.1',
+                    'message' => $log_match[4],
+                    'file_list' => false,
+                    'file_list_count' => 0,
+                );
+
+                // Extract and fix the date and time using the Eastern time zone.
+                $datetime = sprintf('%s %s EDT', $log_match[1], $log_match[2]);
+                $log_data['timestamp'] = strtotime($datetime);
+                $log_data['datetime'] = date('Y-m-d H:i:s', $log_data['timestamp']);
+                $log_data['date'] = date('Y-m-d', $log_data['timestamp']);
+                $log_data['time'] = date('H:i:s', $log_data['timestamp']);
+
+                // Extract more information from the generic audit logs.
+                $log_data['message'] = str_replace('<br>', '; ', $log_data['message']);
+
+                if (@preg_match($generic_pattern, $log_data['message'], $log_extra)) {
+                    $log_data['event'] = strtolower($log_extra[1]);
+                    $log_data['message'] = trim($log_extra[3]);
+
+                    // Extract the username and remote address from the log.
+                    if (!empty($log_extra[2])) {
+                        $username_address = rtrim($log_extra[2], ";\x20");
+
+                        // Separate the username from the remote address.
+                        if (strpos($username_address, ",\x20") !== false) {
+                            $usip_parts = explode(",\x20", $username_address, 2);
+
+                            if (count($usip_parts) == 2) {
+                                // Separate the username from the display name.
+                                $log_data['username'] = @preg_replace('/^.+ \((.+)\)$/', '$1', $usip_parts[0]);
+                                $log_data['remote_addr'] = $usip_parts[1];
+                            }
+                        } else {
+                            $log_data['remote_addr'] = $username_address;
+                        }
+                    }
+
+                    // Fix old user authentication logs for backward compatibility.
+                    $log_data['message'] = str_replace(
+                        'logged in',
+                        'authentication succeeded',
+                        $log_data['message']
+                    );
+
+                    if (@preg_match($auth_pattern, $log_data['message'], $user_match)) {
+                        $log_data['username'] = $user_match[2];
+                    }
+                }
+
+                // Extract more information from the special formatted logs.
+                if (@preg_match($extra_pattern, $log_data['message'], $log_extra)) {
+                    $log_data['message'] = $log_extra[1];
+                    $log_extra[2] = str_replace(', new size', '; new size', $log_extra[2]);
+                    $log_extra[2] = str_replace(",\x20", ";\x20", $log_extra[2]);
+                    $log_data['file_list'] = explode(',', $log_extra[2]);
+                    $log_data['file_list_count'] = count($log_data['file_list']);
+                }
+
+                if ($log_data = self::getLogsHotfix($log_data)) {
+                    $response['output_data'][] = $log_data;
+                }
+            }
+        }
+
+        return $response;
     }
 
     private static function getLogsHotfix($data)

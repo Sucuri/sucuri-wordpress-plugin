@@ -754,10 +754,13 @@ body.sucuri-security_page_sucuriscan_hardening {
 }
 .sucuriscan-auditlog-date {
     color: #808080;
+    padding: 30px 0;
     font-size: 24px;
     font-weight: 200;
-    padding-bottom: 30px;
     border-bottom: 1px solid #dbdbdb;
+}
+.sucuriscan-auditlog-date:first-child {
+    padding-top: 0;
 }
 .sucuriscan-auditlog-entry {
     padding: 20px 0;
@@ -825,4 +828,15 @@ body.sucuri-security_page_sucuriscan_hardening {
 }
 .sucuriscan-hardening-option .sucuriscan-hardening-help svg {
     float: left;
+}
+.sucuriscan-accesslog-datetime,
+.sucuriscan-accesslog-signature,
+.sucuriscan-accesslog-request,
+.sucuriscan-accesslog-useragent,
+.sucuriscan-accesslog-target,
+.sucuriscan-accesslog-referer {
+    margin-left: 24px;
+}
+.sucuriscan-accesslog-label {
+    font-weight: 700;
 }

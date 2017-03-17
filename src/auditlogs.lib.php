@@ -23,11 +23,6 @@ class SucuriScanAuditLogs
     {
         $params = array();
 
-        // Skip audit logs retrieval if there is no API key.
-        if (!SucuriScanOption::getOption(':api_key')) {
-            return '' /* empty page */;
-        }
-
         return SucuriScanTemplate::getSection('auditlogs', $params);
     }
 
@@ -40,19 +35,20 @@ class SucuriScanAuditLogs
         $response = array();
         $response['count'] = 0;
         $response['content'] = '';
+        $response['selfhosting'] = false;
 
-        // Initialize the values for the pagination.
+        /* Initialize the values for the pagination. */
         $maxPerPage = SUCURISCAN_AUDITLOGS_PER_PAGE;
         $pageNumber = SucuriScanTemplate::pageNumber();
         $logsLimit = ($pageNumber * $maxPerPage);
 
-        // Get data from the cache if possible.
+        /* Get data from the cache if possible. */
         $errors = ''; /* no errors so far */
         $cache = new SucuriScanCache('auditlogs');
         $auditlogs = $cache->get('response', SUCURISCAN_AUDITLOGS_LIFETIME, 'array');
-        $cacheTheResponse = false; /* cache only if the data comes from the API */
+        $cacheTheResponse = false; /* cache if the data comes from the API */
 
-        // API call if cache is invalid.
+        /* API call if cache is invalid. */
         if (!$auditlogs || $pageNumber !== 1) {
             ob_start();
             $cacheTheResponse = true;
@@ -61,16 +57,22 @@ class SucuriScanAuditLogs
             ob_end_clean();
         }
 
-        // Stop everything and report errors.
+        /* Stop everything and report errors. */
         if (!empty($errors)) {
             header('Content-Type: text/html; charset=UTF-8');
             print($errors);
             exit(0);
         }
 
-        // Cache the data for sometime.
+        /* Cache the data for sometime. */
         if ($cacheTheResponse && $auditlogs && empty($errors)) {
             $cache->add('response', $auditlogs);
+        }
+
+        /* Fallback; get the logs from the local server */
+        if (!$auditlogs && !SucuriScanOption::getOption(':api_key')) {
+            $auditlogs = SucuriScanAPI::getSelfHostingLogs(SUCURISCAN_AUDITLOGS_PER_PAGE);
+            $response['selfhosting'] = (bool) ($auditlogs !== false);
         }
 
         if ($auditlogs) {
@@ -152,6 +154,8 @@ class SucuriScanAuditLogs
                     );
                 }
             }
+        } else {
+            $response['content'] = 'There are no logs.';
         }
 
         header('Content-Type: application/json');
