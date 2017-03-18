@@ -565,7 +565,6 @@ function sucuriscan_settings_general_importexport($nonce)
         ':api_service',
         ':cloudproxy_apikey',
         ':comment_monitor',
-        ':dismiss_setup',
         ':dns_lookups',
         ':email_subject',
         ':emails_per_hour',

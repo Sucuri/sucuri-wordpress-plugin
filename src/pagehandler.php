@@ -97,8 +97,8 @@ function sucuriscan_lastlogins_page()
 
     // Page pseudo-variables initialization.
     $params = array(
-        'LastLogins.Admins' => sucuriscan_lastlogins_admins(),
         'LastLogins.AllUsers' => sucuriscan_lastlogins_all(),
+        'LastLogins.Admins' => sucuriscan_lastlogins_admins(),
         'LoggedInUsers' => sucuriscan_loggedin_users_panel(),
         'FailedLogins' => sucuriscan_failed_logins_panel(),
         'BlockedUsers' => SucuriScanBlockedUsers::page(),

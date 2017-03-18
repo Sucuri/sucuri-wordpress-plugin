@@ -397,14 +397,14 @@ class SucuriScanEvent extends SucuriScan
                 $e_line = array_key_exists('line', $e_child)
                     ? basename($e_child['line'])
                     : '0';
-                $e_function = array_key_exists('class', $e_child)
+                $e_method = array_key_exists('class', $e_child)
                     ? $e_child['class'] . $e_child['type'] . $e_child['function']
                     : $e_child['function'];
                 $multiple_entries[] = sprintf(
                     '%s(%s): %s',
                     $e_file,
                     $e_line,
-                    $e_function
+                    $e_method
                 );
             }
 

@@ -14,7 +14,7 @@
         </div>
 
         <div class="sucuriscan-pull-right sucuriscan-integrity-right">
-            <h2 class="sucuriscan-subtitle">All Core WordPress Files Are Correct</h2>
+            <h2 class="sucuriscan-subtitle">Core WordPress Files Were Modified</h2>
 
             <p>
                 We identified that some of your WordPress core files were modified.

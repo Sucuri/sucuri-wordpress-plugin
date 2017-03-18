@@ -55,13 +55,11 @@ function sucuriscan_lastlogins_admins()
                     );
                 }
 
-                $user_snippet['AdminUsers.LastLogins'] .= SucuriScanTemplate::getSnippet(
-                    'lastlogins-admins-lastlogin',
-                    array(
-                        'AdminUsers.RemoteAddr' => $lastlogin->user_remoteaddr,
-                        'AdminUsers.Datetime' => SucuriScan::datetime($lastlogin->user_lastlogin_timestamp),
-                    )
-                );
+                $user_snippet['AdminUsers.LastLogins'] .=
+                SucuriScanTemplate::getSnippet('lastlogins-admins-lastlogin', array(
+                    'AdminUsers.RemoteAddr' => $lastlogin->user_remoteaddr,
+                    'AdminUsers.Datetime' => SucuriScan::datetime($lastlogin->user_lastlogin_timestamp),
+                ));
             }
         }
 
@@ -257,93 +255,95 @@ if (!function_exists('sucuri_set_lastlogin')) {
  */
 function sucuriscan_get_logins($limit = 10, $offset = 0, $user_id = 0)
 {
+    $limit = intval($limit); /* prevent arbitrary user input */
     $datastore_filepath = sucuriscan_lastlogins_datastore_is_readable();
     $last_logins = array(
         'total' => 0,
         'entries' => array(),
     );
 
-    if ($datastore_filepath) {
-        $parsed_lines = 0;
-        $data_lines = SucuriScanFileInfo::fileLines($datastore_filepath);
+    if (!$datastore_filepath) {
+        SucuriScan::throwException('Invalid last-logins storage file');
+        return $last_logins;
+    }
 
-        if ($data_lines) {
-            /**
-             * This count will not be 100% accurate considering that we are checking the
-             * syntax of each line in the loop bellow, there may be some lines without the
-             * right syntax which will differ from the total entries returned, but there's
-             * not other EASY way to do this without affect the performance of the code.
-             *
-             * @var integer
-             */
-            $total_lines = count($data_lines);
-            $last_logins['total'] = $total_lines;
+    $parsed_lines = 0;
+    $data_lines = SucuriScanFileInfo::fileLines($datastore_filepath);
 
-            // Get a list with the latest entries in the first positions.
-            $reversed_lines = array_reverse($data_lines);
+    if (!$data_lines) {
+        SucuriScan::throwException('No last-logins data is available');
+        return $last_logins;
+    }
 
-            /**
-             * Only the user accounts with administrative privileges can see the logs of all
-             * the users, for the rest of the accounts they will only see their own logins.
-             *
-             * @var object
-             */
-            $current_user = wp_get_current_user();
-            $is_admin_user = (bool) current_user_can('manage_options');
+    /**
+     * This count will not be 100% accurate considering that we are checking the
+     * syntax of each line in the loop bellow, there may be some lines without the
+     * right syntax which will differ from the total entries returned, but there's
+     * not other EASY way to do this without affect the performance of the code.
+     *
+     * @var integer
+     */
+    $total_lines = count($data_lines);
+    $last_logins['total'] = $total_lines;
 
-            for ($i = $offset; $i < $total_lines; $i++) {
-                $line = $reversed_lines[$i] ? trim($reversed_lines[$i]) : '';
+    // Get a list with the latest entries in the first positions.
+    $reversed_lines = array_reverse($data_lines);
 
-                // Check if the data is serialized (which we will consider as insecure).
-                if (SucuriScan::isSerialized($line)) {
-                    $last_login = false; /* Do not unserialize; is unsafe. */
-                } else {
-                    $last_login = @json_decode($line, true);
-                }
+    /**
+     * Only the user accounts with administrative privileges can see the logs of all
+     * the users, for the rest of the accounts they will only see their own logins.
+     *
+     * @var object
+     */
+    $current_user = wp_get_current_user();
+    $is_admin_user = (bool) current_user_can('manage_options');
 
-                if ($last_login) {
-                    $last_login['user_lastlogin_timestamp'] = strtotime($last_login['user_lastlogin']);
-                    $last_login['user_registered_timestamp'] = 0;
+    for ($i = $offset; $i < $total_lines; $i++) {
+        $line = $reversed_lines[$i] ? trim($reversed_lines[$i]) : '';
 
-                    // Only administrators can see all login stats.
-                    if (!$is_admin_user && $current_user->user_login != $last_login['user_login']) {
-                        continue;
-                    }
+        // Check if the data is serialized (which we will consider as insecure).
+        $last_login = @json_decode($line, true);
 
-                    // Filter the user identifiers using the value passed tot his function.
-                    if ($user_id > 0 && $last_login['user_id'] != $user_id) {
-                        continue;
-                    }
+        if (!$last_login) {
+            $last_logins['total'] -= 1;
+            continue;
+        }
 
-                    // Get the WP_User object and add extra information from the last-login data.
-                    $last_login['user_exists'] = false;
-                    $user_account = get_userdata($last_login['user_id']);
+        $last_login['user_lastlogin_timestamp'] = strtotime($last_login['user_lastlogin']);
+        $last_login['user_registered_timestamp'] = 0;
 
-                    if ($user_account) {
-                        $last_login['user_exists'] = true;
+        // Only administrators can see all login stats.
+        if (!$is_admin_user && $current_user->user_login != $last_login['user_login']) {
+            continue;
+        }
 
-                        foreach ($user_account->data as $var_name => $var_value) {
-                            $last_login[ $var_name ] = $var_value;
+        // Filter the user identifiers using the value passed tot his function.
+        if ($user_id > 0 && $last_login['user_id'] != $user_id) {
+            continue;
+        }
 
-                            if ($var_name == 'user_registered') {
-                                $last_login['user_registered_timestamp'] = strtotime($var_value);
-                            }
-                        }
-                    }
+        // Get the WP_User object and add extra information from the last-login data.
+        $last_login['user_exists'] = false;
+        $user_account = get_userdata($last_login['user_id']);
 
-                    $last_login['line_num'] = $i + 1;
-                    $last_logins['entries'][] = (object) $last_login;
-                    $parsed_lines += 1;
-                } else {
-                    $last_logins['total'] -= 1;
-                }
+        if ($user_account) {
+            $last_login['user_exists'] = true;
 
-                if (@preg_match('/^[0-9]+$/', $limit) && $limit > 0) {
-                    if ($parsed_lines >= $limit) {
-                        break;
-                    }
+            foreach ($user_account->data as $var_name => $var_value) {
+                $last_login[ $var_name ] = $var_value;
+
+                if ($var_name == 'user_registered') {
+                    $last_login['user_registered_timestamp'] = strtotime($var_value);
                 }
             }
+        }
+
+        $last_login['line_num'] = $i + 1;
+        $last_logins['entries'][] = (object) $last_login;
+        $parsed_lines += 1;
+
+        if ($limit > 0 && $parsed_lines >= $limit) {
+            break;
         }
     }
 
