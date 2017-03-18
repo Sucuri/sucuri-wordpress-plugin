@@ -50,6 +50,11 @@ function sucuriscan_failed_logins_panel()
         for ($key = $page_offset; $key < $page_limit; $key++) {
             if (array_key_exists($key, $failed_logins['entries'])) {
                 $login_data = $failed_logins['entries'][ $key ];
+
+                if (!is_array($login_data)) {
+                    continue;
+                }
+
                 $wrong_user_password = 'hidden';
                 $wrong_user_password_color = 'default';
 
@@ -81,7 +86,7 @@ function sucuriscan_failed_logins_panel()
         }
 
         $template_variables['FailedLogins.PaginationLinks'] = SucuriScanTemplate::pagination(
-            '%%SUCURI.URL.Lastlogins%%#failed-logins',
+            '%%SUCURI.URL.Lastlogins%%#failed',
             $failed_logins['count'],
             $max_per_page
         );

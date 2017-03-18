@@ -6,7 +6,7 @@
 
     <td><span class="sucuriscan-monospace">%%SUCURI.FailedLogins.Username%%</span></td>
 
-    <td><span class="sucuriscan-label-%%SUCURI.FailedLogins.PasswordColor%%">%%SUCURI.FailedLogins.Password%%</span></td>
+    <td><span class="sucuriscan-monospace">%%SUCURI.FailedLogins.Password%%</span></td>
 
     <td><span class="sucuriscan-monospace">%%SUCURI.FailedLogins.RemoteAddr%%</span></td>
 
