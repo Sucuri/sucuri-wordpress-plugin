@@ -150,13 +150,14 @@ if (defined('SUCURISCAN')) {
         add_action('admin_init', 'SucuriScanInterface::noticeAfterUpdate');
     }
 
-    /**
-     * Display extension menu and submenu items in the correct interface. For single
-     * site installations the menu items can be displayed normally as always but for
-     * multisite installations the menu items must be available only in the network
-     * panel and hidden in the administration panel of the subsites.
-     */
     if (function_exists('add_action')) {
+        /**
+         * Display extension menu and submenu items in the correct interface.
+         * For single site installations the menu items can be displayed
+         * normally as always but for multisite installations the menu items
+         * must be available only in the network panel and hidden in the
+         * administration panel of the subsites.
+         */
         function sucuriscan_add_menu_page()
         {
             global $sucuriscan_pages;

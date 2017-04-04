@@ -20,16 +20,15 @@ class SucuriScan
     /**
      * Throw generic exception instead of silent failure for unit-tests.
      *
-     * @param  string $message Error or information message.
-     * @param  string $type    Either info or error.
-     * @return void
+     * @param string $message Error or information message.
+     * @param string $type Either info or error.
+     * @throws Exception
      */
     public static function throwException($message, $type = 'error')
     {
         if (defined('SUCURISCAN_THROW_EXCEPTIONS')
             && SUCURISCAN_THROW_EXCEPTIONS === true
             && is_string($message)
-            && !empty($message)
         ) {
             $code = ($type === 'error' ? 157 : 333);
             $message = str_replace(
@@ -50,8 +49,8 @@ class SucuriScan
      * automatically replace that character with the unique identifier of the
      * plugin.
      *
-     * @param  string $var_name Name of a variable with an optional colon at the beginning.
-     * @return string           Full name of the variable with the extra characters (if needed).
+     * @param string $var_name Name of a variable with an optional colon at the beginning.
+     * @return string Full name of the variable with the extra characters (if needed).
      */
     public static function varPrefix($var_name = '')
     {
@@ -69,9 +68,9 @@ class SucuriScan
     /**
      * Gets the value of a configuration option.
      *
-     * @param  string  $property The configuration option name.
-     * @param  boolean $raw      Return the original value from the php.ini file.
-     * @return string            Value of the configuration option as a string on success.
+     * @param string $property The configuration option name.
+     * @param bool $raw Return the original value from the php.ini file.
+     * @return string Value of the configuration option as a string on success.
      */
     public static function iniGet($property = '', $raw = false)
     {
@@ -112,8 +111,8 @@ class SucuriScan
      * Encodes the less-than, greater-than, ampersand, double quote and single quote
      * characters, will never double encode entities.
      *
-     * @param  string $text The text which is to be encoded.
-     * @return string       The encoded text with HTML entities.
+     * @param string $text The text which is to be encoded.
+     * @return string The encoded text with HTML entities.
      */
     public static function escape($text = '')
     {
@@ -128,18 +127,18 @@ class SucuriScan
      * Translate a given number in bytes to a human readable file size using the
      * a approximate value in Kylo, Mega, Giga, etc.
      *
-     * @link   https://www.php.net/manual/en/function.filesize.php#106569
-     * @param  integer $bytes    An integer representing a file size in bytes.
-     * @param  integer $decimals How many decimals should be returned after the translation.
-     * @return string            Human readable representation of the given number in Kylo, Mega, Giga, etc.
+     * @link https://www.php.net/manual/en/function.filesize.php#106569
+     * @param int $bytes Integer representing a file size in bytes.
+     * @param int $decimals How many decimals should be returned.
+     * @return string Human readable representation of the given number.
      */
     public static function humanFileSize($bytes = 0, $decimals = 2)
     {
         $sz = 'BKMGTP';
-        $factor = floor((strlen($bytes) - 1) / 3);
+        $factor = floor((strlen((string) $bytes) - 1) / 3);
         $number = $bytes / pow(1024, $factor);
         $result = sprintf("%.{$decimals}f", $number) . @$sz[$factor];
-        $zeroes = '.' . str_repeat(0, $decimals);
+        $zeroes = '.' . str_repeat('0', $decimals);
         $result = str_replace($zeroes, '', $result); /* remove unused zeroes */
 
         return $result;
@@ -148,7 +147,7 @@ class SucuriScan
     /**
      * Check if the admin init hook must not be intercepted.
      *
-     * @return boolean True if the admin init hook must not be intercepted.
+     * @return bool True if the admin init hook must not be intercepted.
      */
     public static function noAdminInit()
     {
@@ -161,7 +160,7 @@ class SucuriScan
     /**
      * Check if the admin init hook must be intercepted.
      *
-     * @return boolean True if the admin init hook must be intercepted.
+     * @return bool True if the admin init hook must be intercepted.
      */
     public static function runAdminInit()
     {
@@ -190,8 +189,8 @@ class SucuriScan
      * Returns the system filepath to the relevant user uploads directory for this
      * site. This is a multisite capable function.
      *
-     * @param  string $path The relative path that needs to be completed to get the absolute path.
-     * @return string       The full filesystem path including the directory specified.
+     * @param string $path The relative path that needs to be completed to get the absolute path.
+     * @return string The full filesystem path including the directory specified.
      */
     public static function dataStorePath($path = '')
     {
@@ -215,13 +214,19 @@ class SucuriScan
     /**
      * Check whether the current site is working as a multi-site instance.
      *
-     * @return boolean Either TRUE or FALSE in case WordPress is being used as a multi-site instance.
+     * @return bool Either TRUE or FALSE in case WordPress is being used as a multi-site instance.
      */
     public static function isMultiSite()
     {
         return (bool) (function_exists('is_multisite') && is_multisite());
     }
 
+    /**
+     * Returns an URL from the admin dashboard.
+     *
+     * @param string $url Optional trailing of the URL.
+     * @return string Full valid URL from the admin dashboard.
+     */
     public static function adminURL($url = '')
     {
         if (self::isMultiSite()) {
@@ -258,7 +263,7 @@ class SucuriScan
     /**
      * Find and retrieve the absolute path of the WordPress configuration file.
      *
-     * @return string Absolute path of the WordPress configuration file.
+     * @return string|bool Absolute path of the WordPress configuration file.
      */
     public static function getWPConfigPath()
     {
@@ -284,7 +289,7 @@ class SucuriScan
     /**
      * Find and retrieve the absolute path of the main WordPress htaccess file.
      *
-     * @return string Absolute path of the main WordPress htaccess file.
+     * @return string|bool Absolute path of the main WordPress htaccess file.
      */
     public static function getHtaccessPath()
     {
@@ -319,8 +324,6 @@ class SucuriScan
 
     /**
      * Execute the plugin' scheduled tasks.
-     *
-     * @return void
      */
     public static function runScheduledTask()
     {
@@ -341,8 +344,8 @@ class SucuriScan
      * specify the main HTTP header. This is a list of the allowed headers that the
      * user can choose.
      *
-     * @param  boolean $with_keys Return the array with its values are keys.
-     * @return array              Allowed HTTP headers to retrieve real IP.
+     * @param bool $with_keys Return the array with its values are keys.
+     * @return array Allowed HTTP headers to retrieve real IP.
      */
     public static function allowedHttpHeaders($with_keys = false)
     {
@@ -407,8 +410,8 @@ class SucuriScan
     /**
      * Retrieve the real ip address of the user in the current request.
      *
-     * @param  boolean $with_header Return HTTP header where the IP address was found.
-     * @return string               Real IP address of the user in the current request.
+     * @param bool $with_header Return HTTP header where the IP address was found.
+     * @return string Real IP address of the user in the current request.
      */
     public static function getRemoteAddr($with_header = false)
     {
@@ -458,7 +461,7 @@ class SucuriScan
             return self::escape($_SERVER['HTTP_USER_AGENT']);
         }
 
-        return false;
+        return 'Mozilla/5.0 (KHTML, like Gecko) Safari/537.36';
     }
 
     /**
@@ -468,16 +471,16 @@ class SucuriScan
      */
     public static function getDomain($return_tld = false)
     {
-        if (function_exists('get_site_url')) {
-            $site_url = get_site_url();
-            $pattern = '/([fhtps]+:\/\/)?([^:\/]+)(:[0-9:]+)?(\/.*)?/';
-            $replacement = ($return_tld === true) ? '$2' : '$2$3$4';
-            $domain_name = @preg_replace($pattern, $replacement, $site_url);
-
-            return $domain_name;
+        if (!function_exists('get_site_url')) {
+            self::throwException('Built-in WordPress function get_site_url is missing');
         }
 
-        return false;
+        $site_url = get_site_url();
+        $pattern = '/([fhtps]+:\/\/)?([^:\/]+)(:[0-9:]+)?(\/.*)?/';
+        $replacement = ($return_tld === true) ? '$2' : '$2$3$4';
+        $domain_name = @preg_replace($pattern, $replacement, $site_url);
+
+        return $domain_name;
     }
 
     /**
@@ -493,7 +496,7 @@ class SucuriScan
     /**
      * Check whether reverse proxy servers must be supported.
      *
-     * @return boolean TRUE if reverse proxies must be supported, FALSE otherwise.
+     * @return bool TRUE if reverse proxies must be supported, FALSE otherwise.
      */
     public static function supportReverseProxy()
     {
@@ -508,7 +511,7 @@ class SucuriScan
      * filters the requests. If you are not planning to use any of these is better
      * to disable this option, otherwise the load time of your site may be affected.
      *
-     * @return boolean True if the DNS lookups should be executed, false otherwise.
+     * @return bool True if the DNS lookups should be executed, false otherwise.
      */
     public static function executeDNSLookups()
     {
@@ -524,8 +527,8 @@ class SucuriScan
     /**
      * Check whether the site is behind the firewall network.
      *
-     * @param  boolean $verbose Return an array with the hostname, address, and status, or not.
-     * @return boolean          Either TRUE or FALSE if the site is behind the firewall.
+     * @param bool $verbose Return array with HTTP and HOST information.
+     * @return array|bool True if the firewall is in use, false otherwise.
      */
     public static function isBehindFirewall($verbose = false)
     {
@@ -577,32 +580,29 @@ class SucuriScan
             return $email;
         }
 
-        return false;
+        return 'noreply@example.org';
     }
 
     /**
      * Get user data by field and data.
      *
-     * @param  integer $identifier User account identifier.
-     * @return object              WordPress user object with data.
+     * @param int $identifier User account identifier.
+     * @throws Exception If the WordPress function is missing.
+     * @return array WordPress user object with data.
      */
     public static function getUserByID($identifier = 0)
     {
-        if (function_exists('get_user_by')) {
-            $user = get_user_by('id', $identifier);
-
-            if ($user instanceof WP_User) {
-                return $user;
-            }
+        if (!function_exists('get_user_by')) {
+            self::throwException('Built-in WordPress function get_user_by is missing');
         }
 
-        return false;
+        return get_user_by('id', $identifier);
     }
 
     /**
      * Retrieve a list of all admin user accounts.
      *
-     * @return array List of admin users, false otherwise.
+     * @return array|bool List of admin users, false otherwise.
      */
     public static function getAdminUsers()
     {
@@ -646,7 +646,7 @@ class SucuriScan
     /**
      * Returns the current time measured in the number of seconds since the Unix Epoch.
      *
-     * @return integer Return current Unix timestamp.
+     * @return int Return current Unix timestamp.
      */
     public static function localTime()
     {
@@ -664,8 +664,8 @@ class SucuriScan
      * take over the format for the date. If it isn't, then the date format string
      * will be used instead.
      *
-     * @param  integer $timestamp Unix timestamp.
-     * @return string             The date, translated if locale specifies it.
+     * @param int $timestamp Unix timestamp.
+     * @return string The date, translated if locale specifies it.
      */
     public static function datetime($timestamp = null)
     {
@@ -693,8 +693,8 @@ class SucuriScan
     /**
      * Return the time passed since the specified timestamp until now.
      *
-     * @param  integer $timestamp The Unix time number of the date/time before now.
-     * @return string             The time passed since the timestamp specified.
+     * @param int|string $timestamp Unix time of a day in the past.
+     * @return string Time passed since the timestamp specified.
      */
     public static function timeAgo($timestamp = 0)
     {
@@ -733,8 +733,8 @@ class SucuriScan
     /**
      * Check whether a variable contains a serialized data or not.
      *
-     * @param  string  $data The data that will be checked.
-     * @return boolean       TRUE if the data was serialized, FALSE otherwise.
+     * @param string $data The data that will be checked.
+     * @return bool TRUE if the data was serialized, FALSE otherwise.
      */
     public static function isSerialized($data = '')
     {
@@ -744,8 +744,8 @@ class SucuriScan
     /**
      * Check whether an IP address has a valid format or not.
      *
-     * @param  string  $remote_addr The host IP address.
-     * @return boolean              Whether the IP address specified is valid or not.
+     * @param string $remote_addr The host IP address.
+     * @return bool Whether the IP address specified is valid or not.
      */
     public static function isValidIP($remote_addr = '')
     {
@@ -760,8 +760,8 @@ class SucuriScan
     /**
      * Check whether an IP address is formatted as CIDR or not.
      *
-     * @param  string $remote_addr The supposed ip address that will be checked.
-     * @return boolean             Either TRUE or FALSE if the ip address specified is valid or not.
+     * @param string $remote_addr The supposed ip address that will be checked.
+     * @return bool Either TRUE or FALSE if the ip address specified is valid or not.
      */
     public static function isValidCIDR($remote_addr = '')
     {
@@ -777,8 +777,8 @@ class SucuriScan
     /**
      * Separate the parts of an IP address.
      *
-     * @param  string $remote_addr The supposed ip address that will be formatted.
-     * @return array               Clean address, CIDR range, and CIDR format; FALSE otherwise.
+     * @param string $remote_addr The supposed ip address that will be formatted.
+     * @return array|bool Clean address, CIDR range, and CIDR format; FALSE otherwise.
      */
     public static function getIPInfo($remote_addr = '')
     {
@@ -808,8 +808,8 @@ class SucuriScan
      *
      * @see https://www.php.net/manual/en/function.filter-var.php
      *
-     * @param  string $email The string that will be validated as an email address.
-     * @return boolean       TRUE if the email address passed to the method is valid, FALSE if not.
+     * @param string $email The string that will be validated as an email address.
+     * @return bool TRUE if the email address passed to the method is valid, FALSE if not.
      */
     public static function isValidEmail($email = '')
     {
@@ -823,9 +823,9 @@ class SucuriScan
     /**
      * Cut a long text to the length specified, and append suspensive points at the end.
      *
-     * @param  string  $text   String of characters that will be cut.
-     * @param  integer $length Maximum length of the returned string, default is 10.
-     * @return string          Short version of the text specified.
+     * @param string $text String of characters that will be cut.
+     * @param int $length Maximum length of the returned string, default is 10.
+     * @return string Short version of the text specified.
      */
     public static function excerpt($text = '', $length = 10)
     {
@@ -841,8 +841,8 @@ class SucuriScan
     /**
      * Check whether an list is a multidimensional array or not.
      *
-     * @param  array   $list An array or multidimensional array of different values.
-     * @return boolean       TRUE if the list is multidimensional, FALSE otherwise.
+     * @param array $list An array or multidimensional array of different values.
+     * @return bool TRUE if the list is multidimensional, FALSE otherwise.
      */
     public static function isMultiList($list = array())
     {
@@ -860,9 +860,9 @@ class SucuriScan
     /**
      * Join array elements with a string no matter if it is multidimensional.
      *
-     * @param  string $separator Character that will act as a separator, default to an empty string.
-     * @param  array  $list      The array of strings to implode.
-     * @return string            String of all the items in the list, with the separator between them.
+     * @param string $separator Character that will act as a separator, default to an empty string.
+     * @param array $list The array of strings to implode.
+     * @return string String of all the items in the list, with the separator between them.
      */
     public static function implode($separator = '', $list = array())
     {
@@ -882,7 +882,7 @@ class SucuriScan
     /**
      * Check whether the site is running over the Nginx web server.
      *
-     * @return boolean TRUE if the site is running over Nginx, FALSE otherwise.
+     * @return bool TRUE if the site is running over Nginx, FALSE otherwise.
      */
     public static function isNginxServer()
     {
@@ -892,7 +892,7 @@ class SucuriScan
     /**
      * Check whether the site is running over the Nginx web server.
      *
-     * @return boolean TRUE if the site is running over Nginx, FALSE otherwise.
+     * @return bool TRUE if the site is running over Nginx, FALSE otherwise.
      */
     public static function isIISServer()
     {

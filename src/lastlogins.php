@@ -8,6 +8,9 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     exit(1);
 }
 
+/**
+ * Placeholder for the last logins interface.
+ */
 class SucuriScanLastLogins extends SucuriScan
 {
 }
@@ -16,8 +19,6 @@ class SucuriScanLastLogins extends SucuriScan
  * List all the user administrator accounts.
  *
  * @see https://codex.wordpress.org/Class_Reference/WP_User_Query
- *
- * @return void
  */
 function sucuriscan_lastlogins_admins()
 {
@@ -156,7 +157,7 @@ function sucuriscan_lastlogins_datastore_filepath()
  * Check whether the user's last login datastore file exists or not, if not then
  * we try to create the file and check again the success of the operation.
  *
- * @return string Absolute filepath where the user's last login information is stored.
+ * @return string|bool Path to the storage file if exists, false otherwise.
  */
 function sucuriscan_lastlogins_datastore_exists()
 {
@@ -177,7 +178,7 @@ function sucuriscan_lastlogins_datastore_exists()
  * Check whether the user's last login datastore file is writable or not, if not
  * we try to set the right permissions and check again the success of the operation.
  *
- * @return boolean Whether the user's last login datastore file is writable or not.
+ * @return string|bool Path to the storage file if writable, false otherwise.
  */
 function sucuriscan_lastlogins_datastore_is_writable()
 {
@@ -200,7 +201,7 @@ function sucuriscan_lastlogins_datastore_is_writable()
  * Check whether the user's last login datastore file is readable or not, if not
  * we try to set the right permissions and check again the success of the operation.
  *
- * @return boolean Whether the user's last login datastore file is readable or not.
+ * @return string|bool Path to the storage file if readable, false otherwise.
  */
 function sucuriscan_lastlogins_datastore_is_readable()
 {
@@ -217,8 +218,7 @@ if (!function_exists('sucuri_set_lastlogin')) {
     /**
      * Add a new user session to the list of last user logins.
      *
-     * @param  string $user_login The name of the user account involved in the operation.
-     * @return void
+     * @param string $user_login The name of the user account involved in the operation.
      */
     function sucuriscan_set_lastlogin($user_login = '')
     {
@@ -236,7 +236,11 @@ if (!function_exists('sucuri_set_lastlogin')) {
                 'user_lastlogin' => current_time('mysql')
             );
 
-            @file_put_contents($datastore_filepath, json_encode($login_info)."\n", FILE_APPEND);
+            @file_put_contents(
+                $datastore_filepath,
+                json_encode($login_info) . "\n",
+                FILE_APPEND
+            );
         }
     }
     add_action('wp_login', 'sucuriscan_set_lastlogin', 50);
@@ -248,10 +252,10 @@ if (!function_exists('sucuri_set_lastlogin')) {
  * The results of this operation can be filtered by specific user identifiers,
  * or limiting the quantity of entries.
  *
- * @param  integer $limit   How many entries will be returned from the operation.
- * @param  integer $offset  Initial point where the logs will be start counting.
- * @param  integer $user_id Optional user identifier to filter the results.
- * @return array            The list of all the user logins, and total of entries registered.
+ * @param int $limit How many entries will be returned from the operation.
+ * @param int $offset Initial point where the logs will be start counting.
+ * @param int $user_id Optional user identifier to filter the results.
+ * @return array The list of all the user logins, and total of entries registered.
  */
 function sucuriscan_get_logins($limit = 10, $offset = 0, $user_id = 0)
 {
@@ -355,10 +359,10 @@ if (!function_exists('sucuri_login_redirect')) {
      * Hook for the wp-login action to redirect the user to a specific URL after
      * his successfully login to the administrator interface.
      *
-     * @param  string  $redirect_to The redirect destination URL.
-     * @param  object  $request     The requested redirect destination URL passed as a parameter.
-     * @param  boolean $user        WP_User object if login was successful, WP_Error object otherwise.
-     * @return string               URL where the browser must be redirected to.
+     * @param string $redirect_to The redirect destination URL.
+     * @param object $request The requested redirect destination URL passed as a parameter.
+     * @param bool $user WP_User object if login was successful, WP_Error object otherwise.
+     * @return string URL where the browser must be redirected to.
      */
     function sucuriscan_login_redirect($redirect_to = '', $request = null, $user = false)
     {
@@ -382,8 +386,6 @@ if (!function_exists('sucuri_login_redirect')) {
 if (!function_exists('sucuri_get_user_lastlogin')) {
     /**
      * Display the last user login at the top of the admin interface.
-     *
-     * @return void
      */
     function sucuriscan_get_user_lastlogin()
     {

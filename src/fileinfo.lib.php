@@ -84,9 +84,9 @@ class SucuriScanFileInfo extends SucuriScan
      * and md5sum of that file. Some folders and files will be ignored depending
      * on some rules defined by the developer.
      *
-     * @param  string  $directory Parent directory where the filesystem scan will start.
-     * @param  boolean $as_array  Whether the result of the operation will be returned as an array or string.
-     * @return array              List of files in the main and subdirectories of the folder specified.
+     * @param string $directory Where to execute the scanner.
+     * @param bool $as_array Return the file list as an array.
+     * @return array|string List of files in this project.
      */
     public function getDirectoryTreeMd5($directory = '', $as_array = false)
     {
@@ -133,8 +133,8 @@ class SucuriScanFileInfo extends SucuriScan
      * of the folder specified. Some folders and files will be ignored depending
      * on some rules defined by the developer.
      *
-     * @param  string $directory Parent directory where the filesystem scan will start.
-     * @return array             List of files in the main and subdirectories of the folder specified.
+     * @param string $directory Where to execute the scanner.
+     * @return array|bool List of files in the project.
      */
     public function getDirectoryTree($directory = '')
     {
@@ -164,7 +164,7 @@ class SucuriScanFileInfo extends SucuriScan
      *
      * @link https://www.php.net/manual/en/class.splfileobject.php
      *
-     * @return boolean Whether the PHP class "SplFileObject" is available or not.
+     * @return bool Whether the PHP class "SplFileObject" is available or not.
      */
     public static function isSplAvailable()
     {
@@ -182,8 +182,8 @@ class SucuriScanFileInfo extends SucuriScan
      * @see  DirectoryIterator          extends SplFileInfo
      * @see  SplFileInfo
      *
-     * @param  string $directory Parent directory where the filesystem scan will start.
-     * @return array             List of files in the main and subdirectories of the folder specified.
+     * @param string $directory Where to execute the scanner.
+     * @return array|bool List of files in the project.
      */
     private function getDirectoryTreeWithSpl($directory = '')
     {
@@ -218,7 +218,7 @@ class SucuriScanFileInfo extends SucuriScan
         foreach ($objects as $filepath => $fileinfo) {
             $filename = $fileinfo->getFilename();
 
-            if ($this->ignoreFolderPath(null, $filename)) {
+            if ($this->ignoreFolderPath('', $filename)) {
                 /* skip irrelevant files from the scan */
                 continue;
             }
@@ -250,9 +250,9 @@ class SucuriScanFileInfo extends SucuriScan
     /**
      * Skip some specific directories and file paths from the filesystem scan.
      *
-     * @param  string  $directory Directory where the scanner is located at the moment.
-     * @param  string  $filename  Name of the folder or file being scanned at the moment.
-     * @return boolean            Either TRUE or FALSE representing that the scan should ignore this folder or not.
+     * @param string $directory Directory where the scanner is located at the moment.
+     * @param string $filename Name of the folder or file being scanned at the moment.
+     * @return bool Either TRUE or FALSE representing that the scan should ignore this folder or not.
      */
     private function ignoreFolderPath($directory = '', $filename = '')
     {
@@ -289,8 +289,8 @@ class SucuriScanFileInfo extends SucuriScan
     /**
      * Skip some specific files from the filesystem scan.
      *
-     * @param  string  $filename Name of the folder or file being scanned at the moment.
-     * @return boolean           Either TRUE or FALSE representing that the scan should ignore this filename or not.
+     * @param string $filename Name of the folder or file being scanned at the moment.
+     * @return bool Either TRUE or FALSE representing that the scan should ignore this filename or not.
      */
     private function ignoreFilePath($filename = '')
     {
@@ -328,8 +328,8 @@ class SucuriScanFileInfo extends SucuriScan
     /**
      * Retrieve a list of unique directory paths.
      *
-     * @param  array $dir_tree A list of files under a directory.
-     * @return array           A list of unique directory paths.
+     * @param array $dir_tree A list of files under a directory.
+     * @return array A list of unique directory paths.
      */
     public function getDiretoriesOnly($dir_tree = array())
     {
@@ -363,8 +363,8 @@ class SucuriScanFileInfo extends SucuriScan
     /**
      * Remove a directory recursively.
      *
-     * @param  string  $directory Path of the existing directory that will be removed.
-     * @return boolean            TRUE if all the files and folder inside the directory were removed.
+     * @param string $directory Path of the existing directory that will be removed.
+     * @return bool TRUE if all the files and folder inside the directory were removed.
      */
     public function removeDirectoryTree($directory = '')
     {
@@ -381,9 +381,9 @@ class SucuriScanFileInfo extends SucuriScan
             /**
              * Evaluates the difference between the length of two strings.
              *
-             * @param  string  $a First string of characters that will be measured.
-             * @param  string  $b Second string of characters that will be measured.
-             * @return integer    The difference in length between the two strings.
+             * @param string $a First string of characters that will be measured.
+             * @param string $b Second string of characters that will be measured.
+             * @return int The difference in length between the two strings.
              */
             function sucuriscanStrlenDiff($a = '', $b = '')
             {
@@ -403,7 +403,7 @@ class SucuriScanFileInfo extends SucuriScan
         @rmdir($directory); /* attempt to delete parent */
 
         /* check if we deleted all the files and sub-directories */
-        return (bool) ($this->getDirectoryTree($directory) === false);
+        return (bool) !($this->getDirectoryTree($directory));
     }
 
     /**
@@ -414,13 +414,13 @@ class SucuriScanFileInfo extends SucuriScan
      * equals in order to avoid ambiguous results when the file exists, is
      * readable, but is empty.
      *
-     * @param  string $fpath Relative or absolute path of the file.
-     * @return string        Content of the file, false if not accessible.
+     * @param string $fpath Relative or absolute path of the file.
+     * @return string Content of the file, false if not accessible.
      */
     public static function fileContent($fpath = '')
     {
         if (!file_exists($fpath) || !is_readable($fpath)) {
-            return false;
+            return ''; /* empty content for compatibility */
         }
 
         return @file_get_contents($fpath);
@@ -431,8 +431,8 @@ class SucuriScanFileInfo extends SucuriScan
      * line characters from the end of each line, and skip empty lines from the
      * list.
      *
-     * @param  string $filepath Path to the file.
-     * @return array            An array where each element is a line in the file.
+     * @param string $filepath Path to the file.
+     * @return array An array where each element is a line in the file.
      */
     public static function fileLines($filepath = '')
     {
@@ -442,8 +442,8 @@ class SucuriScanFileInfo extends SucuriScan
     /**
      * Tells whether the filename is a directory, symbolic link, or file.
      *
-     * @param  string $path Path to the file.
-     * @return string       Type of resource: dir, link, file.
+     * @param string $path Path to the file.
+     * @return string Type of resource: dir, link, file.
      */
     public static function getResourceType($path = '')
     {

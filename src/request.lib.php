@@ -23,19 +23,16 @@ class SucuriScanRequest extends SucuriScan
      * _REQUEST variables, you can specify a pattern as the second argument to
      * match allowed values.
      *
-     * @param  array  $list    The array where the specified key will be searched.
-     * @param  string $key     Name of the index where the requested variable is supposed to be.
-     * @param  string $pattern Optional pattern to match allowed values in the requested key.
-     * @return string          The value stored in the specified key inside the global _GET variable.
+     * @param array $list The array where the specified key will be searched.
+     * @param string $key Name of the variable contained in _POST.
+     * @param string $pattern Optional pattern to match allowed values.
+     * @return array|string Value from the global _GET or _POST variable.
      */
     public static function request($list = array(), $key = '', $pattern = '')
     {
         $key = self::varPrefix($key);
 
-        if (is_array($list)
-            && is_string($key)
-            && isset($list[ $key ])
-        ) {
+        if (is_array($list) && is_string($key) && isset($list[$key])) {
             // Select the key from the list and escape its content.
             $key_value = $list[ $key ];
 
@@ -73,16 +70,16 @@ class SucuriScanRequest extends SucuriScan
             }
         }
 
-        return false;
+        return '' /* empty value */;
     }
 
     /**
      * Returns the value stored in a specific index in the global _GET variable,
      * you can specify a pattern as the second argument to match allowed values.
      *
-     * @param  string $key     Name of the index where the requested variable is supposed to be.
-     * @param  string $pattern Optional pattern to match allowed values in the requested key.
-     * @return string          The value stored in the specified key inside the global _GET variable.
+     * @param string $key Name of the variable contained in _GET.
+     * @param string $pattern Optional pattern to match allowed values.
+     * @return array|string Value from the global _GET variable.
      */
     public static function get($key = '', $pattern = '')
     {
@@ -93,9 +90,9 @@ class SucuriScanRequest extends SucuriScan
      * Returns the value stored in a specific index in the global _POST variable,
      * you can specify a pattern as the second argument to match allowed values.
      *
-     * @param  string $key     Name of the index where the requested variable is supposed to be.
-     * @param  string $pattern Optional pattern to match allowed values in the requested key.
-     * @return string          The value stored in the specified key inside the global _POST variable.
+     * @param string $key Name of the variable contained in _POST.
+     * @param string $pattern Optional pattern to match allowed values.
+     * @return array|string Value from the global _POST variable.
      */
     public static function post($key = '', $pattern = '')
     {
@@ -106,9 +103,9 @@ class SucuriScanRequest extends SucuriScan
      * Returns the value stored in a specific index in the global _REQUEST variable,
      * you can specify a pattern as the second argument to match allowed values.
      *
-     * @param  string $key     Name of the index where the requested variable is supposed to be.
-     * @param  string $pattern Optional pattern to match allowed values in the requested key.
-     * @return string          The value stored in the specified key inside the global _POST variable.
+     * @param string $key Name of the variable contained in _REQUEST.
+     * @param string $pattern Optional pattern to match allowed values.
+     * @return array|string Value from the global _REQUEST variable.
      */
     public static function getOrPost($key = '', $pattern = '')
     {

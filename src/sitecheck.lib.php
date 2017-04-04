@@ -367,13 +367,13 @@ class SucuriScanSiteCheck
     /**
      * Extract detailed information from a SiteCheck malware payload.
      *
-     * @param  array $malware Array with two entries with basic malware information.
-     * @return array          Detailed information of the malware found by SiteCheck.
+     * @param array $malware Array with two entries with basic malware information.
+     * @return array Detailed information of the malware found by SiteCheck.
      */
     private static function malwareDetails($malware = array())
     {
         if (count($malware) < 2) {
-            return false;
+            return array(/* empty details */);
         }
 
         $data = array(

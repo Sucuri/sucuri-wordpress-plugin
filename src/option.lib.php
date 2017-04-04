@@ -116,8 +116,8 @@ class SucuriScanOption extends SucuriScanRequest
     /**
      * Retrieve the default values for some specific options.
      *
-     * @param  string|array $settings Either an array that will be complemented or a string with the name of the option.
-     * @return string|array           The default values for the specified options.
+     * @param string|array $settings List of options, or single option name.
+     * @return mixed The default values for the specified options.
      */
     private static function getDefaultOptions($settings = '')
     {
@@ -202,8 +202,8 @@ class SucuriScanOption extends SucuriScanRequest
     /**
      * Write new options into the external options file.
      *
-     * @param  array   $options Array with plugins options.
-     * @return boolean          True if the new options were saved, false otherwise.
+     * @param array $options Array with plugins options.
+     * @return bool True if the new options were saved, false otherwise.
      */
     public static function writeNewOptions($options = array())
     {
@@ -229,8 +229,8 @@ class SucuriScanOption extends SucuriScanRequest
      * this library for this specific task we will end up provoking a maximum
      * nesting method call warning.
      *
-     * @param  string $option Name of the setting that will be retrieved.
-     * @return string         Option value, or default value if empty.
+     * @param string $option Name of the option.
+     * @return mixed Value associated to the option.
      */
     public static function getOption($option = '')
     {
@@ -291,9 +291,9 @@ class SucuriScanOption extends SucuriScanRequest
      *
      * @see https://codex.wordpress.org/Function_Reference/update_option
      *
-     * @param  string  $option Name of the option to update, must not exceed 64 characters.
-     * @param  string  $value  New value, either an integer, string, array, or object.
-     * @return boolean         True if option value has changed, false otherwise.
+     * @param string $option Name of the option.
+     * @param mixed $value New value for the option.
+     * @return bool True if option has been updated, false otherwise.
      */
     public static function updateOption($option = '', $value = '')
     {
@@ -319,8 +319,8 @@ class SucuriScanOption extends SucuriScanRequest
      *
      * @see https://codex.wordpress.org/Function_Reference/delete_option
      *
-     * @param  string  $option Name of the option to be deleted.
-     * @return boolean         True, if option is successfully deleted. False on failure, or option does not exist.
+     * @param string $option Name of the option to be deleted.
+     * @return bool True if option is successfully deleted, false otherwise.
      */
     public static function deleteOption($option = '')
     {
@@ -346,8 +346,8 @@ class SucuriScanOption extends SucuriScanRequest
     /**
      * Check whether a setting is enabled or not.
      *
-     * @param  string  $option Name of the option to be deleted.
-     * @return boolean         True if the option is enabled, false otherwise.
+     * @param string $option Name of the option to be deleted.
+     * @return bool True if the option is enabled, false otherwise.
      */
     public static function isEnabled($option = '')
     {
@@ -357,8 +357,8 @@ class SucuriScanOption extends SucuriScanRequest
     /**
      * Check whether a setting is disabled or not.
      *
-     * @param  string  $option Name of the option to be deleted.
-     * @return boolean         True if the option is disabled, false otherwise.
+     * @param string $option Name of the option to be deleted.
+     * @return bool True if the option is disabled, false otherwise.
      */
     public static function isDisabled($option = '')
     {
@@ -367,8 +367,6 @@ class SucuriScanOption extends SucuriScanRequest
 
     /**
      * Delete all the plugin options from the database.
-     *
-     * @return void
      */
     public static function deletePluginOptions()
     {
@@ -396,7 +394,8 @@ class SucuriScanOption extends SucuriScanRequest
 
     /**
      * Retrieve all the options stored by Wordpress in the database. The options
-     * containing the word "transient" are excluded from the results, this functionmethodis compatible with multisite instances.
+     * containing the word "transient" are excluded from the results, this method
+     * compatible with multisite instances.
      *
      * @return array All the options stored by Wordpress in the database, except the transient options.
      */
@@ -428,8 +427,8 @@ class SucuriScanOption extends SucuriScanRequest
      * Check what Wordpress options were changed comparing the values in the database
      * with the values sent through a simple request using a GET or POST method.
      *
-     * @param  array $request The content of the global variable GET or POST considering SERVER[REQUEST_METHOD].
-     * @return array          A list of all the options that were changes through this request.
+     * @param array $request The content of the global variable GET or POST considering SERVER[REQUEST_METHOD].
+     * @return array A list of all the options that were changes through this request.
      */
     public static function whatOptionsWereChanged($request = array())
     {
@@ -455,7 +454,7 @@ class SucuriScanOption extends SucuriScanRequest
     /**
      * Check the nonce comming from any of the settings pages.
      *
-     * @return boolean TRUE if the nonce is valid, FALSE otherwise.
+     * @return bool True if the nonce is valid, false otherwise.
      */
     public static function checkOptionsNonce()
     {
@@ -522,8 +521,8 @@ class SucuriScanOption extends SucuriScanRequest
     /**
      * Add a new post type to the list of ignored events to send alerts.
      *
-     * @param  string  $event_name Unique post-type name.
-     * @return boolean             Whether the event was ignored or not.
+     * @param string $event_name Unique post-type name.
+     * @return bool Whether the event was ignored or not.
      */
     public static function addIgnoredEvent($event_name = '')
     {
@@ -541,8 +540,8 @@ class SucuriScanOption extends SucuriScanRequest
     /**
      * Remove a post type from the list of ignored events to send alerts.
      *
-     * @param  string  $event Unique post-type name.
-     * @return boolean        Whether the event was removed from the list or not.
+     * @param string $event Unique post-type name.
+     * @return bool Whether the event was removed from the list or not.
      */
     public static function removeIgnoredEvent($event = '')
     {
@@ -560,8 +559,8 @@ class SucuriScanOption extends SucuriScanRequest
     /**
      * Check whether an event is being ignored to send alerts or not.
      *
-     * @param  string  $event Unique post-type name.
-     * @return boolean        Whether an event is being ignored or not.
+     * @param string $event Unique post-type name.
+     * @return bool Whether an event is being ignored or not.
      */
     public static function isIgnoredEvent($event = '')
     {
@@ -616,13 +615,12 @@ class SucuriScanOption extends SucuriScanRequest
      * Change the reverse proxy setting.
      *
      * When enabled this option forces the plugin to override the value of the
-     * global IP address variable from the HTTP header selected by the user from the
-     * settings. Note that this may also be automatically enabled when the firewall
-     * page is activated as it assumes that the proxy is creating a custom HTTP
-     * header for the real IP.
+     * global IP address variable from the HTTP header selected by the user from
+     * the settings. Note that this may also be automatically enabled when the
+     * firewall page is activated as it assumes that the proxy is creating a
+     * custom HTTP header for the real IP.
      *
-     * @param  string $header Valid HTTP header name.
-     * @return void
+     * @param string $action Enable or disable the reverse proxy.
      */
     public static function setRevProxy($action = 'disable')
     {
@@ -642,8 +640,7 @@ class SucuriScanOption extends SucuriScanRequest
     /**
      * Change the HTTP header to retrieve the real IP address.
      *
-     * @param  string $header Valid HTTP header name.
-     * @return void
+     * @param string $header Valid HTTP header name.
      */
     public static function setAddrHeader($header = 'REMOTE_ADDR')
     {

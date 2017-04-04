@@ -22,8 +22,8 @@ class SucuriScanFSScanner extends SucuriScan
     /**
      * Retrieve the last time when the filesystem scan was ran.
      *
-     * @param  boolean $format Whether the timestamp must be formatted as date/time or not.
-     * @return string          The timestamp of the runtime, or an string with the date/time.
+     * @param bool $format Whether the timestamp must be formatted as date/time or not.
+     * @return string The timestamp of the runtime, or an string with the date/time.
      */
     public static function getFilesystemRuntime($format = false)
     {
@@ -37,18 +37,14 @@ class SucuriScanFSScanner extends SucuriScan
             return $runtime;
         }
 
-        if ($format) {
-            return 'Unknown';
-        }
-
-        return false;
+        return 'Unknown';
     }
 
     /**
      * Add a new directory path to the list of ignored paths.
      *
-     * @param  string  $directory_path The (full) absolute path of a directory.
-     * @return boolean                 TRUE if the directory path was added to the list, FALSE otherwise.
+     * @param string $directory_path The (full) absolute path of a directory.
+     * @return bool TRUE if the directory path was added to the list, FALSE otherwise.
      */
     public static function ignoreDirectory($directory_path = '')
     {
@@ -70,8 +66,8 @@ class SucuriScanFSScanner extends SucuriScan
     /**
      * Remove a directory path from the list of ignored paths.
      *
-     * @param  string  $directory_path The (full) absolute path of a directory.
-     * @return boolean                 TRUE if the directory path was removed to the list, FALSE otherwise.
+     * @param string $directory_path The (full) absolute path of a directory.
+     * @return bool TRUE if the directory path was removed to the list, FALSE otherwise.
      */
     public static function unignoreDirectory($directory_path = '')
     {

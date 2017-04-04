@@ -36,6 +36,21 @@ class SucuriScanIntegrity
         return SucuriScanTemplate::getSection('integrity', $params);
     }
 
+    /**
+     * Returns a JSON-encoded object with the WordPress integrity status.
+     *
+     * The plugin gets the checksum of all the files installed in the server that
+     * are also part of a normal WordPress package. Then, it communicates with
+     * a WordPress API service to retrieve the official checksums of the files
+     * distributed with the package with the same version installed in the site.
+     *
+     * For any file found in the site that is not part of a normal installation
+     * the plugin will report it as ADDED, for any file that is missing from the
+     * installation but part of the official WordPress package, the plugin will
+     * report it as DELETED, and for every file found in the site that is also
+     * part of a normal installation, it will report it as MODIFIED if there are
+     * differences in their checksums.
+     */
     public static function ajaxIntegrity()
     {
         if (SucuriScanRequest::post('form_action') !== 'check_wordpress_integrity') {
@@ -51,8 +66,6 @@ class SucuriScanIntegrity
      * Process the requests sent by the form submissions originated in the integrity
      * page, all forms must have a nonce field that will be checked against the one
      * generated in the template render function.
-     *
-     * @return void
      */
     private static function pageIntegritySubmission()
     {
@@ -180,6 +193,21 @@ class SucuriScanIntegrity
         ));
     }
 
+    /**
+     * Checks if the WordPress integrity is correct or not.
+     *
+     * For any file found in the site that is not part of a normal installation
+     * the plugin will report it as ADDED, for any file that is missing from the
+     * installation but part of the official WordPress package, the plugin will
+     * report it as DELETED, and for every file found in the site that is also
+     * part of a normal installation, it will report it as MODIFIED if there are
+     * differences in their checksums.
+     *
+     * The website owner will receive an email alert with this information.
+     *
+     * @param bool $send_email Send an email alert to the admins.
+     * @return string|bool HTML with information about the integrity.
+     */
     public static function getIntegrityStatus($send_email = false)
     {
         $params = array();
@@ -298,6 +326,16 @@ class SucuriScanIntegrity
         return SucuriScanTemplate::getSection('integrity-incorrect', $params);
     }
 
+    /**
+     * Setups the page to allow the execution of the diff utility.
+     *
+     * This method will write the modal window and the JavaScript code that will
+     * allow the admin to send an Ajax request to inspect the difference between
+     * a file that is currently installed in the website and the original code
+     * distributed with the official WordPress package.
+     *
+     * @return string HTML and JavaScript code for the diff utility.
+     */
     public static function diffUtility()
     {
         if (!SucuriScanOption::isEnabled(':diff_utility')) {
@@ -316,6 +354,15 @@ class SucuriScanIntegrity
         return SucuriScanTemplate::getSection('integrity-diff-utility', $params);
     }
 
+    /**
+     * Returns the output of the diff utility.
+     *
+     * Some errors will be reported if the admin requests to see the differences
+     * in a file that is not part of the official WordPress distribution. Also,
+     * if the file does not exists it will be useless to see the differences
+     * because obviously the content of the file will all be missing. The plugin
+     * will thrown an exception in this case too.
+     */
     public static function ajaxIntegrityDiffUtility()
     {
         if (SucuriScanRequest::post('form_action') !== 'integrity_diff_utility') {
@@ -349,9 +396,9 @@ class SucuriScanIntegrity
      * Retrieve a list of md5sum and last modification time of all the files in the
      * folder specified. This is a recursive function.
      *
-     * @param  string  $dir       The base path where the scanning will start.
-     * @param  boolean $recursive Either TRUE or FALSE if the scan should be performed recursively.
-     * @return array              List of arrays containing the md5sum and last modification time of the files found.
+     * @param string $dir The base path where the scanning will start.
+     * @param bool $recursive Either TRUE or FALSE if the scan should be performed recursively.
+     * @return array List of arrays containing the md5sum and last modification time of the files found.
      */
     private static function integrityTree($dir = './', $recursive = false)
     {
@@ -380,8 +427,8 @@ class SucuriScanIntegrity
      *   <li>added: Files present in the local project but not in the official WordPress packages.</li>
      * </ul>
      *
-     * @param  integer $version Valid version number of the WordPress project.
-     * @return array            Associative array with these keys: modified, stable, removed, added.
+     * @param string|int $version Valid version number of the WordPress project.
+     * @return array|bool Associative array with these keys: modified, stable, removed, added.
      */
     private static function checkIntegrityIntegrity($version = 0)
     {
@@ -481,10 +528,10 @@ class SucuriScanIntegrity
     /**
      * Ignore irrelevant files and directories from the integrity checking.
      *
-     * @param  string  $file_path File path that will be compared.
-     * @return boolean            TRUE if the file should be ignored, FALSE otherwise.
+     * @param string $path File path that will be compared.
+     * @return bool True if the file should be ignored, false otherwise.
      */
-    private static function ignoreIntegrityFilepath($file_path = '')
+    private static function ignoreIntegrityFilepath($path = '')
     {
         // List of files that will be ignored from the integrity checking.
         $ignore_files = array(
@@ -499,7 +546,7 @@ class SucuriScanIntegrity
 
         // Determine whether a file must be ignored from the integrity checks or not.
         foreach ($ignore_files as $ignore_pattern) {
-            if (@preg_match('/'.$ignore_pattern.'/', $file_path)) {
+            if (@preg_match('/'.$ignore_pattern.'/', $path)) {
                 return true;
             }
         }
@@ -509,8 +556,6 @@ class SucuriScanIntegrity
 
     /**
      * Includes some irrelevant files into the integrity cache.
-     *
-     * @return void
      */
     private static function ignoreIrrelevantFiles()
     {
@@ -573,6 +618,20 @@ class SucuriScanIntegrity
         SucuriScanOption::updateOption(':integrity_startup', 'done');
     }
 
+    /**
+     * Forces the integrity checker to ignore a file.
+     *
+     * The first time the WordPress integrity checker it will include some files
+     * into a storage file that will be used to skip these files during the next
+     * scans. This is to reduce the amount of false/positives. The website owner
+     * is free to add more files that are considered harmless, or stop ignoring
+     * these files from a tool available in the scanner section in the settings
+     * page.
+     *
+     * @param string $path Relative path to the file.
+     * @param bool $checkExistence Stop if the file does not exists.
+     * @return bool True if the file was ignored, false otherwise.
+     */
     private static function ignoreIrrelevantFile($path = '', $checkExistence = true)
     {
         if ($checkExistence && !file_exists(ABSPATH . '/' . $path)) {

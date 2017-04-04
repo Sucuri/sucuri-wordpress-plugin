@@ -26,8 +26,6 @@ class SucuriScanInterface
      * execution of other functions will be generated. Things like the real IP
      * address of the client when it has been forwarded or it's behind an external
      * service like a Proxy.
-     *
-     * @return void
      */
     public static function initialize()
     {
@@ -44,8 +42,6 @@ class SucuriScanInterface
     /**
      * Define which javascript and css files will be loaded in the header of the
      * plugin pages, only when the administrator panel is accessed.
-     *
-     * @return void
      */
     public static function enqueueScripts()
     {
@@ -109,8 +105,6 @@ class SucuriScanInterface
      * 1.6.0) all the functionality of the others will be merged here, this will
      * remove duplicated functionality, duplicated bugs and/or duplicated
      * maintenance reports allowing us to focus in one unique project.
-     *
-     * @return void
      */
     public static function handleOldPlugins()
     {
@@ -145,8 +139,6 @@ class SucuriScanInterface
     /**
      * Create a folder in the WordPress upload directory where the plugin will
      * store all the temporal or dynamic information.
-     *
-     * @return void
      */
     public static function createStorageFolder()
     {
@@ -182,8 +174,6 @@ class SucuriScanInterface
      * number is different than the number defined in the constant that comes
      * with this code then we can consider this as an update, in which case we
      * will execute certain actions and/or display some messages.
-     *
-     * @return void
      */
     public static function noticeAfterUpdate()
     {
@@ -246,8 +236,6 @@ class SucuriScanInterface
 
     /**
      * Check whether a user has the permissions to see a page from the plugin.
-     *
-     * @return void
      */
     public static function checkPageVisibility()
     {
@@ -261,7 +249,7 @@ class SucuriScanInterface
      * validation fails the execution of the script will be stopped and a dead page
      * will be printed to the client using the official WordPress method.
      *
-     * @return boolean Either TRUE or FALSE if the nonce is valid or not respectively.
+     * @return bool True if the nonce is valid, false otherwise.
      */
     public static function checkNonce()
     {
@@ -282,9 +270,8 @@ class SucuriScanInterface
     /**
      * Prints a HTML alert in the WordPress admin interface.
      *
-     * @param  string $type    The type of alert, it can be either Updated or Error.
-     * @param  string $message The message that will be printed in the alert.
-     * @return void
+     * @param string $type The type of alert, it can be either Updated or Error.
+     * @param string $message The message that will be printed in the alert.
      */
     private static function adminNotice($type = 'updated', $message = '')
     {
@@ -322,8 +309,7 @@ class SucuriScanInterface
     /**
      * Prints a HTML alert of type ERROR in the WordPress admin interface.
      *
-     * @param  string $msg The message that will be printed in the alert.
-     * @return void
+     * @param string $msg The message that will be printed in the alert.
      */
     public static function error($msg = '')
     {
@@ -333,8 +319,7 @@ class SucuriScanInterface
     /**
      * Prints a HTML alert of type INFO in the WordPress admin interface.
      *
-     * @param  string $msg The message that will be printed in the alert.
-     * @return void
+     * @param string $msg The message that will be printed in the alert.
      */
     public static function info($msg = '')
     {
@@ -354,7 +339,7 @@ class SucuriScanInterface
      * to remind him. This is, the home page of the admin dashboard, the plugins
      * page, and any of the pages associated to the plugin.
      *
-     * @return boolean Display the API key generator button or not.
+     * @return bool Display the API key generator button or not.
      */
     private static function displayNoticesHere()
     {

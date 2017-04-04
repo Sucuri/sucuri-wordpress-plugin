@@ -23,7 +23,7 @@ class SucuriScanCommand extends SucuriScan
      * commands. In this specific case, we want to know if the generic exec method
      * is enabled or not to allow the execution of system programs.
      *
-     * @return boolean True if the exec method is enabled, false otherwise.
+     * @return bool True if the exec method is enabled, false otherwise.
      */
     private static function canExecuteCommands()
     {
@@ -33,6 +33,12 @@ class SucuriScanCommand extends SucuriScan
         return !in_array('exec', $methods);
     }
 
+    /**
+     * Checks if an external command exists or not.
+     *
+     * @param string $cmd Name of the external command.
+     * @return bool True if the command exists, false otherwise.
+     */
     public static function exists($cmd)
     {
         if (!self::canExecuteCommands()) {
@@ -54,11 +60,11 @@ class SucuriScanCommand extends SucuriScan
     }
 
     /**
-     * Compare files line by line.
+     * Compares two files line by line.
      *
-     * @param  string $a File path of the original file.
-     * @param  string $b File path of the modified file.
-     * @return array     Line-by-line changes (if any).
+     * @param string $a File path of the original file.
+     * @param string $b File path of the modified file.
+     * @return array Line-by-line changes (if any).
      */
     public static function diff($a, $b)
     {
@@ -77,6 +83,23 @@ class SucuriScanCommand extends SucuriScan
         return $out;
     }
 
+    /**
+     * Generates the HTML code with the diff output.
+     *
+     * The method takes the relative path of a core WordPress file, then tries
+     * to download a fresh copy of such file from the official WordPress API. If
+     * the download succeeds the method will write the content of this file into
+     * a temporary resource. Then it will use the Unix diff utility to find all
+     * the differences between the original code and the one present in the site.
+     *
+     * If there are differences, the method will write the HTML code to report
+     * them in the dashboard. Some basic CSS classes will be attached to some of
+     * the elements in the code to facilitate the styling of the diff report.
+     *
+     * @param string $filepath Relative path to the core WordPress file.
+     * @param string $version Version number of the WordPress installation.
+     * @return string HTML code with the diff report.
+     */
     public static function diffHTML($filepath, $version)
     {
         $tempfile = tempnam(sys_get_temp_dir(), SUCURISCAN . '-integrity-');

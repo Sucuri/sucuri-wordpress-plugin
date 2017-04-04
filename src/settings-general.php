@@ -8,6 +8,12 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     exit(1);
 }
 
+/**
+ * Renders a page with information about the reset options feature.
+ *
+ * @param bool $nonce True if the CSRF protection worked.
+ * @return string Page with information about the reset options.
+ */
 function sucuriscan_settings_general_resetoptions($nonce)
 {
     // Reset all the plugin's options.
@@ -30,6 +36,12 @@ function sucuriscan_settings_general_resetoptions($nonce)
     return SucuriScanTemplate::getSection('settings-general-resetoptions');
 }
 
+/**
+ * Renders a page with information about the API key feature.
+ *
+ * @param bool $nonce True if the CSRF protection worked.
+ * @return string Page with information about the API key.
+ */
 function sucuriscan_settings_general_apikey($nonce)
 {
     $params = array();
@@ -66,7 +78,7 @@ function sucuriscan_settings_general_apikey($nonce)
 
         // Generate new API key from the API service.
         if (SucuriScanRequest::post(':plugin_api_key') !== false) {
-            $user_id = SucuriScanRequest::post(':setup_user');
+            $user_id = (int) SucuriScanRequest::post(':setup_user');
             $user_obj = SucuriScan::getUserByID($user_id);
 
             if ($user_obj && user_can($user_obj, 'administrator')) {
@@ -118,6 +130,12 @@ function sucuriscan_settings_general_apikey($nonce)
     return SucuriScanTemplate::getSection('settings-general-apikey', $params);
 }
 
+/**
+ * Renders a page with information about the data storage feature.
+ *
+ * @param bool $nonce True if the CSRF protection worked.
+ * @return string Page with information about the data storage.
+ */
 function sucuriscan_settings_general_datastorage()
 {
     $params = array();
@@ -226,6 +244,12 @@ function sucuriscan_selfhosting_fpath()
     return false;
 }
 
+/**
+ * Renders a page with information about the self-hosting feature.
+ *
+ * @param bool $nonce True if the CSRF protection worked.
+ * @return string Page with information about the self-hosting.
+ */
 function sucuriscan_settings_general_selfhosting($nonce)
 {
     $params = array();
@@ -289,9 +313,10 @@ function sucuriscan_settings_general_selfhosting($nonce)
 }
 
 /**
- * Retrieve a list with the scheduled tasks configured for the site.
+ * Renders a page with information about the cronjobs feature.
  *
- * @return array A list of pseudo-variables and values that will replace them in the HTML template.
+ * @param bool $nonce True if the CSRF protection worked.
+ * @return string Page with information about the cronjobs.
  */
 function sucuriscan_settings_general_cronjobs()
 {
@@ -394,6 +419,12 @@ function sucuriscan_settings_general_cronjobs()
     return SucuriScanTemplate::getSection('settings-general-cronjobs', $params);
 }
 
+/**
+ * Renders a page with information about the reverse proxy feature.
+ *
+ * @param bool $nonce True if the CSRF protection worked.
+ * @return string Page with information about the reverse proxy.
+ */
 function sucuriscan_settings_general_reverseproxy($nonce)
 {
     $params = array(
@@ -426,6 +457,12 @@ function sucuriscan_settings_general_reverseproxy($nonce)
     return SucuriScanTemplate::getSection('settings-general-reverseproxy', $params);
 }
 
+/**
+ * Renders a page with information about the IP discoverer feature.
+ *
+ * @param bool $nonce True if the CSRF protection worked.
+ * @return string Page with information about the IP discoverer.
+ */
 function sucuriscan_settings_general_ipdiscoverer($nonce)
 {
     $params = array(
@@ -500,6 +537,12 @@ function sucuriscan_settings_general_ipdiscoverer($nonce)
     return SucuriScanTemplate::getSection('settings-general-ipdiscoverer', $params);
 }
 
+/**
+ * Renders a page with information about the comment monitor feature.
+ *
+ * @param bool $nonce True if the CSRF protection worked.
+ * @return string Page with information about the comment monitor.
+ */
 function sucuriscan_settings_general_commentmonitor($nonce)
 {
     $params = array(
@@ -532,6 +575,12 @@ function sucuriscan_settings_general_commentmonitor($nonce)
     return SucuriScanTemplate::getSection('settings-general-commentmonitor', $params);
 }
 
+/**
+ * Renders a page with information about the auditlog stats feature.
+ *
+ * @param bool $nonce True if the CSRF protection worked.
+ * @return string Page with information about the auditlog stats.
+ */
 function sucuriscan_settings_general_auditlogstats($nonce)
 {
     $params = array();
@@ -554,6 +603,12 @@ function sucuriscan_settings_general_auditlogstats($nonce)
     return SucuriScanTemplate::getSection('settings-general-auditlogstats', $params);
 }
 
+/**
+ * Renders a page with information about the import export feature.
+ *
+ * @param bool $nonce True if the CSRF protection worked.
+ * @return string Page with information about the import export.
+ */
 function sucuriscan_settings_general_importexport($nonce)
 {
     $settings = array();

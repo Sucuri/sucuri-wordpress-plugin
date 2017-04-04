@@ -113,9 +113,9 @@ function sucuriscan_failed_logins_panel()
  *
  * @see sucuriscan_reset_failed_logins()
  *
- * @param  boolean $get_old_logs Whether the old logs will be retrieved or not.
- * @param  boolean $reset        Whether the file will be resetted or not.
- * @return string                The full (relative) path where the file is located.
+ * @param bool $get_old_logs Whether the old logs will be retrieved or not.
+ * @param bool $reset Whether the file will be resetted or not.
+ * @return string|false Absolute path to the file.
  */
 function sucuriscan_failed_logins_datastore_path($get_old_logs = false, $reset = false)
 {
@@ -149,9 +149,9 @@ function sucuriscan_failed_logins_default_content()
 /**
  * Returns failed logins data including old entries.
  *
- * @param  integer $offset Initial index to start the array.
- * @param  integer $limit  Number of items in the returned array.
- * @return array           Failed logins data.
+ * @param int $offset Initial index to start the array.
+ * @param int $limit Number of items in the returned array.
+ * @return array|false Failed logins data.
  */
 function sucuriscan_get_all_failed_logins($offset = 0, $limit = -1)
 {
@@ -187,10 +187,10 @@ function sucuriscan_get_all_failed_logins($offset = 0, $limit = -1)
  * with the report) or reset the file after considering it a normal behavior of
  * the site.
  *
- * @param  boolean $get_old_logs Whether the old logs will be retrieved or not.
- * @param  integer $offset       Array index from where to start collecting the data.
- * @param  integer $limit        Number of items to insert into the returned array.
- * @return array                 Information and entries gathered from the failed logins datastore file.
+ * @param bool $get_old_logs Whether the old logs will be retrieved or not.
+ * @param int $offset Array index from where to start collecting the data.
+ * @param int $limit Number of items to insert into the returned array.
+ * @return array|false Information and entries gathered from the failed logins datastore file.
  */
 function sucuriscan_get_failed_logins($get_old_logs = false, $offset = 0, $limit = -1)
 {
@@ -294,9 +294,9 @@ function sucuriscan_get_failed_logins($get_old_logs = false, $offset = 0, $limit
  * this entry will contain the username, timestamp of the login attempt, remote
  * address of the computer sending the request, and the user-agent.
  *
- * @param  string  $user_login     Information from the current failed login event.
- * @param  string  $wrong_password Wrong password used during the supposed attack.
- * @return boolean                 Whether the information of the current failed login event was stored or not.
+ * @param string $user_login Information from the current failed login event.
+ * @param string $wrong_password Wrong password used during the supposed attack.
+ * @return bool Whether the information of the current failed login event was stored or not.
  */
 function sucuriscan_log_failed_login($user_login = '', $wrong_password = '')
 {
@@ -331,8 +331,8 @@ function sucuriscan_log_failed_login($user_login = '', $wrong_password = '')
  * in HTML code to send as a report via email according to the plugin settings
  * for the email alerts.
  *
- * @param  array   $failed_logins Information and entries gathered from the failed logins datastore file.
- * @return boolean                Whether the report was sent via email or not.
+ * @param array $failed_logins Information and entries gathered from the failed logins datastore file.
+ * @return bool Whether the report was sent via email or not.
  */
 function sucuriscan_report_failed_logins($failed_logins = array())
 {
@@ -398,7 +398,7 @@ function sucuriscan_report_failed_logins($failed_logins = array())
  * likely the best move) but rather will clean its content and append the
  * default code defined by another method above.
  *
- * @return boolean Whether the datastore file was resetted or not.
+ * @return bool Whether the datastore file was resetted or not.
  */
 function sucuriscan_reset_failed_logins()
 {

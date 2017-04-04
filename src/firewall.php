@@ -11,10 +11,10 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
 /**
  * Generate the HTML code for the firewall settings panel.
  *
- * @param  string $api_key The firewall API key.
- * @return string          The parsed-content of the firewall settings panel.
+ * @param array|bool $api_key The firewall API key.
+ * @return string The parsed-content of the firewall settings panel.
  */
-function sucuriscan_firewall_settings($api_key = '')
+function sucuriscan_firewall_settings($api_key)
 {
     $params = array(
         'Firewall.APIKey' => '',
@@ -78,8 +78,8 @@ function sucuriscan_firewall_settings($api_key = '')
  * text, for example changing numbers or variable names into a more explicit
  * text so the administrator can understand the meaning of these settings.
  *
- * @param  array $settings A hash with the settings of a firewall account.
- * @return array           The explained version of the firewall settings.
+ * @param array $settings A hash with the settings of a firewall account.
+ * @return array The explained version of the firewall settings.
  */
 function sucuriscan_explain_firewall_settings($settings = array())
 {
@@ -125,6 +125,16 @@ function sucuriscan_firewall_auditlogs()
     return SucuriScanTemplate::getSection('firewall-auditlogs', $params);
 }
 
+/**
+ * Returns the security logs from the Firewall API.
+ *
+ * The API allows to filter the logs by day and by user input. This operation
+ * depends on the availability of the Firewall API key, if the website owner has
+ * not signed up for the Firewall service then they will not have access to this
+ * feature. The plugin will display a warning in this case.
+ *
+ * @return string HTML with the security logs from the Firewall.
+ */
 function sucuriscan_firewall_auditlogs_ajax()
 {
     if (SucuriScanRequest::post('form_action') == 'get_firewall_logs') {
@@ -169,6 +179,12 @@ function sucuriscan_firewall_auditlogs_ajax()
     }
 }
 
+/**
+ * Returns the security logs from the firewall in HTML.
+ *
+ * @param array $entries Security logs retrieved from the Firewall API.
+ * @return string HTML with the information from the logs.
+ */
 function sucuriscan_firewall_auditlogs_entries($entries = array())
 {
     $output = '';
@@ -230,10 +246,10 @@ function sucuriscan_firewall_auditlogs_entries($entries = array())
 /**
  * Get a list of years, months or days depending of the type specified.
  *
- * @param  string  $type    Either years, months or days.
- * @param  string  $date    Year, month and day selected from the request.
- * @param  boolean $in_html Whether the list should be converted to a HTML select options or not.
- * @return array            Either an array with the expected values, or a HTML code.
+ * @param string $type Either years, months or days.
+ * @param string $date Year, month and day selected from the request.
+ * @param bool $in_html Whether the list should be converted to a HTML select options or not.
+ * @return array|string Either an array with the expected values, or a HTML code.
  */
 function sucuriscan_firewall_dates($type = '', $date = '', $in_html = true)
 {
@@ -285,7 +301,7 @@ function sucuriscan_firewall_dates($type = '', $date = '', $in_html = true)
 
         foreach ($options as $key => $value) {
             if (is_numeric($value)) {
-                $value = str_pad($value, 2, 0, STR_PAD_LEFT);
+                $value = str_pad($value, 2, '0', STR_PAD_LEFT);
             }
 
             if ($type != 'months') {
@@ -305,8 +321,8 @@ function sucuriscan_firewall_dates($type = '', $date = '', $in_html = true)
 /**
  * Generate the HTML code for the firewall clear cache panel.
  *
- * @param  string $nonce Identifier of the HTTP request for CSRF protection
- * @return string        The parsed-content of the firewall clear cache panel.
+ * @param bool $nonce Identifier of the HTTP request for CSRF protection
+ * @return string The parsed-content of the firewall clear cache panel.
  */
 function sucuriscan_firewall_clearcache($nonce)
 {
@@ -346,8 +362,7 @@ function sucuriscan_firewall_clearcache($nonce)
  * of certain files is going to stay as it is due to the configuration on the
  * edge of the servers.
  *
- * @param  integer $post_id The post ID.
- * @return void
+ * @param int $post_id The post ID.
  */
 function sucuriscanFirewallClearCacheSavePost($post_id = 0)
 {
@@ -363,7 +378,7 @@ function sucuriscanFirewallClearCacheSavePost($post_id = 0)
  * page, all forms must have a nonce field that will be checked against the one
  * generated in the template render function.
  *
- * @return void
+ * @param bool $nonce True if the form submission was validated, false otherwise.
  */
 function sucuriscan_firewall_form_submissions($nonce)
 {

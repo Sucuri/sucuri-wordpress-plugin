@@ -21,7 +21,7 @@ class SucuriScanMail extends SucuriScanOption
     /**
      * Check whether the email alerts will be sent in HTML or Plain/Text.
      *
-     * @return boolean Whether the emails will be in HTML or Plain/Text.
+     * @return bool Whether the emails will be in HTML or Plain/Text.
      */
     public static function prettifyMails()
     {
@@ -31,11 +31,11 @@ class SucuriScanMail extends SucuriScanOption
     /**
      * Send a message to a specific email address.
      *
-     * @param  string  $email    The email address of the recipient that will receive the message.
-     * @param  string  $subject  The reason of the message that will be sent.
-     * @param  string  $message  Body of the message that will be sent.
-     * @param  array   $data_set Optional parameter to add more information to the notification.
-     * @return boolean           Whether the email contents were sent successfully.
+     * @param string $email The email address of the recipient that will receive the message.
+     * @param string $subject The reason of the message that will be sent.
+     * @param string $message Body of the message that will be sent.
+     * @param array $data_set Optional parameter to add more information to the notification.
+     * @return bool Whether the email contents were sent successfully.
      */
     public static function sendMail($email = '', $subject = '', $message = '', $data_set = array())
     {
@@ -114,8 +114,8 @@ class SucuriScanMail extends SucuriScanOption
     /**
      * Generate a subject for the email alerts.
      *
-     * @param  string $event The reason of the message that will be sent.
-     * @return string        A text with the subject for the email alert.
+     * @param string $event The reason of the message that will be sent.
+     * @return string A text with the subject for the email alert.
      */
     private static function getEmailSubject($event = '')
     {
@@ -167,10 +167,10 @@ class SucuriScanMail extends SucuriScanOption
     /**
      * Generate a HTML version of the message that will be sent through an email.
      *
-     * @param  string $subject  The reason of the message that will be sent.
-     * @param  string $message  Body of the message that will be sent.
-     * @param  array  $data_set Optional parameter to add more information to the notification.
-     * @return string           The message formatted in a HTML template.
+     * @param string $subject The reason of the message that will be sent.
+     * @param string $message Body of the message that will be sent.
+     * @param array $data_set Optional parameter to add more information to the notification.
+     * @return string The message formatted in a HTML template.
      */
     private static function prettifyMail($subject = '', $message = '', $data_set = array())
     {
@@ -231,7 +231,7 @@ class SucuriScanMail extends SucuriScanOption
     /**
      * Check whether the maximum quantity of emails per hour was reached.
      *
-     * @return boolean Whether the quota emails per hour was reached.
+     * @return bool Whether the quota emails per hour was reached.
      */
     private static function emailsPerHourReached()
     {

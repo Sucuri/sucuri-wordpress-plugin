@@ -9,13 +9,7 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
 }
 
 /**
- * WordPress core integrity page.
- *
- * It checks whether the WordPress core files are the original ones, and the state
- * of the themes and plugins reporting the availability of updates. It also checks
- * the user accounts under the administrator group.
- *
- * @return void
+ * Renders the content of the plugin's dashboard page.
  */
 function sucuriscan_page()
 {
@@ -46,13 +40,7 @@ function sucuriscan_page()
 }
 
 /**
- * Firewall page.
- *
- * It checks whether the WordPress core files are the original ones, and the state
- * of the themes and plugins reporting the availability of updates. It also checks
- * the user accounts under the administrator group.
- *
- * @return void
+ * Renders the content of the plugin's firewall page.
  */
 function sucuriscan_firewall_page()
 {
@@ -68,7 +56,7 @@ function sucuriscan_firewall_page()
     // Page pseudo-variables initialization.
     $params = array(
         'Firewall.Settings' => sucuriscan_firewall_settings($api_key),
-        'Firewall.AuditLogs' => sucuriscan_firewall_auditlogs($api_key),
+        'Firewall.AuditLogs' => sucuriscan_firewall_auditlogs(),
         'Firewall.ClearCache' => sucuriscan_firewall_clearcache($nonce),
     );
 
@@ -76,11 +64,7 @@ function sucuriscan_firewall_page()
 }
 
 /**
- * Generate and print the HTML code for the Last Logins page.
- *
- * This page will contains information of all the logins of the registered users.
- *
- * @return string Last-logings for the administrator accounts.
+ * Renders the content of the plugin's last logins page.
  */
 function sucuriscan_lastlogins_page()
 {
@@ -113,9 +97,7 @@ function sucuriscan_lastlogins_page()
 }
 
 /**
- * Print a HTML code with the settings of the plugin.
- *
- * @return void
+ * Renders the content of the plugin's settings page.
  */
 function sucuriscan_settings_page()
 {
@@ -168,12 +150,12 @@ function sucuriscan_settings_page()
 
     /* settings - alerts */
     $params['Settings.Alerts.Recipients'] = sucuriscan_settings_alerts_recipients($nonce);
-    $params['Settings.Alerts.TrustedIPs'] = sucuriscan_settings_alerts_trustedips($nonce);
+    $params['Settings.Alerts.TrustedIPs'] = sucuriscan_settings_alerts_trustedips();
     $params['Settings.Alerts.Subject'] = sucuriscan_settings_alerts_subject($nonce);
     $params['Settings.Alerts.PerHour'] = sucuriscan_settings_alerts_perhour($nonce);
     $params['Settings.Alerts.BruteForce'] = sucuriscan_settings_alerts_bruteforce($nonce);
     $params['Settings.Alerts.Events'] = sucuriscan_settings_alerts_events($nonce);
-    $params['Settings.Alerts.IgnorePosts'] = sucuriscan_settings_alerts_ignore_posts($nonce);
+    $params['Settings.Alerts.IgnorePosts'] = sucuriscan_settings_alerts_ignore_posts();
 
     /* settings - api service */
     $params['Settings.APIService.Status'] = sucuriscan_settings_apiservice_status($nonce);
@@ -188,6 +170,9 @@ function sucuriscan_settings_page()
     echo SucuriScanTemplate::getTemplate('settings', $params);
 }
 
+/**
+ * Handles all the AJAX plugin's requests.
+ */
 function sucuriscan_ajax()
 {
     SucuriScanInterface::checkPageVisibility();

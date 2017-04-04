@@ -103,7 +103,7 @@ class SucuriScanPosthackPage extends SucuriScan
         $params['ResetPassword.PaginationVisibility'] = 'hidden';
 
         // Fill the user list for ResetPassword action.
-        $user_list = false;
+        $user_list = array();
         $page_number = SucuriScanTemplate::pageNumber();
         $max_per_page = SUCURISCAN_MAX_PAGINATION_BUTTONS;
         $dbquery = new WP_User_Query(array(
@@ -129,7 +129,7 @@ class SucuriScanPosthackPage extends SucuriScan
             }
         }
 
-        if ($user_list !== false) {
+        if ($user_list) {
             foreach ($user_list as $user) {
                 $user->user_registered_timestamp = strtotime($user->user_registered);
                 $user->user_registered_formatted = SucuriScan::datetime($user->user_registered_timestamp);
@@ -150,6 +150,9 @@ class SucuriScanPosthackPage extends SucuriScan
         return SucuriScanTemplate::getSection('settings-posthack-reset-password', $params);
     }
 
+    /**
+     * Sets a new password for the specified user account.
+     */
     public static function resetPasswordAjax()
     {
         if (SucuriScanRequest::post('form_action') == 'reset_user_password') {
@@ -172,8 +175,6 @@ class SucuriScanPosthackPage extends SucuriScan
 
     /**
      * Reset all the FREE plugins, even if they are not activated.
-     *
-     * @return void
      */
     public static function resetPlugins()
     {
@@ -191,8 +192,6 @@ class SucuriScanPosthackPage extends SucuriScan
 
     /**
      * Find and list available updates for plugins and themes.
-     *
-     * @return void
      */
     public static function availableUpdates()
     {
@@ -307,7 +306,7 @@ class SucuriScanPosthackPage extends SucuriScan
     /**
      * Retrieve the information for the available updates.
      *
-     * @return string HTML code for a table with the updates information.
+     * @return string|bool HTML code for a table with the updates information.
      */
     public static function availableUpdatesContent($send_email = false)
     {
