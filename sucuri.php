@@ -171,7 +171,7 @@ define('SUCURISCAN_GET_PLUGINS_LIFETIME', 1800);
 /**
  * The maximum execution time of a HTTP request before timeout.
  */
-define('SUCURISCAN_MAX_REQUEST_TIMEOUT', 15);
+define('SUCURISCAN_MAX_REQUEST_TIMEOUT', 60);
 
 /**
  * The maximum execution time for SiteCheck requests before timeout.
