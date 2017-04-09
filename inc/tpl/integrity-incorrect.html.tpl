@@ -30,10 +30,12 @@
 
     %%%SUCURI.SiteCheck.Details%%%
 
+    %%%SUCURI.Integrity.DiffUtility%%%
+
     <form action="%%SUCURI.URL.Dashboard%%" method="post" class="sucuriscan-%%SUCURI.Integrity.BadVisibility%%">
         <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
 
-        <table class="wp-list-table widefat sucuriscan-table">
+        <table class="wp-list-table widefat sucuriscan-table sucuriscan-integrity-table">
             <thead>
                 <tr>
                     <th colspan="5">WordPress Integrity (%%SUCURI.Integrity.ListCount%% files)</th>

@@ -203,6 +203,7 @@ require_once('src/event.lib.php');
 require_once('src/hook.lib.php');
 require_once('src/api.lib.php');
 require_once('src/mail.lib.php');
+require_once('src/command.lib.php');
 require_once('src/template.lib.php');
 require_once('src/fsscanner.lib.php');
 require_once('src/hardening.lib.php');

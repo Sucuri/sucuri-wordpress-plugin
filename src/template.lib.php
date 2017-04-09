@@ -312,7 +312,7 @@ class SucuriScanTemplate extends SucuriScanRequest
                 proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>',
         );
 
-        if (!empty($template) && $template != 'none') {
+        if (!empty($template) && $template !== 'none') {
             $params['Content'] = self::getSection($template);
         }
 
@@ -322,8 +322,8 @@ class SucuriScanTemplate extends SucuriScanRequest
             }
         }
 
-        $params['Visibility'] = 'sucuriscan-' . $params['Visibility'];
-        $params['Identifier'] = 'sucuriscan-' . $template . '-modal';
+        $params['Visibility'] = SUCURISCAN . '-' . $params['Visibility'];
+        $params['Identifier'] = SUCURISCAN . '-' . $params['Identifier'] . '-modal';
         $params = self::sharedParams('modal', $params);
 
         return self::getTemplate('modalwindow', $params, 'section');

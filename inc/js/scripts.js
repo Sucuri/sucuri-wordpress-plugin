@@ -7,13 +7,13 @@ function sucuriscanAlertClose (id) {
 }
 
 jQuery(document).ready(function ($) {
-    $('.sucuriscan-modal-button').on('click', function (event) {
+    $('.sucuriscan-container').on('click', '.sucuriscan-modal-button', function (event) {
         event.preventDefault();
         var modalid = $(this).data('modalid');
         $('div.' + modalid + '-modal').removeClass('sucuriscan-hidden');
     });
 
-    $('.sucuriscan-overlay, .sucuriscan-modal-close').on('click', function (event) {
+    $('.sucuriscan-container').on('click', '.sucuriscan-overlay, .sucuriscan-modal-close', function (event) {
         event.preventDefault();
         $('.sucuriscan-overlay').addClass('sucuriscan-hidden');
         $('.sucuriscan-modal').addClass('sucuriscan-hidden');

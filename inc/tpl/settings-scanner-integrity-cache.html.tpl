@@ -1,19 +1,18 @@
 
 <div class="sucuriscan-panel">
-    <h3 class="sucuriscan-title">Core Integrity Checks - Marked As Fixed</h3>
+    <h3 class="sucuriscan-title">WordPress Integrity (False/Positives)</h3>
 
     <div class="inside">
         <p>
-            The scanner is prone to inconsistencies due to the diversity of configurations
-            that a hosting provider may have in their servers, many of them add files in the
-            document root of the websites with information associated to 3rd-party services
-            that they offer or programs that they are running in their system. These files
-            will be flagged by the plugin as <em>"added"</em> because they are not part of
-            the official WordPress packages, but it is clear that they are false/positives.
-            Some of these files are being ignored by the plugin to reduce the noise in the
-            integrity checks, but there are many others that are not, you will have to
-            select them and mark them as fixed if you believe they are harmless, this action
-            will force the plugin to ignore them in future scans.
+            Since the scanner doesn't reads the files during the execution of the
+            integrity check, it is possible to find false/positives. The scanner
+            compares a hash generated from the file content but not the content
+            in itself. If you include, for example, a new empty line in any of
+            the core WordPress files the scanner will flag that file even if the
+            modification is harmless. If a file is marked as <em>"added"</em> and
+            after a manual check of its content you verify that the file is legit,
+            you can mark it as fixed and the scanner will skip that file the next
+            time it runs.
         </p>
 
         <form action="%%SUCURI.URL.Settings%%#scanner" method="post">

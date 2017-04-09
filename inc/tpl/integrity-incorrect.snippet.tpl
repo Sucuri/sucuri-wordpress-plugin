@@ -17,7 +17,7 @@
 
     <td>%%SUCURI.Integrity.ModifiedAt%%</td>
 
-    <td>
+    <td class="sucuriscan-integrity-filepath" data-filepath="%%SUCURI.Integrity.FilePath%%">
         <span class="sucuriscan-monospace sucuriscan-wraptext">%%SUCURI.Integrity.FilePath%%</span>
         <em>%%SUCURI.Integrity.IsNotFixable%%</em>
     </td>

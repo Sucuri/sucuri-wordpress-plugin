@@ -69,12 +69,18 @@ class SucuriScan
     /**
      * Gets the value of a configuration option.
      *
-     * @param  string $property The configuration option name.
-     * @return string           Value of the configuration option as a string on success.
+     * @param  string  $property The configuration option name.
+     * @param  boolean $raw      Return the original value from the php.ini file.
+     * @return string            Value of the configuration option as a string on success.
      */
-    public static function iniGet($property = '')
+    public static function iniGet($property = '', $raw = false)
     {
         $ini_value = ini_get($property);
+
+        if ($raw) {
+            return $ini_value;
+        }
+
         $default = array(
             'error_log' => 'error_log',
             'safe_mode' => 'Off',

@@ -10,6 +10,42 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
 
 class SucuriScanSettingsIntegrity extends SucuriScanSettings
 {
+    public static function diffUtility($nonce)
+    {
+        $params = array();
+
+        $params['DiffUtility.StatusNum'] = 0;
+        $params['DiffUtility.Status'] = 'Disabled';
+        $params['DiffUtility.SwitchText'] = 'Enable';
+        $params['DiffUtility.SwitchValue'] = 'enable';
+
+        if ($nonce) {
+            // Enable or disable the Unix diff utility.
+            if ($status = SucuriScanRequest::post(':diff_utility', '(en|dis)able')) {
+                if (!SucuriScanCommand::exists('diff')) {
+                    SucuriScanInterface::error('Your hosting provider has blocked the execution of external commands.');
+                } else {
+                    $status = $status . 'd'; /* add past tense */
+                    $message = 'Integrity diff utility has been <code>' . $status . '</code>';
+
+                    SucuriScanOption::updateOption(':diff_utility', $status);
+                    SucuriScanEvent::reportInfoEvent($message);
+                    SucuriScanEvent::notifyEvent('plugin_change', $message);
+                    SucuriScanInterface::info($message);
+                }
+            }
+        }
+
+        if (SucuriScanOption::isEnabled(':diff_utility')) {
+            $params['DiffUtility.StatusNum'] = 1;
+            $params['DiffUtility.Status'] = 'Enabled';
+            $params['DiffUtility.SwitchText'] = 'Disable';
+            $params['DiffUtility.SwitchValue'] = 'disable';
+        }
+
+        return SucuriScanTemplate::getSection('settings-scanner-integrity-diff-utility', $params);
+    }
+
     public static function language($nonce)
     {
         $params = array();

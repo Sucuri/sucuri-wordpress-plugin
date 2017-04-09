@@ -1,29 +1,27 @@
 
 <div class="sucuriscan-panel">
-    <h3 class="sucuriscan-title">Core Integrity Checks - Language</h3>
+    <h3 class="sucuriscan-title">WordPress Integrity (Language)</h3>
 
     <div class="inside">
         <p>
-            The information necessary to check the integrity of the core files is obtained
-            from the official <a href="http://codex.wordpress.org/WordPress.org_API"
-            target="_blank">WordPress API</a> using an endpoint that returns the checksums
-            of all the files associated to a version number. By default the API returns the
-            checksums for the English installation, and there is an optional parameter named
-            locale that accepts a valid abbreviation for a supported language. If your website
-            was not installed using the English package please choose the appropriate language
-            below.
+            The information necessary to check the WordPress integrity uses data
+            obtained from the <a href="http://codex.wordpress.org/WordPress.org_API"
+            target="_blank">WordPress API</a>. It compares this data with the
+            content of the files installed in your website. By default the API
+            returns this data for the English version of WordPress. If your
+            website is using a non-English version of the code you will have to
+            specify the language to reduce the amount of false/positives.
         </p>
 
-        <p>
-            <strong>Note:</strong> Not all the international language codes are supported by
-            WordPress's API, you must expect incompatibilities with the results of the core
-            integrity checks, if you see files that are being flagged as added even when they
-            are part of the official releases, files that are being flagged as deleted even
-            when they are part of the official releases, and/or files that are being flagged
-            as modified even when their content has not been modified please consider to
-            select the English locale, if the false positives are persistent then fill a
-            ticket reporting the issue.
-        </p>
+        <div class="sucuriscan-inline-alert-info">
+            <p>
+                <b>NOTE:</b> Not all the languages are supported. If you notice
+                a high amount of false/positives please consider to switch the
+                option back to English and then mark the files that you consider
+                are clean as such, they will be ignored by the scanner the next
+                time it runs.
+            </p>
+        </div>
 
         <form action="%%SUCURI.URL.Settings%%#scanner" method="post">
             <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />

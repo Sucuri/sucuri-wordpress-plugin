@@ -50,6 +50,7 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_cloudproxy_apikey' => '',
             'sucuriscan_comment_monitor' => 'disabled',
             'sucuriscan_datastore_path' => dirname(self::optionsFilePath()),
+            'sucuriscan_diff_utility' => 'disabled',
             'sucuriscan_dns_lookups' => 'enabled',
             'sucuriscan_email_subject' => 'Sucuri Alert, :domain, :event',
             'sucuriscan_emails_per_hour' => 5,

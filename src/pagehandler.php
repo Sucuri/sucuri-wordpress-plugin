@@ -136,6 +136,7 @@ function sucuriscan_settings_page()
     /* settings - scanner */
     $params['Settings.Scanner.Options'] = sucuriscan_settings_scanner_options();
     $params['Settings.Scanner.SiteCheckTimeout'] = SucuriScanSettingsSiteCheck::timeoutPage($nonce);
+    $params['Settings.Scanner.IntegrityDiffUtility'] = SucuriScanSettingsIntegrity::diffUtility($nonce);
     $params['Settings.Scanner.IntegrityLanguage'] = SucuriScanSettingsIntegrity::language($nonce);
     $params['Settings.Scanner.IntegrityCache'] = SucuriScanSettingsIntegrity::cache($nonce);
     $params['Settings.Scanner.IgnoreFolders'] = sucuriscan_settings_scanner_ignore_folders($nonce);
@@ -188,6 +189,7 @@ function sucuriscan_ajax()
 
     if (SucuriScanInterface::checkNonce()) {
         SucuriScanIntegrity::ajaxIntegrity();
+        SucuriScanIntegrity::ajaxIntegrityDiffUtility();
 
         SucuriScanAuditLogs::ajaxAuditLogs();
         SucuriScanAuditLogs::ajaxAuditLogsReport();

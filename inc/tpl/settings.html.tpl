@@ -38,6 +38,8 @@
 
             %%%SUCURI.Settings.Scanner.SiteCheckTimeout%%%
 
+            %%%SUCURI.Settings.Scanner.IntegrityDiffUtility%%%
+
             %%%SUCURI.Settings.Scanner.IntegrityLanguage%%%
 
             %%%SUCURI.Settings.Scanner.IntegrityCache%%%

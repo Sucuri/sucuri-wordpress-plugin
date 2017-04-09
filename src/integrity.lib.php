@@ -184,7 +184,7 @@ class SucuriScanIntegrity
     {
         $params = array();
         $affected_files = 0;
-        $site_version = SucuriScan::siteVersion();
+        $siteVersion = SucuriScan::siteVersion();
 
         $params['Version'] = SucuriScan::siteVersion();
         $params['Integrity.List'] = '';
@@ -199,13 +199,13 @@ class SucuriScanIntegrity
         /* Check if we have already ignored irrelevant files */
         self::ignoreIrrelevantFiles();
 
-        if ($site_version) {
+        if ($siteVersion) {
             // Check if there are added, removed, or modified files.
-            $latest_hashes = self::checkIntegrityIntegrity($site_version);
+            $latest_hashes = self::checkIntegrityIntegrity($siteVersion);
             $language = SucuriScanOption::getOption(':language');
             $params['Integrity.RemoteChecksumsURL'] =
                 'https://api.wordpress.org/core/checksums/1.0/'
-                . '?version=' . $site_version . '&locale=' . $language;
+                . '?version=' . $siteVersion . '&locale=' . $language;
 
             if ($latest_hashes) {
                 $cache = new SucuriScanCache('integrity');
@@ -250,7 +250,7 @@ class SucuriScanIntegrity
 
                         // Generate the HTML code from the snippet template for this file.
                         $params['Integrity.List'] .=
-                        SucuriScanTemplate::getSnippet('integrity', array(
+                        SucuriScanTemplate::getSnippet('integrity-incorrect', array(
                             'Integrity.StatusType' => $list_type,
                             'Integrity.FilePath' => $file_path,
                             'Integrity.FileSize' => $file_size,
@@ -289,12 +289,60 @@ class SucuriScanIntegrity
         }
 
         $params['SiteCheck.Details'] = SucuriScanSiteCheck::details();
+        $params['Integrity.DiffUtility'] = SucuriScanIntegrity::diffUtility();
 
         if ($affected_files === 0) {
             return SucuriScanTemplate::getSection('integrity-correct', $params);
         }
 
         return SucuriScanTemplate::getSection('integrity-incorrect', $params);
+    }
+
+    public static function diffUtility()
+    {
+        if (!SucuriScanOption::isEnabled(':diff_utility')) {
+            return ''; /* empty page */
+        }
+
+        $params = array();
+
+        $params['DiffUtility.Modal'] = SucuriScanTemplate::getModal('none', array(
+            'Title' => 'WordPress Integrity Diff Utility',
+            'Content' => '' /* empty */,
+            'Identifier' => 'diff-utility',
+            'Visibility' => 'hidden',
+        ));
+
+        return SucuriScanTemplate::getSection('integrity-diff-utility', $params);
+    }
+
+    public static function ajaxIntegrityDiffUtility()
+    {
+        if (SucuriScanRequest::post('form_action') !== 'integrity_diff_utility') {
+            return;
+        }
+
+        $version = SucuriScan::siteVersion();
+        $filepath = SucuriScanRequest::post('filepath');
+        $checksums = SucuriScanAPI::getOfficialChecksums($version);
+
+        if (!$checksums) {
+            SucuriScanInterface::error('WordPress version is not supported.');
+            return;
+        }
+
+        if (!array_key_exists($filepath, $checksums)) {
+            SucuriScanInterface::error('File is not part of the official WordPress installation.');
+            return;
+        }
+
+        if (!file_exists(ABSPATH . '/' . $filepath)) {
+            SucuriScanInterface::error('Cannot check the integrity of a non-existing file.');
+            return;
+        }
+
+        print(SucuriScanCommand::diffHTML($filepath, $version));
+        exit(0);
     }
 
     /**
