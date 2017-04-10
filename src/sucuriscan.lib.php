@@ -330,7 +330,7 @@ class SucuriScan
     public static function allowedHttpHeaders($with_keys = false)
     {
         $allowed = array(
-            /* CloudProxy custom HTTP headers */
+            /* Sucuri custom HTTP headers */
             'HTTP_X_SUCURI_CLIENTIP',
             /* CloudFlare custom HTTP headers */
             'HTTP_CF_CONNECTING_IP', /* Real visitor IP. */
@@ -486,11 +486,10 @@ class SucuriScan
     /**
      * Check whether the DNS lookups should be execute or not.
      *
-     * DNS lookups are only necessary if you are planning to use a reverse proxy or
-     * firewall (like CloudProxy), this is used to set the correct IP address when
-     * the firewall/proxy filters the requests. If you are not planning to use any
-     * of these is better to disable this option, otherwise the load time of your
-     * site may be affected.
+     * DNS lookups are only necessary if you are planning to use a reverse proxy
+     * or firewall, this is used to set the correct IP address when the firewall
+     * filters the requests. If you are not planning to use any of these is better
+     * to disable this option, otherwise the load time of your site may be affected.
      *
      * @return boolean True if the DNS lookups should be executed, false otherwise.
      */
@@ -506,12 +505,12 @@ class SucuriScan
     }
 
     /**
-     * Check whether the site is behind the Sucuri CloudProxy network.
+     * Check whether the site is behind the firewall network.
      *
      * @param  boolean $verbose Return an array with the hostname, address, and status, or not.
-     * @return boolean          Either TRUE or FALSE if the site is behind CloudProxy.
+     * @return boolean          Either TRUE or FALSE if the site is behind the firewall.
      */
-    public static function isBehindCloudproxy($verbose = false)
+    public static function isBehindFirewall($verbose = false)
     {
         $http_host = self::getTopLevelDomain();
 
@@ -526,11 +525,11 @@ class SucuriScan
         }
 
         /*
-         * If the DNS reversion failed but the CloudProxy API key is set, then consider
+         * If the DNS reversion failed but the firewall API key is set, then consider
          * the site as protected by a firewall. A fake key can be used to bypass the DNS
          * checking, but that is not something that will affect us, only the client.
          */
-        if (!$status && SucuriScanAPI::getCloudproxyKey()) {
+        if (!$status && SucuriScanAPI::getFirewallKey()) {
             $status = true;
         }
 

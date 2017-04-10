@@ -52,7 +52,7 @@
                 <h3 class="sucuriscan-title">Hardening Options</h3>
 
                 <div class="inside">
-                    %%%SUCURI.Settings.Hardening.CloudProxy%%%
+                    %%%SUCURI.Settings.Hardening.Firewall%%%
 
                     %%%SUCURI.Settings.Hardening.WPVersion%%%
 

@@ -13,13 +13,13 @@
         </p>
 
         <p>
-            Services like <a href="https://sucuri.net/website-firewall/" target="_blank">
-            CloudProxy</a> once active forces the network traffic to pass through them to
-            filter any security threat that may affect the original server. A side effect
-            of this is that the real IP address is no longer available in the global server
-            variable <em>Remote-Addr</em> but in a custom HTTP header with a name provided
-            by the service. CloudProxy uses <em>"X-Sucuri-ClientIP"</em>, CloudFlare uses
-            <em>"CF-Connecting-IP"</em>, others use <em>"X-Forwarded-For"</em>.
+            Services like the <a href="https://sucuri.net/website-firewall/"
+            target="_blank">Sucuri Firewall</a> &mdash; once active &mdash; forces
+            the network traffic to pass through them to filter any security threat
+            that may affect the original server. A side effect of this is that the
+            real IP address is no longer available in the global server variable
+            <em>REMOTE-ADDR</em> but in a custom HTTP header with a name provided
+            by the service.
         </p>
 
         <div class="sucuriscan-inline-alert-warning">

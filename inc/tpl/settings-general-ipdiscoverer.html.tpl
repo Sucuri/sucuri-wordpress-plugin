@@ -4,10 +4,9 @@
 
     <div class="inside">
         <p>
-
-            The IP address discoverer will use DNS lookups to automatically
-            detect if the website is behind <a href="https://sucuri.net/website-firewall/"
-            target="_blank">CloudProxy</a> in which case will modify the global
+            IP address discoverer will use DNS lookups to automatically detect if
+            the website is behind the <a href="https://sucuri.net/website-firewall/"
+            target="_blank">Sucuri Firewall</a> in which case will modify the global
             server variable <em>Remote-Addr</em> to set the real IP of the website's
             visitors. This check runs on every WordPress init action and that is
             why it may slow down your website as some hosting providers rely on
@@ -54,7 +53,7 @@
             </fieldset>
 
             <div class="sucuriscan-hstatus sucuriscan-hstatus-2 sucuriscan-monospace">
-                <div>CloudProxy is %%SUCURI.IsUsingCloudProxy%%</div>
+                <div>Sucuri Firewall is %%SUCURI.IsUsingFirewall%%</div>
                 <div>Website URL: %%SUCURI.WebsiteURL%%</div>
                 <div>Top Level Domain: %%SUCURI.TopLevelDomain%%</div>
                 <div>Website Hostname: %%SUCURI.WebsiteHostName%%</div>

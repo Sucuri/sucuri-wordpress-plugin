@@ -97,9 +97,9 @@ Regardless of how good your security posture is, sometimes it’s impossible to 
 Having all these security features would be useless unless you were notified of the issues. This is why we have made available security alerts. We have also expanded the various security related events, to provide website owners more flexibility in regards to what they want to know about. As a website owner, you have the option to make these security alerts as quiet or noisy as you would like.
 
 
-= Sucuri CloudProxy Website Firewall (Add On Security Service) =
+= Sucuri Firewall (Add On Security Service) =
 
-This is by far the coolest security feature Sucuri has to offer everyday website owners. It’s an enterprise grade Website Firewall known as CloudProxy. It is designed to give you the best security protection any website can hope for. It protects your website from a variety of website attacks and security events to include:
+This is by far the coolest security feature Sucuri has to offer everyday website owners. It’s an enterprise grade Website Firewall designed to give you the best security protection any website can hope for. It protects your website from a variety of website attacks and security events to include:
 
 <ol>
     <li>Denial of Service (DOS / DDOS) Attacks</li>
@@ -116,7 +116,7 @@ This is coupled with a number of features like:
     <li>Failover and Redundancy</li>
 </ol>
 
-This is <strong>not included as a free</strong> option to the plugin, but is integrated so that if purchased you are able to activate.  If you prefer to leverage the Sucuri Security Website Firewall (CloudProxy) product by itself, you have the option to operate the <a href="https://wordpress.org/plugins/sucuri-cloudproxy-waf/" target="_blank">Website Firewall WordPress Security</a> plugin in standalone mode.
+This is <strong>not included as a free</strong> option to the plugin, but is integrated so that if purchased you are able to activate.  If you prefer to leverage the Sucuri Firewall product by itself, you have the option to operate the <a href="https://wordpress.org/plugins/sucuri-cloudproxy-waf/" target="_blank">Website Firewall WordPress Security</a> plugin in standalone mode.
 
 [youtube https://www.youtube.com/watch?v=fN-3DLObLF0]
 
@@ -212,7 +212,7 @@ Not that we are aware of.
 
 = Do I need to run this plugin to get the Website Firewall ad-on feature? =
 
-No, it is not required. The Website Firewall (CloudProxy) runs in the cloud without the need of anything installed. This plugin only helps see and manage the service from the WordPress dashboard.
+No, it is not required. The Website Firewall runs in the cloud without the need of anything installed. This plugin only helps see and manage the service from the WordPress dashboard.
 
 == Upgrade Notice ==
 
@@ -256,7 +256,7 @@ This version adds support for the latest version of WordPress. Introduces new fe
 = 1.7.19 =
 * Added method to rescue HTTP requests using sockets
 * Fixed mishandled JSON data in audit logs Ajax request
-* Modified list of CloudProxy features and promo video
+* Modified list of firewall features and promo video
 
 = 1.7.18 =
 * Added options library using external file instead of the database
@@ -320,7 +320,7 @@ This version adds support for the latest version of WordPress. Introduces new fe
 * Various bugfixes and improvements
 
 = 1.7.11 =
-* Reverted change for CloudProxy detection to protect legacy users
+* Reverted change for firewall detection to protect legacy users
 
 = 1.7.10 =
 * Added better checks for SSL issues

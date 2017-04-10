@@ -38,7 +38,7 @@
         <input type="hidden" name="sucuriscan_dns_lookups" value="disable" />
         <input type="checkbox" name="sucuriscan_dns_lookups" value="enable" checked="checked" />
         <span class="sucuriscan-tooltip" content="Check the box if your website is
-        behind a firewall like CloudProxy, this guarantees that the IP address of
+        behind a known firewall service, this guarantees that the IP address of
         your visitors will be detected correctly for the security logs. You can
         change this later from the settings.">Enable DNS Lookups On Startup</span>
     </fieldset>

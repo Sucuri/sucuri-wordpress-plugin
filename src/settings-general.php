@@ -431,7 +431,7 @@ function sucuriscan_settings_general_ipdiscoverer($nonce)
         'TopLevelDomain' => 'Unknown',
         'WebsiteHostName' => 'Unknown',
         'WebsiteHostAddress' => 'Unknown',
-        'IsUsingCloudProxy' => 'Unknown',
+        'IsUsingFirewall' => 'Unknown',
         'WebsiteURL' => 'Unknown',
         'RemoteAddress' => '127.0.0.1',
         'RemoteAddressHeader' => 'INVALID',
@@ -477,13 +477,13 @@ function sucuriscan_settings_general_ipdiscoverer($nonce)
         $params['DnsLookupsSwitchValue'] = 'enable';
     }
 
-    $proxy_info = SucuriScan::isBehindCloudproxy(true);
+    $proxy_info = SucuriScan::isBehindFirewall(true);
     $base_domain = SucuriScan::getDomain(true);
 
     $params['TopLevelDomain'] = $proxy_info['http_host'];
     $params['WebsiteHostName'] = $proxy_info['host_name'];
     $params['WebsiteHostAddress'] = $proxy_info['host_addr'];
-    $params['IsUsingCloudProxy'] = ($proxy_info['status'] ? 'Active' : 'Not Active');
+    $params['IsUsingFirewall'] = ($proxy_info['status'] ? 'Active' : 'Not Active');
     $params['RemoteAddressHeader'] = SucuriScan::getRemoteAddrHeader();
     $params['RemoteAddress'] = SucuriScan::getRemoteAddr();
     $params['WebsiteURL'] = SucuriScan::getDomain();

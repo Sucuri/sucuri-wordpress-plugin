@@ -4,24 +4,26 @@
 
     <div class="inside">
         <p>
-            CloudProxy offers multiple options to configure the cache level applied to your
-            website. You can either enable the full cache functionality which is the
-            recommended setting, or you can set the cache level to minimal which will keep
-            the pages static for a couple of minutes, or force the usage of the website
-            headers <em>(only for advanced users)</em>, or in extreme cases where you do not
-            need the cache you can simply disable it. You can find more information about it
-            in the <a href="https://kb.sucuri.net/cloudproxy/Performance/caching-options"
-            target="_blank">Sucuri Knowledge Base</a> website.
+            The firewall offers multiple options to configure the cache level
+            applied to your website. You can either enable the full cache which
+            is the recommended setting, or you can set the cache level to minimal
+            which will keep the pages static for a couple of minutes, or force
+            the usage of the website headers <em>(only for advanced users)</em>,
+            or in extreme cases where you do not need the cache you can simply
+            disable it. Find more information about it in the <a target="_blank"
+            href="https://kb.sucuri.net/cloudproxy/Performance/caching-options">
+            Sucuri Knowledge Base</a> website.
         </p>
 
         <div class="sucuriscan-inline-alert-info">
             <p>
-                Note that CloudProxy has <a href="https://kb.sucuri.net/cloudproxy/Performance/cache-exceptions"
-                target="_blank">special caching rules</a> for Images, Cascading Style Sheets,
-                JavaScript, PDF, TXT, media files and a few more extensions that are stored on
-                our <a href="https://en.wikipedia.org/wiki/Edge_device" target="_blank">edge</a>.
-                The only way to flush the cache for these files is by clearing CloudProxy's cache
-                completely <em>(for the whole website)</em>.
+                Note that the firewall has <a href="https://kb.sucuri.net/cloudproxy/Performance/cache-exceptions"
+                target="_blank">special caching rules</a> for Images, CSS, PDF,
+                TXT, JavaScript, media files and a few more extensions that are
+                stored on our <a href="https://en.wikipedia.org/wiki/Edge_device"
+                target="_blank">edge</a>. The only way to flush the cache for
+                these files is by clearing the firewall's cache completely
+                <em>(for the whole website)</em>.
             </p>
         </div>
 

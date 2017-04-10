@@ -431,13 +431,13 @@ class SucuriScanAPI extends SucuriScanOption
      *
      * @return array|boolean false if the key is invalid or not present, an array otherwise.
      */
-    public static function getCloudproxyKey()
+    public static function getFirewallKey()
     {
         $option_name = ':cloudproxy_apikey';
         $api_key = self::getOption($option_name);
 
         // Check the validity of the API key.
-        $match = self::isValidCloudproxyKey($api_key, true);
+        $match = self::isValidFirewallKey($api_key, true);
 
         if ($match) {
             return array(
@@ -451,13 +451,13 @@ class SucuriScanAPI extends SucuriScanOption
     }
 
     /**
-     * Check whether the CloudProxy API key is valid or not.
+     * Check whether the firewall API key is valid or not.
      *
-     * @param  string  $api_key      The CloudProxy API key.
+     * @param  string  $api_key      The firewall API key.
      * @param  boolean $return_match Whether the parts of the API key must be returned or not.
      * @return boolean               true if the API key specified is valid, false otherwise.
      */
-    public static function isValidCloudproxyKey($api_key = '', $return_match = false)
+    public static function isValidFirewallKey($api_key = '', $return_match = false)
     {
         $pattern = '/^([a-z0-9]{32})\/([a-z0-9]{32})$/';
 
@@ -501,20 +501,20 @@ class SucuriScanAPI extends SucuriScanOption
     }
 
     /**
-     * Call an action from the remote API interface of our CloudProxy service.
+     * Call an action from the remote API interface of our firewall service.
      *
      * @param  string $method HTTP method that will be used to send the request.
      * @param  array  $params Parameters for the request defined in an associative array of key-value.
      * @return array          Response object after the HTTP request is executed.
      */
-    public static function apiCallCloudproxy($method = 'GET', $params = array())
+    public static function apiCallFirewall($method = 'GET', $params = array())
     {
         $send_request = false;
 
         if (isset($params['k']) && isset($params['s'])) {
             $send_request = true;
         } else {
-            $api_key = self::getCloudproxyKey();
+            $api_key = self::getFirewallKey();
 
             if ($api_key) {
                 $send_request = true;
@@ -622,10 +622,10 @@ class SucuriScanAPI extends SucuriScanOption
                 SucuriScanOption::deleteOption(':api_key');
             }
 
-            // Special response for invalid CloudProxy API keys.
+            // Special response for invalid firewall API keys.
             if (stripos($raw, 'wrong api key') !== false) {
                 $key = SucuriScanOption::getOption(':cloudproxy_apikey');
-                $msg .= '; invalid CloudProxy API key: ' . SucuriScan::escape($key);
+                $msg .= '; invalid firewall API key: ' . SucuriScan::escape($key);
 
                 SucuriScanInterface::error($msg);
                 $msg = ''; /* Force premature error message. */
@@ -1143,10 +1143,10 @@ class SucuriScanAPI extends SucuriScanOption
      * request to the remote API service and process its response, when successful
      * it will return an array/object containing the public attributes of the site.
      *
-     * @param  boolean $api_key The CloudProxy API key.
-     * @return array            A hash with the settings of a CloudProxy account.
+     * @param  boolean $api_key The firewall API key.
+     * @return array            A hash with the settings of a firewall account.
      */
-    public static function getCloudproxySettings($api_key = false)
+    public static function getFirewallSettings($api_key = false)
     {
         $params = array('a' => 'show_settings');
 
@@ -1154,7 +1154,7 @@ class SucuriScanAPI extends SucuriScanOption
             $params = array_merge($params, $api_key);
         }
 
-        $response = self::apiCallCloudproxy('GET', $params);
+        $response = self::apiCallFirewall('GET', $params);
 
         if (self::handleResponse($response)) {
             return $response['output'];
@@ -1166,10 +1166,10 @@ class SucuriScanAPI extends SucuriScanOption
     /**
      * Flush the cache of the site(s) associated with the API key.
      *
-     * @param  boolean $api_key The CloudProxy API key.
+     * @param  boolean $api_key The firewall API key.
      * @return string           Message explaining the result of the operation.
      */
-    public static function clearCloudproxyCache($api_key = false)
+    public static function clearFirewallCache($api_key = false)
     {
         $params = array( 'a' => 'clear_cache' );
 
@@ -1177,7 +1177,7 @@ class SucuriScanAPI extends SucuriScanOption
             $params = array_merge($params, $api_key);
         }
 
-        $response = self::apiCallCloudproxy('GET', $params);
+        $response = self::apiCallFirewall('GET', $params);
 
         if (self::handleResponse($response)) {
             return $response;
@@ -1191,13 +1191,13 @@ class SucuriScanAPI extends SucuriScanOption
      * registered b the administrator of the site. This method will send a HTTP
      * request to the remote API service and process its response, when successful
      * it will return an array/object containing a list of requests blocked by our
-     * CloudProxy.
+     * firewall.
      *
      * By default the logs that will be retrieved are from today, if you need to see
      * the logs of previous days you will need to add a new parameter to the request
      * URL named "date" with format yyyy-mm-dd.
      *
-     * @param  string  $api_key The CloudProxy API key.
+     * @param  string  $api_key The firewall API key.
      * @param  string  $date    Retrieve the data from this date.
      * @param  string  $query   Filter the data to match this query.
      * @param  integer $limit   Retrieve this maximum of data.
@@ -1218,7 +1218,7 @@ class SucuriScanAPI extends SucuriScanOption
             $params = array_merge($params, $api_key);
         }
 
-        $response = self::apiCallCloudproxy('GET', $params);
+        $response = self::apiCallFirewall('GET', $params);
 
         if (self::handleResponse($response)) {
             return $response['output'];

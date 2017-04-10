@@ -52,14 +52,14 @@ class SucuriScanHardeningPage extends SucuriScan
         );
     }
 
-    public static function cloudproxy()
+    public static function firewall()
     {
         $params = array();
 
         if (self::processRequest(__FUNCTION__)) {
-            SucuriScanInterface::error('CloudProxy is a premium service, you need
-            to purchase it at — <a href="https://goo.gl/qfNkMq" target="_blank">
-            Sucuri CloudProxy</a>');
+            SucuriScanInterface::error('The firewall is a premium service that
+            you need purchase at — <a href="https://goo.gl/qfNkMq" target="_blank">
+            Sucuri Firewall</a>');
         }
 
         $params['Hardening.FieldName'] = __FUNCTION__;
@@ -67,10 +67,9 @@ class SucuriScanHardeningPage extends SucuriScan
         $params['Hardening.Description'] = 'A WAF is a protection layer for your
         web site, blocking all sort of attacks (brute force attempts, DDoS, SQL
         injections, etc) and helping it remain malware and blacklist free. This
-        test checks if your site is using Sucuri CloudProxy WAF to protect your
-        site.';
+        test checks if your site is using Sucuri Firewall to protect your site.';
 
-        if (!SucuriScan::isBehindCloudproxy()) {
+        if (!SucuriScan::isBehindFirewall()) {
             $params['Hardening.Status'] = 0;
             $params['Hardening.FieldText'] = 'Apply Hardening';
         } else {

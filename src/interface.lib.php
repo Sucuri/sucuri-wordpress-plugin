@@ -32,7 +32,7 @@ class SucuriScanInterface
     public static function initialize()
     {
         if (SucuriScan::supportReverseProxy()
-            || SucuriScan::isBehindCloudproxy()
+            || SucuriScan::isBehindFirewall()
         ) {
             $_SERVER['SUCURIREAL_REMOTE_ADDR'] = $_SERVER['REMOTE_ADDR'];
             $_SERVER['REMOTE_ADDR'] = SucuriScan::getRemoteAddr();

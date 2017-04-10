@@ -448,7 +448,7 @@ class SucuriScanEvent extends SucuriScan
                     . "site is under a password guessing brute-force attack [1]. You can disable "
                     . "the failed login alerts from here [2]. Alternatively, you can consider "
                     . "to install a firewall between your website and your visitors to filter "
-                    . "out these and other attacks, take a look at Sucuri CloudProxy [3].</em>"
+                    . "out these and other attacks, take a look at Sucuri Firewall [3].</em>"
                     . "<br>\n<br>\n"
                     . "[1] <a href='https://kb.sucuri.net/definitions/attacks/brute-force/password-guessing'>"
                     . "https://kb.sucuri.net/definitions/attacks/brute-force/password-guessing</a><br>\n"

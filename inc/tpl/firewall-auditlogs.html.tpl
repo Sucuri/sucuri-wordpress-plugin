@@ -4,13 +4,14 @@
 
     <div class="inside">
         <p>
-            CloudProxy logs every request involved in an attack and separates them from the
-            legitimate requests. You can analyze the data from the latest entries in the
-            logs using this tool and take action either enabling the advanced features of
-            the IDS <em>(Intrusion Detection System)</em> from the <a  target="_blank"
-            href="https://waf.sucuri.net/?settings">CloudProxy Dashboard</a> and/or blocking
-            IP addresses and URL paths directly from the <a href="https://waf.sucuri.net/?audit"
-            target="_blank">CloudProxy Audit Trails</a> page.
+            The firewall logs every request involved in an attack and separates
+            them from the legitimate requests. You can analyze the data from the
+            latest entries in the logs using this tool and take action either
+            enabling the advanced features of the IDS <em>(Intrusion Detection
+            System)</em> from the <a  target="_blank" href="https://waf.sucuri.net/?settings">
+            Firewall Dashboard</a> and/or blocking IP addresses and URL paths
+            directly from the <a href="https://waf.sucuri.net/?audit" target="_blank">
+            Firewall Audit Trails</a> page.
         </p>
 
         <div class="sucuriscan-inline-alert-info">

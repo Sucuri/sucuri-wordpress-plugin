@@ -124,12 +124,12 @@ if (!defined('SUCURISCAN_API_URL')) {
 define('SUCURISCAN_API_VERSION', 'v1');
 
 /**
- * Remote URL where the CloudProxy API service is running.
+ * Remote URL where the firewall API service is running.
  */
 define('SUCURISCAN_CLOUDPROXY_API', 'https://waf.sucuri.net/api');
 
 /**
- * Latest version of the CloudProxy API.
+ * Latest version of the firewall API.
  */
 define('SUCURISCAN_CLOUDPROXY_API_VERSION', 'v2');
 

@@ -41,7 +41,7 @@ function sucuriscan_page()
 }
 
 /**
- * CloudProxy firewall page.
+ * Firewall page.
  *
  * It checks whether the WordPress core files are the original ones, and the state
  * of the themes and plugins reporting the availability of updates. It also checks
@@ -58,7 +58,7 @@ function sucuriscan_firewall_page()
     sucuriscan_firewall_form_submissions($nonce);
 
     // Get the dynamic values for the template variables.
-    $api_key = SucuriScanAPI::getCloudproxyKey();
+    $api_key = SucuriScanAPI::getFirewallKey();
 
     // Page pseudo-variables initialization.
     $params = array(
@@ -142,7 +142,7 @@ function sucuriscan_settings_page()
     $params['Settings.Scanner.IgnoreFolders'] = sucuriscan_settings_scanner_ignore_folders($nonce);
 
     /* settings - hardening */
-    $params['Settings.Hardening.CloudProxy'] = SucuriScanHardeningPage::cloudproxy();
+    $params['Settings.Hardening.Firewall'] = SucuriScanHardeningPage::firewall();
     $params['Settings.Hardening.WPVersion'] = SucuriScanHardeningPage::wpversion();
     $params['Settings.Hardening.PHPVersion'] = SucuriScanHardeningPage::phpversion();
     $params['Settings.Hardening.RemoveGenerator'] = SucuriScanHardeningPage::wpgenerator();
