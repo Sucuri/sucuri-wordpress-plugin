@@ -21,9 +21,10 @@ jQuery(function ($) {
             sucuriscan_page_nonce: '%%SUCURI.PageNonce%%',
             form_action: 'get_audit_logs',
         }, function (data) {
+            $('.sucuriscan-pagination-loading').html('');
+
             if (data.content !== undefined) {
                 $('.sucuriscan-auditlog-response').html(data.content);
-                $('.sucuriscan-pagination-loading').html('');
 
                 if (data.selfhosting) {
                     $('#sucuriscan-auditlog-selfhosting').removeClass('sucuriscan-hidden');
@@ -36,8 +37,10 @@ jQuery(function ($) {
                 $('.sucuriscan-auditlog-response').html(
                 '<textarea class="sucuriscan-full-textarea">' +
                 JSON.stringify(data) + '</textarea>');
+                $('.sucuriscan-auditlog-table .sucuriscan-pagination').html('');
             } else {
                 $('.sucuriscan-auditlog-response').html(data);
+                $('.sucuriscan-auditlog-table .sucuriscan-pagination').html('');
             }
         });
     }

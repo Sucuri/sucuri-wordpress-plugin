@@ -32,7 +32,7 @@
     </div>
 
     <div class="sucuriscan-pull-right">
-        <a href="#" class="sucuriscan-show-more" data-target=".sucuriscan-sitecheck-details li.sucuriscan-hidden">
+        <a href="#" class="sucuriscan-show-more" data-status="more" data-target=".sucuriscan-sitecheck-details li.sucuriscan-invisible">
             <span class="sucuriscan-show-more-title">Show More Info</span>
             <span class="sucuriscan-show-more-arrow"></span>
         </a>

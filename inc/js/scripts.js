@@ -21,8 +21,18 @@ jQuery(document).ready(function ($) {
 
     $('.sucuriscan-container').on('click', '.sucuriscan-show-more', function (event) {
         event.preventDefault();
-        var target = $(this).attr('data-target');
-        $(target).removeClass('sucuriscan-hidden');
+        var button = $(this);
+        var target = button.attr('data-target');
+        var status = button.attr('data-status');
+        if (status === 'more') {
+            button.attr('data-status', 'less');
+            $(target).removeClass('sucuriscan-hidden');
+            button.find('.sucuriscan-show-more-title').html('Show Less Info');
+        } else {
+            button.attr('data-status', 'more');
+            $(target).addClass('sucuriscan-hidden');
+            button.find('.sucuriscan-show-more-title').html('Show More Info');
+        }
     });
 
     if ($('.sucuriscan-tabs').length) {
