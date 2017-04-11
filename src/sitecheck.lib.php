@@ -253,10 +253,10 @@ class SucuriScanSiteCheck
         $data = self::scanAndCollectData();
 
         if (!isset($data['LINKS']['IFRAME'])) {
-            return 'No iFrames';
+            return 'iFrames: 0';
         }
 
-        return sprintf('%d iFrames', count($data['LINKS']['IFRAME']));
+        return sprintf('iFrames: %d', count($data['LINKS']['IFRAME']));
     }
 
     public static function linksTitle()
@@ -264,10 +264,10 @@ class SucuriScanSiteCheck
         $data = self::scanAndCollectData();
 
         if (!isset($data['LINKS']['URL'])) {
-            return 'No Links';
+            return 'Links: 0';
         }
 
-        return sprintf('%d Links', count($data['LINKS']['URL']));
+        return sprintf('Links: %d', count($data['LINKS']['URL']));
     }
 
     public static function scriptsTitle()
@@ -283,11 +283,7 @@ class SucuriScanSiteCheck
             $total += count($data['LINKS']['JSEXTERNAL']);
         }
 
-        if ($total === 0) {
-            return 'No Scripts';
-        }
-
-        return sprintf('%d Scripts', $total);
+        return sprintf('Scripts: %d', $total);
     }
 
     public static function iFramesContent()
