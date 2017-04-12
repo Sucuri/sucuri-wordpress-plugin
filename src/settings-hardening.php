@@ -458,6 +458,7 @@ class SucuriScanHardeningPage extends SucuriScan
         if (count($results) === 0) {
             $params['Hardening.Status'] = 1;
             $params['Hardening.FieldAttrs'] = 'disabled';
+            $params['Hardening.FieldText'] = 'Revert Hardening';
         } else {
             $params['Hardening.Status'] = 0;
             $params['Hardening.FieldName'] = __FUNCTION__;

@@ -19,9 +19,9 @@
     <div class="inside">
         <p>
             WordPress has a big user base in the public Internet, this brings
-            interest to malicious people to find vulnerabilities in the code
-            code, 3rd-party extensions, and themes that other companies develop.
-            You should keep every piece of code installed in your website update
+            interest to malicious people to find vulnerabilities in the code,
+            3rd-party extensions, and themes that other companies develop. You
+            should keep every piece of code installed in your website update
             to prevent attacks as soon as disclosed vulnerabilities are patched.
         </p>
 
