@@ -58,6 +58,7 @@ jQuery(document).ready(function ($) {
 
                     $('.sucuriscan-tabs-buttons a').removeClass(activeState);
                     $('.sucuriscan-tabs-containers > div').addClass(hiddenState);
+                    $('.sucuriscan-container .sucuriscan-alert').remove();
 
                     button.addClass(activeState);
                     container.addClass(visibleState);
