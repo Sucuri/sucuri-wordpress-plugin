@@ -381,9 +381,8 @@ function sucuriscan_settings_alerts_ignore_posts()
 {
     $notify_new_site_content = SucuriScanOption::getOption(':notify_post_publication');
 
-    $template_variables = array(
+    $params = array(
         'IgnoreRules.MessageVisibility' => 'visible',
-        'IgnoreRules.TableVisibility' => 'hidden',
         'IgnoreRules.PostTypes' => '',
     );
 
@@ -393,7 +392,9 @@ function sucuriscan_settings_alerts_ignore_posts()
             $ignore_rule = SucuriScanRequest::post(':ignorerule');
 
             if ($action == 'add') {
-                if (SucuriScanOption::addIgnoredEvent($ignore_rule)) {
+                if (!preg_match('/^[a-z_]+$/', $ignore_rule)) {
+                    SucuriScanInterface::error('Only lowercase letters and underscores are allowed.');
+                } elseif (SucuriScanOption::addIgnoredEvent($ignore_rule)) {
                     SucuriScanInterface::info('Post-type ignored successfully.');
                     SucuriScanEvent::reportWarningEvent('Changes in <code>' . $ignore_rule . '</code> post-type will be ignored');
                 } else {
@@ -411,9 +412,16 @@ function sucuriscan_settings_alerts_ignore_posts()
         $post_types = get_post_types();
         $ignored_events = SucuriScanOption::getIgnoredEvents();
 
-        $template_variables['IgnoreRules.MessageVisibility'] = 'hidden';
-        $template_variables['IgnoreRules.TableVisibility'] = 'visible';
+        $params['IgnoreRules.MessageVisibility'] = 'hidden';
 
+        /* Include custom non-registered post-types */
+        foreach ($ignored_events as $event => $time) {
+            if (!array_key_exists($event, $post_types)) {
+                $post_types[$event] = $event;
+            }
+        }
+
+        /* Check which post-types are being ignored */
         foreach ($post_types as $post_type) {
             $post_type_title = ucwords(str_replace('_', chr(32), $post_type));
 
@@ -431,7 +439,7 @@ function sucuriscan_settings_alerts_ignore_posts()
                 $button_text = 'Stop These Alerts';
             }
 
-            $template_variables['IgnoreRules.PostTypes'] .=
+            $params['IgnoreRules.PostTypes'] .=
             SucuriScanTemplate::getSnippet('settings-alerts-ignore-posts', array(
                 'IgnoreRules.PostTypeTitle' => $post_type_title,
                 'IgnoreRules.IsIgnored' => $is_ignored_text,
@@ -444,5 +452,5 @@ function sucuriscan_settings_alerts_ignore_posts()
         }
     }
 
-    return SucuriScanTemplate::getSection('settings-alerts-ignore-posts', $template_variables);
+    return SucuriScanTemplate::getSection('settings-alerts-ignore-posts', $params);
 }

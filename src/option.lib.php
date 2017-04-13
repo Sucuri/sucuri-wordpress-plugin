@@ -528,24 +528,15 @@ class SucuriScanOption extends SucuriScanRequest
      */
     public static function addIgnoredEvent($event_name = '')
     {
-        if (function_exists('get_post_types')) {
-            $post_types = get_post_types();
+        $ignored = self::getIgnoredEvents();
 
-            // Check if the event is a registered post-type.
-            if (array_key_exists($event_name, $post_types)) {
-                $ignored_events = self::getIgnoredEvents();
-
-                // Check if the event is not ignored already.
-                if (!array_key_exists($event_name, $ignored_events)) {
-                    $ignored_events[ $event_name ] = time();
-                    $saved = self::updateOption(':ignored_events', json_encode($ignored_events));
-
-                    return $saved;
-                }
-            }
+        if (array_key_exists($event_name, $ignored)) {
+            return false; /* skip if the post-type was already ignored */
         }
 
-        return false;
+        $ignored[$event_name] = time(); /* add post-type to the list */
+
+        return self::updateOption(':ignored_events', @json_encode($ignored));
     }
 
     /**
@@ -558,16 +549,13 @@ class SucuriScanOption extends SucuriScanRequest
     {
         $ignored = self::getIgnoredEvents();
 
-        if (array_key_exists($event, $ignored)) {
-            unset($ignored[$event]);
-
-            return self::updateOption(
-                ':ignored_events',
-                @json_encode($ignored)
-            );
+        if (!array_key_exists($event, $ignored)) {
+            return false;
         }
 
-        return false;
+        unset($ignored[$event]); /* remove post-type from the list */
+
+        return self::updateOption(':ignored_events', @json_encode($ignored));
     }
 
     /**
