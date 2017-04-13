@@ -190,9 +190,21 @@ class SucuriScan
      */
     public static function dataStorePath($path = '')
     {
-        $datastore = SucuriScanOption::getOption(':datastore_path');
+        $content_dir = defined('WP_CONTENT_DIR')
+            ? rtrim(WP_CONTENT_DIR, '/')
+            : ABSPATH . '/wp-content';
+        $folder = $content_dir . '/uploads/sucuri';
 
-        return self::fixPath($datastore . '/' . $path);
+        /* custom path no matter its existence */
+        if (defined('SUCURI_DATA_STORAGE')) {
+            $folder = SUCURI_DATA_STORAGE;
+        }
+
+        $fullpath = self::fixPath($folder . '/' . $path);
+        $fullpath = str_replace('//', '/', $fullpath);
+        $fullpath = rtrim($fullpath, '/');
+
+        return $fullpath;
     }
 
     /**

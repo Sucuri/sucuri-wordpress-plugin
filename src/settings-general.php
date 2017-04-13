@@ -137,7 +137,7 @@ function sucuriscan_settings_general_datastorage()
     );
 
     $params['Storage.Files'] = '';
-    $params['Storage.Path'] = SucuriScanOption::getOption(':datastore_path');
+    $params['Storage.Path'] = SucuriScan::dataStorePath();
 
     if (SucuriScanInterface::checkNonce()) {
         if ($filenames = SucuriScanRequest::post(':filename', '_array')) {
@@ -168,6 +168,7 @@ function sucuriscan_settings_general_datastorage()
     }
 
     foreach ($files as $name) {
+        $fsize = 0;
         $fname = ($name ? sprintf('sucuri-%s.php', $name) : '');
         $fpath = SucuriScan::dataStorePath($fname);
         $disabled = 'disabled="disabled"';

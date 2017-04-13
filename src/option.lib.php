@@ -49,7 +49,6 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_api_service' => 'enabled',
             'sucuriscan_cloudproxy_apikey' => '',
             'sucuriscan_comment_monitor' => 'disabled',
-            'sucuriscan_datastore_path' => dirname(self::optionsFilePath()),
             'sucuriscan_diff_utility' => 'disabled',
             'sucuriscan_dns_lookups' => 'enabled',
             'sucuriscan_email_subject' => 'Sucuri Alert, :domain, :event',
@@ -165,17 +164,7 @@ class SucuriScanOption extends SucuriScanRequest
      */
     public static function optionsFilePath()
     {
-        $content_dir = defined('WP_CONTENT_DIR')
-            ? rtrim(WP_CONTENT_DIR, '/')
-            : ABSPATH . '/wp-content';
-        $folder = $content_dir . '/uploads/sucuri';
-
-        /* custom path no matter its existence */
-        if (defined('SUCURI_DATA_STORAGE')) {
-            $folder = SUCURI_DATA_STORAGE;
-        }
-
-        return self::fixPath($folder . '/sucuri-settings.php');
+        return self::dataStorePath('sucuri-settings.php');
     }
 
     /**
