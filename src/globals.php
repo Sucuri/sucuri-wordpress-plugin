@@ -211,13 +211,15 @@ if (defined('SUCURISCAN')) {
      * @see Class SucuriScanHook
      */
     if (class_exists('SucuriScanHook')) {
+        add_action('activated_plugin', 'SucuriScanHook::hookDetectPluginActivation', 10, 2);
         add_action('add_attachment', 'SucuriScanHook::hookAddAttachment', 50, 5);
         add_action('add_link', 'SucuriScanHook::hookAddLink', 50, 5);
-        add_action('edit_link', 'SucuriScanHook::hookEditLink', 50, 5);
-        add_action('create_category', 'SucuriScanHook::hookCreateCategory', 50, 5);
         add_action('before_delete_post', 'SucuriScanHook::hookBeforeDeletePost', 50, 5);
+        add_action('create_category', 'SucuriScanHook::hookCreateCategory', 50, 5);
+        add_action('deactivated_plugin', 'SucuriScanHook::hookDetectPluginDeactivation', 10, 2);
         add_action('delete_post', 'SucuriScanHook::hookDeletePost', 50, 5);
         add_action('delete_user', 'SucuriScanHook::hookDeleteUser', 50, 5);
+        add_action('edit_link', 'SucuriScanHook::hookEditLink', 50, 5);
         add_action('login_form_resetpass', 'SucuriScanHook::hookLoginFormResetpass', 50, 5);
         add_action('private_to_published', 'SucuriScanHook::hookPrivateToPublished', 50, 5);
         add_action('publish_page', 'SucuriScanHook::hookPublishPage', 50, 5);

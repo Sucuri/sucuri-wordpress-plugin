@@ -25,6 +25,69 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
 class SucuriScanHook extends SucuriScanEvent
 {
     /**
+     * Detects whether a plugin has been activated or deactivated.
+     *
+     * @param  string $plugin             Name of the plugin.
+     * @param  string $network_activation Whether the activation was global or not.
+     * @return void
+     */
+    private static function detectPluginChanges($action, $plugin = '', $network_activation = '')
+    {
+        $filename = WP_PLUGIN_DIR . '/' . $plugin;
+
+        /* ignore non-existing plugins */
+        if (!file_exists($filename)) {
+            return;
+        }
+
+        $info = get_plugin_data($filename);
+        $name = 'Unknown';
+        $version = '0.0.0';
+
+        if (!empty($info['Name'])) {
+            $name = $info['Name'];
+        }
+
+        if (!empty($info['Version'])) {
+            $version = $info['Version'];
+        }
+
+        $message = sprintf(
+            'Plugin %s: %s (v%s; %s)',
+            $action, /* activated or deactivated */
+            self::escape($info['Name']),
+            self::escape($info['Version']),
+            self::escape($plugin)
+        );
+        self::reportWarningEvent($message);
+        self::notifyEvent('plugin_' . $action, $message);
+    }
+
+    /**
+     * Sends an alert with information about a plugin that has been activated.
+     *
+     * @param  string $plugin             Name of the plugin.
+     * @param  string $network_activation Whether the activation was global or not.
+     * @return void
+     */
+    public static function hookDetectPluginActivation($plugin = '', $network_activation = '')
+    {
+        self::detectPluginChanges('activated', $plugin, $network_activation);
+    }
+
+    /**
+     * Sends an alert with information about a plugin that has been deactivated.
+     *
+     * @param  string $plugin             Name of the plugin.
+     * @param  string $network_activation Whether the deactivation was global or not.
+     * @return void
+     */
+    public static function hookDetectPluginDeactivation($plugin = '', $network_activation = '')
+    {
+        self::detectPluginChanges('deactivated', $plugin, $network_activation);
+    }
+
+    /**
      * Send to Sucuri servers an alert notifying that an attachment was added to a post.
      *
      * @param  integer $id The post identifier.
@@ -534,7 +597,6 @@ class SucuriScanHook extends SucuriScanEvent
      */
     public static function hookUndefinedActions()
     {
-        self::hookUndefinedActionsPluginActivation();
         self::hookUndefinedActionsPluginUpdate();
         self::hookUndefinedActionsPluginInstallation();
         self::hookUndefinedActionsPluginDeletion();
@@ -546,70 +608,6 @@ class SucuriScanHook extends SucuriScanEvent
         self::hookUndefinedActionsCoreUpdate();
         self::hookUndefinedActionsWidgetAddition();
         self::hookUndefinedActionsOptionsManagement();
-    }
-
-    private static function hookUndefinedActionsPluginActivation()
-    {
-        // Plugin activation and/or deactivation.
-        $plugin_activate_actions = '(activate|deactivate)(\-selected)?';
-
-        if (current_user_can('activate_plugins')
-            && (
-                SucuriScanRequest::getOrPost('action', $plugin_activate_actions)
-                || SucuriScanRequest::getOrPost('action2', $plugin_activate_actions)
-            )
-        ) {
-            $plugin_list = array();
-            $items_affected = array();
-
-            // Get the action performed through action or action2 params.
-            $action_d = SucuriScanRequest::getOrPost('action');
-            if ($action_d == '-1') {
-                $action_d = SucuriScanRequest::getOrPost('action2');
-            }
-            $action_d .= 'd';
-
-            if (SucuriScanRequest::get('plugin', '.+')
-                && strpos($_SERVER['REQUEST_URI'], 'plugins.php') !== false
-            ) {
-                $plugin_list[] = SucuriScanRequest::get('plugin');
-            } elseif (isset($_POST['checked'])
-                && is_array($_POST['checked'])
-                && !empty($_POST['checked'])
-            ) {
-                $plugin_list = SucuriScanRequest::post('checked', '_array');
-                $action_d = str_replace('-selected', '', $action_d);
-            }
-
-            foreach ($plugin_list as $plugin) {
-                $plugin_info = get_plugin_data(WP_PLUGIN_DIR . '/' . $plugin);
-
-                if (!empty($plugin_info['Name'])
-                    && !empty($plugin_info['Version'])
-                ) {
-                    $items_affected[] = sprintf(
-                        '%s (v%s; %s)',
-                        self::escape($plugin_info['Name']),
-                        self::escape($plugin_info['Version']),
-                        self::escape($plugin)
-                    );
-                }
-            }
-
-            // Report activated/deactivated plugins at once.
-            if (!empty($items_affected)) {
-                $message_tpl = ( count($items_affected) > 1 )
-                    ? 'Plugins %s: (multiple entries): %s'
-                    : 'Plugin %s: %s';
-                $message = sprintf(
-                    $message_tpl,
-                    $action_d,
-                    @implode(',', $items_affected)
-                );
-                self::reportWarningEvent($message);
-                self::notifyEvent('plugin_' . $action_d, $message);
-            }
-        }
     }
 
     private static function hookUndefinedActionsPluginUpdate()
