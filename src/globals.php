@@ -215,6 +215,7 @@ if (defined('SUCURISCAN')) {
         add_action('add_link', 'SucuriScanHook::hookAddLink', 50, 5);
         add_action('edit_link', 'SucuriScanHook::hookEditLink', 50, 5);
         add_action('create_category', 'SucuriScanHook::hookCreateCategory', 50, 5);
+        add_action('before_delete_post', 'SucuriScanHook::hookBeforeDeletePost', 50, 5);
         add_action('delete_post', 'SucuriScanHook::hookDeletePost', 50, 5);
         add_action('delete_user', 'SucuriScanHook::hookDeleteUser', 50, 5);
         add_action('login_form_resetpass', 'SucuriScanHook::hookLoginFormResetpass', 50, 5);

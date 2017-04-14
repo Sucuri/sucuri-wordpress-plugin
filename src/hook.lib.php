@@ -120,6 +120,45 @@ class SucuriScanHook extends SucuriScanEvent
     }
 
     /**
+     * Every time a post or page is deleted WordPress triggers an action called
+     * delete_post, this action is caught by the event monitor. However, at this
+     * point the page or post has already been deleted, which means we cannot
+     * send enough information about the event to the API. To fix this, we will
+     * also monitor the before_delete_post action which is triggered before the
+     * post is deleted but after the user has executed the action.
+     *
+     * We will store some information related to the post in a temporary data
+     * structure. Then, when the delete_post action is triggered we will extract
+     * this informaiton to send it to the API. We will delete the temporary data
+     * after the operation has succeeded.
+     *
+     * @param  integer $id The identifier of the post deleted.
+     * @return void
+     */
+    public static function hookBeforeDeletePost($id = 0)
+    {
+        if ($data = get_post($id)) {
+            $out = array(); /* data to cache */
+            $cache = new SucuriScanCache('hookdata');
+
+            $out['id'] = $data->ID;
+            $out['author'] = $data->post_author;
+            $out['type'] = $data->post_type;
+            $out['status'] = $data->post_status;
+            $out['inserted'] = $data->post_date;
+            $out['modified'] = $data->post_modified;
+            $out['guid'] = $data->guid;
+            $out['title'] = $data->post_title;
+
+            if (empty($data->post_title)) {
+                $out['title'] = '(empty)';
+            }
+
+            $cache->add('post_' . $id, $out);
+        }
+    }
+
+    /**
      * Send an alert notifying that a post was deleted.
      *
      * @param  integer $id The identifier of the post deleted.
@@ -127,7 +166,21 @@ class SucuriScanHook extends SucuriScanEvent
      */
     public static function hookDeletePost($id = 0)
     {
-        self::reportWarningEvent('Post deleted; identifier: ' . $id);
+        $pieces = array();
+        $cache = new SucuriScanCache('hookdata');
+        $data = $cache->get('post_' . $id);
+
+        if (!$data) {
+            $data = array('id' => $id);
+        }
+
+        foreach ($data as $keyname => $value) {
+            $pieces[] = sprintf('Post %s: %s', $keyname, $value);
+        }
+
+        $data = $cache->delete('post_' . $id);
+        $entries = implode(',', $pieces); /* merge all entries together */
+        self::reportWarningEvent('Post deleted: (multiple entries): ' . $entries);
     }
 
     /**
