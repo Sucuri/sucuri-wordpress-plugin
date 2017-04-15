@@ -224,6 +224,8 @@ class SucuriScanMail extends SucuriScanOption
             $params[ $var_key ] = $var_value;
         }
 
+        /* SucuriScanTemplate::notification-pretty */
+        /* SucuriScanTemplate::notification-simple */
         return SucuriScanTemplate::getSection('notification-' . $prettify_type, $params);
     }
 

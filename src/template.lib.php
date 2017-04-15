@@ -88,6 +88,7 @@ class SucuriScanTemplate extends SucuriScanRequest
 
             SucuriScanTemplate::getModal('register-site', array(
                 'Visibility' => 'hidden',
+                'Identifier' => 'register-site',
                 'Title' => 'Sucuri API Key Generator',
             ));
         }
@@ -224,23 +225,18 @@ class SucuriScanTemplate extends SucuriScanRequest
         }
 
         if ($type == 'page') {
-            $fpath_pattern = '%s/%s/inc/tpl/%s.html.tpl';
+            $pattern = '%s/inc/tpl/%s.html.tpl';
         } elseif ($type == 'section') {
-            $fpath_pattern = '%s/%s/inc/tpl/%s.html.tpl';
+            $pattern = '%s/inc/tpl/%s.html.tpl';
         } elseif ($type == 'snippet') {
-            $fpath_pattern = '%s/%s/inc/tpl/%s.snippet.tpl';
+            $pattern = '%s/inc/tpl/%s.snippet.tpl';
         } else {
             SucuriScan::throwException('Invalid template type');
             return ''; /* empty page */
         }
 
-        $output = '';
-        $fpath = sprintf(
-            $fpath_pattern,
-            WP_PLUGIN_DIR,
-            SUCURISCAN_PLUGIN_FOLDER,
-            $template
-        );
+        $output = ''; /* initialize response as an empty string */
+        $fpath = sprintf($pattern, SUCURISCAN_PLUGIN_PATH, $template);
 
         if (file_exists($fpath) && is_readable($fpath)) {
             $output = @file_get_contents($fpath);
@@ -355,10 +351,16 @@ class SucuriScanTemplate extends SucuriScanRequest
         $options = '';
 
         foreach ($allowed_values as $option_name => $option_label) {
+            $selected = '';
+
+            if ($option_name === $selected_val) {
+                $selected = "\x20selected=\"selected\"";
+            }
+
             $options .= sprintf(
-                "<option %s value='%s'>%s</option>\n",
-                ($option_name === $selected_val ? 'selected="selected"' : ''),
+                "<option value=\"%s\"%s>%s</option>\n",
                 SucuriScan::escape($option_name),
+                $selected, /* do not escape HTML */
                 SucuriScan::escape($option_label)
             );
         }
