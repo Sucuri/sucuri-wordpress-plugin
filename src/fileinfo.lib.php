@@ -484,55 +484,40 @@ class SucuriScanFileInfo extends SucuriScan
      */
     public function removeDirectoryTree($directory = '')
     {
-        $dir_tree = $this->getDirectoryTree($directory);
-
-        if ($dir_tree) {
-            $dirs_only = array();
-
-            // Include the parent directory as the first entry.
-            $dirs_only[] = $directory;
-
-            /**
-             * Delete all the files and symbolic links recursively and append the
-             * directories in a list to delete them later when we are sure that all files
-             * were successfully deleted, this is because PHP does not allows to delete non-
-             * empty folders.
-             */
-            foreach ($dir_tree as $filepath) {
-                if (is_dir($filepath)) {
-                    $dirs_only[] = $filepath;
-                } else {
-                    @unlink($filepath);
+        /* delete all the regular files and symbolic links */
+        if ($dir_tree = $this->getDirectoryTree($directory)) {
+            foreach ($dir_tree as $filename) {
+                if (is_file($filename) || is_link($filename)) {
+                    @unlink($filename);
                 }
             }
-
-            if (!function_exists('sucuriscanStrlenDiff')) {
-                /**
-                 * Evaluates the difference between the length of two strings.
-                 *
-                 * @param  string  $a First string of characters that will be measured.
-                 * @param  string  $b Second string of characters that will be measured.
-                 * @return integer    The difference in length between the two strings.
-                 */
-                function sucuriscanStrlenDiff($a = '', $b = '')
-                {
-                    return strlen($b) - strlen($a);
-                }
-            }
-
-            // Sort the directories by deep level in ascendant order.
-            $dirs_only = array_unique($dirs_only);
-            usort($dirs_only, 'sucuriscanStrlenDiff');
-
-            // Delete all the directories starting from the deepest level.
-            foreach ($dirs_only as $dir_path) {
-                @rmdir($dir_path);
-            }
-
-            return true;
         }
 
-        return false;
+        if (!function_exists('sucuriscanStrlenDiff')) {
+            /**
+             * Evaluates the difference between the length of two strings.
+             *
+             * @param  string  $a First string of characters that will be measured.
+             * @param  string  $b Second string of characters that will be measured.
+             * @return integer    The difference in length between the two strings.
+             */
+            function sucuriscanStrlenDiff($a = '', $b = '')
+            {
+                return strlen($b) - strlen($a);
+            }
+        }
+
+        /* delete all directories starting from the deepest level */
+        $dir_tree = $this->getDirectoryTree($directory);
+        $dir_tree = array_unique($dir_tree);
+        usort($dir_tree, 'sucuriscanStrlenDiff');
+        $dir_tree[] = $directory; /* add parent */
+        foreach ($dir_tree as $dir_path) {
+            @rmdir($dir_path);
+        }
+
+        /* check if we deleted all the files and sub-directories */
+        return (bool) ($this->getDirectoryTree($directory) === false);
     }
 
     /**
