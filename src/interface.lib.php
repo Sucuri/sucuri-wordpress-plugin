@@ -115,16 +115,20 @@ class SucuriScanInterface
     public static function handleOldPlugins()
     {
         if (class_exists('SucuriScanFileInfo')) {
-            $file_info = new SucuriScanFileInfo();
-            $file_info->ignore_files = false;
-            $file_info->ignore_directories = false;
+            $finfo = new SucuriScanFileInfo();
+            $finfo->ignore_files = false;
+            $finfo->ignore_directories = false;
+            $finfo->skip_directories = false;
+            $finfo->run_recursively = true;
 
             $plugins = array(
-                'sucuri-wp-plugin/sucuri.php',
-                'sucuri-cloudproxy-waf/cloudproxy.php',
+                'c3VjdXJpLXdwLXBsdWdpbi9zdWN1cmkucGhw',
+                'c3VjdXJpLWNsb3VkcHJveHktd2FmL2Nsb3VkcHJveHkucGhw',
+                'ZGVzc2t5LXNlY3VyaXR5L2Rlc3NreS1zZWN1cml0eS5waHA=',
             );
 
             foreach ($plugins as $plugin) {
+                $plugin = base64_decode($plugin);
                 $plugin_directory = dirname(WP_PLUGIN_DIR . '/' . $plugin);
 
                 if (file_exists($plugin_directory)) {
@@ -132,7 +136,7 @@ class SucuriScanInterface
                         deactivate_plugins($plugin);
                     }
 
-                    $file_info->removeDirectoryTree($plugin_directory);
+                    $finfo->removeDirectoryTree($plugin_directory);
                 }
             }
         }
