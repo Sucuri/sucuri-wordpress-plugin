@@ -137,7 +137,12 @@ class SucuriScan
     {
         $sz = 'BKMGTP';
         $factor = floor((strlen($bytes) - 1) / 3);
-        return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[ $factor ];
+        $number = $bytes / pow(1024, $factor);
+        $result = sprintf("%.{$decimals}f", $number) . @$sz[$factor];
+        $zeroes = '.' . str_repeat(0, $decimals);
+        $result = str_replace($zeroes, '', $result); /* remove unused zeroes */
+
+        return $result;
     }
 
     /**

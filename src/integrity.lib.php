@@ -244,7 +244,7 @@ class SucuriScanIntegrity
                         }
 
                         // Pretty-print the file size in human-readable form.
-                        if ($file_size > 0) {
+                        if ($file_size !== false) {
                             $file_size_human = SucuriScan::humanFileSize($file_size);
                         }
 

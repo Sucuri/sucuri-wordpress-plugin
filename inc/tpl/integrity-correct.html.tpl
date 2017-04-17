@@ -17,10 +17,11 @@
             <h2 class="sucuriscan-subtitle">All Core WordPress Files Are Correct</h2>
 
             <p>
-                We have not identified any changes to the core files in your WordPress
-                installation. If you are experiencing other malware issues, please use
-                a <a href="https://sucuri.net/website-security/malware-removal"
-                target="_blank">Server Side Scanner</a>.
+                We have not identified additional files, deleted files, or relevant
+                changes to the core files in your WordPress installation. If you are
+                experiencing other malware issues, please use a <a target="_blank"
+                href="https://sucuri.net/website-security/malware-removal">Server
+                Side Scanner</a>.
             </p>
 
             <p><a href="%%SUCURI.URL.Settings%%#scanner">Review False/Positives</a></p>
