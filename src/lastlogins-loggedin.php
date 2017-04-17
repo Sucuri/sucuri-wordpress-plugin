@@ -208,5 +208,5 @@ if (!function_exists('sucuriscan_set_online_user')) {
         }
     }
 
-    add_action('wp_login', 'sucuriscan_set_online_user', 10, 2);
+    add_action('wp_login', 'sucuriscan_set_online_user', 50, 2);
 }

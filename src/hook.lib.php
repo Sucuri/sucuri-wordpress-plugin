@@ -297,33 +297,47 @@ class SucuriScanHook extends SucuriScanEvent
     }
 
     /**
-     * Send an alert notifying that the state of a post was changed
-     * from private to published. This will only applies for posts not pages.
+     * Sends an alert for transitions between post statuses.
      *
-     * @param  integer $id The identifier of the post changed.
+     * @param  string $new  New post status.
+     * @param  string $old  Old post status.
+     * @param  object $post Post data.
      * @return void
      */
-    public static function hookPrivateToPublished($id = 0)
+    public static function hookTransitionPostStatus($new = '', $old = '', $post)
     {
-        if ($data = get_post($id)) {
-            $title = $data->post_title;
-            $p_type = ucwords($data->post_type);
-        } else {
-            $title = 'Unknown';
-            $p_type = 'Publication';
+        if (!property_exists($post, 'ID')) {
+            return;
         }
 
-        // Check whether the post-type is being ignored to send alerts.
-        if (!SucuriScanOption::isIgnoredEvent($p_type)) {
-            $message = sprintf(
-                '%s (private to published); identifier: %s; name: %s',
-                $p_type,
-                $id,
-                $title
-            );
-            self::reportNoticeEvent($message);
-            self::notifyEvent('post_publication', $message);
+        $post_type = 'post'; /* either post or page */
+
+        if (property_exists($post, 'post_type')) {
+            $post_type = $post->post_type;
         }
+
+        /* check if email alerts are disabled for this type */
+        if (SucuriScanOption::isIgnoredEvent($post_type)) {
+            return;
+        }
+
+        $pieces = array();
+        $post_type = ucwords($post_type);
+
+        $pieces[] = 'ID: ' . self::escape($post->ID);
+        $pieces[] = 'Old status: ' . self::escape($old);
+        $pieces[] = 'New status: ' . self::escape($new);
+
+        if (property_exists($post, 'post_title')) {
+            $pieces[] = 'Title: ' . self::escape($post->post_title);
+        }
+
+        $message = self::escape($post_type) . ' status has been changed';
+        $message .= "; details:\x20";
+        $message .= implode(',', $pieces);
+
+        self::reportNoticeEvent($message);
+        self::notifyEvent('post_publication', $message);
     }
 
     /**
@@ -332,24 +346,29 @@ class SucuriScanHook extends SucuriScanEvent
      * @param  integer $id The identifier of the post or page published.
      * @return void
      */
-    public static function hookPublish($id = 0)
+    private static function hookPublish($id = 0)
     {
+        $title = 'Unknown';
+        $p_type = 'Publication';
+        $action = 'published';
+
         if ($data = get_post($id)) {
             $title = $data->post_title;
             $p_type = ucwords($data->post_type);
-            $action = ( $data->post_date == $data->post_modified ? 'created' : 'updated' );
-        } else {
-            $title = 'Unknown';
-            $p_type = 'Publication';
-            $action = 'published';
+            $action = 'updated';
+
+            /* new posts have the same creation and modification dates */
+            if ($data->post_date === $data->post_modified) {
+                $action = 'created';
+            }
         }
 
         $message = sprintf(
             '%s was %s; identifier: %s; name: %s',
-            $p_type,
-            $action,
-            $id,
-            $title
+            self::escape($p_type),
+            self::escape($action),
+            intval($id),
+            self::escape($title)
         );
         self::reportNoticeEvent($message);
         self::notifyEvent('post_publication', $message);

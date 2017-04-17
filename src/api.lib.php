@@ -939,6 +939,17 @@ class SucuriScanAPI extends SucuriScanOption
                     $log_data['file_list_count'] = count($log_data['file_list']);
                 }
 
+                /* extract additional details from the message */
+                if (strpos($log_data['message'], '; details:')) {
+                    $idx = strpos($log_data['message'], '; details:');
+                    $message = substr($log_data['message'], 0, $idx);
+                    $details = substr($log_data['message'], $idx + 11);
+
+                    $log_data['message'] = $message . ' (details):';
+                    $log_data['file_list'] = explode(',', $details);
+                    $log_data['file_list_count'] = count($log_data['file_list']);
+                }
+
                 if ($log_data = self::getLogsHotfix($log_data)) {
                     $response['output_data'][] = $log_data;
                 }

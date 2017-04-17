@@ -65,7 +65,7 @@ if (defined('SUCURISCAN')) {
         'sucuriscan_notify_success_login' => 'user:Receive email alerts for successful login attempts',
         'sucuriscan_notify_failed_login' => 'user:Receive email alerts for failed login attempts <em>(you may receive tons of emails)</em>',
         'sucuriscan_notify_bruteforce_attack' => 'user:Receive email alerts for password guessing attacks <em>(summary of failed logins per hour)</em>',
-        'sucuriscan_notify_post_publication' => 'Receive email alerts for Post-Type changes <em>(configure from Ignore Posts Changes)</em>',
+        'sucuriscan_notify_post_publication' => 'Receive email alerts for changes in the post status <em>(configure from Ignore Posts Changes)</em>',
         'sucuriscan_notify_website_updated' => 'Receive email alerts when the WordPress version is updated',
         'sucuriscan_notify_settings_updated' => 'Receive email alerts when your website settings are updated',
         'sucuriscan_notify_theme_editor' => 'Receive email alerts when a file is modified with theme/plugin editor',
@@ -211,22 +211,22 @@ if (defined('SUCURISCAN')) {
      * @see Class SucuriScanHook
      */
     if (class_exists('SucuriScanHook')) {
-        add_action('activated_plugin', 'SucuriScanHook::hookDetectPluginActivation', 10, 2);
+        add_action('activated_plugin', 'SucuriScanHook::hookDetectPluginActivation', 50, 2);
         add_action('add_attachment', 'SucuriScanHook::hookAddAttachment', 50, 5);
         add_action('add_link', 'SucuriScanHook::hookAddLink', 50, 5);
         add_action('before_delete_post', 'SucuriScanHook::hookBeforeDeletePost', 50, 5);
         add_action('create_category', 'SucuriScanHook::hookCreateCategory', 50, 5);
-        add_action('deactivated_plugin', 'SucuriScanHook::hookDetectPluginDeactivation', 10, 2);
+        add_action('deactivated_plugin', 'SucuriScanHook::hookDetectPluginDeactivation', 50, 2);
         add_action('delete_post', 'SucuriScanHook::hookDeletePost', 50, 5);
         add_action('delete_user', 'SucuriScanHook::hookDeleteUser', 50, 5);
         add_action('edit_link', 'SucuriScanHook::hookEditLink', 50, 5);
         add_action('login_form_resetpass', 'SucuriScanHook::hookLoginFormResetpass', 50, 5);
-        add_action('private_to_published', 'SucuriScanHook::hookPrivateToPublished', 50, 5);
         add_action('publish_page', 'SucuriScanHook::hookPublishPage', 50, 5);
         add_action('publish_phone', 'SucuriScanHook::hookPublishPhone', 50, 5);
         add_action('publish_post', 'SucuriScanHook::hookPublishPost', 50, 5);
         add_action('retrieve_password', 'SucuriScanHook::hookRetrievePassword', 50, 5);
         add_action('switch_theme', 'SucuriScanHook::hookSwitchTheme', 50, 5);
+        add_action('transition_post_status', 'SucuriScanHook::hookTransitionPostStatus', 50, 3);
         add_action('user_register', 'SucuriScanHook::hookUserRegister', 50, 5);
         add_action('wp_insert_comment', 'SucuriScanHook::hookWPInsertComment', 50, 5);
         add_action('wp_login', 'SucuriScanHook::hookWPLogin', 50, 5);
