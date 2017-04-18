@@ -10,8 +10,7 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
 
 function sucuriscan_settings_scanner_options()
 {
-    global $sucuriscan_schedule_allowed,
-        $sucuriscan_interface_allowed;
+    global $sucuriscan_schedule_allowed;
 
     $params = array();
 
@@ -37,37 +36,18 @@ function sucuriscan_settings_scanner_options()
                 SucuriScanInterface::info($message);
             }
         }
-
-        // Set the method (aka. interface) that will be used to scan the site.
-        if ($interface = SucuriScanRequest::post(':scan_interface')) {
-            $allowed_values = array_keys($sucuriscan_interface_allowed);
-
-            if (in_array($interface, $allowed_values)) {
-                $message = 'File system scanning interface set to <code>' . $interface . '</code>';
-
-                SucuriScanOption::updateOption(':scan_interface', $interface);
-                SucuriScanEvent::reportInfoEvent($message);
-                SucuriScanEvent::notifyEvent('plugin_change', $message);
-                SucuriScanInterface::info($message);
-            }
-        }
     }
 
     $scan_freq = SucuriScanOption::getOption(':scan_frequency');
-    $scan_algo = SucuriScanOption::getOption(':scan_interface');
 
     // Generate the HTML code for the option list in the form select fields.
     $freq_options = SucuriScanTemplate::selectOptions($sucuriscan_schedule_allowed, $scan_freq);
-    $algo_options = SucuriScanTemplate::selectOptions($sucuriscan_interface_allowed, $scan_algo);
 
     $params['ScanningFrequency'] = 'Undefined';
-    $params['ScanningInterface'] = 'Undefined';
     $params['ScanningFrequencyOptions'] = $freq_options;
-    $params['ScanningInterfaceOptions'] = $algo_options;
 
-    if ($scan_algo && array_key_exists($scan_algo, $sucuriscan_interface_allowed)) {
-        $params['ScanningInterface'] = $sucuriscan_interface_allowed[$scan_algo];
-    }
+    $hasSPL = SucuriScanFileInfo::isSplAvailable();
+    $params['NoSPL.Visibility'] = SucuriScanTemplate::visibility(!$hasSPL);
 
     if (array_key_exists($scan_freq, $sucuriscan_schedule_allowed)) {
         $params['ScanningFrequency'] = $sucuriscan_schedule_allowed[ $scan_freq ];

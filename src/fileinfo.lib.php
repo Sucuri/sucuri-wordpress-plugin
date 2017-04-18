@@ -19,22 +19,13 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
 class SucuriScanFileInfo extends SucuriScan
 {
     /**
-     * Define the interface that will be used to execute the file system scans, the
-     * available options are SPL, OpenDir, and Glob (all in lowercase). This can be
-     * configured from the settings page.
-     *
-     * @var string
-     */
-    public $scan_interface = 'spl';
-
-    /**
      * Whether the list of files that can be ignored from the filesystem scan will
      * be used to return the directory tree, this should be disabled when scanning a
      * directory without the need to filter the items in the list.
      *
      * @var boolean
      */
-    public $ignore_files = true;
+    public $ignore_files;
 
     /**
      * Whether the list of folders that can be ignored from the filesystem scan will
@@ -43,7 +34,7 @@ class SucuriScanFileInfo extends SucuriScan
      *
      * @var boolean
      */
-    public $ignore_directories = true;
+    public $ignore_directories;
 
     /**
      * A list of ignored directory paths, these folders will be skipped during the
@@ -53,14 +44,14 @@ class SucuriScanFileInfo extends SucuriScan
      * @see SucuriScanFSScanner.getIgnoredDirectories()
      * @var array
      */
-    private $ignored_directories = array();
+    private $ignored_directories;
 
     /**
      * Whether the filesystem scanner should run recursively or not.
      *
      * @var boolean
      */
-    public $run_recursively = true;
+    public $run_recursively;
 
     /**
      * Whether the directory paths must be skipped or not.
@@ -73,13 +64,18 @@ class SucuriScanFileInfo extends SucuriScan
      *
      * @var boolean
      */
-    public $skip_directories = true;
+    public $skip_directories;
 
     /**
      * Class constructor.
      */
     public function __construct()
     {
+        $this->ignore_files = true;
+        $this->ignore_directories = true;
+        $this->ignored_directories = array();
+        $this->run_recursively = true;
+        $this->skip_directories = true;
     }
 
     /**
@@ -102,26 +98,30 @@ class SucuriScanFileInfo extends SucuriScan
             $signatures = array();
         }
 
-        if ($files) {
-            sort($files);
+        if (!$files) {
+            self::throwException('No files were found');
+            return $signatures;
+        }
 
-            foreach ($files as $filepath) {
-                $file_checksum = @md5_file($filepath);
-                $filesize = @filesize($filepath);
+        sort($files); /* sort file list alphabetically */
 
-                if ($as_array) {
-                    $basename = str_replace($abspath . '/', '', $filepath);
-                    $signatures[ $basename ] = array(
-                        'filepath' => $filepath,
-                        'checksum' => $file_checksum,
-                        'filesize' => $filesize,
-                        'created_at' => @filectime($filepath),
-                        'modified_at' => @filemtime($filepath),
-                    );
-                } else {
-                    $filepath = str_replace($abspath, $abspath . '/', $filepath);
-                    $signatures .= $file_checksum . $filesize . "\x20" . $filepath . "\n";
-                }
+        foreach ($files as $filepath) {
+            /* silence errors when file is not readable */
+            $file_checksum = @md5_file($filepath);
+            $filesize = @filesize($filepath);
+
+            if ($as_array) {
+                $basename = str_replace($abspath . '/', '', $filepath);
+                $signatures[$basename] = array(
+                    'filepath' => $filepath,
+                    'checksum' => $file_checksum,
+                    'filesize' => $filesize,
+                    'created_at' => @filectime($filepath),
+                    'modified_at' => @filemtime($filepath),
+                );
+            } else {
+                $filepath = str_replace($abspath, $abspath . '/', $filepath);
+                $signatures .= $file_checksum . $filesize . "\x20" . $filepath . "\n";
             }
         }
 
@@ -138,44 +138,23 @@ class SucuriScanFileInfo extends SucuriScan
      */
     public function getDirectoryTree($directory = '')
     {
-        if (file_exists($directory) && is_dir($directory)) {
-            $tree = array();
-
-            $this->ignored_directories = SucuriScanFSScanner::getIgnoredDirectories();
-
-            switch ($this->scan_interface) {
-                case 'spl':
-                    if ($this->isSplAvailable()) {
-                        $tree = $this->getDirectoryTreeWithSpl($directory);
-                    } else {
-                        $this->scan_interface = 'opendir';
-                        SucuriScanOption::updateOption(':scan_interface', $this->scan_interface);
-                        $tree = $this->getDirectoryTree($directory);
-                    }
-                    break;
-
-                case 'glob':
-                    $tree = $this->getDirectoryTreeWithGlob($directory);
-                    break;
-
-                case 'opendir':
-                    $tree = $this->getDirectoryTreeWithOpendir($directory);
-                    break;
-
-                default:
-                    $this->scan_interface = 'spl';
-                    $tree = $this->getDirectoryTree($directory);
-                    break;
-            }
-
-            if (is_array($tree) && !empty($tree)) {
-                sort($tree); /* Sort in alphabetic order */
-
-                return array_map(array('SucuriScan', 'fixPath'), $tree);
-            }
+        if (!file_exists($directory) && !is_dir($directory)) {
+            return false;
         }
 
-        return false;
+        $tree = array();
+
+        $this->ignored_directories = SucuriScanFSScanner::getIgnoredDirectories();
+
+        $tree = $this->getDirectoryTreeWithSpl($directory);
+
+        if (!is_array($tree) || empty($tree)) {
+            return false;
+        }
+
+        sort($tree); /* sort directory tree alphabetically */
+
+        return array_map(array('SucuriScan', 'fixPath'), $tree);
     }
 
     /**
@@ -189,7 +168,7 @@ class SucuriScanFileInfo extends SucuriScan
      */
     public static function isSplAvailable()
     {
-        return (bool) class_exists('SplFileObject');
+        return (bool) (class_exists('SplFileObject') && class_exists('FilesystemIterator'));
     }
 
     /**
@@ -213,16 +192,9 @@ class SucuriScanFileInfo extends SucuriScan
         $objects = array();
 
         // Exception for directory name must not be empty.
-        if ($filepath === false) {
-            return $files;
-        }
-
-        if (!class_exists('FilesystemIterator')) {
-            $this->scan_interface = 'opendir';
-            SucuriScanOption::updateOption(':scan_interface', $this->scan_interface);
-            $alternative_tree = $this->getDirectoryTree($directory);
-
-            return $alternative_tree;
+        if (!$filepath) {
+            self::throwException('Directory path is invalid');
+            return false;
         }
 
         try {
@@ -246,12 +218,13 @@ class SucuriScanFileInfo extends SucuriScan
         foreach ($objects as $filepath => $fileinfo) {
             $filename = $fileinfo->getFilename();
 
-            if ($this->ignoreFolderPath(null, $filename)
-                || (
-                    $this->skip_directories === true
-                    && $fileinfo->isDir()
-                )
-            ) {
+            if ($this->ignoreFolderPath(null, $filename)) {
+                /* skip irrelevant files from the scan */
+                continue;
+            }
+
+            if ($this->skip_directories && $fileinfo->isDir()) {
+                /* skip irrelevant directories from the scan */
                 continue;
             }
 
@@ -275,96 +248,6 @@ class SucuriScanFileInfo extends SucuriScan
     }
 
     /**
-     * Retrieve a list with all the files contained in the main and subdirectories
-     * of the folder specified. Some folders and files will be ignored depending
-     * on some rules defined by the developer.
-     *
-     * @param  string $directory Parent directory where the filesystem scan will start.
-     * @return array             List of files in the main and subdirectories of the folder specified.
-     */
-    private function getDirectoryTreeWithGlob($directory = '')
-    {
-        $files = array();
-        $directory_pattern = sprintf('%s/*', rtrim($directory, '/'));
-        $files_found = @glob($directory_pattern);
-
-        if (is_array($files_found)) {
-            foreach ($files_found as $filepath) {
-                $filepath = @realpath($filepath);
-                $directory = dirname($filepath);
-                $filepath_parts = explode('/', $filepath);
-                $filename = array_pop($filepath_parts);
-
-                if (is_dir($filepath)) {
-                    if ($this->ignoreFolderPath($directory, $filename)) {
-                        continue;
-                    }
-
-                    if ($this->run_recursively) {
-                        $sub_files = $this->getDirectoryTreeWithGlob($filepath);
-
-                        if ($sub_files) {
-                            $files = array_merge($files, $sub_files);
-                        }
-                    }
-                } elseif ($this->ignoreFilePath($filename)) {
-                    continue;
-                } else {
-                    $files[] = $filepath;
-                }
-            }
-        }
-
-        return $files;
-    }
-
-    /**
-     * Retrieve a list with all the files contained in the main and subdirectories
-     * of the folder specified. Some folders and files will be ignored depending
-     * on some rules defined by the developer.
-     *
-     * @param  string $directory Parent directory where the filesystem scan will start.
-     * @return array             List of files in the main and subdirectories of the folder specified.
-     */
-    private function getDirectoryTreeWithOpendir($directory = '')
-    {
-        $files = array();
-        $dh = @opendir($directory);
-
-        if (!$dh) {
-            return false;
-        }
-
-        while (($filename = readdir($dh)) !== false) {
-            $filepath = @realpath($directory . '/' . $filename);
-
-            if ($filepath === false) {
-                continue;
-            } elseif (is_dir($filepath)) {
-                if ($this->ignoreFolderPath($directory, $filename)) {
-                    continue;
-                }
-
-                if ($this->run_recursively) {
-                    $sub_files = $this->getDirectoryTreeWithOpendir($filepath);
-
-                    if ($sub_files) {
-                        $files = array_merge($files, $sub_files);
-                    }
-                }
-            } else {
-                if ($this->ignoreFilePath($filename)) {
-                    continue;
-                }
-                $files[] = $filepath;
-            }
-        }
-
-        closedir($dh);
-        return $files;
-    }
-
-    /**
      * Skip some specific directories and file paths from the filesystem scan.
      *
      * @param  string  $directory Directory where the scanner is located at the moment.
@@ -383,7 +266,8 @@ class SucuriScanFileInfo extends SucuriScan
             $filepath = @realpath($directory . '/' . $filename);
             $pattern = '/\/wp-content\/(uploads|cache|backup|w3tc)/';
 
-            if (preg_match($pattern, $filepath)) {
+            /* silence regexp match if the file is not readable */
+            if (@preg_match($pattern, $filepath)) {
                 return true;
             }
 
@@ -508,13 +392,15 @@ class SucuriScanFileInfo extends SucuriScan
         }
 
         /* delete all directories starting from the deepest level */
-        $dir_tree = $this->getDirectoryTree($directory);
-        $dir_tree = array_unique($dir_tree);
-        usort($dir_tree, 'sucuriscanStrlenDiff');
-        $dir_tree[] = $directory; /* add parent */
-        foreach ($dir_tree as $dir_path) {
-            @rmdir($dir_path);
+        if ($dir_tree = $this->getDirectoryTree($directory)) {
+            $dir_tree = array_unique($dir_tree);
+            usort($dir_tree, 'sucuriscanStrlenDiff');
+            foreach ($dir_tree as $dir_path) {
+                @rmdir($dir_path);
+            }
         }
+
+        @rmdir($directory); /* attempt to delete parent */
 
         /* check if we deleted all the files and sub-directories */
         return (bool) ($this->getDirectoryTree($directory) === false);
@@ -533,11 +419,17 @@ class SucuriScanFileInfo extends SucuriScan
      */
     public static function fileContent($fpath = '')
     {
-        if (file_exists($fpath) && is_readable($fpath)) {
-            return file_get_contents($fpath);
+        if (!file_exists($fpath)) {
+            self::throwException('File does not exists');
+            return false;
         }
 
-        return false;
+        if (!is_readable($fpath)) {
+            self::throwException('File is not readable');
+            return false;
+        }
+
+        return @file_get_contents($fpath);
     }
 
     /**
@@ -563,12 +455,16 @@ class SucuriScanFileInfo extends SucuriScan
     {
         if (is_dir($path)) {
             return 'dir';
-        } elseif (is_link($path)) {
-            return 'link';
-        } elseif (is_file($path)) {
-            return 'file';
-        } else {
-            return 'unknown';
         }
+
+        if (is_link($path)) {
+            return 'link';
+        }
+
+        if (is_file($path)) {
+            return 'file';
+        }
+
+        return 'unknown';
     }
 }

@@ -359,7 +359,6 @@ class SucuriScanIntegrity
         $file_info->ignore_files = false;
         $file_info->ignore_directories = false;
         $file_info->run_recursively = $recursive;
-        $file_info->scan_interface = SucuriScanOption::getOption(':scan_interface');
         $tree = $file_info->getDirectoryTreeMd5($dir, true);
 
         if (!$tree) {

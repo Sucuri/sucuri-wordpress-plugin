@@ -23,6 +23,11 @@ function sucuriscan_page()
 
     SucuriScanInterface::checkPageVisibility();
 
+    if (!SucuriScanFileInfo::isSplAvailable()) {
+        /* display a warning when system dependencies are not met */
+        SucuriScanInterface::error('The plugin requires PHP 5 >= 5.3.0 — OR — PHP 7');
+    }
+
     $params['Integrity'] = SucuriScanIntegrity::pageIntegrity();
     $params['SiteCheck.Details'] = SucuriScanSiteCheck::details();
     $params['SiteCheck.Malware'] = SucuriScanSiteCheck::malware();

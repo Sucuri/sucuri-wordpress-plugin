@@ -146,7 +146,6 @@ class SucuriScanEvent extends SucuriScan
         self::reportSiteVersion();
 
         $file_info = new SucuriScanFileInfo();
-        $file_info->scan_interface = SucuriScanOption::getOption(':scan_interface');
         $signatures = $file_info->getDirectoryTreeMd5(ABSPATH);
 
         if (!$signatures) {

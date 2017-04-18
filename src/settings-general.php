@@ -602,7 +602,6 @@ function sucuriscan_settings_general_importexport($nonce)
         ':request_timeout',
         ':revproxy',
         ':scan_frequency',
-        ':scan_interface',
         ':selfhosting_fpath',
         ':selfhosting_monitor',
         ':sitecheck_timeout',

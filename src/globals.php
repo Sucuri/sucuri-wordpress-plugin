@@ -82,12 +82,6 @@ if (defined('SUCURISCAN')) {
         'sucuriscan_notify_theme_deleted' => 'theme:Receive email alerts when a <b>theme is deleted</b>',
     );
 
-    $sucuriscan_interface_allowed = array(
-        'spl' => 'SPL (high performance)',
-        'opendir' => 'OpenDir (medium)',
-        'glob' => 'Glob (low)',
-    );
-
     $sucuriscan_emails_per_hour = array(
         '5' => 'Maximum 5 per hour',
         '10' => 'Maximum 10 per hour',

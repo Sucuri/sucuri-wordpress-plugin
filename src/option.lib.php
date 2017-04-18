@@ -90,7 +90,6 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_revproxy' => 'disabled',
             'sucuriscan_runtime' => 0,
             'sucuriscan_scan_frequency' => 'twicedaily',
-            'sucuriscan_scan_interface' => 'spl',
             'sucuriscan_selfhosting_fpath' => '',
             'sucuriscan_selfhosting_monitor' => 'disabled',
             'sucuriscan_site_version' => '0.0',

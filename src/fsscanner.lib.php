@@ -163,7 +163,6 @@ class SucuriScanFSScanner extends SucuriScan
         $file_info = new SucuriScanFileInfo();
         $file_info->ignore_files = true;
         $file_info->ignore_directories = true;
-        $file_info->scan_interface = SucuriScanOption::getOption(':scan_interface');
         $directory_list = $file_info->getDiretoriesOnly(ABSPATH);
 
         if ($directory_list) {

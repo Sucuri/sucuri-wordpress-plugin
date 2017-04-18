@@ -266,7 +266,6 @@ function sucuriscan_deactivate()
     $fifo->ignore_directories = false;
     $fifo->run_recursively = false;
     $directory = SucuriScan::dataStorePath();
-    $fifo->scan_interface = SucuriScanOption::getOption(':scan_interface');
     $fifo->removeDirectoryTree($directory);
 }
 
