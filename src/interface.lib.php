@@ -187,29 +187,61 @@ class SucuriScanInterface
      */
     public static function noticeAfterUpdate()
     {
-        $version = SucuriScanOption::getOption(':plugin_version');
-
-        // Use simple comparison to force type cast.
-        if ($version != SUCURISCAN_VERSION) {
-            /**
-             * Check if the API communication has been disabled due to issues
-             * with the previous version of the code, in this case we will
-             * display a message at the top of the admin dashboard suggesting
-             * the user to enable it once again expecting to see have a better
-             * performance with the new code.
-             */
-            if (SucuriScanOption::isDisabled(':api_service')) {
-                self::info(
-                    'API service communication is disabled, if you just updated '
-                    . 'the plugin this might be a good opportunity to test this '
-                    . 'feature once again with the new code. Enable it again from '
-                    . 'the "API Service" panel located in the settings page.'
-                );
-            }
-
-            // Update the version number in the plugin settings.
-            SucuriScanOption::updateOption(':plugin_version', SUCURISCAN_VERSION);
+        /* use simple comparison to force type cast. */
+        if (SucuriScanOption::getOption(':plugin_version') == SUCURISCAN_VERSION) {
+            return;
         }
+
+        /**
+         * Suggest re-activation of the API communication.
+         *
+         * Check if the API communication has been disabled due to issues with
+         * the previous version of the code, in this case we will display a
+         * message at the top of the admin dashboard suggesting the user to
+         * enable it once again expecting to see have a better performance with
+         * the new code.
+         */
+        if (SucuriScanOption::isDisabled(':api_service')) {
+            self::info(
+                'API service communication is disabled, if you just updated '
+                . 'the plugin this might be a good opportunity to test this '
+                . 'feature once again with the new code. Enable it again from '
+                . 'the "API Service" panel located in the settings page.'
+            );
+        }
+
+        /**
+         * Invite website owner to subscribe to our security newsletter.
+         *
+         * For every fresh installation of the plugin we will send a one-time
+         * email to the website owner with an invitation to subscribe to our
+         * security related newsletter where they can learn about better security
+         * practices and get alerts from public vulnerabilities disclosures.
+         *
+         * The plugin will set a hidden (non-modifiable) option in the settings
+         * file to let it know that we already sent this email. In most cases this
+         * will be enough to avoid unnecessary spam, but if the website owner
+         * decides to reset the plugin settings, or for some reason, the settings
+         * file is not writable.
+         *
+         * @date Featured added at - May 01, 2017
+         */
+        if (SucuriScanOption::getOption(':newsletter_invitation') !== 'sent') {
+            SucuriScanMail::sendMail(
+                SucuriScan::getSiteEmail(),
+                'Newsletter Invitation',
+                SucuriScanTemplate::getSection('notification-newsletter'),
+                array(
+                    'Force' => true,
+                    'ForceHTML' => true,
+                    'UseRawHTML' => true,
+                )
+            );
+            SucuriScanOption::updateOption(':newsletter_invitation', 'sent');
+        }
+
+        /* update the version number in the plugin settings. */
+        SucuriScanOption::updateOption(':plugin_version', SUCURISCAN_VERSION);
     }
 
     /**

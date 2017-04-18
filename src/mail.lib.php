@@ -45,17 +45,13 @@ class SucuriScanMail extends SucuriScanOption
         $debug = false;
 
         // Check whether the mail will be printed in the site instead of sent.
-        if (isset($data_set['Debug'])
-            && $data_set['Debug'] == true
-        ) {
+        if (isset($data_set['Debug']) && $data_set['Debug']) {
             $debug = true;
             unset($data_set['Debug']);
         }
 
         // Check whether the mail will be even if the limit per hour was reached or not.
-        if (isset($data_set['Force'])
-            && $data_set['Force'] == true
-        ) {
+        if (isset($data_set['Force']) && $data_set['Force']) {
             $force = true;
             unset($data_set['Force']);
         }
@@ -70,7 +66,10 @@ class SucuriScanMail extends SucuriScanOption
         }
 
         if (!self::emailsPerHourReached() || $force || $debug) {
-            $message = self::prettifyMail($subject, $message, $data_set);
+            /* check if we need to load a template file to wrap the message */
+            if (!array_key_exists('UseRawHTML', $data_set) || !$data_set['UseRawHTML']) {
+                $message = self::prettifyMail($subject, $message, $data_set);
+            }
 
             if ($debug) {
                 die($message);
