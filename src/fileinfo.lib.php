@@ -419,13 +419,7 @@ class SucuriScanFileInfo extends SucuriScan
      */
     public static function fileContent($fpath = '')
     {
-        if (!file_exists($fpath)) {
-            self::throwException('File does not exists');
-            return false;
-        }
-
-        if (!is_readable($fpath)) {
-            self::throwException('File is not readable');
+        if (!file_exists($fpath) || !is_readable($fpath)) {
             return false;
         }
 

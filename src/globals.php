@@ -205,34 +205,43 @@ if (defined('SUCURISCAN')) {
      * @see Class SucuriScanHook
      */
     if (class_exists('SucuriScanHook')) {
-        add_action('activated_plugin', 'SucuriScanHook::hookDetectPluginActivation', 50, 2);
-        add_action('add_attachment', 'SucuriScanHook::hookAddAttachment', 50, 5);
-        add_action('add_link', 'SucuriScanHook::hookAddLink', 50, 5);
-        add_action('before_delete_post', 'SucuriScanHook::hookBeforeDeletePost', 50, 5);
-        add_action('create_category', 'SucuriScanHook::hookCreateCategory', 50, 5);
-        add_action('deactivated_plugin', 'SucuriScanHook::hookDetectPluginDeactivation', 50, 2);
-        add_action('delete_post', 'SucuriScanHook::hookDeletePost', 50, 5);
-        add_action('delete_user', 'SucuriScanHook::hookDeleteUser', 50, 5);
-        add_action('edit_link', 'SucuriScanHook::hookEditLink', 50, 5);
+        add_action('activated_plugin', 'SucuriScanHook::hookPluginActivate', 50, 2);
+        add_action('add_attachment', 'SucuriScanHook::hookAttachmentAdd', 50, 5);
+        add_action('add_link', 'SucuriScanHook::hookLinkAdd', 50, 5);
+        add_action('before_delete_post', 'SucuriScanHook::hookPostBeforeDelete', 50, 5);
+        add_action('create_category', 'SucuriScanHook::hookCategoryCreate', 50, 5);
+        add_action('deactivated_plugin', 'SucuriScanHook::hookPluginDeactivate', 50, 2);
+        add_action('delete_post', 'SucuriScanHook::hookPostDelete', 50, 5);
+        add_action('delete_user', 'SucuriScanHook::hookUserDelete', 50, 5);
+        add_action('edit_link', 'SucuriScanHook::hookLinkEdit', 50, 5);
         add_action('login_form_resetpass', 'SucuriScanHook::hookLoginFormResetpass', 50, 5);
         add_action('publish_page', 'SucuriScanHook::hookPublishPage', 50, 5);
         add_action('publish_phone', 'SucuriScanHook::hookPublishPhone', 50, 5);
         add_action('publish_post', 'SucuriScanHook::hookPublishPost', 50, 5);
         add_action('retrieve_password', 'SucuriScanHook::hookRetrievePassword', 50, 5);
-        add_action('switch_theme', 'SucuriScanHook::hookSwitchTheme', 50, 5);
-        add_action('transition_post_status', 'SucuriScanHook::hookTransitionPostStatus', 50, 3);
+        add_action('switch_theme', 'SucuriScanHook::hookThemeSwitch', 50, 5);
+        add_action('transition_post_status', 'SucuriScanHook::hookPostStatus', 50, 3);
         add_action('user_register', 'SucuriScanHook::hookUserRegister', 50, 5);
-        add_action('wp_insert_comment', 'SucuriScanHook::hookWPInsertComment', 50, 5);
-        add_action('wp_login', 'SucuriScanHook::hookWPLogin', 50, 5);
-        add_action('wp_login_failed', 'SucuriScanHook::hookWPLoginFailed', 50, 5);
-        add_action('wp_trash_post', 'SucuriScanHook::hookWPTrashPost', 50, 5);
-        add_action('xmlrpc_publish_post', 'SucuriScanHook::hookXMLRPCPublishPost', 50, 5);
+        add_action('wp_insert_comment', 'SucuriScanHook::hookCommentInsert', 50, 5);
+        add_action('wp_login', 'SucuriScanHook::hookLoginSuccess', 50, 5);
+        add_action('wp_login_failed', 'SucuriScanHook::hookLoginFailure', 50, 5);
+        add_action('wp_trash_post', 'SucuriScanHook::hookPostTrash', 50, 5);
+        add_action('xmlrpc_publish_post', 'SucuriScanHook::hookPublishPostXMLRPC', 50, 5);
 
         if (SucuriScan::runAdminInit()) {
-            add_action('admin_init', 'SucuriScanHook::hookUndefinedActions');
+            add_action('admin_init', 'SucuriScanHook::hookCoreUpdate');
+            add_action('admin_init', 'SucuriScanHook::hookOptionsManagement');
+            add_action('admin_init', 'SucuriScanHook::hookPluginDelete');
+            add_action('admin_init', 'SucuriScanHook::hookPluginEditor');
+            add_action('admin_init', 'SucuriScanHook::hookPluginInstall');
+            add_action('admin_init', 'SucuriScanHook::hookPluginUpdate');
+            add_action('admin_init', 'SucuriScanHook::hookThemeDelete');
+            add_action('admin_init', 'SucuriScanHook::hookThemeEditor');
+            add_action('admin_init', 'SucuriScanHook::hookThemeInstall');
+            add_action('admin_init', 'SucuriScanHook::hookThemeUpdate');
+            add_action('admin_init', 'SucuriScanHook::hookWidgetAdd');
+            add_action('admin_init', 'SucuriScanHook::hookWidgetDelete');
         }
-
-        add_action('login_form', 'SucuriScanHook::hookUndefinedActions');
     } else {
         SucuriScanInterface::error('Function call interceptors are not working properly.');
     }
