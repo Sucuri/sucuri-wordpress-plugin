@@ -208,27 +208,11 @@ class SucuriScanInterface
          * security related newsletter where they can learn about better security
          * practices and get alerts from public vulnerabilities disclosures.
          *
-         * The plugin will set a hidden (non-modifiable) option in the settings
-         * file to let it know that we already sent this email. In most cases this
-         * will be enough to avoid unnecessary spam, but if the website owner
-         * decides to reset the plugin settings, or for some reason, the settings
-         * file is not writable.
-         *
          * @date Featured added at - May 01, 2017
          */
-        if (SucuriScanOption::getOption(':newsletter_invitation') !== 'sent') {
-            SucuriScanMail::sendMail(
-                SucuriScan::getSiteEmail(),
-                'Newsletter Invitation',
-                SucuriScanTemplate::getSection('notification-newsletter'),
-                array(
-                    'Force' => true,
-                    'ForceHTML' => true,
-                    'UseRawHTML' => true,
-                )
-            );
-            SucuriScanOption::updateOption(':newsletter_invitation', 'sent');
-        }
+        self::info('Do you want to get vulnerability disclosures? Subscribe to '
+        . 'our newsletter <a href="http://sucuri.hs-sites.com/subscribe-to-secu'
+        . 'rity" target="_blank">here</a>');
 
         /* update the version number in the plugin settings. */
         SucuriScanOption::updateOption(':plugin_version', SUCURISCAN_VERSION);
