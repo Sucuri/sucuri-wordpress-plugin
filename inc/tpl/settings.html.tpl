@@ -36,8 +36,6 @@
         <div id="sucuriscan-tabs-scanner">
             %%%SUCURI.Settings.Scanner.Options%%%
 
-            %%%SUCURI.Settings.Scanner.SiteCheckTimeout%%%
-
             %%%SUCURI.Settings.Scanner.IntegrityDiffUtility%%%
 
             %%%SUCURI.Settings.Scanner.IntegrityLanguage%%%

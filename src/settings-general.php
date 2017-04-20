@@ -659,7 +659,6 @@ function sucuriscan_settings_general_importexport($nonce)
         ':scan_frequency',
         ':selfhosting_fpath',
         ':selfhosting_monitor',
-        ':sitecheck_timeout',
         ':use_wpmail',
     );
 

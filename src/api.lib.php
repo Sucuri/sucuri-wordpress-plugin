@@ -1283,7 +1283,6 @@ class SucuriScanAPI extends SucuriScanOption
         }
 
         $params = array();
-        $timeout = (int) SucuriScanOption::getOption(':sitecheck_timeout');
         $params['scan'] = $domain;
         $params['fromwp'] = 2;
         $params['json'] = 1;
@@ -1293,17 +1292,9 @@ class SucuriScanAPI extends SucuriScanOption
             $params['clear'] = 1;
         }
 
-        $response = self::apiCall(
-            'https://sitecheck.sucuri.net/',
-            'GET',
-            $params,
-            array(
-                'assoc' => true,
-                'timeout' => $timeout,
-            )
-        );
+        $args = array('assoc' => true, 'timeout' => 60);
 
-        return $response;
+        return self::apiCall('https://sitecheck.sucuri.net/', 'GET', $params, $args);
     }
 
     /**
