@@ -26,7 +26,7 @@ class SucuriScanRequest extends SucuriScan
      * @param array $list The array where the specified key will be searched.
      * @param string $key Name of the variable contained in _POST.
      * @param string $pattern Optional pattern to match allowed values.
-     * @return array|string Value from the global _GET or _POST variable.
+     * @return array|string|bool Value from the global _GET or _POST variable.
      */
     public static function request($list = array(), $key = '', $pattern = '')
     {
@@ -70,7 +70,7 @@ class SucuriScanRequest extends SucuriScan
             }
         }
 
-        return '' /* empty value */;
+        return false;
     }
 
     /**
