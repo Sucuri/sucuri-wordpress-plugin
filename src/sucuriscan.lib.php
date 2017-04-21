@@ -174,6 +174,7 @@ class SucuriScan
      * differs from what other file systems use. To keep consistency during the
      * unit-tests we have decided to replace any non forward slash with it.
      *
+     * @param string $path Directory path to fix.
      * @return string Fixed file path.
      */
     public static function fixPath($path = '')
@@ -467,6 +468,7 @@ class SucuriScan
     /**
      * Get the clean version of the current domain.
      *
+     * @param bool $return_tld Returns the top-level domain instead.
      * @return string The domain of the current site.
      */
     public static function getDomain($return_tld = false)
@@ -728,17 +730,6 @@ class SucuriScan
         );
 
         return $time_ago;
-    }
-
-    /**
-     * Check whether a variable contains a serialized data or not.
-     *
-     * @param string $data The data that will be checked.
-     * @return bool TRUE if the data was serialized, FALSE otherwise.
-     */
-    public static function isSerialized($data = '')
-    {
-        return ( is_string($data) && preg_match('/^(a|O):[0-9]+:.+/', $data) );
     }
 
     /**

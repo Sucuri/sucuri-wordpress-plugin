@@ -1298,49 +1298,6 @@ class SucuriScanAPI extends SucuriScanOption
     }
 
     /**
-     * Extract detailed information from a SiteCheck malware payload.
-     *
-     * @param array $malware Array with two entries with basic malware information.
-     * @return array|bool Detailed information of the malware found by SiteCheck.
-     */
-    public static function getSitecheckMalware($malware = array())
-    {
-        if (count($malware) >= 2) {
-            $data_set = array(
-                'alert_message' => '',
-                'infected_url' => '',
-                'malware_type' => '',
-                'malware_docs' => '',
-                'malware_payload' => '',
-            );
-
-            // Extract the information from the alert message.
-            $alert_parts = explode(':', $malware[0], 2);
-
-            if (isset($alert_parts[1])) {
-                $data_set['alert_message'] = $alert_parts[0];
-                $data_set['infected_url'] = trim($alert_parts[1]);
-            }
-
-            // Extract the information from the malware message.
-            $malware_parts = explode("\n", $malware[1]);
-
-            if (isset($malware_parts[1])) {
-                if (@preg_match('/(.+)\. Details: (.+)/', $malware_parts[0], $match)) {
-                    $data_set['malware_type'] = $match[1];
-                    $data_set['malware_docs'] = $match[2];
-                }
-
-                $data_set['malware_payload'] = trim($malware_parts[1]);
-            }
-
-            return $data_set;
-        }
-
-        return false;
-    }
-
-    /**
      * Retrieve a new set of keys for the WordPress configuration file using the
      * official API provided by WordPress itself.
      *

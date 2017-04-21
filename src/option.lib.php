@@ -365,33 +365,6 @@ class SucuriScanOption extends SucuriScanRequest
     }
 
     /**
-     * Delete all the plugin options from the database.
-     */
-    public static function deletePluginOptions()
-    {
-        global $wpdb;
-
-        $options = $wpdb->get_results(
-            "SELECT * FROM {$wpdb->options}
-            WHERE option_name LIKE 'sucuriscan%'
-            ORDER BY option_id ASC"
-        );
-
-        foreach ($options as $option) {
-            delete_option($option->option_name);
-        }
-
-        // Merge with the default options to ensure full cleanup.
-        $default = self::getDefaultOptionNames();
-
-        foreach ($default as $option) {
-            if (is_string($option)) {
-                self::deleteOption($option);
-            }
-        }
-    }
-
-    /**
      * Retrieve all the options stored by Wordpress in the database. The options
      * containing the word "transient" are excluded from the results, this method
      * compatible with multisite instances.
