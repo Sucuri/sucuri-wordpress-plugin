@@ -241,17 +241,29 @@ require_once('src/globals.php');
 
 function sucuriscan_deactivate()
 {
-    /* Remove scheduled task from the system */
+    global $wpdb;
+
+    if ($wpdb) {
+        /* Delete all the possible plugin related options from the database */
+        $sql = "SELECT * FROM {$wpdb->options} WHERE option_name LIKE 'sucuriscan%'";
+        $options = $wpdb->get_results($sql);
+        foreach ($options as $option) {
+            delete_site_option($option->option_name);
+            delete_option($option->option_name);
+        }
+    }
+
+    /* Delete scheduled task from the system */
     wp_clear_scheduled_hook('sucuriscan_scheduled_scan');
 
-    /* Remove settings from the database if they exist */
+    /* Delete settings from the database if they exist */
     $options = SucuriScanOption::getDefaultOptionNames();
     foreach ($options as $option_name) {
         delete_site_option($option_name);
         delete_option($option_name);
     }
 
-    /* Remove hardening in standard directories */
+    /* Delete hardening in standard directories */
     SucuriScanHardening::dewhitelist('ms-files.php', 'wp-includes');
     SucuriScanHardening::dewhitelist('wp-tinymce.php', 'wp-includes');
     SucuriScanHardening::unhardenDirectory(WP_CONTENT_DIR);
@@ -259,7 +271,7 @@ function sucuriscan_deactivate()
     SucuriScanHardening::unhardenDirectory(ABSPATH . '/wp-includes');
     SucuriScanHardening::unhardenDirectory(ABSPATH . '/wp-admin');
 
-    /* Remove cache files from disk */
+    /* Delete cache files from disk */
     $fifo = new SucuriScanFileInfo();
     $fifo->ignore_files = false;
     $fifo->ignore_directories = false;
