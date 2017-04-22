@@ -49,7 +49,7 @@ class SucuriScanTemplate extends SucuriScanRequest
             $with_escape = '%%' . $tplkey . '%%';
             $wout_escape = '%%%' . $tplkey . '%%%';
 
-            if (!is_string($kvalue)) {
+            if (!is_string($kvalue) && !is_numeric($kvalue)) {
                 $kvalue = ''; /* empty */
             }
 

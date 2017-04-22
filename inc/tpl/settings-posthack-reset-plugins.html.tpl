@@ -16,7 +16,7 @@
 
         $('#sucuriscan_reset_plugins').on('click', function (event) {
             event.preventDefault();
-            $('.check-column :checkbox:checked').each(function (key, el) {
+            $('.sucuriscan-reset-plugins-table .check-column :checkbox:checked').each(function (key, el) {
                 var pluginName = $(el).val();
                 var unique = $(el).attr('data-unique');
 

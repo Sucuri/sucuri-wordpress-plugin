@@ -27,7 +27,7 @@ function sucuriscan_page()
 
     if (!SucuriScanFileInfo::isSplAvailable()) {
         /* display a warning when system dependencies are not met */
-        SucuriScanInterface::error('The plugin requires PHP 5 >= 5.3.0 âM-^@M-^T OR âM-^@M-^T PHP 7');
+        SucuriScanInterface::error('The plugin requires PHP 5 >= 5.3.0 - OR - PHP 7');
     }
 
     $params['Integrity'] = SucuriScanIntegrity::pageIntegrity();

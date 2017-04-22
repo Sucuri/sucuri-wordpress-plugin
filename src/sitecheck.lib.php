@@ -464,7 +464,7 @@ class SucuriScanSiteCheck
      * @param array $malware Array with two entries with basic malware information.
      * @return array Detailed information of the malware found by SiteCheck.
      */
-    private static function malwareDetails($malware = array())
+    public static function malwareDetails($malware = array())
     {
         if (count($malware) < 2) {
             return array(/* empty details */);
@@ -483,7 +483,7 @@ class SucuriScanSiteCheck
 
         if (isset($alert_parts[1])) {
             $data['alert_message'] = $alert_parts[0];
-            $data['infected_url'] = $alert_parts[1];
+            $data['infected_url'] = trim($alert_parts[1]);
         }
 
         // Extract the information from the malware message.
