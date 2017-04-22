@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Code related to the settings-scanner.php interface.
+ *
+ * @package Sucuri Security
+ * @subpackage settings-scanner.php
+ * @copyright Since 2010 Sucuri Inc.
+ */
+
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     if (!headers_sent()) {
         /* Report invalid access if possible. */
@@ -8,6 +16,16 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     exit(1);
 }
 
+/**
+ * Returns the HTML for the project scanner options.
+ *
+ * This method renders a section in the settings page that allows the website
+ * owner to configure the functionality of the main file system scanner. This
+ * includes the frequency in which such scanner will run and information about
+ * the availability of the required dependencies.
+ *
+ * @return string HTML for the project scanner options.
+ */
 function sucuriscan_settings_scanner_options()
 {
     global $sucuriscan_schedule_allowed;
@@ -56,6 +74,11 @@ function sucuriscan_settings_scanner_options()
     return SucuriScanTemplate::getSection('settings-scanner-options', $params);
 }
 
+/**
+ * Returns a list of directories in the website.
+ *
+ * @return string List of directories in the website.
+ */
 function sucuriscan_settings_ignorescan_ajax()
 {
     if (SucuriScanRequest::post('form_action') == 'get_ignored_files') {
@@ -97,6 +120,17 @@ function sucuriscan_settings_ignorescan_ajax()
     }
 }
 
+/**
+ * Returns the HTML for the folder scanner skipper.
+ *
+ * If the website has too many files it would be wise to force the plugin to
+ * ignore some directories that are not relevant for the scanner. This includes
+ * directories with media files like images, audio, videos, etc and directories
+ * used to store cache data.
+ *
+ * @param bool $nonce True if the CSRF protection worked, false otherwise.
+ * @return string HTML for the folder scanner skipper.
+ */
 function sucuriscan_settings_scanner_ignore_folders($nonce)
 {
     $params = array();

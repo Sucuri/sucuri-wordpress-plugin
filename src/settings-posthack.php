@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Code related to the settings-posthack.php interface.
+ *
+ * @package Sucuri Security
+ * @subpackage settings-posthack.php
+ * @copyright Since 2010 Sucuri Inc.
+ */
+
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     if (!headers_sent()) {
         /* Report invalid access if possible. */
@@ -8,6 +16,13 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     exit(1);
 }
 
+/**
+ * Tools to execute after a hack attempt.
+ *
+ * The plugin allows to execute some tools that will clear up the site after a
+ * suspicious activity. This includes the ability to reset the secret security
+ * keys, the password for each user account, and the installed plugins.
+ */
 class SucuriScanPosthackPage extends SucuriScan
 {
     /**
@@ -306,6 +321,7 @@ class SucuriScanPosthackPage extends SucuriScan
     /**
      * Retrieve the information for the available updates.
      *
+     * @param bool $send_email Sends the available updates via email.
      * @return string|bool HTML code for a table with the updates information.
      */
     public static function availableUpdatesContent($send_email = false)

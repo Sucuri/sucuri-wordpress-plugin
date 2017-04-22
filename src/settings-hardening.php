@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Code related to the settings-hardening.php interface.
+ *
+ * @package Sucuri Security
+ * @subpackage settings-hardening.php
+ * @copyright Since 2010 Sucuri Inc.
+ */
+
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     if (!headers_sent()) {
         /* Report invalid access if possible. */
@@ -75,7 +83,7 @@ class SucuriScanHardeningPage extends SucuriScan
 
         if (self::processRequest(__FUNCTION__)) {
             SucuriScanInterface::error('The firewall is a premium service that
-            you need purchase at â€” <a href="https://goo.gl/qfNkMq" target="_blank">
+            you need purchase at âM-^@M-^T <a href="https://goo.gl/qfNkMq" target="_blank">
             Sucuri Firewall</a>');
         }
 
@@ -155,7 +163,7 @@ class SucuriScanHardeningPage extends SucuriScan
 
         if (self::processRequest(__FUNCTION__)) {
             SucuriScanInterface::error('Ask your hosting provider to install an
-            updated version of PHP â€” <a href="http://php.net/supported-versions.php"
+            updated version of PHP âM-^@M-^T <a href="http://php.net/supported-versions.php"
             target="_blank">List of PHP Supported Versions</a>');
         }
 
@@ -213,7 +221,7 @@ class SucuriScanHardeningPage extends SucuriScan
         if (self::processRequest(__FUNCTION__)) {
             SucuriScanInterface::error('Read the official WordPress guidelines
             to learn how to restrict access to PHP files in sensitive directories
-            â€” <a href="https://codex.wordpress.org/Nginx#Global_restrictions_file"
+            âM-^@M-^T <a href="https://codex.wordpress.org/Nginx#Global_restrictions_file"
             target="_blank">Nginx Global Restrictions For WordPress</a>');
         }
 

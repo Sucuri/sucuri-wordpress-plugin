@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Code related to the settings-general.php interface.
+ *
+ * @package Sucuri Security
+ * @subpackage settings-general.php
+ * @copyright Since 2010 Sucuri Inc.
+ */
+
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     if (!headers_sent()) {
         /* Report invalid access if possible. */
@@ -228,6 +236,15 @@ function sucuriscan_settings_general_datastorage()
     return SucuriScanTemplate::getSection('settings-general-datastorage', $params);
 }
 
+/**
+ * Returns the path to the local event monitoring file.
+ *
+ * The website owner can configure the plugin to send a copy of the security
+ * events to a local file that can be integrated with other monitoring systems
+ * like OSSEC, OpenVAS, NewRelic and similar.
+ *
+ * @return string|bool Path to the log file, false if disabled.
+ */
 function sucuriscan_selfhosting_fpath()
 {
     $monitor = SucuriScanOption::getOption(':selfhosting_monitor');

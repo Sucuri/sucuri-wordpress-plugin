@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Code related to the request.lib.php interface.
+ *
+ * @package Sucuri Security
+ * @subpackage request.lib.php
+ * @copyright Since 2010 Sucuri Inc.
+ */
+
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     if (!headers_sent()) {
         /* Report invalid access if possible. */

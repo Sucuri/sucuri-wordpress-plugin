@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Code related to the pagehandler.php interface.
+ *
+ * @package Sucuri Security
+ * @subpackage pagehandler.php
+ * @copyright Since 2010 Sucuri Inc.
+ */
+
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     if (!headers_sent()) {
         /* Report invalid access if possible. */
@@ -19,7 +27,7 @@ function sucuriscan_page()
 
     if (!SucuriScanFileInfo::isSplAvailable()) {
         /* display a warning when system dependencies are not met */
-        SucuriScanInterface::error('The plugin requires PHP 5 >= 5.3.0 ‚Äî OR ‚Äî PHP 7');
+        SucuriScanInterface::error('The plugin requires PHP 5 >= 5.3.0 ‚M-^@M-^T OR ‚M-^@M-^T PHP 7');
     }
 
     $params['Integrity'] = SucuriScanIntegrity::pageIntegrity();

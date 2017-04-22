@@ -3,9 +3,9 @@
 Plugin Name: Sucuri Security - Auditing, Malware Scanner and Hardening
 Plugin URI: https://wordpress.sucuri.net/
 Description: The <a href="https://sucuri.net/" target="_blank">Sucuri</a> plugin provides the website owner the best Activity Auditing, SiteCheck Remote Malware Scanning, Effective Security Hardening and Post-Hack features. SiteCheck will check for malware, spam, blacklisting and other security issues like .htaccess redirects, hidden eval code, etc. The best thing about it is it's completely free.
-Author: Sucuri, INC
+Author: Sucuri Inc.
+Author URI: https://sucuri.net/
 Version: 1.8.3
-Author URI: https://sucuri.net
 */
 
 
@@ -19,11 +19,12 @@ Author URI: https://sucuri.net
  * prevent unwanted access to code with unmet dependencies.
  *
  * @package   Sucuri Security
- * @author    Daniel Cid   <dcid@sucuri.net>
- * @copyright Since 2010-2015 Sucuri Inc.
- * @license   Released under the GPL - see LICENSE file for details.
- * @link      https://wordpress.sucuri.net/
+ * @author    Daniel Cid <dcid@sucuri.net>
+ * @license   Released under the GPL.
+ * @copyright Since 2010 Sucuri Inc.
  * @since     File available since Release 0.1
+ * @link      https://wordpress.org/plugins/sucuri-scanner/
+ * @link      https://wordpress.sucuri.net/
  */
 define('SUCURISCAN_INIT', true);
 
@@ -239,6 +240,16 @@ require_once('src/settings-webinfo.php');
 /* Load global variables and triggers */
 require_once('src/globals.php');
 
+/**
+ * Uninstalls the plugin, its settings and reverts the hardening.
+ *
+ * When the user decides to deactivate and/or uninstall the plugin it will call
+ * this method to delete all traces of data inserted into the database by older
+ * versions of the code, will remove the scheduled task, will delte the options
+ * inserted into the sub-database associated to a multi-site installation, will
+ * revert the hardening applied to the core directories, and will delete all the
+ * security logs, cache and additional data stored in the storage directory.
+ */
 function sucuriscan_deactivate()
 {
     global $wpdb;

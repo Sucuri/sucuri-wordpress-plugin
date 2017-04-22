@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Code related to the settings-integrity.php interface.
+ *
+ * @package Sucuri Security
+ * @subpackage settings-integrity.php
+ * @copyright Since 2010 Sucuri Inc.
+ */
+
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     if (!headers_sent()) {
         /* Report invalid access if possible. */
@@ -8,8 +16,23 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     exit(1);
 }
 
+/**
+ * Settings for the WordPress integrity scanner.
+ *
+ * Generates the HTML code to display a list of options in the settings page to
+ * allow the website owner to configure the functionality of the WordPress core
+ * integrity scanner and the optional Unix diff utility. This also includes some
+ * options to configure the website installation language and the false/positive
+ * cache file.
+ */
 class SucuriScanSettingsIntegrity extends SucuriScanSettings
 {
+    /**
+     * Configures the diffUtility for the integrity scanner.
+     *
+     * @param bool $nonce True if the CSRF protection worked, false otherwise.
+     * @return string HTML code to render the configuration panel.
+     */
     public static function diffUtility($nonce)
     {
         $params = array();
@@ -46,6 +69,12 @@ class SucuriScanSettingsIntegrity extends SucuriScanSettings
         return SucuriScanTemplate::getSection('settings-scanner-integrity-diff-utility', $params);
     }
 
+    /**
+     * Configures the language for the integrity scanner.
+     *
+     * @param bool $nonce True if the CSRF protection worked, false otherwise.
+     * @return string HTML code to render the configuration panel.
+     */
     public static function language($nonce)
     {
         $params = array();
@@ -74,6 +103,12 @@ class SucuriScanSettingsIntegrity extends SucuriScanSettings
         return SucuriScanTemplate::getSection('settings-scanner-integrity-language', $params);
     }
 
+    /**
+     * Configures the cache for the integrity scanner.
+     *
+     * @param bool $nonce True if the CSRF protection worked, false otherwise.
+     * @return string HTML code to render the configuration panel.
+     */
     public static function cache($nonce)
     {
         $params = array();
