@@ -30,22 +30,10 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
 class SucuriScanAPI extends SucuriScanOption
 {
     /**
-     * Check whether the SSL certificates will be verified while executing a HTTP
-     * request or not. This is only for customization of the administrator, in fact
-     * not verifying the SSL certificates can lead to a "Man in the Middle" attack.
-     *
-     * @return boolean Whether the SSL certs will be verified while sending a request.
-     */
-    public static function verifySslCert()
-    {
-        return (self::get_option(':verify_ssl_cert') === 'true');
-    }
-
-    /**
      * Seconds before consider a HTTP request as timeout.
      *
      * As for the 01/Jan/2016 if the number of seconds before a timeout is greater
-     * than sixty (which is one minute) the function will reset the option to its
+     * than sixty (which is one minute) the method will reset the option to its
      * default value to keep the latency of the HTTP requests in a minimum to
      * minimize the interruptions in the admins workflow. The normal connection
      * timeout should be in the range of ten seconds, or fifteen if the DNS lookups
@@ -55,10 +43,10 @@ class SucuriScanAPI extends SucuriScanOption
      */
     public static function requestTimeout()
     {
-        $timeout = (int) self::get_option(':request_timeout');
+        $timeout = (int) self::getOption(':request_timeout');
 
         if ($timeout > SUCURISCAN_MAX_REQUEST_TIMEOUT) {
-            self::delete_option(':request_timeout');
+            self::deleteOption(':request_timeout');
 
             return self::requestTimeout();
         }
@@ -75,13 +63,13 @@ class SucuriScanAPI extends SucuriScanOption
     {
         return sprintf(
             'WordPress/%s; %s',
-            self::site_version(),
-            self::get_domain()
+            self::siteVersion(),
+            self::getDomain()
         );
     }
 
     /**
-     * Alternative to the built-in PHP function http_build_query.
+     * Alternative to the built-in PHP method http_build_query.
      *
      * Some PHP installations with different encoding or with different language
      * (German for example) might produce an unwanted behavior when building an
@@ -120,149 +108,6 @@ class SucuriScanAPI extends SucuriScanOption
     }
 
     /**
-     * Assign the communication protocol.
-     *
-     * @see https://developer.wordpress.org/reference/functions/wp_http_supports/
-     * @see https://developer.wordpress.org/reference/functions/set_url_scheme/
-     *
-     * @param  string $url      Valid URL with or without protocol
-     * @param  string $protocol Optional protocol, we will get it from the config.
-     * @return string           Full URL with the proper protocol.
-     */
-    public static function apiUrlProtocol($url = '', $protocol = false)
-    {
-        $pattern = 'sucuri://'; /* Placeholder for HTTP protocol. */
-
-        if (strpos($url, $pattern) === 0) {
-            if (!$protocol) {
-                $protocol = SucuriScanOption::get_option(':api_protocol');
-            }
-
-            $protocol = ($protocol === 'https') ? 'https' : 'http';
-            $url = str_replace($pattern, '', $url);
-            $url = sprintf('%s://%s', $protocol, $url);
-        }
-
-        return $url;
-    }
-
-    /**
-     * Affected URLs by API protocol setting.
-     *
-     * These URLs are the ones that will be modified when the admin decides to
-     * enable or disable the API communication protocol. If this option is enabled
-     * these URLs will be queried using HTTPS and HTTP otherwise. Find an updated
-     * list of the affected URLs using the Grep command like this:
-     *
-     * Note: The string that identifies each URL is a descriptive unique string used
-     * to differentiate and easily select the URLs from the list. Make sure that
-     * they are different among them all.
-     *
-     * @see    grep -n 'sucuri://' sucuri.php
-     * @return array API URLs affected by the HTTP protocol setting.
-     */
-    public static function ambiguousApiUrls()
-    {
-        return array(
-            'sucuriwp' => 'sucuri://wordpress.sucuri.net/api/',
-            'cproxywp' => 'sucuri://waf.sucuri.net/api',
-            'sitechck' => 'sucuri://sitecheck.sucuri.net/',
-            'wpssalts' => 'sucuri://api.wordpress.org/secret-key/1.1/salt/',
-            'wphashes' => 'sucuri://api.wordpress.org/core/checksums/1.0/',
-            'wpplugin' => 'sucuri://wordpress.org/plugins/PLUGIN/',
-            'plugindt' => 'sucuri://api.wordpress.org/plugins/info/1.0/PLUGIN.json',
-            'wpvfpath' => 'sucuri://core.svn.wordpress.org/tags/VERSION/FILEPATH',
-        );
-    }
-
-    /**
-     * Send test HTTP request to the API URLs.
-     *
-     * @param  string $unique Unique API URL selector.
-     * @return object         WordPress HTTP request response.
-     */
-    public static function debugApiCall($unique = null)
-    {
-        $urls = self::ambiguousApiUrls();
-
-        if (array_key_exists($unique, $urls)) {
-            $params = array();
-            $url = self::apiUrlProtocol($urls[$unique]);
-
-            if ($unique === 'sitechck') {
-                $response = self::getSitecheckResults('sucuri.net', false);
-            } else {
-                if ($unique === 'cproxywp') {
-                    $params['v2'] = 'true';
-                    $params['a'] = 'test';
-                } elseif ($unique === 'wpplugin') {
-                    $url = str_replace('/PLUGIN/', '/sucuri-scanner/', $url);
-                } elseif ($unique === 'plugindt') {
-                    $url = str_replace('/PLUGIN.json', '/sucuri-scanner.json', $url);
-                } elseif ($unique === 'wpvfpath') {
-                    $fpath = sprintf('/%s/wp-load.php', SucuriScan::site_version());
-                    $url = str_replace('/VERSION/FILEPATH', $fpath, $url);
-                }
-
-                $response = self::apiCall($url, 'GET', $params);
-            }
-
-            if ($response) {
-                if ($unique === 'sucuriwp'
-                    && array_key_exists('status', $response)
-                    && array_key_exists('action', $response)
-                    && array_key_exists('output', $response)
-                    && is_numeric($response['status'])
-                ) {
-                    return array('unique' => $unique, 'output' => 'OK');
-                } elseif ($unique === 'cproxywp'
-                    && array_key_exists('status', $response)
-                    && array_key_exists('action', $response)
-                    && array_key_exists('output', $response)
-                    && is_numeric($response['status'])
-                ) {
-                    return array('unique' => $unique, 'output' => 'OK');
-                } elseif ($unique === 'sitechck'
-                    && array_key_exists('SCAN', $response)
-                    && array_key_exists('SYSTEM', $response)
-                    && array_key_exists('BLACKLIST', $response)
-                ) {
-                    return array('unique' => $unique, 'output' => 'OK');
-                } elseif ($unique === 'wpssalts'
-                    && strpos($response, 'AUTH_KEY')
-                    && strpos($response, 'AUTH_SALT')
-                    && strpos($response, 'SECURE_AUTH_KEY')
-                ) {
-                    return array('unique' => $unique, 'output' => 'OK');
-                } elseif ($unique === 'wphashes'
-                    && is_array($response)
-                    && array_key_exists('checksums', $response)
-                    && is_array($response['checksums'])
-                ) {
-                    return array('unique' => $unique, 'output' => 'OK');
-                } elseif ($unique === 'wpplugin'
-                    && strpos($response, '<title>Sucuri Security')
-                    && strpos($response, 'wordpress.org/plugin/sucuri-scanner')
-                ) {
-                    return array('unique' => $unique, 'output' => 'OK');
-                } elseif ($unique === 'plugindt'
-                    && array_key_exists('slug', $response)
-                    && $response['slug'] === 'sucuri-scanner'
-                ) {
-                    return array('unique' => $unique, 'output' => 'OK');
-                } elseif ($unique === 'wpvfpath'
-                    && strpos($response, 'ABSPATH')
-                    && strpos($response, 'wp_die')
-                ) {
-                    return array('unique' => $unique, 'output' => 'OK');
-                }
-            }
-        }
-
-        return array('unique' => $unique, 'output' => 'ERROR');
-    }
-
-    /**
      * Communicates with a remote URL and retrieves its content.
      *
      * Curl is a reflective object-oriented programming language for interactive
@@ -271,10 +116,10 @@ class SucuriScanAPI extends SucuriScanOption
      * in simple documents without needing to switch between programming
      * languages or development platforms.
      *
-     * Using Curl instead of the custom WordPress HTTP functions allow us to
+     * Using Curl instead of the custom WordPress HTTP methods allow us to
      * control the functionality at 100% without expecting breaking changes in
      * newer versions of the code. For exampe, as of WordPress 4.6.x the result
-     * of executing the functions prefixed with "wp_remote_" returns an object
+     * of executing the methods prefixed with "wp_remote_" returns an object
      * WP_HTTP_Requests_Response that is not compatible with older implementations
      * of the plugin.
      *
@@ -289,11 +134,22 @@ class SucuriScanAPI extends SucuriScanOption
     public static function apiCall($url = '', $method = 'GET', $params = array(), $args = array())
     {
         if ($url && ($method === 'GET' || $method === 'POST')) {
-            $handler = SucuriScanOption::get_option(':api_handler');
+            $handler = SucuriScanOption::getOption(':api_handler');
+
+            if (getenv('SUCURISCAN_API_DEBUG') !== false) {
+                printf(
+                    "curl -X%s \"%s?%s\"\n",
+                    $method,
+                    $url, /* request target */
+                    self::buildQuery($params)
+                );
+            }
 
             if (!function_exists('curl_init') || $handler === 'socket') {
+                $params['socket'] = 'true';
                 $output = self::apiCallSocket($url, $method, $params, $args);
             } else {
+                $params['curl'] = 'true';
                 $output = self::apiCallCurl($url, $method, $params, $args);
             }
 
@@ -311,181 +167,206 @@ class SucuriScanAPI extends SucuriScanOption
 
     private static function apiCallCurl($url = '', $method = 'GET', $params = array(), $args = array())
     {
-        if ($url
-            && function_exists('curl_init')
-            && ($method === 'GET' || $method === 'POST')
-        ) {
-            $curl = curl_init();
-            $url = self::apiUrlProtocol($url);
-            $timeout = self::requestTimeout();
-
-            if (is_array($args) && isset($args['timeout'])) {
-                $timeout = $args['timeout'];
-            }
-
-            // Add random request parameter to avoid request reset.
-            if (!empty($params) && !array_key_exists('time', $params)) {
-                $params['time'] = time();
-            }
-
-            if ($method === 'GET'
-                && is_array($params)
-                && !empty($params)
-            ) {
-                $url .= '?' . self::buildQuery($params);
-            }
-
-            curl_setopt($curl, CURLOPT_URL, $url);
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($curl, CURLOPT_USERAGENT, self::userAgent());
-            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
-            curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $timeout);
-            curl_setopt($curl, CURLOPT_TIMEOUT, $timeout * 2);
-
-            if (self::canCurlFollowRedirection()) {
-                curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
-                curl_setopt($curl, CURLOPT_MAXREDIRS, 2);
-            }
-
-            if ($method === 'POST') {
-                curl_setopt($curl, CURLOPT_POST, true);
-                curl_setopt($curl, CURLOPT_POSTFIELDS, self::buildQuery($params));
-            }
-
-            if (self::verifySslCert()) {
-                curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
-                curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
-            } else {
-                curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-                curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-            }
-
-            $output = curl_exec($curl);
-            $header = curl_getinfo($curl);
-            $errors = curl_error($curl);
-
-            curl_close($curl);
-
-            if (array_key_exists('http_code', $header)
-                && $header['http_code'] === 200
-                && !empty($output)
-            ) {
-                return $output;
-            }
-
-            SucuriScan::throwException($errors);
+        if (!$url) {
+            SucuriScan::throwException('URL is invalid');
+            return false;
         }
 
-        return false;
+        if (!function_exists('curl_init')) {
+            SucuriScan::throwException('CURL is not available');
+            return false;
+        }
+
+        if ($method !== 'GET' && $method !== 'POST') {
+            SucuriScan::throwException('Only GET and POST methods allowed');
+            return false;
+        }
+
+        $curl = curl_init();
+        $timeout = self::requestTimeout();
+
+        if (is_array($args) && isset($args['timeout'])) {
+            $timeout = $args['timeout'];
+        }
+
+        // Add random request parameter to avoid request reset.
+        if (!empty($params) && !array_key_exists('time', $params)) {
+            $params['time'] = time();
+        }
+
+        if ($method === 'GET'
+            && is_array($params)
+            && !empty($params)
+        ) {
+            $url .= '?' . self::buildQuery($params);
+        }
+
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_USERAGENT, self::userAgent());
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $timeout);
+        curl_setopt($curl, CURLOPT_TIMEOUT, $timeout * 2);
+
+        if (self::canCurlFollowRedirection()) {
+            curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($curl, CURLOPT_MAXREDIRS, 2);
+        }
+
+        if ($method === 'POST') {
+            curl_setopt($curl, CURLOPT_POST, true);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, self::buildQuery($params));
+        }
+
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
+
+        $output = curl_exec($curl);
+        $errors = curl_error($curl);
+
+        curl_close($curl);
+
+        if (empty($output) && !empty($errors)) {
+            /* report errors to the unit-tests */
+            SucuriScan::throwException($errors);
+            $output = $errors;
+        }
+
+        return $output;
     }
 
     private static function apiCallSocket($url = '', $method = 'GET', $params = array(), $args = array())
     {
-        if (function_exists('fsockopen')) {
-            $url = self::apiUrlProtocol($url);
-            $timeout = self::requestTimeout();
-
-            if (is_array($args) && isset($args['timeout'])) {
-                $timeout = $args['timeout'];
-            }
-
-            // Add random request parameter to avoid request reset.
-            if (!empty($params) && !array_key_exists('time', $params)) {
-                $params['time'] = time();
-            }
-
-            if ($method === 'GET'
-                && is_array($params)
-                && !empty($params)
-            ) {
-                $url .= '?' . self::buildQuery($params);
-            }
-
-            $url_parts = parse_url($url);
-
-            if (is_array($url_parts)
-                && array_key_exists('host', $url_parts)
-                && array_key_exists('scheme', $url_parts)
-            ) {
-                $host = $url_parts['host'];
-                $path = '/';
-                $port = 80;
-
-                if ($url_parts['scheme'] === 'https') {
-                    $host = sprintf('ssl://%s', $url_parts['host']);
-                    $port = 443;
-                }
-
-                if (array_key_exists('path', $url_parts)) {
-                    $path = $url_parts['path'];
-                }
-
-                if (array_key_exists('query', $url_parts)) {
-                    $path .= '?' . $url_parts['query'];
-                }
-
-                $socket = fsockopen($host, $port, $errno, $errstr, $timeout);
-
-                if ($socket) {
-                    $headers = '';
-                    $response = '';
-
-                    $out = sprintf("%s %s HTTP/1.1\r\n", $method, $path);
-                    $out .= "Accept: */*\r\n";
-                    $out .= sprintf("Host: %s\r\n", $url_parts['host']);
-                    $out .= sprintf("User-Agent: %s\r\n", self::userAgent());
-                    $out .= "Connection: Close\r\n";
-
-                    if ($method === 'POST') {
-                        $query = self::buildQuery($params);
-                        $out .= sprintf("Content-Length: %s\r\n", strlen($query));
-                        $out .= "Content-Type: application/x-www-form-urlencoded; charset=utf-8\r\n";
-                        $out .= "\r\n" . $query;
-                    }
-
-                    fwrite($socket, $out . "\r\n");
-
-                    while (strpos($headers, "\r\n\r\n") === false) {
-                        $headers .= fread($socket, 1);
-                    }
-
-                    $chunk = '';
-                    $segmented = false;
-
-                    while (!feof($socket)) {
-                        $byte = fread($socket, 1);
-
-                        if ($byte === "\r") { /* CR */
-                            fread($socket, 1); /* LF */
-
-                            if (strlen($chunk) <= 4) {
-                                /* Chunk size, ignore */
-                            } else {
-                                $segmented = true;
-                                $response .= $chunk;
-                            }
-
-                            /* Reset and continue */
-                            $chunk = '';
-                            continue;
-                        }
-
-                        $chunk .= $byte;
-                    }
-
-                    if ($segmented === false) {
-                        $response = $chunk;
-                    }
-
-                    fclose($socket);
-
-                    if (strpos($headers, '200 OK')) {
-                        return $response;
-                    }
-                }
-            }
+        if (!function_exists('fsockopen')) {
+            SucuriScan::throwException('fsockopen is not available');
+            return false;
         }
 
+        $timeout = self::requestTimeout();
+
+        if (is_array($args) && isset($args['timeout'])) {
+            $timeout = $args['timeout'];
+        }
+
+        // Add random request parameter to avoid request reset.
+        if (!empty($params) && !array_key_exists('time', $params)) {
+            $params['time'] = time();
+        }
+
+        if ($method === 'GET'
+            && is_array($params)
+            && !empty($params)
+        ) {
+            $url .= '?' . self::buildQuery($params);
+        }
+
+        $url_parts = parse_url($url);
+
+        if (!is_array($url_parts)
+            || !array_key_exists('host', $url_parts)
+            || !array_key_exists('scheme', $url_parts)
+        ) {
+            SucuriScan::throwException('URL is invalid; no host or scheme: ' . $url);
+            return false;
+        }
+
+        $host = $url_parts['host'];
+        $path = '/';
+        $port = 80;
+
+        if ($url_parts['scheme'] === 'https') {
+            $host = sprintf('ssl://%s', $url_parts['host']);
+            $port = 443;
+        }
+
+        if (array_key_exists('path', $url_parts)) {
+            $path = $url_parts['path'];
+        }
+
+        if (array_key_exists('query', $url_parts)) {
+            $path .= '?' . $url_parts['query'];
+        }
+
+        $socket = fsockopen($host, $port, $errno, $errstr, $timeout);
+
+        if (!$socket) {
+            SucuriScan::throwException('socket could not be opened');
+            return false;
+        }
+
+        $headers = '';
+        $response = '';
+
+        $out = sprintf("%s %s HTTP/1.1\r\n", $method, $path);
+        $out .= "Accept: */*\r\n";
+        $out .= sprintf("Host: %s\r\n", $url_parts['host']);
+        $out .= sprintf("User-Agent: %s\r\n", self::userAgent());
+        $out .= "Connection: Close\r\n";
+
+        if ($method === 'POST') {
+            $query = self::buildQuery($params);
+            $out .= sprintf("Content-Length: %s\r\n", strlen($query));
+            $out .= "Content-Type: application/x-www-form-urlencoded; charset=utf-8\r\n";
+            $out .= "\r\n" . $query;
+        }
+
+        fwrite($socket, $out . "\r\n");
+
+        while (strpos($headers, "\r\n\r\n") === false) {
+            $headers .= fread($socket, 1);
+        }
+
+        $chunk = '';
+        $segmented = false;
+
+        while (!feof($socket)) {
+            $byte = fread($socket, 1);
+
+            if ($byte === "\r") { /* CR */
+                fread($socket, 1); /* LF */
+
+                if (strlen($chunk) <= 4) {
+                    /* Chunk size, ignore */
+                } else {
+                    $segmented = true;
+                    $response .= $chunk;
+                }
+
+                /* Reset and continue */
+                $chunk = '';
+                continue;
+            }
+
+            $chunk .= $byte;
+        }
+
+        if ($segmented === false) {
+            $response = $chunk;
+        }
+
+        fclose($socket);
+
+        /* Follow explicit redirection */
+        if (stripos($headers, 'location:') !== false) {
+            if (@preg_match('/ocation:(.+)\r\n/', $headers, $match)) {
+                return self::apiCallSocket(
+                    trim($match[1]),
+                    $method,
+                    $params,
+                    $args
+                );
+            }
+
+            SucuriScan::throwException('redirection without next target');
+            return false;
+        }
+
+        /* Return if we reached the destination */
+        if (strpos($headers, '200 OK')) {
+            return $response;
+        }
+
+        SucuriScan::throwException('unexpected http status code');
         return false;
     }
 
@@ -517,10 +398,10 @@ class SucuriScanAPI extends SucuriScanOption
         }
 
         if (!empty($api_key)) {
-            SucuriScanEvent::notify_event('plugin_change', 'API key updated successfully: ' . $api_key);
+            SucuriScanEvent::notifyEvent('plugin_change', 'API key updated successfully: ' . $api_key);
         }
 
-        return self::update_option(':api_key', $api_key);
+        return self::updateOption(':api_key', $api_key);
     }
 
     /**
@@ -530,7 +411,7 @@ class SucuriScanAPI extends SucuriScanOption
      */
     public static function getPluginKey()
     {
-        $api_key = self::get_option(':api_key');
+        $api_key = self::getOption(':api_key');
 
         if (is_string($api_key)
             && self::isValidKey($api_key)
@@ -550,13 +431,13 @@ class SucuriScanAPI extends SucuriScanOption
      *
      * @return array|boolean false if the key is invalid or not present, an array otherwise.
      */
-    public static function getCloudproxyKey()
+    public static function getFirewallKey()
     {
         $option_name = ':cloudproxy_apikey';
-        $api_key = self::get_option($option_name);
+        $api_key = self::getOption($option_name);
 
         // Check the validity of the API key.
-        $match = self::isValidCloudproxyKey($api_key, true);
+        $match = self::isValidFirewallKey($api_key, true);
 
         if ($match) {
             return array(
@@ -570,13 +451,13 @@ class SucuriScanAPI extends SucuriScanOption
     }
 
     /**
-     * Check whether the CloudProxy API key is valid or not.
+     * Check whether the firewall API key is valid or not.
      *
-     * @param  string  $api_key      The CloudProxy API key.
+     * @param  string  $api_key      The firewall API key.
      * @param  boolean $return_match Whether the parts of the API key must be returned or not.
      * @return boolean               true if the API key specified is valid, false otherwise.
      */
-    public static function isValidCloudproxyKey($api_key = '', $return_match = false)
+    public static function isValidFirewallKey($api_key = '', $return_match = false)
     {
         $pattern = '/^([a-z0-9]{32})\/([a-z0-9]{32})$/';
 
@@ -602,8 +483,8 @@ class SucuriScanAPI extends SucuriScanOption
      */
     public static function apiCallWordpress($method = 'GET', $params = array(), $send_api_key = true, $args = array())
     {
-        $url = SUCURISCAN_API;
-        $params[ SUCURISCAN_API_VERSION ] = 1;
+        $url = SUCURISCAN_API_URL;
+        $params[SUCURISCAN_API_VERSION] = 1;
         $params['p'] = 'wordpress';
 
         if ($send_api_key) {
@@ -620,20 +501,20 @@ class SucuriScanAPI extends SucuriScanOption
     }
 
     /**
-     * Call an action from the remote API interface of our CloudProxy service.
+     * Call an action from the remote API interface of our firewall service.
      *
      * @param  string $method HTTP method that will be used to send the request.
      * @param  array  $params Parameters for the request defined in an associative array of key-value.
      * @return array          Response object after the HTTP request is executed.
      */
-    public static function apiCallCloudproxy($method = 'GET', $params = array())
+    public static function apiCallFirewall($method = 'GET', $params = array())
     {
         $send_request = false;
 
         if (isset($params['k']) && isset($params['s'])) {
             $send_request = true;
         } else {
-            $api_key = self::getCloudproxyKey();
+            $api_key = self::getFirewallKey();
 
             if ($api_key) {
                 $send_request = true;
@@ -664,23 +545,27 @@ class SucuriScanAPI extends SucuriScanOption
      */
     private static function handleResponse($response = array(), $enqueue = true)
     {
-        if ($response !== false) {
-            if (is_array($response)
-                && array_key_exists('status', $response)
-                && intval($response['status']) === 1
-            ) {
-                return true;
-            }
-
-            if (is_array($response)
-                && array_key_exists('messages', $response)
-                && !empty($response['messages'])
-            ) {
-                return self::handleErrorResponse($response, $enqueue);
-            }
+        if (!$response) {
+            return false;
         }
 
-        return false;
+        if (is_array($response)
+            && array_key_exists('status', $response)
+            && intval($response['status']) === 1
+        ) {
+            return true;
+        }
+
+        if (is_array($response)
+            && array_key_exists('messages', $response)
+            && !empty($response['messages'])
+        ) {
+            return self::handleErrorResponse($response, $enqueue);
+        }
+
+        if (is_string($response) && !empty($response)) {
+            SucuriScanInterface::error($response);
+        }
     }
 
     /**
@@ -727,25 +612,25 @@ class SucuriScanAPI extends SucuriScanOption
 
             // Special response for invalid API keys.
             if (stripos($raw, 'log file not found') !== false) {
-                $key = SucuriScanOption::get_option(':api_key');
+                $key = SucuriScanOption::getOption(':api_key');
                 $msg .= '; this generally happens when you add an invalid API '
                 . 'key, the key will be deleted automatically to hide these w'
                 . 'arnings, if you want to recover it go to the settings page'
                 . ' and use the recover button to send the key to your email '
                 . 'address: ' . SucuriScan::escape($key);
 
-                SucuriScanOption::delete_option(':api_key');
+                SucuriScanOption::deleteOption(':api_key');
             }
 
-            // Special response for invalid CloudProxy API keys.
+            // Special response for invalid firewall API keys.
             if (stripos($raw, 'wrong api key') !== false) {
-                $key = SucuriScanOption::get_option(':cloudproxy_apikey');
-                $msg .= '; invalid CloudProxy API key: ' . SucuriScan::escape($key);
+                $key = SucuriScanOption::getOption(':cloudproxy_apikey');
+                $msg .= '; invalid firewall API key: ' . SucuriScan::escape($key);
 
                 SucuriScanInterface::error($msg);
                 $msg = ''; /* Force premature error message. */
 
-                SucuriScanOption::delete_option(':cloudproxy_apikey');
+                SucuriScanOption::deleteOption(':cloudproxy_apikey');
                 SucuriScanOption::setAddrHeader('REMOTE_ADDR');
                 SucuriScanOption::setRevProxy('disable');
             }
@@ -755,13 +640,10 @@ class SucuriScanAPI extends SucuriScanOption
                 || stripos($raw, 'error setting certificate')
                 || stripos($raw, 'SSL connect error')
             ) {
-                SucuriScanOption::update_option(':verify_ssl_cert', 'false');
-
-                $msg .= 'There were some issues with the SSL certificate eith'
-                . 'er in this server or with the remote API service. The auto'
-                . 'matic verification of the certificates has been deactivate'
-                . 'd to reduce the noise during the execution of the HTTP req'
-                . 'uests.';
+                $msg .= 'Your website seems to use an old version of the Open'
+                . 'SSL library or the CURL extension was compiled without sup'
+                . 'port for the algorithm used on the API service. Contact yo'
+                . 'ur hosting provider to fix this issue.';
             }
 
             // Check if the MX records as missing for API registration.
@@ -787,20 +669,20 @@ class SucuriScanAPI extends SucuriScanOption
     public static function registerSite($email = '')
     {
         if (!is_string($email) || empty($email)) {
-            $email = self::get_site_email();
+            $email = self::getSiteEmail();
         }
 
         $response = self::apiCallWordpress('POST', array(
             'e' => $email,
-            's' => self::get_domain(),
+            's' => self::getDomain(),
             'a' => 'register_site',
         ), false);
 
         if (self::handleResponse($response)) {
             self::setPluginKey($response['output']['api_key']);
 
-            SucuriScanEvent::schedule_task();
-            SucuriScanEvent::notify_event('plugin_change', 'Site registered and API key generated');
+            SucuriScanEvent::scheduleTask();
+            SucuriScanEvent::notifyEvent('plugin_change', 'Site registered and API key generated');
             SucuriScanInterface::info('The API key for your site was successfully generated and saved.');
 
             return true;
@@ -816,16 +698,16 @@ class SucuriScanAPI extends SucuriScanOption
      */
     public static function recoverKey()
     {
-        $clean_domain = self::get_domain();
+        $clean_domain = self::getDomain();
 
         $response = self::apiCallWordpress('GET', array(
-            'e' => self::get_site_email(),
+            'e' => self::getSiteEmail(),
             's' => $clean_domain,
             'a' => 'recover_key',
         ), false);
 
         if (self::handleResponse($response)) {
-            SucuriScanEvent::notify_event('plugin_change', 'API key recovered for domain: ' . $clean_domain);
+            SucuriScanEvent::notifyEvent('plugin_change', 'API key recovered for domain: ' . $clean_domain);
             SucuriScanInterface::info($response['output']['message']);
 
             return true;
@@ -872,7 +754,7 @@ class SucuriScanAPI extends SucuriScanOption
      * Retry the HTTP calls for the logs that were not sent to the API service
      * because of a connection failure or misconfiguration. Each successful call
      * will remove the log from the queue and the failures will keep them until the
-     * next function call is executed.
+     * next method call is executed.
      *
      * @return void
      */
@@ -908,123 +790,203 @@ class SucuriScanAPI extends SucuriScanOption
     }
 
     /**
-     * Retrieve all the event logs registered by the API service.
-     *
-     * @return array The object with the data returned from the API service.
-     */
-    public static function getAllLogs()
-    {
-        // Get the total number of lines in the logs.
-        $response = self::apiCallWordpress('GET', array(
-            'a' => 'get_logs',
-            'l' => 0,
-        ));
-
-        // If success continue with the retrieval of the logs data.
-        if (self::handleResponse($response)) {
-            return self::getLogs($response['total_entries']);
-        }
-
-        return false;
-    }
-
-    /**
      * Retrieve the event logs registered by the API service.
      *
      * @param  integer $lines How many lines from the log file will be retrieved.
      * @return string         The response of the API service.
      */
-    public static function getLogs($lines = 50)
+    public static function getAuditLogs($lines = 50)
     {
         $response = self::apiCallWordpress('GET', array(
             'a' => 'get_logs',
             'l' => $lines,
         ));
 
-        if (self::handleResponse($response)) {
-            $response['output_data'] = array();
-            $log_pattern = '/^([0-9\-]+) ([0-9:]+) (\S+) : (.+)/';
-            $extra_pattern = '/(.+ \(multiple entries\):) (.+)/';
-            $generic_pattern = '/^@?([A-Z][a-z]{3,7}): ([^;]+; )?(.+)/';
-            $auth_pattern = '/^User authentication (succeeded|failed): ([^<;]+)/';
+        if (!self::handleResponse($response)) {
+            return false;
+        }
 
-            foreach ($response['output'] as $log) {
-                if (@preg_match($log_pattern, $log, $log_match)) {
-                    $log_data = array(
-                        'event' => 'notice',
-                        'date' => '',
-                        'time' => '',
-                        'datetime' => '',
-                        'timestamp' => 0,
-                        'account' => $log_match[3],
-                        'username' => 'system',
-                        'remote_addr' => '127.0.0.1',
-                        'message' => $log_match[4],
-                        'file_list' => false,
-                        'file_list_count' => 0,
+        return self::parseAuditLogs($response);
+    }
+
+    public static function getSelfHostingLogs($limit = 0)
+    {
+        if (SucuriScanOption::isDisabled(':selfhosting_monitor')) {
+            SucuriScan::throwException('Self-hosting monitor is disabled');
+            return false;
+        }
+
+        if (!class_exists('SplFileObject')) {
+            SucuriScan::throwException('SplFileObject is not available');
+            return false;
+        }
+
+        $fpath = SucuriScanOption::getOption(':selfhosting_fpath');
+
+        if (!is_readable($fpath)) {
+            SucuriScan::throwException('Self-hosting log file is not readable');
+            return false;
+        }
+
+        $auditlogs = array();
+        $domain = SucuriScan::getDomain(true);
+        $category = sprintf("\x20WordPressAudit %s", $domain);
+        $file = new SplFileObject($fpath);
+        $file->seek(PHP_INT_MAX);
+        $total = $file->key();
+
+        if ($total > $limit) {
+            $file->seek($total - $limit);
+        } else {
+            $file->seek(0);
+        }
+
+        while (!$file->eof()) {
+            $line = $file->current();
+            $line = str_replace($category, '', $line);
+            $auditlogs[] = trim($line);
+            $file->next();
+        }
+
+        return self::parseAuditLogs(array(
+            'status' => 1,
+            'action' => 'get_logs',
+            'request_time' => time(),
+            'verbose' => 0,
+            'output' => array_reverse($auditlogs),
+            'total_entries' => count($auditlogs),
+        ));
+    }
+
+    private static function parseAuditLogs($response)
+    {
+        if (!is_array($response) || !array_key_exists('output', $response)) {
+            return false; /* missing data; stop response parser */
+        }
+
+        $response['output_data'] = array();
+        $log_pattern = '/^([0-9\-]+) ([0-9:]+) (\S+) : (.+)/';
+        $extra_pattern = '/(.+ \(multiple entries\):) (.+)/';
+        $generic_pattern = '/^@?([A-Z][a-z]{3,7}): ([^;]+; )?(.+)/';
+        $auth_pattern = '/^User authentication (succeeded|failed): ([^<;]+)/';
+
+        foreach ($response['output'] as $log) {
+            if (@preg_match($log_pattern, $log, $log_match)) {
+                $log_data = array(
+                    'event' => 'notice',
+                    'date' => '',
+                    'time' => '',
+                    'datetime' => '',
+                    'timestamp' => 0,
+                    'account' => $log_match[3],
+                    'username' => 'system',
+                    'remote_addr' => '127.0.0.1',
+                    'message' => $log_match[4],
+                    'file_list' => false,
+                    'file_list_count' => 0,
+                );
+
+                // Extract and fix the date and time using the Eastern time zone.
+                $datetime = sprintf('%s %s EDT', $log_match[1], $log_match[2]);
+                $log_data['timestamp'] = strtotime($datetime);
+                $log_data['datetime'] = date('Y-m-d H:i:s', $log_data['timestamp']);
+                $log_data['date'] = date('Y-m-d', $log_data['timestamp']);
+                $log_data['time'] = date('H:i:s', $log_data['timestamp']);
+
+                // Extract more information from the generic audit logs.
+                $log_data['message'] = str_replace('<br>', '; ', $log_data['message']);
+
+                if (@preg_match($generic_pattern, $log_data['message'], $log_extra)) {
+                    $log_data['event'] = strtolower($log_extra[1]);
+                    $log_data['message'] = trim($log_extra[3]);
+
+                    // Extract the username and remote address from the log.
+                    if (!empty($log_extra[2])) {
+                        $username_address = rtrim($log_extra[2], ";\x20");
+
+                        // Separate the username from the remote address.
+                        if (strpos($username_address, ",\x20") !== false) {
+                            $usip_parts = explode(",\x20", $username_address, 2);
+
+                            if (count($usip_parts) == 2) {
+                                // Separate the username from the display name.
+                                $log_data['username'] = @preg_replace('/^.+ \((.+)\)$/', '$1', $usip_parts[0]);
+                                $log_data['remote_addr'] = $usip_parts[1];
+                            }
+                        } else {
+                            $log_data['remote_addr'] = $username_address;
+                        }
+                    }
+
+                    // Fix old user authentication logs for backward compatibility.
+                    $log_data['message'] = str_replace(
+                        'logged in',
+                        'authentication succeeded',
+                        $log_data['message']
                     );
 
-                    // Extract and fix the date and time using the Eastern time zone.
-                    $datetime = sprintf('%s %s EDT', $log_match[1], $log_match[2]);
-                    $log_data['timestamp'] = strtotime($datetime);
-                    $log_data['datetime'] = date('Y-m-d H:i:s', $log_data['timestamp']);
-                    $log_data['date'] = date('Y-m-d', $log_data['timestamp']);
-                    $log_data['time'] = date('H:i:s', $log_data['timestamp']);
-
-                    // Extract more information from the generic audit logs.
-                    $log_data['message'] = str_replace('<br>', '; ', $log_data['message']);
-
-                    if (@preg_match($generic_pattern, $log_data['message'], $log_extra)) {
-                        $log_data['event'] = strtolower($log_extra[1]);
-                        $log_data['message'] = trim($log_extra[3]);
-
-                        // Extract the username and remote address from the log.
-                        if (!empty($log_extra[2])) {
-                            $username_address = rtrim($log_extra[2], ";\x20");
-
-                            // Separate the username from the remote address.
-                            if (strpos($username_address, ",\x20") !== false) {
-                                $usip_parts = explode(",\x20", $username_address, 2);
-
-                                if (count($usip_parts) == 2) {
-                                    // Separate the username from the display name.
-                                    $log_data['username'] = @preg_replace('/^.+ \((.+)\)$/', '$1', $usip_parts[0]);
-                                    $log_data['remote_addr'] = $usip_parts[1];
-                                }
-                            } else {
-                                $log_data['remote_addr'] = $username_address;
-                            }
-                        }
-
-                        // Fix old user authentication logs for backward compatibility.
-                        $log_data['message'] = str_replace(
-                            'logged in',
-                            'authentication succeeded',
-                            $log_data['message']
-                        );
-
-                        if (@preg_match($auth_pattern, $log_data['message'], $user_match)) {
-                            $log_data['username'] = $user_match[2];
-                        }
+                    if (@preg_match($auth_pattern, $log_data['message'], $user_match)) {
+                        $log_data['username'] = $user_match[2];
                     }
+                }
 
-                    // Extract more information from the special formatted logs.
-                    if (@preg_match($extra_pattern, $log_data['message'], $log_extra)) {
-                        $log_data['message'] = $log_extra[1];
-                        $log_extra[2] = str_replace(', new size', '; new size', $log_extra[2]);
-                        $log_extra[2] = str_replace(",\x20", ";\x20", $log_extra[2]);
-                        $log_data['file_list'] = explode(',', $log_extra[2]);
-                        $log_data['file_list_count'] = count($log_data['file_list']);
-                    }
+                // Extract more information from the special formatted logs.
+                if (@preg_match($extra_pattern, $log_data['message'], $log_extra)) {
+                    $log_data['message'] = $log_extra[1];
+                    $log_extra[2] = str_replace(', new size', '; new size', $log_extra[2]);
+                    $log_extra[2] = str_replace(",\x20", ";\x20", $log_extra[2]);
+                    $log_data['file_list'] = explode(',', $log_extra[2]);
+                    $log_data['file_list_count'] = count($log_data['file_list']);
+                }
 
+                /* extract additional details from the message */
+                if (strpos($log_data['message'], '; details:')) {
+                    $idx = strpos($log_data['message'], '; details:');
+                    $message = substr($log_data['message'], 0, $idx);
+                    $details = substr($log_data['message'], $idx + 11);
+
+                    $log_data['message'] = $message . ' (details):';
+                    $log_data['file_list'] = explode(',', $details);
+                    $log_data['file_list_count'] = count($log_data['file_list']);
+                }
+
+                if ($log_data = self::getLogsHotfix($log_data)) {
                     $response['output_data'][] = $log_data;
                 }
             }
-
-            return $response;
         }
 
-        return false;
+        return $response;
+    }
+
+    private static function getLogsHotfix($data)
+    {
+        if (!isset($data['message'])) {
+            return false;
+        }
+
+        /**
+         * PHP Compatibility Checker
+         *
+         * The WP Engine PHP Compatibility Checker can be used by any WordPress
+         * website on any web host to check PHP version compatibility. This
+         * plugin will lint theme and plugin code inside your WordPress file
+         * system and give you back a report of compatibility issues for you to
+         * fix.
+         *
+         * @see https://wordpress.org/plugins/php-compatibility-checker/
+         */
+        if (strpos($data['message'], 'Wpephpcompat_jobs') === 0
+            && preg_match('/identifier: ([0-9]+); name: (.+)/', $data['message'], $match)
+        ) {
+            $data['message'] = sprintf(
+                'WP Engine PHP Compatibility Checker: %s (created post #%d as cache)',
+                $match[2], /* plugin or theme name */
+                $match[1] /* unique post or page identifier */
+            );
+        }
+
+        return $data;
     }
 
     /**
@@ -1070,7 +1032,7 @@ class SucuriScanAPI extends SucuriScanOption
      */
     public static function getAuditReport($lines = 50)
     {
-        $audit_logs = self::getLogs($lines);
+        $audit_logs = self::getAuditLogs($lines);
 
         if (is_array($audit_logs)
             && array_key_exists('total_entries', $audit_logs)
@@ -1096,7 +1058,7 @@ class SucuriScanAPI extends SucuriScanOption
             $event_types = self::getAuditEventTypes();
             foreach ($event_types as $event => $event_color) {
                 $report['events_per_type'][$event] = 0;
-                $report['event_colors'][] = sprintf("'%s'", $event_color);
+                $report['event_colors'][] = $event_color;
             }
 
             // Collect information for each report chart.
@@ -1188,14 +1150,14 @@ class SucuriScanAPI extends SucuriScanOption
 
     /**
      * Retrieve the public settings of the account associated with the API keys
-     * registered by the administrator of the site. This function will send a HTTP
+     * registered by the administrator of the site. This method will send a HTTP
      * request to the remote API service and process its response, when successful
      * it will return an array/object containing the public attributes of the site.
      *
-     * @param  boolean $api_key The CloudProxy API key.
-     * @return array            A hash with the settings of a CloudProxy account.
+     * @param  boolean $api_key The firewall API key.
+     * @return array            A hash with the settings of a firewall account.
      */
-    public static function getCloudproxySettings($api_key = false)
+    public static function getFirewallSettings($api_key = false)
     {
         $params = array('a' => 'show_settings');
 
@@ -1203,7 +1165,7 @@ class SucuriScanAPI extends SucuriScanOption
             $params = array_merge($params, $api_key);
         }
 
-        $response = self::apiCallCloudproxy('GET', $params);
+        $response = self::apiCallFirewall('GET', $params);
 
         if (self::handleResponse($response)) {
             return $response['output'];
@@ -1215,10 +1177,10 @@ class SucuriScanAPI extends SucuriScanOption
     /**
      * Flush the cache of the site(s) associated with the API key.
      *
-     * @param  boolean $api_key The CloudProxy API key.
+     * @param  boolean $api_key The firewall API key.
      * @return string           Message explaining the result of the operation.
      */
-    public static function clearCloudproxyCache($api_key = false)
+    public static function clearFirewallCache($api_key = false)
     {
         $params = array( 'a' => 'clear_cache' );
 
@@ -1226,7 +1188,7 @@ class SucuriScanAPI extends SucuriScanOption
             $params = array_merge($params, $api_key);
         }
 
-        $response = self::apiCallCloudproxy('GET', $params);
+        $response = self::apiCallFirewall('GET', $params);
 
         if (self::handleResponse($response)) {
             return $response;
@@ -1237,16 +1199,16 @@ class SucuriScanAPI extends SucuriScanOption
 
     /**
      * Retrieve the audit logs of the account associated with the API keys
-     * registered b the administrator of the site. This function will send a HTTP
+     * registered b the administrator of the site. This method will send a HTTP
      * request to the remote API service and process its response, when successful
      * it will return an array/object containing a list of requests blocked by our
-     * CloudProxy.
+     * firewall.
      *
      * By default the logs that will be retrieved are from today, if you need to see
      * the logs of previous days you will need to add a new parameter to the request
      * URL named "date" with format yyyy-mm-dd.
      *
-     * @param  string  $api_key The CloudProxy API key.
+     * @param  string  $api_key The firewall API key.
      * @param  string  $date    Retrieve the data from this date.
      * @param  string  $query   Filter the data to match this query.
      * @param  integer $limit   Retrieve this maximum of data.
@@ -1267,7 +1229,7 @@ class SucuriScanAPI extends SucuriScanOption
             $params = array_merge($params, $api_key);
         }
 
-        $response = self::apiCallCloudproxy('GET', $params);
+        $response = self::apiCallFirewall('GET', $params);
 
         if (self::handleResponse($response)) {
             return $response['output'];
@@ -1288,32 +1250,32 @@ class SucuriScanAPI extends SucuriScanOption
      */
     public static function getSitecheckResults($domain = '', $clear = true)
     {
-        if (!empty($domain)) {
-            $params = array();
-            $timeout = (int) SucuriScanOption::get_option(':sitecheck_timeout');
-            $params['scan'] = $domain;
-            $params['fromwp'] = 2;
-            $params['json'] = 1;
-
-            // Request a fresh scan or not.
-            if ($clear === true) {
-                $params['clear'] = 1;
-            }
-
-            $response = self::apiCall(
-                'sucuri://sitecheck.sucuri.net/',
-                'GET',
-                $params,
-                array(
-                    'assoc' => true,
-                    'timeout' => $timeout,
-                )
-            );
-
-            return $response;
+        if (empty($domain)) {
+            return false;
         }
 
-        return false;
+        $params = array();
+        $timeout = (int) SucuriScanOption::getOption(':sitecheck_timeout');
+        $params['scan'] = $domain;
+        $params['fromwp'] = 2;
+        $params['json'] = 1;
+
+        // Request a fresh scan or not.
+        if ($clear === true) {
+            $params['clear'] = 1;
+        }
+
+        $response = self::apiCall(
+            'https://sitecheck.sucuri.net/',
+            'GET',
+            $params,
+            array(
+                'assoc' => true,
+                'timeout' => $timeout,
+            )
+        );
+
+        return $response;
     }
 
     /**
@@ -1338,7 +1300,7 @@ class SucuriScanAPI extends SucuriScanOption
 
             if (isset($alert_parts[1])) {
                 $data_set['alert_message'] = $alert_parts[0];
-                $data_set['infected_url'] = $alert_parts[1];
+                $data_set['infected_url'] = trim($alert_parts[1]);
             }
 
             // Extract the information from the malware message.
@@ -1367,8 +1329,8 @@ class SucuriScanAPI extends SucuriScanOption
      */
     public static function getNewSecretKeys()
     {
-        $pattern = self::secret_key_pattern();
-        $response = self::apiCall('sucuri://api.wordpress.org/secret-key/1.1/salt/', 'GET');
+        $pattern = self::secretKeyPattern();
+        $response = self::apiCall('https://api.wordpress.org/secret-key/1.1/salt/', 'GET');
 
         if ($response && @preg_match_all($pattern, $response, $match)) {
             $new_keys = array();
@@ -1393,9 +1355,9 @@ class SucuriScanAPI extends SucuriScanOption
      */
     public static function getOfficialChecksums($version = 0)
     {
-        $language = SucuriScanOption::get_option(':language');
+        $language = SucuriScanOption::getOption(':language');
         $response = self::apiCall(
-            'sucuri://api.wordpress.org/core/checksums/1.0/',
+            'https://api.wordpress.org/core/checksums/1.0/',
             'GET',
             array(
                 'version' => $version,
@@ -1421,7 +1383,7 @@ class SucuriScanAPI extends SucuriScanOption
 
     /**
      * Check the plugins directory and retrieve all plugin files with plugin data.
-     * This function will also retrieve the URL and name of the repository/page
+     * This method will also retrieve the URL and name of the repository/page
      * where it is being published at the WordPress plugins market.
      *
      * @return array Key is the plugin file path and the value is an array of the plugin data.
@@ -1444,7 +1406,7 @@ class SucuriScanAPI extends SucuriScanOption
         // Get the plugin's basic information from WordPress transient data.
         $plugins = get_plugins();
         $pattern = '/^http(s)?:\/\/wordpress\.org\/plugins\/(.*)\/$/';
-        $wp_market = 'sucuri://wordpress.org/plugins/%s/';
+        $wp_market = 'https://wordpress.org/plugins/%s/';
 
         // Loop through each plugin data and complement its information with more attributes.
         foreach ($plugins as $plugin_path => $plugin_data) {
@@ -1475,7 +1437,6 @@ class SucuriScanAPI extends SucuriScanOption
 
                 if (isset($plugin_path_parts[0])) {
                     $possible_repository = sprintf($wp_market, $plugin_path_parts[0]);
-                    $possible_repository = SucuriScanAPI::apiUrlProtocol($possible_repository);
                     $resp = wp_remote_head($possible_repository);
 
                     if (!is_wp_error($resp)
@@ -1534,7 +1495,7 @@ class SucuriScanAPI extends SucuriScanOption
     public static function getRemotePluginData($plugin = '')
     {
         if (!empty($plugin)) {
-            $url = sprintf('sucuri://api.wordpress.org/plugins/info/1.0/%s.json', $plugin);
+            $url = sprintf('https://api.wordpress.org/plugins/info/1.0/%s.json', $plugin);
             $response = self::apiCall($url, 'GET');
 
             if ($response) {
@@ -1562,10 +1523,10 @@ class SucuriScanAPI extends SucuriScanOption
     {
         if (!empty($filepath)) {
             if ($version == 0) {
-                $version = self::site_version();
+                $version = self::siteVersion();
             }
 
-            $url = sprintf('sucuri://core.svn.wordpress.org/tags/%s/%s', $version, $filepath);
+            $url = sprintf('https://core.svn.wordpress.org/tags/%s/%s', $version, $filepath);
             $response = self::apiCall($url, 'GET');
 
             if ($response) {

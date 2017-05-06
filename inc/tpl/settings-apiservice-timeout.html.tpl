@@ -1,6 +1,6 @@
 
-<div class="postbox">
-    <h3>API Request Timeout</h3>
+<div class="sucuriscan-panel">
+    <h3 class="sucuriscan-title">API Request Timeout</h3>
 
     <div class="inside">
         <p>
@@ -30,11 +30,11 @@
 
         <form action="%%SUCURI.URL.Settings%%#apiservice" method="post">
             <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
-            <span class="sucuriscan-input-group">
+            <fieldset class="sucuriscan-clearfix">
                 <label>HTTP Request Timeout (in secs)</label>
-                <input type="text" name="sucuriscan_request_timeout" class="input-text" />
-            </span>
-            <button type="submit" class="button-primary">Proceed</button>
+                <input type="text" name="sucuriscan_request_timeout" />
+                <button type="submit" class="button button-primary">Proceed</button>
+            </fieldset>
         </form>
     </div>
 </div>

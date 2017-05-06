@@ -25,10 +25,8 @@ function sucuriscan_loggedin_users_panel()
 
     if (is_array($logged_in_users) && !empty($logged_in_users)) {
         $params['LoggedInUsers.Total'] = count($logged_in_users);
-        $counter = 0;
 
         foreach ((array) $logged_in_users as $logged_in_user) {
-            $counter++;
             $logged_in_user['last_activity_datetime'] = SucuriScan::datetime($logged_in_user['last_activity']);
             $logged_in_user['user_registered_datetime'] = SucuriScan::datetime(strtotime($logged_in_user['user_registered']));
 
@@ -36,13 +34,12 @@ function sucuriscan_loggedin_users_panel()
                 'lastlogins-loggedin',
                 array(
                     'LoggedInUsers.Id' => $logged_in_user['user_id'],
-                    'LoggedInUsers.UserURL' => SucuriScan::admin_url('user-edit.php?user_id=' . $logged_in_user['user_id']),
+                    'LoggedInUsers.UserURL' => SucuriScan::adminURL('user-edit.php?user_id=' . $logged_in_user['user_id']),
                     'LoggedInUsers.UserLogin' => $logged_in_user['user_login'],
                     'LoggedInUsers.UserEmail' => $logged_in_user['user_email'],
                     'LoggedInUsers.LastActivity' => $logged_in_user['last_activity_datetime'],
                     'LoggedInUsers.Registered' => $logged_in_user['user_registered_datetime'],
                     'LoggedInUsers.RemoveAddr' => $logged_in_user['remote_addr'],
-                    'LoggedInUsers.CssClass' => ($counter % 2 === 0) ? '' : 'alternate',
                 )
             );
         }
@@ -61,7 +58,7 @@ function sucuriscan_get_online_users($add_current_user = false)
 {
     $users = array();
 
-    if (SucuriScan::is_multisite()) {
+    if (SucuriScan::isMultiSite()) {
         $users = get_site_transient('online_users');
     } else {
         $users = get_transient('online_users');
@@ -93,7 +90,7 @@ function sucuriscan_save_online_users($logged_in_users = array())
 {
     $expiration = 30 * 60;
 
-    if (SucuriScan::is_multisite()) {
+    if (SucuriScan::isMultiSite()) {
         return set_site_transient('online_users', $logged_in_users, $expiration);
     } else {
         return set_transient('online_users', $logged_in_users, $expiration);
@@ -109,7 +106,7 @@ if (!function_exists('sucuriscan_unset_online_user_on_logout')) {
      */
     function sucuriscan_unset_online_user_on_logout()
     {
-        $remote_addr = SucuriScan::get_remote_addr();
+        $remote_addr = SucuriScan::getRemoteAddr();
         $current_user = wp_get_current_user();
         $user_id = $current_user->ID;
 
@@ -160,7 +157,7 @@ if (!function_exists('sucuriscan_set_online_user')) {
             // Get logged in user information.
             $current_user = ($user instanceof WP_User) ? $user : wp_get_current_user();
             $current_user_id = $current_user->ID;
-            $remote_addr = SucuriScan::get_remote_addr();
+            $remote_addr = SucuriScan::getRemoteAddr();
             $current_time = current_time('timestamp');
             $logged_in_users = sucuriscan_get_online_users();
 
@@ -211,5 +208,5 @@ if (!function_exists('sucuriscan_set_online_user')) {
         }
     }
 
-    add_action('wp_login', 'sucuriscan_set_online_user', 10, 2);
+    add_action('wp_login', 'sucuriscan_set_online_user', 50, 2);
 }

@@ -19,7 +19,7 @@
             </p>
         </div>
 
-        <a href="%%SUCURI.URL.Home%%" class="button button-primary">Dashboard</a>
+        <a href="%%SUCURI.URL.Dashboard%%" class="button button-primary">Dashboard</a>
         <a href="%%SUCURI.URL.Settings%%" class="button button-primary">Settings</a>
     </div>
 </div>

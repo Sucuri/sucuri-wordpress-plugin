@@ -1,70 +1,124 @@
 
 <div class="sucuriscan-tabs">
-    <ul>
-        <li>
-            <a href="#general" data-tabname="general">General</a>
-        </li>
-        <li>
-            <a href="#scanner" data-tabname="scanner">Scanner</a>
-        </li>
-        <li>
-            <a href="#notifications" data-tabname="notifications">Alerts</a>
-        </li>
-        <li>
-            <a href="#apiservice" data-tabname="apiservice">API Service</a>
-        </li>
-        <li>
-            <a href="#selfhosting" data-tabname="selfhosting">Log Exporter</a>
-        </li>
-        <li>
-            <a href="#ignorescanning" data-tabname="ignorescanning">Ignore Scanning</a>
-        </li>
-        <li>
-            <a href="#ignorerules" data-tabname="ignorerules">Ignore Alerts</a>
-        </li>
-        <li>
-            <a href="#trustip" data-tabname="trustip">Trust IP</a>
-        </li>
-        <li>
-            <a href="#heartbeat" data-tabname="heartbeat">Heartbeat</a>
-        </li>
+    <ul class="sucuriscan-clearfix sucuriscan-tabs-buttons">
+        <li><a href="%%SUCURI.URL.Settings%%#general">General</a></li>
+        <li><a href="%%SUCURI.URL.Settings%%#scanner">Scanner</a></li>
+        <li><a href="%%SUCURI.URL.Settings%%#hardening">Hardening</a></li>
+        <li><a href="%%SUCURI.URL.Settings%%#posthack">Post-Hack</a></li>
+        <li><a href="%%SUCURI.URL.Settings%%#alerts">Alerts</a></li>
+        <li><a href="%%SUCURI.URL.Settings%%#apiservice">API Service</a></li>
+        <li><a href="%%SUCURI.URL.Settings%%#webinfo">Website Info</a></li>
     </ul>
 
-    <div class="sucuriscan-tab-containers">
-        <div id="sucuriscan-general">
-            %%%SUCURI.Settings.General%%%
+    <div class="sucuriscan-tabs-containers">
+        <div id="sucuriscan-tabs-general">
+            %%%SUCURI.Settings.General.ApiKey%%%
+
+            %%%SUCURI.Settings.General.DataStorage%%%
+
+            %%%SUCURI.Settings.General.SelfHosting%%%
+
+            %%%SUCURI.Settings.General.Cronjobs%%%
+
+            %%%SUCURI.Settings.General.ReverseProxy%%%
+
+            %%%SUCURI.Settings.General.IPDiscoverer%%%
+
+            %%%SUCURI.Settings.General.CommentMonitor%%%
+
+            %%%SUCURI.Settings.General.AuditLogStats%%%
+
+            %%%SUCURI.Settings.General.ImportExport%%%
+
+            %%%SUCURI.Settings.General.ResetOptions%%%
         </div>
 
-        <div id="sucuriscan-scanner">
-            %%%SUCURI.Settings.Scanner%%%
+        <div id="sucuriscan-tabs-scanner">
+            %%%SUCURI.Settings.Scanner.Options%%%
+
+            %%%SUCURI.Settings.Scanner.SiteCheckTimeout%%%
+
+            %%%SUCURI.Settings.Scanner.IntegrityDiffUtility%%%
+
+            %%%SUCURI.Settings.Scanner.IntegrityLanguage%%%
+
+            %%%SUCURI.Settings.Scanner.IntegrityCache%%%
+
+            %%%SUCURI.Settings.Scanner.IgnoreFolders%%%
         </div>
 
-        <div id="sucuriscan-notifications">
-            %%%SUCURI.Settings.Alerts%%%
+        <div id="sucuriscan-tabs-hardening">
+            <div class="sucuriscan-panel">
+                <h3 class="sucuriscan-title">Hardening Options</h3>
+
+                <div class="inside">
+                    %%%SUCURI.Settings.Hardening.Firewall%%%
+
+                    %%%SUCURI.Settings.Hardening.WPVersion%%%
+
+                    %%%SUCURI.Settings.Hardening.PHPVersion%%%
+
+                    %%%SUCURI.Settings.Hardening.RemoveGenerator%%%
+
+                    %%%SUCURI.Settings.Hardening.NginxPHPFPM%%%
+
+                    %%%SUCURI.Settings.Hardening.WPUploads%%%
+
+                    %%%SUCURI.Settings.Hardening.WPContent%%%
+
+                    %%%SUCURI.Settings.Hardening.WPIncludes%%%
+
+                    %%%SUCURI.Settings.Hardening.Readme%%%
+
+                    %%%SUCURI.Settings.Hardening.AdminUser%%%
+
+                    %%%SUCURI.Settings.Hardening.FileEditor%%%
+                </div>
+            </div>
+
+            %%%SUCURI.Settings.Hardening.WhitelistPHPFiles%%%
         </div>
 
-        <div id="sucuriscan-apiservice">
-            %%%SUCURI.Settings.ApiService%%%
+        <div id="sucuriscan-tabs-posthack">
+            %%%SUCURI.Settings.Posthack.SecurityKeys%%%
+
+            %%%SUCURI.Settings.Posthack.ResetPassword%%%
+
+            %%%SUCURI.Settings.Posthack.ResetPlugins%%%
+
+            %%%SUCURI.Settings.Posthack.AvailableUpdates%%%
         </div>
 
-        <div id="sucuriscan-selfhosting">
-            %%%SUCURI.Settings.SelfHosting%%%
+        <div id="sucuriscan-tabs-alerts">
+            %%%SUCURI.Settings.Alerts.Recipients%%%
+
+            %%%SUCURI.Settings.Alerts.TrustedIPs%%%
+
+            %%%SUCURI.Settings.Alerts.Subject%%%
+
+            %%%SUCURI.Settings.Alerts.PerHour%%%
+
+            %%%SUCURI.Settings.Alerts.BruteForce%%%
+
+            %%%SUCURI.Settings.Alerts.Events%%%
+
+            %%%SUCURI.Settings.Alerts.IgnorePosts%%%
         </div>
 
-        <div id="sucuriscan-ignorescanning">
-            %%%SUCURI.Settings.IgnoreScanning%%%
+        <div id="sucuriscan-tabs-apiservice">
+            %%%SUCURI.Settings.APIService.Status%%%
+
+            %%%SUCURI.Settings.APIService.Timeout%%%
+
+            %%%SUCURI.Settings.APIService.Proxy%%%
         </div>
 
-        <div id="sucuriscan-ignorerules">
-            %%%SUCURI.Settings.IgnoreRules%%%
-        </div>
+        <div id="sucuriscan-tabs-webinfo">
+            %%%SUCURI.Settings.Webinfo.Details%%%
 
-        <div id="sucuriscan-trustip">
-            %%%SUCURI.Settings.TrustIP%%%
-        </div>
+            %%%SUCURI.Settings.Webinfo.WPConfig%%%
 
-        <div id="sucuriscan-heartbeat">
-            %%%SUCURI.Settings.Heartbeat%%%
+            %%%SUCURI.Settings.Webinfo.HTAccess%%%
         </div>
     </div>
 </div>

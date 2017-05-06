@@ -49,6 +49,8 @@ $sucuriscan_dependencies = array(
 // Terminate execution if any of the functions mentioned above is not defined.
 foreach ($sucuriscan_dependencies as $dependency) {
     if (!function_exists($dependency)) {
+        /* Report invalid access if possible. */
+        header('HTTP/1.1 403 Forbidden');
         exit(0);
     }
 }
@@ -92,27 +94,29 @@ define('SUCURISCAN_PLUGIN_FOLDER', basename(dirname(__FILE__)));
 /**
  * The fullpath where the plugin's files will be located.
  */
-define('SUCURISCAN_PLUGIN_PATH', WP_PLUGIN_DIR.'/'.SUCURISCAN_PLUGIN_FOLDER);
+define('SUCURISCAN_PLUGIN_PATH', WP_PLUGIN_DIR . '/' . SUCURISCAN_PLUGIN_FOLDER);
 
 /**
  * The fullpath of the main plugin file.
  */
-define('SUCURISCAN_PLUGIN_FILEPATH', SUCURISCAN_PLUGIN_PATH.'/'.SUCURISCAN_PLUGIN_FILE);
+define('SUCURISCAN_PLUGIN_FILEPATH', SUCURISCAN_PLUGIN_PATH . '/' . SUCURISCAN_PLUGIN_FILE);
 
 /**
  * The local URL where the plugin's files and assets are served.
  */
-define('SUCURISCAN_URL', rtrim(plugin_dir_url(SUCURISCAN_PLUGIN_FILEPATH), '/'));
-
-/**
- * Checksum of this file to check the integrity of the plugin.
- */
-define('SUCURISCAN_PLUGIN_CHECKSUM', @md5_file(SUCURISCAN_PLUGIN_FILEPATH));
+define('SUCURISCAN_URL', site_url(dirname(str_replace(ABSPATH, '', SUCURISCAN_PLUGIN_FILEPATH))));
 
 /**
  * Remote URL where the public Sucuri API service is running.
+ *
+ * We will check if the constant was already set to allow developers to use
+ * their own API service. This is useful both for the execution of the tests
+ * as well as for website owners who do not want to send data to the Sucuri
+ * servers.
  */
-define('SUCURISCAN_API', 'sucuri://wordpress.sucuri.net/api/');
+if (!defined('SUCURISCAN_API_URL')) {
+    define('SUCURISCAN_API_URL', 'https://wordpress.sucuri.net/api/');
+}
 
 /**
  * Latest version of the public Sucuri API.
@@ -120,12 +124,12 @@ define('SUCURISCAN_API', 'sucuri://wordpress.sucuri.net/api/');
 define('SUCURISCAN_API_VERSION', 'v1');
 
 /**
- * Remote URL where the CloudProxy API service is running.
+ * Remote URL where the firewall API service is running.
  */
-define('SUCURISCAN_CLOUDPROXY_API', 'sucuri://waf.sucuri.net/api');
+define('SUCURISCAN_CLOUDPROXY_API', 'https://waf.sucuri.net/api');
 
 /**
- * Latest version of the CloudProxy API.
+ * Latest version of the firewall API.
  */
 define('SUCURISCAN_CLOUDPROXY_API_VERSION', 'v2');
 
@@ -133,6 +137,11 @@ define('SUCURISCAN_CLOUDPROXY_API_VERSION', 'v2');
  * The maximum quantity of entries that will be displayed in the last login page.
  */
 define('SUCURISCAN_LASTLOGINS_USERSLIMIT', 25);
+
+/**
+ * The life time of the cache for the audit logs to help API perforamnce.
+ */
+define('SUCURISCAN_AUDITLOGS_LIFETIME', 600);
 
 /**
  * The maximum quantity of entries that will be displayed in the audit logs page.
@@ -162,12 +171,27 @@ define('SUCURISCAN_GET_PLUGINS_LIFETIME', 1800);
 /**
  * The maximum execution time of a HTTP request before timeout.
  */
-define('SUCURISCAN_MAX_REQUEST_TIMEOUT', 15);
+define('SUCURISCAN_MAX_REQUEST_TIMEOUT', 60);
 
 /**
  * The maximum execution time for SiteCheck requests before timeout.
  */
 define('SUCURISCAN_MAX_SITECHECK_TIMEOUT', 60);
+
+/**
+ * Sets the text that will preceed the admin notices.
+ *
+ * If you have defined SUCURISCAN_THROW_EXCEPTIONS to throw a generic exception
+ * when an info or error alert is triggered, this text will be replaced by the
+ * type of alert that was fired (either Info or Error respectively) which is
+ * useful when you are executing code in a testing environment.
+ */
+define('SUCURISCAN_ADMIN_NOTICE_PREFIX', '<b>SUCURI:</b>');
+
+/* Fix missing server name in non-webview context */
+if (!array_key_exists('SERVER_NAME', $_SERVER)) {
+    $_SERVER['SERVER_NAME'] = 'localhost';
+}
 
 /* Load all classes before anything else. */
 require_once('src/sucuriscan.lib.php');
@@ -179,22 +203,21 @@ require_once('src/event.lib.php');
 require_once('src/hook.lib.php');
 require_once('src/api.lib.php');
 require_once('src/mail.lib.php');
+require_once('src/command.lib.php');
 require_once('src/template.lib.php');
 require_once('src/fsscanner.lib.php');
-require_once('src/heartbeat.lib.php');
 require_once('src/hardening.lib.php');
 require_once('src/interface.lib.php');
+require_once('src/auditlogs.lib.php');
+require_once('src/sitecheck.lib.php');
+require_once('src/integrity.lib.php');
+require_once('src/installer-skin.lib.php');
+
+/* Load page and ajax handlers */
+require_once('src/pagehandler.php');
 
 /* Load handlers for main pages. */
-require_once('src/modfiles.php');
-require_once('src/sitecheck.php');
 require_once('src/firewall.php');
-require_once('src/hardening.php');
-require_once('src/homepage.php');
-require_once('src/auditlogs.php');
-require_once('src/outdated.php');
-require_once('src/corefiles.php');
-require_once('src/posthack.php');
 
 /* Load handlers for main pages (lastlogins). */
 require_once('src/lastlogins.php');
@@ -204,21 +227,46 @@ require_once('src/lastlogins-blocked.php');
 
 /* Load handlers for main pages (settings). */
 require_once('src/settings.php');
-require_once('src/settings-handler.php');
 require_once('src/settings-general.php');
 require_once('src/settings-scanner.php');
-require_once('src/settings-corefiles.php');
+require_once('src/settings-integrity.php');
 require_once('src/settings-sitecheck.php');
-require_once('src/settings-ignorescan.php');
+require_once('src/settings-hardening.php');
+require_once('src/settings-posthack.php');
 require_once('src/settings-alerts.php');
-require_once('src/settings-ignorealerts.php');
 require_once('src/settings-apiservice.php');
-require_once('src/settings-selfhosting.php');
-require_once('src/settings-trustip.php');
-require_once('src/settings-heartbeat.php');
-
-/* Load handlers for main pages (infosys). */
-require_once('src/infosys.php');
+require_once('src/settings-webinfo.php');
 
 /* Load global variables and triggers */
 require_once('src/globals.php');
+
+function sucuriscan_deactivate()
+{
+    /* Remove scheduled task from the system */
+    wp_clear_scheduled_hook('sucuriscan_scheduled_scan');
+
+    /* Remove settings from the database if they exist */
+    $options = SucuriScanOption::getDefaultOptionNames();
+    foreach ($options as $option_name) {
+        delete_site_option($option_name);
+        delete_option($option_name);
+    }
+
+    /* Remove hardening in standard directories */
+    SucuriScanHardening::dewhitelist('ms-files.php', 'wp-includes');
+    SucuriScanHardening::dewhitelist('wp-tinymce.php', 'wp-includes');
+    SucuriScanHardening::unhardenDirectory(WP_CONTENT_DIR);
+    SucuriScanHardening::unhardenDirectory(WP_CONTENT_DIR . '/uploads');
+    SucuriScanHardening::unhardenDirectory(ABSPATH . '/wp-includes');
+    SucuriScanHardening::unhardenDirectory(ABSPATH . '/wp-admin');
+
+    /* Remove cache files from disk */
+    $fifo = new SucuriScanFileInfo();
+    $fifo->ignore_files = false;
+    $fifo->ignore_directories = false;
+    $fifo->run_recursively = false;
+    $directory = SucuriScan::dataStorePath();
+    $fifo->removeDirectoryTree($directory);
+}
+
+register_deactivation_hook(__FILE__, 'sucuriscan_deactivate');

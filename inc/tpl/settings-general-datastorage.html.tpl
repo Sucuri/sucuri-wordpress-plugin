@@ -1,6 +1,6 @@
 
-<div class="postbox">
-    <h3>Data Storage Path</h3>
+<div class="sucuriscan-panel">
+    <h3 class="sucuriscan-title">Data Storage Path</h3>
 
     <div class="inside">
         <p>
@@ -24,7 +24,7 @@
         </div>
 
         <div class="sucuriscan-hstatus sucuriscan-hstatus-2">
-            <span class="sucuriscan-monospace">%%SUCURI.DatastorePath%%</span>
+            <span class="sucuriscan-monospace">%%SUCURI.Storage.Path%%</span>
         </div>
 
         <p>
@@ -37,32 +37,32 @@
             remain in the database until the user grants write permissions.
         </p>
 
-        <div class="sucuriscan-inline-alert-info">
+        <form action="%%SUCURI.URL.Settings%%#general" method="post">
+            <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
+            <input type="hidden" name="sucuriscan_reset_storage" value="1" />
+
+            <table class="wp-list-table widefat sucuriscan-table">
+                <thead>
+                    <tr>
+                        <td id="cb" class="manage-column column-cb check-column">
+                            <label class="screen-reader-text" for="cb-select-all-1">Select All</label>
+                            <input id="cb-select-all-1" type="checkbox">
+                        </td>
+                        <th class="manage-column">File</th>
+                        <th class="manage-column">Size</th>
+                        <th class="manage-column">Existence</th>
+                        <th class="manage-column">Write Permission</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    %%%SUCURI.Storage.Files%%%
+                </tbody>
+            </table>
+
             <p>
-                Add this <code>define('SUCURI_SETTINGS_IN', 'database');</code>
-                in the configuration file if you want to keep using the database.
-                However, we encourage you to keep using the plain text files as
-                this guarantees that the automated tests will cover all the code
-                that powers the plugin.
+                <button type="submit" class="button button-primary">Reset Files</button>
             </p>
-        </div>
-
-        <table class="wp-list-table widefat sucuriscan-table">
-            <thead>
-                <tr>
-                    <th class="manage-column column-cb check-column">
-                        <label class="screen-reader-text" for="cb-select-all-1">Select All</label>
-                        <input id="cb-select-all-1" type="checkbox">
-                    </th>
-                    <th class="manage-column">File</th>
-                    <th width="70" class="manage-column">Exists?</th>
-                    <th width="90" class="manage-column">Writable?</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                %%%SUCURI.DataStorage.Files%%%
-            </tbody>
-        </table>
+        </form>
     </div>
 </div>

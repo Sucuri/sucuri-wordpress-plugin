@@ -12,7 +12,7 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  * Plugin's global variables.
  *
  * These variables will be defined globally to allow the inclusion in multiple
- * functions and classes defined in the libraries loaded by this plugin. The
+ * methods and classes defined in the libraries loaded by this plugin. The
  * conditional will act as a container helping in the readability of the code
  * considering the total number of lines that this file will have.
  */
@@ -26,7 +26,7 @@ if (defined('SUCURISCAN')) {
      *
      * @var string
      */
-    $sucuriscan_action_prefix = SucuriScan::is_multisite() ? 'network_' : '';
+    $sucuriscan_action_prefix = SucuriScan::isMultiSite() ? 'network_' : '';
 
     /**
      * List an associative array with the sub-pages of this plugin.
@@ -35,13 +35,9 @@ if (defined('SUCURISCAN')) {
      */
     $sucuriscan_pages = array(
         'sucuriscan' => 'Dashboard',
-        'sucuriscan_scanner' => 'Malware Scan',
         'sucuriscan_firewall' => 'Firewall (WAF)',
-        'sucuriscan_hardening' => 'Hardening',
-        'sucuriscan_posthack' => 'Post-Hack',
         'sucuriscan_lastlogins' => 'Last Logins',
         'sucuriscan_settings' => 'Settings',
-        'sucuriscan_infosys' => 'Site Info',
     );
 
     /**
@@ -56,6 +52,8 @@ if (defined('SUCURISCAN')) {
      * @var array
      */
 
+    $sucuriscan_schedule_allowed = SucuriScanEvent::availableSchedules();
+
     $sucuriscan_notify_options = array(
         'sucuriscan_notify_plugin_change' => 'Receive email alerts for <b>Sucuri</b> plugin changes',
         'sucuriscan_prettify_mails' => 'Receive email alerts in HTML <em>(there may be issues with some mail services)</em>',
@@ -67,7 +65,7 @@ if (defined('SUCURISCAN')) {
         'sucuriscan_notify_success_login' => 'user:Receive email alerts for successful login attempts',
         'sucuriscan_notify_failed_login' => 'user:Receive email alerts for failed login attempts <em>(you may receive tons of emails)</em>',
         'sucuriscan_notify_bruteforce_attack' => 'user:Receive email alerts for password guessing attacks <em>(summary of failed logins per hour)</em>',
-        'sucuriscan_notify_post_publication' => 'Receive email alerts for Post-Type changes <em>(configure from Ignore Alerts)</em>',
+        'sucuriscan_notify_post_publication' => 'Receive email alerts for changes in the post status <em>(configure from Ignore Posts Changes)</em>',
         'sucuriscan_notify_website_updated' => 'Receive email alerts when the WordPress version is updated',
         'sucuriscan_notify_settings_updated' => 'Receive email alerts when your website settings are updated',
         'sucuriscan_notify_theme_editor' => 'Receive email alerts when a file is modified with theme/plugin editor',
@@ -82,19 +80,6 @@ if (defined('SUCURISCAN')) {
         'sucuriscan_notify_theme_activated' => 'theme:Receive email alerts when a <b>theme is activated</b>',
         'sucuriscan_notify_theme_updated' => 'theme:Receive email alerts when a <b>theme is updated</b>',
         'sucuriscan_notify_theme_deleted' => 'theme:Receive email alerts when a <b>theme is deleted</b>',
-    );
-
-    $sucuriscan_schedule_allowed = array(
-        'hourly' => 'Every three hours (3 hours)',
-        'twicedaily' => 'Twice daily (12 hours)',
-        'daily' => 'Once daily (24 hours)',
-        '_oneoff' => 'Never',
-    );
-
-    $sucuriscan_interface_allowed = array(
-        'spl' => 'SPL (high performance)',
-        'opendir' => 'OpenDir (medium)',
-        'glob' => 'Glob (low)',
     );
 
     $sucuriscan_emails_per_hour = array(
@@ -113,11 +98,6 @@ if (defined('SUCURISCAN')) {
         '120' => '120 failed logins per hour',
         '240' => '240 failed logins per hour',
         '480' => '480 failed logins per hour',
-    );
-
-    $sucuriscan_verify_ssl_cert = array(
-        'true' => 'Verify peer\'s cert',
-        'false' => 'Stop peer\'s cert verification',
     );
 
     $sucuriscan_api_handlers = array(
@@ -147,18 +127,18 @@ if (defined('SUCURISCAN')) {
     remove_action('wp_head', 'wp_generator');
 
     /**
-     * Run a specific function defined in the plugin's code to locate every
+     * Run a specific method defined in the plugin's code to locate every
      * directory and file, collect their checksum and file size, and send this
      * information to the Sucuri API service where a security and integrity scan
      * will be performed against the hashes provided and the official versions.
      */
-    add_action('sucuriscan_scheduled_scan', 'SucuriScan::run_scheduled_task');
+    add_action('sucuriscan_scheduled_scan', 'SucuriScan::runScheduledTask');
 
     /**
      * Initialize the execute of the main plugin's functions.
      *
      * This will load the menu options in the WordPress administrator panel, and
-     * execute the bootstrap function of the plugin.
+     * execute the bootstrap method of the plugin.
      */
     add_action('init', 'SucuriScanInterface::initialize', 1);
     add_action('init', 'SucuriScanBlockedUsers::blockUserLogin', 1);
@@ -176,23 +156,48 @@ if (defined('SUCURISCAN')) {
      * multisite installations the menu items must be available only in the network
      * panel and hidden in the administration panel of the subsites.
      */
-    add_action($sucuriscan_action_prefix . 'admin_menu', 'SucuriScanInterface::addInterfaceMenu');
+    if (function_exists('add_action')) {
+        function sucuriscan_add_menu_page()
+        {
+            global $sucuriscan_pages;
 
-    /**
-     * Attach Ajax requests to a custom page handler.
-     */
-    foreach ($sucuriscan_pages as $page_func => $page_title) {
-        $ajax_func = $page_func . '_ajax';
+            add_menu_page(
+                'Sucuri Security',
+                'Sucuri Security',
+                'manage_options',
+                'sucuriscan',
+                'sucuriscan_page',
+                SUCURISCAN_URL . '/inc/images/menuicon.png'
+            );
 
-        if (function_exists($ajax_func)) {
-            add_action('wp_ajax_' . $ajax_func, $ajax_func);
+            /* exit if no pages were defined */
+            if (!is_array($sucuriscan_pages)) {
+                return;
+            }
+
+            foreach ($sucuriscan_pages as $sub_page_func => $sub_page_title) {
+                add_submenu_page(
+                    'sucuriscan',
+                    $sub_page_title,
+                    $sub_page_title,
+                    'manage_options',
+                    $sub_page_func,
+                    $sub_page_func . '_page'
+                );
+            }
         }
+
+        /* Attach HTTP request handlers for the internal plugin pages */
+        add_action($sucuriscan_action_prefix . 'admin_menu', 'sucuriscan_add_menu_page');
+
+        /* Attach HTTP request handlers for the AJAX requests */
+        add_action('wp_ajax_sucuriscan_ajax', 'sucuriscan_ajax');
     }
 
     /**
      * Function call interceptors.
      *
-     * Define the names for the hooks that will intercept specific function calls in
+     * Define the names for the hooks that will intercept specific method calls in
      * the admin interface and parts of the external site, an event report will be
      * sent to the API service and an email notification to the administrator of the
      * site.
@@ -200,69 +205,55 @@ if (defined('SUCURISCAN')) {
      * @see Class SucuriScanHook
      */
     if (class_exists('SucuriScanHook')) {
-        $sucuriscan_hooks = array(
-            'add_attachment',
-            'add_link',
-            'create_category',
-            'delete_post',
-            'delete_user',
-            'login_form_resetpass',
-            'private_to_published',
-            'publish_page',
-            'publish_phone',
-            'publish_post',
-            'retrieve_password',
-            'switch_theme',
-            'user_register',
-            'wp_insert_comment',
-            'wp_login',
-            'wp_login_failed',
-            'wp_trash_post',
-            'xmlrpc_publish_post',
-        );
-
-        if (SucuriScanOption::is_enabled(':xhr_monitor')) {
-            $sucuriscan_hooks[] = 'all';
-        }
-
-        foreach ($sucuriscan_hooks as $hook_name) {
-            $hook_func = 'SucuriScanHook::hook_' . $hook_name;
-            add_action($hook_name, $hook_func, 50, 5);
-        }
+        add_action('activated_plugin', 'SucuriScanHook::hookPluginActivate', 50, 2);
+        add_action('add_attachment', 'SucuriScanHook::hookAttachmentAdd', 50, 5);
+        add_action('add_link', 'SucuriScanHook::hookLinkAdd', 50, 5);
+        add_action('before_delete_post', 'SucuriScanHook::hookPostBeforeDelete', 50, 5);
+        add_action('create_category', 'SucuriScanHook::hookCategoryCreate', 50, 5);
+        add_action('deactivated_plugin', 'SucuriScanHook::hookPluginDeactivate', 50, 2);
+        add_action('delete_post', 'SucuriScanHook::hookPostDelete', 50, 5);
+        add_action('delete_user', 'SucuriScanHook::hookUserDelete', 50, 5);
+        add_action('edit_link', 'SucuriScanHook::hookLinkEdit', 50, 5);
+        add_action('login_form_resetpass', 'SucuriScanHook::hookLoginFormResetpass', 50, 5);
+        add_action('publish_page', 'SucuriScanHook::hookPublishPage', 50, 5);
+        add_action('publish_phone', 'SucuriScanHook::hookPublishPhone', 50, 5);
+        add_action('publish_post', 'SucuriScanHook::hookPublishPost', 50, 5);
+        add_action('retrieve_password', 'SucuriScanHook::hookRetrievePassword', 50, 5);
+        add_action('switch_theme', 'SucuriScanHook::hookThemeSwitch', 50, 5);
+        add_action('transition_post_status', 'SucuriScanHook::hookPostStatus', 50, 3);
+        add_action('user_register', 'SucuriScanHook::hookUserRegister', 50, 5);
+        add_action('wp_insert_comment', 'SucuriScanHook::hookCommentInsert', 50, 5);
+        add_action('wp_login', 'SucuriScanHook::hookLoginSuccess', 50, 5);
+        add_action('wp_login_failed', 'SucuriScanHook::hookLoginFailure', 50, 5);
+        add_action('wp_trash_post', 'SucuriScanHook::hookPostTrash', 50, 5);
+        add_action('xmlrpc_publish_post', 'SucuriScanHook::hookPublishPostXMLRPC', 50, 5);
 
         if (SucuriScan::runAdminInit()) {
-            add_action('admin_init', 'SucuriScanHook::hook_undefined_actions');
+            add_action('admin_init', 'SucuriScanHook::hookCoreUpdate');
+            add_action('admin_init', 'SucuriScanHook::hookOptionsManagement');
+            add_action('admin_init', 'SucuriScanHook::hookPluginDelete');
+            add_action('admin_init', 'SucuriScanHook::hookPluginEditor');
+            add_action('admin_init', 'SucuriScanHook::hookPluginInstall');
+            add_action('admin_init', 'SucuriScanHook::hookPluginUpdate');
+            add_action('admin_init', 'SucuriScanHook::hookThemeDelete');
+            add_action('admin_init', 'SucuriScanHook::hookThemeEditor');
+            add_action('admin_init', 'SucuriScanHook::hookThemeInstall');
+            add_action('admin_init', 'SucuriScanHook::hookThemeUpdate');
+            add_action('admin_init', 'SucuriScanHook::hookWidgetAdd');
+            add_action('admin_init', 'SucuriScanHook::hookWidgetDelete');
         }
-
-        add_action('login_form', 'SucuriScanHook::hook_undefined_actions');
     } else {
         SucuriScanInterface::error('Function call interceptors are not working properly.');
     }
 
     /**
-     * Display a message if the plugin is not activated.
+     * Clear the firewall cache if necessary.
      *
-     * Display a message at the top of the administration panel with a button that
-     * once clicked will send the site's email and domain name to the Sucuri API
-     * service where an API key will be generated for the site, this key will allow
-     * the plugin to execute the filesystem scans, the project integrity, and the
-     * email notifications.
+     * Every time a page or post is modified and saved into the database the
+     * plugin will send a HTTP request to the firewall API service and except
+     * that, if the API key is valid, the cache is reset. Notice that the cache
+     * of certain files is going to stay as it is due to the configuration on the
+     * edge of the servers.
      */
-    add_action($sucuriscan_action_prefix . 'admin_notices', 'SucuriScanInterface::setup_notice');
-
-    /**
-     * Heartbeat API
-     *
-     * Update the settings of the Heartbeat API according to the values set by an
-     * administrator. This tool may cause an increase in the CPU usage, a bad
-     * configuration may cause low account to run out of resources, but in better
-     * cases it may improve the performance of the site by reducing the quantity of
-     * requests sent to the server per session.
-     */
-    add_filter('init', 'SucuriScanHeartbeat::register_script', 1);
-    add_filter('heartbeat_settings', 'SucuriScanHeartbeat::update_settings');
-    add_filter('heartbeat_send', 'SucuriScanHeartbeat::respond_to_send', 10, 3);
-    add_filter('heartbeat_received', 'SucuriScanHeartbeat::respond_to_received', 10, 3);
-    add_filter('heartbeat_nopriv_send', 'SucuriScanHeartbeat::respond_to_send', 10, 3);
-    add_filter('heartbeat_nopriv_received', 'SucuriScanHeartbeat::respond_to_received', 10, 3);
+    add_action('save_post', 'sucuriscanFirewallClearCacheSavePost');
 }

@@ -11,7 +11,7 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
 /**
  * Generate the HTML code for the firewall settings panel.
  *
- * @param  string $api_key The CloudProxy API key.
+ * @param  string $api_key The firewall API key.
  * @return string          The parsed-content of the firewall settings panel.
  */
 function sucuriscan_firewall_settings($api_key = '')
@@ -25,19 +25,17 @@ function sucuriscan_firewall_settings($api_key = '')
     );
 
     if ($api_key && array_key_exists('string', $api_key)) {
-        $settings = SucuriScanAPI::getCloudproxySettings($api_key);
+        $settings = SucuriScanAPI::getFirewallSettings($api_key);
 
         $params['Firewall.APIKeyVisibility'] = 'visible';
         $params['Firewall.APIKeyFormVisibility'] = 'hidden';
         $params['Firewall.APIKey'] = $api_key['string'];
 
         if ($settings) {
-            $counter = 0;
             $params['Firewall.SettingsVisibility'] = 'visible';
             $settings = sucuriscan_explain_firewall_settings($settings);
 
             foreach ($settings as $option_name => $option_value) {
-                $css_class = ($counter % 2 === 0) ? 'alternate' : '';
                 $option_title = ucwords(str_replace('_', "\x20", $option_name));
 
                 // Generate a HTML list when the option's value is an array.
@@ -64,12 +62,10 @@ function sucuriscan_firewall_settings($api_key = '')
                 $params['Firewall.SettingOptions'] .= SucuriScanTemplate::getSnippet(
                     'firewall-settings',
                     array(
-                        'Firewall.OptionCssClass' => $css_class,
                         'Firewall.OptionName' => $option_title,
                         'Firewall.OptionValue' => $option_value,
                     )
                 );
-                $counter++;
             }
         }
     }
@@ -82,8 +78,8 @@ function sucuriscan_firewall_settings($api_key = '')
  * text, for example changing numbers or variable names into a more explicit
  * text so the administrator can understand the meaning of these settings.
  *
- * @param  array $settings A hash with the settings of a CloudProxy account.
- * @return array           The explained version of the CloudProxy settings.
+ * @param  array $settings A hash with the settings of a firewall account.
+ * @return array           The explained version of the firewall settings.
  */
 function sucuriscan_explain_firewall_settings($settings = array())
 {
@@ -131,9 +127,9 @@ function sucuriscan_firewall_auditlogs()
 
 function sucuriscan_firewall_auditlogs_ajax()
 {
-    if (SucuriScanRequest::post('form_action') == 'get_audit_logs') {
+    if (SucuriScanRequest::post('form_action') == 'get_firewall_logs') {
         $response = '';
-        $api_key = SucuriScanAPI::getCloudproxyKey();
+        $api_key = SucuriScanAPI::getFirewallKey();
 
         if ($api_key) {
             $query = SucuriScanRequest::post(':query');
@@ -165,7 +161,7 @@ function sucuriscan_firewall_auditlogs_ajax()
                 }
             }
         } else {
-            SucuriScanInterface::error('CloudProxy API Key was not found.');
+            SucuriScanInterface::error('Firewall API key was not found.');
         }
 
         print($response);
@@ -195,12 +191,9 @@ function sucuriscan_firewall_auditlogs_entries($entries = array())
     );
 
     if (is_array($entries) && !empty($entries)) {
-        $counter = 0;
-
         foreach ($entries as $entry) {
             if (array_key_exists('is_usable', $entry) && $entry['is_usable']) {
                 $data_set = array();
-                $data_set['AccessLog.CssClass'] = ($counter % 2 == 0) ? '' : 'alternate';
 
                 foreach ($attributes as $attr) {
                     // Generate variable name for the template pseudo-tags.
@@ -227,7 +220,6 @@ function sucuriscan_firewall_auditlogs_entries($entries = array())
                 }
 
                 $output .= SucuriScanTemplate::getSnippet('firewall-auditlogs', $data_set);
-                $counter++;
             }
         }
     }
@@ -323,7 +315,7 @@ function sucuriscan_firewall_clearcache($nonce)
     if ($nonce) {
         // Flush the cache of the site(s) associated with the API key.
         if (SucuriScanRequest::post(':clear_cache') == 1) {
-            $response = SucuriScanAPI::clearCloudproxyCache();
+            $response = SucuriScanAPI::clearFirewallCache();
 
             if ($response) {
                 if (isset($response['messages'][0])) {
@@ -337,7 +329,7 @@ function sucuriscan_firewall_clearcache($nonce)
                     SucuriScanInterface::error('Could not clear the cache of your site, try later again.');
                 }
             } else {
-                SucuriScanInterface::error('CloudProxy is not enabled on your site, or your API key is invalid.');
+                SucuriScanInterface::error('Firewall is not enabled on your site, or your API key is invalid.');
             }
         }
     }
@@ -346,50 +338,24 @@ function sucuriscan_firewall_clearcache($nonce)
 }
 
 /**
- * CloudProxy firewall page.
+ * Clear the firewall cache if necessary.
  *
- * It checks whether the WordPress core files are the original ones, and the state
- * of the themes and plugins reporting the availability of updates. It also checks
- * the user accounts under the administrator group.
+ * Every time a page or post is modified and saved into the database the
+ * plugin will send a HTTP request to the firewall API service and except
+ * that, if the API key is valid, the cache is reset. Notice that the cache
+ * of certain files is going to stay as it is due to the configuration on the
+ * edge of the servers.
  *
+ * @param  integer $post_id The post ID.
  * @return void
  */
-function sucuriscan_firewall_page()
+function sucuriscanFirewallClearCacheSavePost($post_id = 0)
 {
-    SucuriScanInterface::check_permissions();
-
-    // Process all form submissions.
-    $nonce = SucuriScanInterface::check_nonce();
-    sucuriscan_firewall_form_submissions($nonce);
-
-    // Get the dynamic values for the template variables.
-    $api_key = SucuriScanAPI::getCloudproxyKey();
-
-    // Page pseudo-variables initialization.
-    $params = array(
-        'PageTitle' => 'Firewall WAF',
-        'Firewall.Settings' => sucuriscan_firewall_settings($api_key),
-        'Firewall.AuditLogs' => sucuriscan_firewall_auditlogs($api_key),
-        'Firewall.ClearCache' => sucuriscan_firewall_clearcache($nonce),
-    );
-
-    echo SucuriScanTemplate::getTemplate('firewall', $params);
-}
-
-/**
- * Handle an Ajax request for this specific page.
- *
- * @return mixed.
- */
-function sucuriscan_firewall_ajax()
-{
-    SucuriScanInterface::check_permissions();
-
-    if (SucuriScanInterface::check_nonce()) {
-        sucuriscan_firewall_auditlogs_ajax();
+    if (wp_is_post_revision($post_id) || wp_is_post_autosave($post_id)) {
+        return; /* Prevent double execution of the save_post action */
     }
 
-    wp_die();
+    SucuriScanAPI::clearFirewallCache(); /* ignore errors */
 }
 
 /**
@@ -409,20 +375,20 @@ function sucuriscan_firewall_form_submissions($nonce)
         if ($api_key !== false) {
             $api_key = trim($api_key);
 
-            if (SucuriScanAPI::isValidCloudproxyKey($api_key)) {
-                SucuriScanOption::update_option($option_name, $api_key);
-                SucuriScanInterface::info('CloudProxy API key saved successfully');
+            if (SucuriScanAPI::isValidFirewallKey($api_key)) {
+                SucuriScanOption::updateOption($option_name, $api_key);
+                SucuriScanInterface::info('Firewall API key saved successfully');
                 SucuriScanOption::setRevProxy('enable');
                 SucuriScanOption::setAddrHeader('HTTP_X_SUCURI_CLIENTIP');
             } else {
-                SucuriScanInterface::error('Invalid CloudProxy API key.');
+                SucuriScanInterface::error('Invalid firewall API key.');
             }
         }
 
-        // Delete CloudProxy API key from the plugin.
+        // Delete the firewall API key from the plugin.
         if (SucuriScanRequest::post(':delete_wafkey') !== false) {
-            SucuriScanOption::delete_option($option_name);
-            SucuriScanInterface::info('CloudProxy API key removed successfully');
+            SucuriScanOption::deleteOption($option_name);
+            SucuriScanInterface::info('Firewall API key removed successfully');
             SucuriScanOption::setRevProxy('disable');
             SucuriScanOption::setAddrHeader('REMOTE_ADDR');
         }

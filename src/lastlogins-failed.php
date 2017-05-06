@@ -21,12 +21,11 @@ function sucuriscan_failed_logins_panel()
         'FailedLogins.MaxFailedLogins' => 0,
         'FailedLogins.NoItemsVisibility' => 'visible',
         'FailedLogins.WarningVisibility' => 'visible',
-        'FailedLogins.CollectPasswordsVisibility' => 'visible',
         'FailedLogins.PaginationLinks' => '',
         'FailedLogins.PaginationVisibility' => 'hidden',
     );
 
-    if (SucuriScanInterface::check_nonce()) {
+    if (SucuriScanInterface::checkNonce()) {
         $blockUsers = SucuriScanRequest::post(':block_user', '_array');
 
         if (is_array($blockUsers) && !empty($blockUsers)) {
@@ -41,10 +40,9 @@ function sucuriscan_failed_logins_panel()
     $page_offset = ($page_number - 1) * $max_per_page;
     $page_limit = ($page_offset + $max_per_page);
 
-    $max_failed_logins = SucuriScanOption::get_option(':maximum_failed_logins');
-    $notify_bruteforce_attack = SucuriScanOption::get_option(':notify_bruteforce_attack');
-    $collect_passwords = sucuriscan_collect_wrong_passwords();
-    $failed_logins = sucuriscan_get_all_failed_logins();
+    $max_failed_logins = SucuriScanOption::getOption(':maximum_failed_logins');
+    $notify_bruteforce_attack = SucuriScanOption::getOption(':notify_bruteforce_attack');
+    $failed_logins = sucuriscan_get_all_failed_logins($page_offset, $max_per_page);
 
     if ($failed_logins) {
         $counter = 0;
@@ -52,33 +50,33 @@ function sucuriscan_failed_logins_panel()
         for ($key = $page_offset; $key < $page_limit; $key++) {
             if (array_key_exists($key, $failed_logins['entries'])) {
                 $login_data = $failed_logins['entries'][ $key ];
-                $css_class = ( $counter % 2 == 0 ) ? '' : 'alternate';
+
+                if (!is_array($login_data)) {
+                    continue;
+                }
+
                 $wrong_user_password = 'hidden';
                 $wrong_user_password_color = 'default';
 
-                if ($collect_passwords === true) {
-                    if (isset($login_data['user_password']) && !empty($login_data['user_password'])) {
-                        $wrong_user_password = $login_data['user_password'];
-                        $wrong_user_password_color = 'none';
-                    } else {
-                        $wrong_user_password = 'empty';
-                        $wrong_user_password_color = 'info';
-                    }
+                if (isset($login_data['user_password']) && !empty($login_data['user_password'])) {
+                    $wrong_user_password = $login_data['user_password'];
+                    $wrong_user_password_color = 'danger';
+                } else {
+                    $wrong_user_password = 'empty';
+                    $wrong_user_password_color = 'info';
                 }
 
-                $template_variables['FailedLogins.List'] .= SucuriScanTemplate::getSnippet(
-                    'lastlogins-failedlogins',
-                    array(
-                        'FailedLogins.CssClass' => $css_class,
-                        'FailedLogins.Num' => $login_data['attempt_count'],
-                        'FailedLogins.Username' => $login_data['user_login'],
-                        'FailedLogins.RemoteAddr' => $login_data['remote_addr'],
-                        'FailedLogins.UserAgent' => $login_data['user_agent'],
-                        'FailedLogins.Password' => $wrong_user_password,
-                        'FailedLogins.PasswordColor' => $wrong_user_password_color,
-                        'FailedLogins.Datetime' => SucuriScan::datetime($login_data['attempt_time']),
-                    )
-                );
+                $template_variables['FailedLogins.List'] .=
+                SucuriScanTemplate::getSnippet('lastlogins-failedlogins', array(
+                    'FailedLogins.Num' => $login_data['attempt_count'],
+                    'FailedLogins.Username' => $login_data['user_login'],
+                    'FailedLogins.RemoteAddr' => $login_data['remote_addr'],
+                    'FailedLogins.UserAgent' => $login_data['user_agent'],
+                    'FailedLogins.Password' => $wrong_user_password,
+                    'FailedLogins.PasswordColor' => $wrong_user_password_color,
+                    'FailedLogins.Datetime' => SucuriScan::datetime($login_data['attempt_time']),
+                ));
+
                 $counter++;
             }
         }
@@ -88,7 +86,7 @@ function sucuriscan_failed_logins_panel()
         }
 
         $template_variables['FailedLogins.PaginationLinks'] = SucuriScanTemplate::pagination(
-            '%%SUCURI.URL.Lastlogins%%#failed-logins',
+            '%%SUCURI.URL.Lastlogins%%#failed',
             $failed_logins['count'],
             $max_per_page
         );
@@ -104,27 +102,13 @@ function sucuriscan_failed_logins_panel()
         $template_variables['FailedLogins.WarningVisibility'] = 'hidden';
     }
 
-    if ($collect_passwords !== true) {
-        $template_variables['FailedLogins.CollectPasswordsVisibility'] = 'hidden';
-    }
-
     return SucuriScanTemplate::getSection('lastlogins-failedlogins', $template_variables);
-}
-
-/**
- * Whether or not to collect the password of failed logins.
- *
- * @return boolean TRUE if the password must be collected, FALSE otherwise.
- */
-function sucuriscan_collect_wrong_passwords()
-{
-    return SucuriScanOption::is_enabled(':collect_wrong_passwords');
 }
 
 /**
  * Find the full path of the file where the information of the failed logins
  * will be stored, it will be created automatically if does not exists (and if
- * the destination folder has permissions to write). This function can also be
+ * the destination folder has permissions to write). This method can also be
  * used to reset the content of the datastore file.
  *
  * @see sucuriscan_reset_failed_logins()
@@ -136,7 +120,7 @@ function sucuriscan_collect_wrong_passwords()
 function sucuriscan_failed_logins_datastore_path($get_old_logs = false, $reset = false)
 {
     $file_name = $get_old_logs ? 'sucuri-oldfailedlogins.php' : 'sucuri-failedlogins.php';
-    $datastore_path = SucuriScan::datastore_folder_path($file_name);
+    $datastore_path = SucuriScan::dataStorePath($file_name);
     $default_content = sucuriscan_failed_logins_default_content();
 
     // Create the file if it does not exists.
@@ -165,13 +149,15 @@ function sucuriscan_failed_logins_default_content()
 /**
  * Returns failed logins data including old entries.
  *
- * @return array Failed logins data.
+ * @param  integer $offset Initial index to start the array.
+ * @param  integer $limit  Number of items in the returned array.
+ * @return array           Failed logins data.
  */
-function sucuriscan_get_all_failed_logins()
+function sucuriscan_get_all_failed_logins($offset = 0, $limit = -1)
 {
     $all = array();
     $new = sucuriscan_get_failed_logins();
-    $old = sucuriscan_get_failed_logins(true);
+    $old = sucuriscan_get_failed_logins(true, $offset, $limit);
 
     if ($new && $old) {
         // Merge the new and old failed logins.
@@ -195,68 +181,112 @@ function sucuriscan_get_all_failed_logins()
 
 /**
  * Read and parse the content of the datastore file where the failed logins are
- * being kept. This function will also calculate the difference in time between
+ * being kept. This method will also calculate the difference in time between
  * the first and last login attempt registered in the file to later decide if
  * there is a brute-force attack in progress (and send an email notification
  * with the report) or reset the file after considering it a normal behavior of
  * the site.
  *
  * @param  boolean $get_old_logs Whether the old logs will be retrieved or not.
+ * @param  integer $offset       Array index from where to start collecting the data.
+ * @param  integer $limit        Number of items to insert into the returned array.
  * @return array                 Information and entries gathered from the failed logins datastore file.
  */
-function sucuriscan_get_failed_logins($get_old_logs = false)
+function sucuriscan_get_failed_logins($get_old_logs = false, $offset = 0, $limit = -1)
 {
     $datastore_path = sucuriscan_failed_logins_datastore_path($get_old_logs);
 
-    if ($datastore_path) {
-        $lines = SucuriScanFileInfo::file_lines($datastore_path);
+    if (!$datastore_path) {
+        return false;
+    }
 
-        if ($lines) {
-            $failed_logins = array(
-                'count' => 0,
-                'first_attempt' => 0,
-                'last_attempt' => 0,
-                'diff_time' => 0,
-                'entries' => array(),
-            );
+    $lines = SucuriScanFileInfo::fileLines($datastore_path);
 
-            // Read and parse all the entries found in the datastore file.
-            $offset = count($lines) - 1;
+    if (!$lines) {
+        return false;
+    }
 
-            for ($key = $offset; $key >= 0; $key--) {
-                $line = trim($lines[ $key ]);
-                $login_data = @json_decode($line, true);
+    $failed_logins = array(
+        'count' => 0,
+        'first_attempt' => 0,
+        'last_attempt' => 0,
+        'diff_time' => 0,
+        'entries' => array(),
+    );
 
-                if (is_array($login_data)) {
-                    $login_data['attempt_date'] = date('r', $login_data['attempt_time']);
-                    $login_data['attempt_count'] = ( $key + 1 );
+    // Read and parse all the entries found in the datastore file.
+    $initial = count($lines) - 1;
+    $processed = 0;
 
-                    if (!$login_data['user_agent']) {
-                        $login_data['user_agent'] = 'Unknown';
-                    }
+    // Start from the newest entry in the file.
+    for ($key = $initial; $key >= 0; $key--) {
+        $line = trim($lines[ $key ]);
 
-                    if (!isset($login_data['user_password'])) {
-                        $login_data['user_password'] = '';
-                    }
+        // Skip lines that are clearly not JSON-encoded.
+        if (substr($line, 0, 1) !== '{') {
+            continue;
+        }
 
-                    $failed_logins['entries'][] = $login_data;
-                    $failed_logins['count'] += 1;
-                }
+        // Reduce the memory allocation by skipping unnecessary lines (LEFT).
+        if ($limit > 0 && $failed_logins['count'] < $offset) {
+            $failed_logins['entries'][] = $line;
+            $failed_logins['count'] += 1;
+            continue;
+        }
+
+        // Reduce the memory allocation by skipping unnecessary lines (RIGHT).
+        if ($limit > 0 && $processed > $limit) {
+            $failed_logins['entries'][] = $line;
+            $failed_logins['count'] += 1;
+            continue;
+        }
+
+        // Decode data only if necessary.
+        $login_data = @json_decode($line, true);
+        $processed++; /* count decoded data */
+
+        if (is_array($login_data)) {
+            $login_data['attempt_date'] = date('r', $login_data['attempt_time']);
+            $login_data['attempt_count'] = ( $key + 1 );
+
+            if (!$login_data['user_agent']) {
+                $login_data['user_agent'] = 'Unknown';
             }
 
-            // Calculate the different time between the first and last attempt.
-            if ($failed_logins['count'] > 0) {
-                $z = abs($failed_logins['count'] - 1);
-                $failed_logins['last_attempt'] = $failed_logins['entries'][ $z ]['attempt_time'];
-                $failed_logins['first_attempt'] = $failed_logins['entries'][0]['attempt_time'];
-                $failed_logins['diff_time'] = abs($failed_logins['last_attempt'] - $failed_logins['first_attempt']);
-
-                return $failed_logins;
+            if (!isset($login_data['user_password'])) {
+                $login_data['user_password'] = '';
             }
+
+            $failed_logins['entries'][] = $login_data;
+            $failed_logins['count'] += 1;
         }
     }
 
-    return false;
+    // Stop if the there is no data.
+    if ($failed_logins['count'] <= 0) {
+        return false;
+    }
+
+    // Calculate the different time between the first and last attempt.
+    $idx = abs($failed_logins['count'] - 1);
+    $last = $failed_logins['entries'][$idx];
+    $first = $failed_logins['entries'][0];
+
+    if (!is_array($last)) {
+        /* In case the JSON is not decoded yet */
+        $last = @json_decode($last, true);
+    }
+
+    if (!is_array($first)) {
+        /* In case the JSON is not decoded yet */
+        $first= @json_decode($first, true);
+    }
+
+    $failed_logins['last_attempt'] = $last['attempt_time'];
+    $failed_logins['first_attempt'] = $first['attempt_time'];
+    $failed_logins['diff_time'] = abs($last['attempt_time'] - $first['attempt_time']);
+
+    return $failed_logins;
 }
 
 /**
@@ -272,18 +302,13 @@ function sucuriscan_log_failed_login($user_login = '', $wrong_password = '')
 {
     $datastore_path = sucuriscan_failed_logins_datastore_path();
 
-    // Do not collect wrong passwords if it is not necessary.
-    if (sucuriscan_collect_wrong_passwords() !== true) {
-        $wrong_password = '';
-    }
-
     if ($datastore_path) {
         $login_data = json_encode(array(
             'user_login' => $user_login,
             'user_password' => $wrong_password,
             'attempt_time' => time(),
-            'remote_addr' => SucuriScan::get_remote_addr(),
-            'user_agent' => SucuriScan::get_user_agent(),
+            'remote_addr' => SucuriScan::getRemoteAddr(),
+            'user_agent' => SucuriScan::getUserAgent(),
         ));
 
         $written = @file_put_contents(
@@ -304,7 +329,7 @@ function sucuriscan_log_failed_login($user_login = '', $wrong_password = '')
  * Read and parse all the entries in the datastore file where the failed logins
  * are being kept, this will loop through all these items and generate a table
  * in HTML code to send as a report via email according to the plugin settings
- * for the email notifications.
+ * for the email alerts.
  *
  * @param  array   $failed_logins Information and entries gathered from the failed logins datastore file.
  * @return boolean                Whether the report was sent via email or not.
@@ -312,8 +337,7 @@ function sucuriscan_log_failed_login($user_login = '', $wrong_password = '')
 function sucuriscan_report_failed_logins($failed_logins = array())
 {
     if ($failed_logins && $failed_logins['count'] > 0) {
-        $prettify_mails = SucuriScanMail::prettify_mails();
-        $collect_wrong_passwords = sucuriscan_collect_wrong_passwords();
+        $prettify_mails = SucuriScanMail::prettifyMails();
         $mail_content = '';
 
         if ($prettify_mails) {
@@ -323,11 +347,7 @@ function sucuriscan_report_failed_logins($failed_logins = array())
             $table_html .= '<thead>';
             $table_html .= '<tr>';
             $table_html .= '<th>Username</th>';
-
-            if ($collect_wrong_passwords === true) {
-                $table_html .= '<th>Password</th>';
-            }
-
+            $table_html .= '<th>Password</th>';
             $table_html .= '<th>IP Address</th>';
             $table_html .= '<th>Attempt Timestamp</th>';
             $table_html .= '<th>Attempt Date/Time</th>';
@@ -341,11 +361,7 @@ function sucuriscan_report_failed_logins($failed_logins = array())
             if ($prettify_mails) {
                 $table_html .= '<tr>';
                 $table_html .= '<td>' . esc_attr($login_data['user_login']) . '</td>';
-
-                if ($collect_wrong_passwords === true) {
-                    $table_html .= '<td>' . esc_attr($login_data['user_password']) . '</td>';
-                }
-
+                $table_html .= '<td>' . esc_attr($login_data['user_password']) . '</td>';
                 $table_html .= '<td>' . esc_attr($login_data['remote_addr']) . '</td>';
                 $table_html .= '<td>' . $login_data['attempt_time'] . '</td>';
                 $table_html .= '<td>' . $login_data['attempt_date'] . '</td>';
@@ -353,11 +369,7 @@ function sucuriscan_report_failed_logins($failed_logins = array())
             } else {
                 $mail_content .= "\n";
                 $mail_content .= 'Username: ' . $login_data['user_login'] . "\n";
-
-                if ($collect_wrong_passwords === true) {
-                    $mail_content .= 'Password: ' . $login_data['user_password'] . "\n";
-                }
-
+                $mail_content .= 'Password: ' . $login_data['user_password'] . "\n";
                 $mail_content .= 'IP Address: ' . $login_data['remote_addr'] . "\n";
                 $mail_content .= 'Attempt Timestamp: ' . $login_data['attempt_time'] . "\n";
                 $mail_content .= 'Attempt Date/Time: ' . $login_data['attempt_date'] . "\n";
@@ -370,7 +382,7 @@ function sucuriscan_report_failed_logins($failed_logins = array())
             $mail_content = $table_html;
         }
 
-        if (SucuriScanEvent::notify_event('bruteforce_attack', $mail_content)) {
+        if (SucuriScanEvent::notifyEvent('bruteforce_attack', $mail_content)) {
             sucuriscan_reset_failed_logins();
 
             return true;
@@ -382,15 +394,15 @@ function sucuriscan_report_failed_logins($failed_logins = array())
 
 /**
  * Remove all the entries in the datastore file where the failed logins are
- * being kept. The execution of this function will not delete the file (which is
+ * being kept. The execution of this method will not delete the file (which is
  * likely the best move) but rather will clean its content and append the
- * default code defined by another function above.
+ * default code defined by another method above.
  *
  * @return boolean Whether the datastore file was resetted or not.
  */
 function sucuriscan_reset_failed_logins()
 {
-    $datastore_path = SucuriScan::datastore_folder_path('sucuri-failedlogins.php');
+    $datastore_path = SucuriScan::dataStorePath('sucuri-failedlogins.php');
     $datastore_backup_path = sucuriscan_failed_logins_datastore_path(true, false);
     $default_content = sucuriscan_failed_logins_default_content();
     $current_content = @file_get_contents($datastore_path);

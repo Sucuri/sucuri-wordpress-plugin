@@ -3,8 +3,8 @@
 
 %%%SUCURI.ModalForApiKeyRecovery%%%
 
-<div class="postbox">
-    <h3>Plugin API Key</h3>
+<div class="sucuriscan-panel">
+    <h3 class="sucuriscan-title">Plugin API Key</h3>
 
     <div class="inside">
         <p>
@@ -45,7 +45,7 @@
                 <div class="sucuriscan-monospace">Plugin API Key: %%SUCURI.APIKey%%</div>
                 <form action="%%SUCURI.URL.Settings%%" method="post">
                     <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
-                    <button type="submit" name="sucuriscan_recover_key" class="button-primary">Recover Via E-mail</button>
+                    <button type="submit" name="sucuriscan_recover_key" class="button button-primary">Recover Via E-mail</button>
                 </form>
             </div>
 
@@ -62,7 +62,7 @@
             <div class="sucuriscan-monospace">Plugin API Key: %%SUCURI.APIKey%%</div>
             <form action="%%SUCURI.URL.Settings%%" method="post">
                 <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
-                <button type="submit" name="sucuriscan_remove_api_key" class="button-primary button-danger">Remove</button>
+                <button type="submit" name="sucuriscan_remove_api_key" class="button button-primary">Remove</button>
             </form>
         </div>
     </div>

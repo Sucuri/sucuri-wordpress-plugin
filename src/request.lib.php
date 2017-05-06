@@ -18,7 +18,6 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  */
 class SucuriScanRequest extends SucuriScan
 {
-
     /**
      * Returns the value stored in a specific index in the global _GET, _POST or
      * _REQUEST variables, you can specify a pattern as the second argument to
@@ -31,7 +30,7 @@ class SucuriScanRequest extends SucuriScan
      */
     public static function request($list = array(), $key = '', $pattern = '')
     {
-        $key = self::variable_prefix($key);
+        $key = self::varPrefix($key);
 
         if (is_array($list)
             && is_string($key)
@@ -111,7 +110,7 @@ class SucuriScanRequest extends SucuriScan
      * @param  string $pattern Optional pattern to match allowed values in the requested key.
      * @return string          The value stored in the specified key inside the global _POST variable.
      */
-    public static function get_or_post($key = '', $pattern = '')
+    public static function getOrPost($key = '', $pattern = '')
     {
         return self::request($_REQUEST, $key, $pattern);
     }

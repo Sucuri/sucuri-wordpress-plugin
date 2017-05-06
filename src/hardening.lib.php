@@ -13,7 +13,7 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  *
  * In computing, hardening is usually the process of securing a system by
  * reducing its surface of vulnerability. A system has a larger vulnerability
- * surface the more functions it fulfills; in principle a single-function system
+ * surface the more functions it fulfills; in principle a single-method system
  * is more secure than a multipurpose one. Reducing available vectors of attack
  * typically includes the removal of unnecessary software, unnecessary usernames
  * or logins and the disabling or removal of unnecessary services.
@@ -28,7 +28,6 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  */
 class SucuriScanHardening extends SucuriScan
 {
-
     /**
      * Returns a list of access control rules for the Apache web server that can be
      * used to deny and allow certain files to be accessed by certain network nodes.
@@ -37,7 +36,7 @@ class SucuriScanHardening extends SucuriScan
      *
      * @return array List of access control rules.
      */
-    private static function get_rules()
+    private static function getRules()
     {
         return array(
             '<FilesMatch "\.(?i:php)$">',
@@ -56,12 +55,12 @@ class SucuriScanHardening extends SucuriScan
      * Adds some rules to an existing access control file (or creates it if does not
      * exists) to deny access to all files with certain extension in any mixed case.
      * The permissions to modify the file are checked before anything else, this
-     * function is self-contained.
+     * method is self-contained.
      *
      * @param  string  $directory Valid directory path where to place the access rules.
      * @return boolean            True if the rules are successfully added, false otherwise.
      */
-    public static function harden_directory($directory = '')
+    public static function hardenDirectory($directory = '')
     {
         if (file_exists($directory)
             && is_writable($directory)
@@ -69,10 +68,10 @@ class SucuriScanHardening extends SucuriScan
         ) {
             $fhandle = false;
             $target = self::htaccess($directory);
-            $deny_rules = self::get_rules();
+            $deny_rules = self::getRules();
 
             if (file_exists($target)) {
-                self::fix_previous_hardening($directory);
+                self::fixPreviousHardening($directory);
                 $fhandle = @fopen($target, 'a');
             } else {
                 $fhandle = @fopen($target, 'w');
@@ -98,10 +97,10 @@ class SucuriScanHardening extends SucuriScan
      * @param  string  $directory Valid directory path where to access rules are.
      * @return boolean            True if the rules are successfully deleted, false otherwise.
      */
-    public static function unharden_directory($directory = '')
+    public static function unhardenDirectory($directory = '')
     {
-        if (self::is_hardened($directory)) {
-            $deny_rules = self::get_rules();
+        if (self::isHardened($directory)) {
+            $deny_rules = self::getRules();
             $fpath = self::htaccess($directory);
             $content = @file_get_contents($fpath);
 
@@ -128,7 +127,7 @@ class SucuriScanHardening extends SucuriScan
      * @param  string  $directory Valid directory path.
      * @return boolean            True if the access control file was fixed.
      */
-    private static function fix_previous_hardening($directory = '')
+    private static function fixPreviousHardening($directory = '')
     {
         $fpath = self::htaccess($directory);
         $content = @file_get_contents($fpath);
@@ -152,13 +151,13 @@ class SucuriScanHardening extends SucuriScan
      * @param  string  $directory Valid directory path.
      * @return boolean            True if the directory is hardened, false otherwise.
      */
-    public static function is_hardened($directory = '')
+    public static function isHardened($directory = '')
     {
         if (file_exists($directory) && is_dir($directory)) {
             $fpath = self::htaccess($directory);
 
             if (file_exists($fpath) && is_readable($fpath)) {
-                $rules = self::get_rules();
+                $rules = self::getRules();
                 $rules_str = implode("\n", $rules);
                 $content = @file_get_contents($fpath);
 
@@ -181,7 +180,7 @@ class SucuriScanHardening extends SucuriScan
         return $htaccess;
     }
 
-    private static function whitelist_rule($file = '')
+    private static function whitelistRule($file = '')
     {
         $file = str_replace('/', '', $file);
         $file = str_replace('<', '', $file);
@@ -206,7 +205,7 @@ class SucuriScanHardening extends SucuriScan
 
         if (file_exists($htaccess)) {
             if (is_writable($htaccess)) {
-                $rules = "\n" . self::whitelist_rule($file);
+                $rules = "\n" . self::whitelistRule($file);
                 @file_put_contents($htaccess, $rules, FILE_APPEND);
             } else {
                 throw new Exception('Access control file is not writable');
@@ -225,7 +224,7 @@ class SucuriScanHardening extends SucuriScan
             && is_writable($htaccess)
         ) {
             $content = file_get_contents($htaccess);
-            $rules = self::whitelist_rule($file);
+            $rules = self::whitelistRule($file);
             $content = str_replace($rules, '', $content);
             $content = rtrim($content) . "\n";
 
@@ -233,7 +232,7 @@ class SucuriScanHardening extends SucuriScan
         }
     }
 
-    public static function get_whitelisted($folder = '')
+    public static function getWhitelisted($folder = '')
     {
         $htaccess = self::htaccess($folder);
 

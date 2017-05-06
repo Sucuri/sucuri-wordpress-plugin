@@ -8,85 +8,148 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     exit(1);
 }
 
-/**
- * Read and parse the content of the scanner settings template.
- *
- * @return string Parsed HTML code for the scanner settings panel.
- */
-function sucuriscan_settings_scanner($nonce)
+function sucuriscan_settings_scanner_options()
 {
-    global $sucuriscan_schedule_allowed,
-        $sucuriscan_interface_allowed;
+    global $sucuriscan_schedule_allowed;
 
-    // Get initial variables to decide some things bellow.
-    $fs_scanner = SucuriScanOption::get_option(':fs_scanner');
-    $scan_freq = SucuriScanOption::get_option(':scan_frequency');
-    $scan_interface = SucuriScanOption::get_option(':scan_interface');
-    $scan_errorlogs = SucuriScanOption::get_option(':scan_errorlogs');
-    $runtime_scan_human = SucuriScanFSScanner::get_filesystem_runtime(true);
+    $params = array();
 
-    // Get the file path of the security logs.
-    $basedir = SucuriScan::datastore_folder_path();
-    $integrity_log_path = $basedir . '/sucuri-integrity.php';
-    $lastlogins_log_path = $basedir . '/sucuri-lastlogins.php';
-    $failedlogins_log_path = $basedir . '/sucuri-failedlogins.php';
+    if (SucuriScanInterface::checkNonce()) {
+        // Modify the schedule of the filesystem scanner.
+        if ($frequency = SucuriScanRequest::post(':scan_frequency')) {
+            if (array_key_exists($frequency, $sucuriscan_schedule_allowed)) {
+                SucuriScanOption::updateOption(':scan_frequency', $frequency);
+
+                // Remove all the scheduled tasks associated to the plugin.
+                wp_clear_scheduled_hook('sucuriscan_scheduled_scan');
+
+                // Install new cronjob unless the user has selected "Never".
+                if ($frequency !== '_oneoff') {
+                    wp_schedule_event(time() + 10, $frequency, 'sucuriscan_scheduled_scan');
+                }
+
+                $frequency_title = strtolower($sucuriscan_schedule_allowed[ $frequency ]);
+                $message = 'File system scanning frequency set to <code>' . $frequency_title . '</code>';
+
+                SucuriScanEvent::reportInfoEvent($message);
+                SucuriScanEvent::notifyEvent('plugin_change', $message);
+                SucuriScanInterface::info($message);
+            }
+        }
+    }
+
+    $scan_freq = SucuriScanOption::getOption(':scan_frequency');
 
     // Generate the HTML code for the option list in the form select fields.
-    $scan_freq_options = SucuriScanTemplate::selectOptions($sucuriscan_schedule_allowed, $scan_freq);
-    $scan_interface_options = SucuriScanTemplate::selectOptions($sucuriscan_interface_allowed, $scan_interface);
+    $freq_options = SucuriScanTemplate::selectOptions($sucuriscan_schedule_allowed, $scan_freq);
 
-    $params = array(
-        /* Filesystem scanner */
-        'FsScannerStatus' => 'Enabled',
-        'FsScannerSwitchText' => 'Disable',
-        'FsScannerSwitchValue' => 'disable',
-        'FsScannerSwitchCssClass' => 'button-danger',
-        /* Scan error logs. */
-        'ScanErrorlogsStatus' => 'Enabled',
-        'ScanErrorlogsSwitchText' => 'Disable',
-        'ScanErrorlogsSwitchValue' => 'disable',
-        'ScanErrorlogsSwitchCssClass' => 'button-danger',
-        /* Filsystem scanning frequency. */
-        'ScanningFrequency' => 'Undefined',
-        'ScanningFrequencyOptions' => $scan_freq_options,
-        'ScanningInterface' => ( $scan_interface ? $sucuriscan_interface_allowed[ $scan_interface ] : 'Undefined' ),
-        'ScanningInterfaceOptions' => $scan_interface_options,
-        /* Filesystem scanning runtime. */
-        'ScanningRuntimeHuman' => $runtime_scan_human,
-        'IntegrityLogLife' => '0B',
-        'LastLoginLogLife' => '0B',
-        'FailedLoginLogLife' => '0B',
-    );
+    $params['ScanningFrequency'] = 'Undefined';
+    $params['ScanningFrequencyOptions'] = $freq_options;
 
-    if ($fs_scanner == 'disabled') {
-        $params['FsScannerStatus'] = 'Disabled';
-        $params['FsScannerSwitchText'] = 'Enable';
-        $params['FsScannerSwitchValue'] = 'enable';
-        $params['FsScannerSwitchCssClass'] = 'button-success';
-    }
-
-    if ($scan_errorlogs == 'disabled') {
-        $params['ScanErrorlogsStatus'] = 'Disabled';
-        $params['ScanErrorlogsSwitchText'] = 'Enable';
-        $params['ScanErrorlogsSwitchValue'] = 'enable';
-        $params['ScanErrorlogsSwitchCssClass'] = 'button-success';
-    }
+    $hasSPL = SucuriScanFileInfo::isSplAvailable();
+    $params['NoSPL.Visibility'] = SucuriScanTemplate::visibility(!$hasSPL);
 
     if (array_key_exists($scan_freq, $sucuriscan_schedule_allowed)) {
         $params['ScanningFrequency'] = $sucuriscan_schedule_allowed[ $scan_freq ];
     }
 
-    // Determine the age of the security log files.
-    $params['IntegrityLogLife'] = SucuriScan::human_filesize(@filesize($integrity_log_path));
-    $params['LastLoginLogLife'] = SucuriScan::human_filesize(@filesize($lastlogins_log_path));
-    $params['FailedLoginLogLife'] = SucuriScan::human_filesize(@filesize($failedlogins_log_path));
+    return SucuriScanTemplate::getSection('settings-scanner-options', $params);
+}
 
-    $params['Settings.CoreFilesStatus'] = sucuriscan_settings_corefiles_status($nonce);
-    $params['Settings.CoreFilesLanguage'] = sucuriscan_settings_corefiles_language($nonce);
-    $params['Settings.CoreFilesCache'] = sucuriscan_settings_corefiles_cache($nonce);
-    $params['Settings.SiteCheckStatus'] = SucuriScanSiteCheck::statusPage();
-    $params['Settings.SiteCheckCache'] = SucuriScanSiteCheck::cachePage($nonce);
-    $params['Settings.SiteCheckTimeout'] = SucuriScanSiteCheck::timeoutPage($nonce);
+function sucuriscan_settings_ignorescan_ajax()
+{
+    if (SucuriScanRequest::post('form_action') == 'get_ignored_files') {
+        $response = '';
 
-    return SucuriScanTemplate::getSection('settings-scanner', $params);
+        // Scan the project and get the ignored paths.
+        $ignored_dirs = SucuriScanFSScanner::getIgnoredDirectoriesLive();
+
+        foreach ($ignored_dirs as $group => $dir_list) {
+            foreach ($dir_list as $dir_data) {
+                $valid_entry = false;
+                $snippet = array(
+                    'IgnoreScan.Directory' => '',
+                    'IgnoreScan.DirectoryPath' => '',
+                    'IgnoreScan.IgnoredAt' => '',
+                    'IgnoreScan.IgnoredAtText' => 'ok',
+                );
+
+                if ($group == 'is_ignored') {
+                    $valid_entry = true;
+                    $snippet['IgnoreScan.Directory'] = urlencode($dir_data['directory_path']);
+                    $snippet['IgnoreScan.DirectoryPath'] = $dir_data['directory_path'];
+                    $snippet['IgnoreScan.IgnoredAt'] = SucuriScan::datetime($dir_data['ignored_at']);
+                    $snippet['IgnoreScan.IgnoredAtText'] = 'ignored';
+                } elseif ($group == 'is_not_ignored') {
+                    $valid_entry = true;
+                    $snippet['IgnoreScan.Directory'] = urlencode($dir_data);
+                    $snippet['IgnoreScan.DirectoryPath'] = $dir_data;
+                }
+
+                if ($valid_entry) {
+                    $response .= SucuriScanTemplate::getSnippet('settings-scanner-ignore-folders', $snippet);
+                }
+            }
+        }
+
+        print($response);
+        exit(0);
+    }
+}
+
+function sucuriscan_settings_scanner_ignore_folders($nonce)
+{
+    $params = array();
+
+    if ($nonce) {
+        // Ignore a new directory path for the file system scans.
+        if ($action = SucuriScanRequest::post(':ignorescanning_action', '(ignore|unignore)')) {
+            $ign_dirs = SucuriScanRequest::post(':ignorescanning_dirs', '_array');
+            $ign_file = SucuriScanRequest::post(':ignorescanning_file');
+
+            if ($action == 'ignore') {
+                // Target a single file path to be ignored.
+                if ($ign_file !== false) {
+                    $ign_dirs = array($ign_file);
+                    unset($_POST['sucuriscan_ignorescanning_file']);
+                }
+
+                // Target a list of directories to be ignored.
+                if (is_array($ign_dirs) && !empty($ign_dirs)) {
+                    $were_ignored = array();
+
+                    foreach ($ign_dirs as $resource_path) {
+                        if (file_exists($resource_path)
+                            && SucuriScanFSScanner::ignoreDirectory($resource_path)
+                        ) {
+                            $were_ignored[] = $resource_path;
+                        }
+                    }
+
+                    if (!empty($were_ignored)) {
+                        SucuriScanInterface::info('Items selected will be ignored in future scans.');
+                        SucuriScanEvent::reportWarningEvent(sprintf(
+                            'Resources will not be scanned: (multiple entries): %s',
+                            @implode(',', $ign_dirs)
+                        ));
+                    }
+                }
+            } elseif ($action == 'unignore'
+                && is_array($ign_dirs)
+                && !empty($ign_dirs)
+            ) {
+                foreach ($ign_dirs as $directory_path) {
+                    SucuriScanFSScanner::unignoreDirectory($directory_path);
+                }
+
+                SucuriScanInterface::info('Items selected will not be ignored anymore.');
+                SucuriScanEvent::reportNoticeEvent(sprintf(
+                    'Resources will be scanned: (multiple entries): %s',
+                    @implode(',', $ign_dirs)
+                ));
+            }
+        }
+    }
+
+    return SucuriScanTemplate::getSection('settings-scanner-ignore-folders', $params);
 }

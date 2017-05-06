@@ -1,27 +1,21 @@
 
 <div class="sucuriscan-tabs">
-    <ul>
-        <li>
-            <a href="#settings" data-tabname="settings">Settings</a>
-        </li>
-        <li>
-            <a href="#auditlogs" data-tabname="auditlogs">Audit Logs</a>
-        </li>
-        <li>
-            <a href="#clearcache" data-tabname="clearcache">Clear Cache</a>
-        </li>
+    <ul class="sucuriscan-clearfix sucuriscan-tabs-buttons">
+        <li><a href="%%SUCURI.URL.Firewall%%#settings">Settings</a></li>
+        <li><a href="%%SUCURI.URL.Firewall%%#auditlogs">Audit Logs</a></li>
+        <li><a href="%%SUCURI.URL.Firewall%%#clearcache">Clear Cache</a></li>
     </ul>
 
-    <div class="sucuriscan-tab-containers">
-        <div id="sucuriscan-settings">
+    <div class="sucuriscan-tabs-containers">
+        <div id="sucuriscan-tabs-settings" class="sucuriscan-hidden">
             %%%SUCURI.Firewall.Settings%%%
         </div>
 
-        <div id="sucuriscan-auditlogs">
+        <div id="sucuriscan-tabs-auditlogs" class="sucuriscan-hidden">
             %%%SUCURI.Firewall.AuditLogs%%%
         </div>
 
-        <div id="sucuriscan-clearcache">
+        <div id="sucuriscan-tabs-clearcache" class="sucuriscan-hidden">
             %%%SUCURI.Firewall.ClearCache%%%
         </div>
     </div>

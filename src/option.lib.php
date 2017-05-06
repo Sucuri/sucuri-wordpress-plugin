@@ -23,7 +23,7 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  * name. This page contains the technical documentation needed to use the
  * Options API. A list of default options can be found in the Option Reference.
  *
- * Note that the _site_ functions are essentially the same as their
+ * Note that the _site_ methods are essentially the same as their
  * counterparts. The only differences occur for WP Multisite, when the options
  * apply network-wide and the data is stored in the wp_sitemeta table under the
  * given custom name.
@@ -33,13 +33,12 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  */
 class SucuriScanOption extends SucuriScanRequest
 {
-
     /**
      * Default values for all the plugin's options.
      *
      * @return array Default values for all the plugin's options.
      */
-    public static function get_default_option_values()
+    private static function getDefaultOptionValues()
     {
         $defaults = array(
             'sucuriscan_account' => '',
@@ -48,24 +47,15 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_api_key' => false,
             'sucuriscan_api_protocol' => 'https',
             'sucuriscan_api_service' => 'enabled',
-            'sucuriscan_audit_report' => 'disabled',
             'sucuriscan_cloudproxy_apikey' => '',
-            'sucuriscan_collect_wrong_passwords' => 'disabled',
             'sucuriscan_comment_monitor' => 'disabled',
-            'sucuriscan_datastore_path' => dirname(self::optionsFilePath()),
-            'sucuriscan_dismiss_setup' => 'disabled',
+            'sucuriscan_diff_utility' => 'disabled',
             'sucuriscan_dns_lookups' => 'enabled',
             'sucuriscan_email_subject' => 'Sucuri Alert, :domain, :event',
             'sucuriscan_emails_per_hour' => 5,
             'sucuriscan_emails_sent' => 0,
-            'sucuriscan_errorlogs_limit' => 30,
-            'sucuriscan_fs_scanner' => 'enabled',
-            'sucuriscan_heartbeat' => 'enabled',
-            'sucuriscan_heartbeat_autostart' => 'enabled',
-            'sucuriscan_heartbeat_interval' => 'standard',
-            'sucuriscan_heartbeat_pulse' => 15,
-            'sucuriscan_ignore_scanning' => 'disabled',
             'sucuriscan_ignored_events' => '',
+            'sucuriscan_integrity_startup' => '',
             'sucuriscan_language' => 'en_US',
             'sucuriscan_last_email_at' => time(),
             'sucuriscan_lastlogin_redirection' => 'enabled',
@@ -94,24 +84,17 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_notify_website_updated' => 'disabled',
             'sucuriscan_notify_widget_added' => 'disabled',
             'sucuriscan_notify_widget_deleted' => 'disabled',
-            'sucuriscan_parse_errorlogs' => 'enabled',
             'sucuriscan_plugin_version' => '0.0',
             'sucuriscan_prettify_mails' => 'disabled',
-            'sucuriscan_request_timeout' => 5,
+            'sucuriscan_request_timeout' => 15,
             'sucuriscan_revproxy' => 'disabled',
             'sucuriscan_runtime' => 0,
-            'sucuriscan_scan_checksums' => 'enabled',
-            'sucuriscan_scan_errorlogs' => 'disabled',
             'sucuriscan_scan_frequency' => 'twicedaily',
-            'sucuriscan_scan_interface' => 'spl',
             'sucuriscan_selfhosting_fpath' => '',
             'sucuriscan_selfhosting_monitor' => 'disabled',
             'sucuriscan_site_version' => '0.0',
-            'sucuriscan_sitecheck_counter' => 0,
             'sucuriscan_sitecheck_timeout' => 30,
             'sucuriscan_use_wpmail' => 'enabled',
-            'sucuriscan_verify_ssl_cert' => 'false',
-            'sucuriscan_xhr_monitor' => 'disabled',
         );
 
         return $defaults;
@@ -122,25 +105,12 @@ class SucuriScanOption extends SucuriScanRequest
      *
      * @return array Name of all valid plugin's options.
      */
-    public static function get_default_option_names()
+    public static function getDefaultOptionNames()
     {
-        $options = self::get_default_option_values();
+        $options = self::getDefaultOptionValues();
         $names = array_keys($options);
 
         return $names;
-    }
-
-    /**
-     * Check whether an option is used in the plugin or not.
-     *
-     * @param  string  $option Name of the option that will be checked.
-     * @return boolean         True if the option is part of the plugin, False otherwise.
-     */
-    public static function is_valid_plugin_option($option = '')
-    {
-        $options = self::get_default_option_names();
-
-        return (bool) in_array($option, $options);
     }
 
     /**
@@ -149,9 +119,9 @@ class SucuriScanOption extends SucuriScanRequest
      * @param  string|array $settings Either an array that will be complemented or a string with the name of the option.
      * @return string|array           The default values for the specified options.
      */
-    public static function get_default_options($settings = '')
+    private static function getDefaultOptions($settings = '')
     {
-        $default_options = self::get_default_option_values();
+        $default_options = self::getDefaultOptionValues();
 
         // Use framework built-in function.
         if (function_exists('get_option')) {
@@ -181,41 +151,6 @@ class SucuriScanOption extends SucuriScanRequest
     }
 
     /**
-     * Check if the settings will be stored in the database.
-     *
-     * Since version 1.7.18 the plugin started using plain text files to store
-     * its settings as a security measure to reduce the scope of the attacks
-     * against the database and to simplify the management of the settings for
-     * multisite installations. Some users complained about this and suggested
-     * to create an option to allow them to keep using the database instead of
-     * plain text files.
-     *
-     * We will not add an explicit option in the settings page, but users can go
-     * around this defining a constant in the configuration file named
-     * "SUCURI_SETTINGS_IN" with value "database" to force the plugin to store
-     * its settings in the database instead of the plain text files.
-     *
-     * @return boolean True if the settings will be stored in the database.
-     */
-    public static function settingsInDatabase()
-    {
-        return (bool) (
-            defined('SUCURI_SETTINGS_IN')
-            && SUCURI_SETTINGS_IN === 'database'
-        );
-    }
-
-    /**
-     * Check if the settings will be stored in a plain text file.
-     *
-     * @return boolean True if the settings will be stored in a file.
-     */
-    public static function settingsInTextFile()
-    {
-        return (bool) (self::settingsInDatabase() === false);
-    }
-
-    /**
      * Returns path of the options storage.
      *
      * Returns the absolute path of the file that will store the options
@@ -228,19 +163,7 @@ class SucuriScanOption extends SucuriScanRequest
      */
     public static function optionsFilePath()
     {
-        $content_dir = defined('WP_CONTENT_DIR')
-            ? rtrim(WP_CONTENT_DIR, '/')
-            : ABSPATH . '/wp-content';
-        $folder = $content_dir . '/uploads/sucuri';
-
-        if (defined('SUCURI_DATA_STORAGE')
-            && file_exists(SUCURI_DATA_STORAGE)
-            && is_dir(SUCURI_DATA_STORAGE)
-        ) {
-            $folder = SUCURI_DATA_STORAGE;
-        }
-
-        return self::fixPath($folder . '/sucuri-settings.php');
+        return self::dataStorePath('sucuri-settings.php');
     }
 
     /**
@@ -257,7 +180,7 @@ class SucuriScanOption extends SucuriScanRequest
         $options = array();
         $fpath = self::optionsFilePath();
 
-        /* Use this over SucuriScanCache to prevent nested function calls */
+        /* Use this over SucuriScanCache to prevent nested method calls */
         $content = SucuriScanFileInfo::fileContent($fpath);
 
         if ($content !== false) {
@@ -295,24 +218,24 @@ class SucuriScanOption extends SucuriScanRequest
      * Returns data from the settings file or the database.
      *
      * To facilitate the development, you can prefix the name of the key in the
-     * request (when accessing it) with a single colon, this function will
+     * request (when accessing it) with a single colon, this method will
      * automatically replace that character with the unique identifier of the
      * plugin.
      *
      * NOTE: The SucuriScanCache library is a better interface to read the
      * content of a configuration file following the same standard in the other
      * files associated to the plugin. However, this library makes use of this
-     * function to retrieve the directory where the files are stored, if we use
+     * method to retrieve the directory where the files are stored, if we use
      * this library for this specific task we will end up provoking a maximum
-     * nesting function call warning.
+     * nesting method call warning.
      *
      * @param  string $option Name of the setting that will be retrieved.
      * @return string         Option value, or default value if empty.
      */
-    public static function get_option($option = '')
+    public static function getOption($option = '')
     {
         $options = self::getAllOptions();
-        $option = self::variable_prefix($option);
+        $option = self::varPrefix($option);
 
         if (array_key_exists($option, $options)) {
             return $options[$option];
@@ -331,7 +254,7 @@ class SucuriScanOption extends SucuriScanRequest
          * the name starts with the same prefix used by the plugin then we must
          * return the default value defined by the author.
          *
-         * Note that if the plain text file is not writable the function should
+         * Note that if the plain text file is not writable the method should
          * not delete the option from the database to keep backward compatibility
          * with previous installations of the plugin.
          */
@@ -340,7 +263,7 @@ class SucuriScanOption extends SucuriScanRequest
 
             if ($value !== false) {
                 if (strpos($option, 'sucuriscan_') === 0) {
-                    $written = self::update_option($option, $value);
+                    $written = self::updateOption($option, $value);
 
                     if ($written === true) {
                         delete_option($option);
@@ -352,7 +275,7 @@ class SucuriScanOption extends SucuriScanRequest
         }
 
         if (strpos($option, 'sucuriscan_') === 0) {
-            return self::get_default_options($option);
+            return self::getDefaultOptions($option);
         }
 
         return false;
@@ -361,7 +284,7 @@ class SucuriScanOption extends SucuriScanRequest
     /**
      * Update the value of an database' option.
      *
-     * Use the function to update a named option/value pair to the options database
+     * Use the method to update a named option/value pair to the options database
      * table. The option name value is escaped with a special database method before
      * the insert SQL statement but not the option value, this value should always
      * be properly sanitized.
@@ -372,17 +295,14 @@ class SucuriScanOption extends SucuriScanRequest
      * @param  string  $value  New value, either an integer, string, array, or object.
      * @return boolean         True if option value has changed, false otherwise.
      */
-    public static function update_option($option = '', $value = '')
+    public static function updateOption($option = '', $value = '')
     {
         if (strpos($option, ':') === 0 || strpos($option, 'sucuriscan') === 0) {
             $options = self::getAllOptions();
-            $option = self::variable_prefix($option);
+            $option = self::varPrefix($option);
             $options[$option] = $value;
 
-            // Skip if user wants to use the database.
-            if (self::settingsInTextFile() && self::writeNewOptions($options)) {
-                return true;
-            }
+            return self::writeNewOptions($options);
         }
 
         if (function_exists('update_option')) {
@@ -402,11 +322,11 @@ class SucuriScanOption extends SucuriScanRequest
      * @param  string  $option Name of the option to be deleted.
      * @return boolean         True, if option is successfully deleted. False on failure, or option does not exist.
      */
-    public static function delete_option($option = '')
+    public static function deleteOption($option = '')
     {
         if (strpos($option, ':') === 0 || strpos($option, 'sucuriscan') === 0) {
             $options = self::getAllOptions();
-            $option = self::variable_prefix($option);
+            $option = self::varPrefix($option);
 
             // Create/Modify option's value.
             if (array_key_exists($option, $options)) {
@@ -429,9 +349,9 @@ class SucuriScanOption extends SucuriScanRequest
      * @param  string  $option Name of the option to be deleted.
      * @return boolean         True if the option is enabled, false otherwise.
      */
-    public static function is_enabled($option = '')
+    public static function isEnabled($option = '')
     {
-        return (bool) ( self::get_option($option) === 'enabled' );
+        return (bool) (self::getOption($option) === 'enabled');
     }
 
     /**
@@ -440,9 +360,9 @@ class SucuriScanOption extends SucuriScanRequest
      * @param  string  $option Name of the option to be deleted.
      * @return boolean         True if the option is disabled, false otherwise.
      */
-    public static function is_disabled($option = '')
+    public static function isDisabled($option = '')
     {
-        return (bool) ( self::get_option($option) === 'disabled' );
+        return (bool) (self::getOption($option) === 'disabled');
     }
 
     /**
@@ -450,7 +370,7 @@ class SucuriScanOption extends SucuriScanRequest
      *
      * @return void
      */
-    public static function delete_plugin_options()
+    public static function deletePluginOptions()
     {
         global $wpdb;
 
@@ -465,23 +385,22 @@ class SucuriScanOption extends SucuriScanRequest
         }
 
         // Merge with the default options to ensure full cleanup.
-        $default = self::get_default_option_names();
+        $default = self::getDefaultOptionNames();
 
         foreach ($default as $option) {
             if (is_string($option)) {
-                self::delete_option($option);
+                self::deleteOption($option);
             }
         }
     }
 
     /**
      * Retrieve all the options stored by Wordpress in the database. The options
-     * containing the word "transient" are excluded from the results, this function
-     * is compatible with multisite instances.
+     * containing the word "transient" are excluded from the results, this functionmethodis compatible with multisite instances.
      *
      * @return array All the options stored by Wordpress in the database, except the transient options.
      */
-    public static function get_site_options()
+    private static function getSiteOptions()
     {
         global $wpdb;
 
@@ -512,14 +431,14 @@ class SucuriScanOption extends SucuriScanRequest
      * @param  array $request The content of the global variable GET or POST considering SERVER[REQUEST_METHOD].
      * @return array          A list of all the options that were changes through this request.
      */
-    public static function what_options_were_changed($request = array())
+    public static function whatOptionsWereChanged($request = array())
     {
         $options_changed = array(
             'original' => array(),
             'changed' => array()
         );
 
-        $site_options = self::get_site_options();
+        $site_options = self::getSiteOptions();
 
         foreach ($request as $req_name => $req_value) {
             if (array_key_exists($req_name, $site_options)
@@ -538,7 +457,7 @@ class SucuriScanOption extends SucuriScanRequest
      *
      * @return boolean TRUE if the nonce is valid, FALSE otherwise.
      */
-    public static function check_options_nonce()
+    public static function checkOptionsNonce()
     {
         // Create the option_page value if permalink submission.
         if (!isset($_POST['option_page'])
@@ -579,14 +498,14 @@ class SucuriScanOption extends SucuriScanRequest
     }
 
     /**
-     * Get a list of the post types ignored to receive email notifications when the
+     * Get a list of the post types ignored to receive email alerts when the
      * "new site content" hook is triggered.
      *
-     * @return array List of ignored posts-types to send notifications.
+     * @return array List of ignored posts-types to send alerts.
      */
-    public static function get_ignored_events()
+    public static function getIgnoredEvents()
     {
-        $post_types = self::get_option(':ignored_events');
+        $post_types = self::getOption(':ignored_events');
         $post_types_arr = false;
 
         if (is_string($post_types)) {
@@ -601,65 +520,53 @@ class SucuriScanOption extends SucuriScanRequest
     }
 
     /**
-     * Add a new post type to the list of ignored events to send notifications.
+     * Add a new post type to the list of ignored events to send alerts.
      *
      * @param  string  $event_name Unique post-type name.
      * @return boolean             Whether the event was ignored or not.
      */
-    public static function add_ignored_event($event_name = '')
+    public static function addIgnoredEvent($event_name = '')
     {
-        if (function_exists('get_post_types')) {
-            $post_types = get_post_types();
+        $ignored = self::getIgnoredEvents();
 
-            // Check if the event is a registered post-type.
-            if (array_key_exists($event_name, $post_types)) {
-                $ignored_events = self::get_ignored_events();
-
-                // Check if the event is not ignored already.
-                if (!array_key_exists($event_name, $ignored_events)) {
-                    $ignored_events[ $event_name ] = time();
-                    $saved = self::update_option(':ignored_events', json_encode($ignored_events));
-
-                    return $saved;
-                }
-            }
+        if (array_key_exists($event_name, $ignored)) {
+            return false; /* skip if the post-type was already ignored */
         }
 
-        return false;
+        $ignored[$event_name] = time(); /* add post-type to the list */
+
+        return self::updateOption(':ignored_events', @json_encode($ignored));
     }
 
     /**
-     * Remove a post type from the list of ignored events to send notifications.
+     * Remove a post type from the list of ignored events to send alerts.
      *
      * @param  string  $event Unique post-type name.
      * @return boolean        Whether the event was removed from the list or not.
      */
-    public static function remove_ignored_event($event = '')
+    public static function removeIgnoredEvent($event = '')
     {
-        $ignored = self::get_ignored_events();
+        $ignored = self::getIgnoredEvents();
 
-        if (array_key_exists($event, $ignored)) {
-            unset($ignored[$event]);
-
-            return self::update_option(
-                ':ignored_events',
-                @json_encode($ignored)
-            );
+        if (!array_key_exists($event, $ignored)) {
+            return false;
         }
 
-        return false;
+        unset($ignored[$event]); /* remove post-type from the list */
+
+        return self::updateOption(':ignored_events', @json_encode($ignored));
     }
 
     /**
-     * Check whether an event is being ignored to send notifications or not.
+     * Check whether an event is being ignored to send alerts or not.
      *
      * @param  string  $event Unique post-type name.
      * @return boolean        Whether an event is being ignored or not.
      */
-    public static function is_ignored_event($event = '')
+    public static function isIgnoredEvent($event = '')
     {
         $event = strtolower($event);
-        $ignored = self::get_ignored_events();
+        $ignored = self::getIgnoredEvents();
 
         return array_key_exists($event, $ignored);
     }
@@ -670,7 +577,7 @@ class SucuriScanOption extends SucuriScanRequest
      *
      * @return array Array with three keys: good, missing, bad.
      */
-    public static function get_security_keys()
+    public static function getSecurityKeys()
     {
         $response = array(
             'good' => array(),
@@ -720,15 +627,15 @@ class SucuriScanOption extends SucuriScanRequest
     public static function setRevProxy($action = 'disable')
     {
         if ($action !== 'enable' && $action !== 'disable') {
-            return self::delete_option(':revproxy');
+            return self::deleteOption(':revproxy');
         }
 
         $action_d = $action . 'd';
         $message = 'Reverse proxy support was <code>' . $action_d . '</code>';
 
-        self::update_option(':revproxy', $action_d);
-        SucuriScanEvent::report_info_event($message);
-        SucuriScanEvent::notify_event('plugin_change', $message);
+        self::updateOption(':revproxy', $action_d);
+        SucuriScanEvent::reportInfoEvent($message);
+        SucuriScanEvent::notifyEvent('plugin_change', $message);
         SucuriScanInterface::info($message);
     }
 
@@ -746,9 +653,9 @@ class SucuriScanOption extends SucuriScanRequest
         if (array_key_exists($header, $allowed)) {
             $message = 'HTTP header was set to <code>' . $header . '</code>';
 
-            self::update_option(':addr_header', $header);
-            SucuriScanEvent::report_info_event($message);
-            SucuriScanEvent::notify_event('plugin_change', $message);
+            self::updateOption(':addr_header', $header);
+            SucuriScanEvent::reportInfoEvent($message);
+            SucuriScanEvent::notifyEvent('plugin_change', $message);
             SucuriScanInterface::info($message);
         } else {
             SucuriScanInterface::error('HTTP header is not in the allowed list');

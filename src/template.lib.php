@@ -32,37 +32,24 @@ class SucuriScanTemplate extends SucuriScanRequest
      */
     private static function replacePseudoVars($content = '', $params = array())
     {
-        if (is_array($params)) {
-            foreach ($params as $keyname => $kvalue) {
-                $tplkey = 'SUCURI.' . $keyname;
-                $with_escape = '%%' . $tplkey . '%%';
-                $wout_escape = '%%%' . $tplkey . '%%%';
-
-                if (strpos($content, $wout_escape) !== false) {
-                    $content = str_replace($wout_escape, $kvalue, $content);
-                } elseif (strpos($content, $with_escape) !== false) {
-                    $kvalue = SucuriScan::escape($kvalue);
-                    $content = str_replace($with_escape, $kvalue, $content);
-                }
-            }
-
-            return $content;
+        if (!is_array($params)) {
+            return false;
         }
 
-        return false;
-    }
+        foreach ($params as $keyname => $kvalue) {
+            $tplkey = 'SUCURI.' . $keyname;
+            $with_escape = '%%' . $tplkey . '%%';
+            $wout_escape = '%%%' . $tplkey . '%%%';
 
-    /**
-     * Check if the ads in the sidebar are visible or not.
-     *
-     * @return boolean True if the ads must be hidden.
-     */
-    private static function noAdvertisement()
-    {
-        return (bool) (
-            defined('SUCURISCAN_HIDE_ADS')
-            && SUCURISCAN_HIDE_ADS === true
-        );
+            if (strpos($content, $wout_escape) !== false) {
+                $content = str_replace($wout_escape, $kvalue, $content);
+            } elseif (strpos($content, $with_escape) !== false) {
+                $kvalue = SucuriScan::escape($kvalue);
+                $content = str_replace($with_escape, $kvalue, $content);
+            }
+        }
+
+        return $content;
     }
 
     /**
@@ -80,30 +67,36 @@ class SucuriScanTemplate extends SucuriScanRequest
         $params = self::linksAndNavbar($params);
 
         // Global parameters, used through out all the pages.
-        $params['PageTitle'] = isset($params['PageTitle']) ? '('.$params['PageTitle'].')' : '';
+        $params['GenerateAPIKey.Modal'] = '';
+        $params['GenerateAPIKey.Visibility'] = 'hidden';
         $params['PageNonce'] = wp_create_nonce('sucuriscan_page_nonce');
-        $params['PageStyleClass'] = isset($params['PageStyleClass']) ? $params['PageStyleClass'] : 'base';
-        $params['CleanDomain'] = self::get_domain();
+        $params['WordPressVersion'] = self::siteVersion();
+        $params['PluginVersion'] = SUCURISCAN_VERSION;
+        $params['CleanDomain'] = self::getDomain();
+        $params['Year'] = date('Y');
 
-        // Get a list of admin users for the API key generation.
-        if ($target === 'modal' /* Get API key if required */
-            && SucuriScanAPI::getPluginKey() === false
-        ) {
-            $admin_users = SucuriScan::get_users_for_api_key();
-            $params['AdminEmails'] = self::selectOptions($admin_users);
+        if (!array_key_exists('PageStyleClass', $params)) {
+            $params['PageStyleClass'] = 'base';
         }
 
-        // Hide the advertisements from the layout.
-        if (self::noAdvertisement()) {
-            $params['LayoutType'] = 'onecolumn';
-            $params['AdsVisibility'] = 'hidden';
-            $params['ReviewNavbarButton'] = 'visible';
-            $params['PageSidebarContent'] = '';
-        } else {
-            $params['LayoutType'] = 'twocolumns';
-            $params['AdsVisibility'] = 'visible';
-            $params['ReviewNavbarButton'] = 'hidden';
-            $params['PageSidebarContent'] = self::getTemplate('bsidebar', $params, 'section');
+        if ($target === 'base'
+            && current_user_can('manage_options')
+            && !SucuriScanAPI::getPluginKey()
+        ) {
+            $params['GenerateAPIKey.Visibility'] = 'visible';
+            $params['GenerateAPIKey.Modal'] = /* register-site */
+
+            SucuriScanTemplate::getModal('register-site', array(
+                'Visibility' => 'hidden',
+                'Identifier' => 'register-site',
+                'Title' => 'Sucuri API Key Generator',
+            ));
+        }
+
+        // Get a list of admin users for the API key generation.
+        if ($target === 'modal' && !SucuriScanAPI::getPluginKey()) {
+            $admin_users = SucuriScan::getUsersForAPIKey();
+            $params['AdminEmails'] = self::selectOptions($admin_users);
         }
 
         return $params;
@@ -121,7 +114,7 @@ class SucuriScanTemplate extends SucuriScanRequest
     }
 
     /**
-     * Generate an URL pointing to the page indicated in the function and that must
+     * Generate an URL pointing to the page indicated in the method and that must
      * be loaded through the administrator panel.
      *
      * @param  string  $page Short name of the page that will be generated.
@@ -131,13 +124,13 @@ class SucuriScanTemplate extends SucuriScanRequest
     public static function getUrl($page = '', $ajax = false)
     {
         $suffix = ($ajax === true) ? 'admin-ajax' : 'admin';
-        $url_path = SucuriScan::admin_url($suffix . '.php?page=sucuriscan');
+        $url_path = SucuriScan::adminURL($suffix . '.php?page=sucuriscan');
 
         if (!empty($page)) {
             $url_path .= '_' . strtolower($page);
         }
 
-        if (SucuriScan::is_multisite()) {
+        if (SucuriScan::isMultiSite()) {
             $url_path = str_replace(
                 'wp-admin/network/admin-ajax.php',
                 'wp-admin/admin-ajax.php',
@@ -149,7 +142,7 @@ class SucuriScanTemplate extends SucuriScanRequest
     }
 
     /**
-     * Generate an URL pointing to the page indicated in the function and that must
+     * Generate an URL pointing to the page indicated in the method and that must
      * be loaded through the Ajax handler of the administrator panel.
      *
      * @param  string $page Short name of the page that will be generated.
@@ -175,20 +168,7 @@ class SucuriScanTemplate extends SucuriScanRequest
         $params = is_array($params) ? $params : array();
         $sub_pages = is_array($sucuriscan_pages) ? $sucuriscan_pages : array();
 
-        $params['Navbar'] = '';
-        $params['CurrentPageFunc'] = '';
-
-        if ($_page = self::get('page', '_page')) {
-            $params['CurrentPageFunc'] = $_page;
-        }
-
         foreach ($sub_pages as $sub_page_func => $sub_page_title) {
-            if ($sub_page_func === 'sucuriscan_scanner'
-                && SucuriScanSiteCheck::isDisabled()
-            ) {
-                continue;
-            }
-
             $func_parts = explode('_', $sub_page_func, 2);
 
             if (isset($func_parts[1])) {
@@ -196,7 +176,7 @@ class SucuriScanTemplate extends SucuriScanRequest
                 $pseudo_var = 'URL.' . ucwords($unique_name);
             } else {
                 $unique_name = '';
-                $pseudo_var = 'URL.Home';
+                $pseudo_var = 'URL.Dashboard';
             }
 
             $params[$pseudo_var] = self::getUrl($unique_name);
@@ -204,19 +184,6 @@ class SucuriScanTemplate extends SucuriScanRequest
             // Copy URL variable and create an Ajax handler.
             $pseudo_var_ajax = 'Ajax' . $pseudo_var;
             $params[$pseudo_var_ajax] = self::getAjaxUrl($unique_name);
-
-            $navbar_item_css_class = 'nav-tab';
-
-            if ($params['CurrentPageFunc'] == $sub_page_func) {
-                $navbar_item_css_class .= "\x20nav-tab-active";
-            }
-
-            $params['Navbar'] .= sprintf(
-                "<a class='%s' href='%s'>%s</a>\n",
-                $navbar_item_css_class,
-                $params[$pseudo_var],
-                $sub_page_title
-            );
         }
 
         return $params;
@@ -257,49 +224,48 @@ class SucuriScanTemplate extends SucuriScanRequest
             $params = array();
         }
 
-        if ($type == 'page' || $type == 'section') {
-            $fpath_pattern = '%s/%s/inc/tpl/%s.html.tpl';
+        if ($type == 'page') {
+            $pattern = '%s/inc/tpl/%s.html.tpl';
+        } elseif ($type == 'section') {
+            $pattern = '%s/inc/tpl/%s.html.tpl';
         } elseif ($type == 'snippet') {
-            $fpath_pattern = '%s/%s/inc/tpl/%s.snippet.tpl';
+            $pattern = '%s/inc/tpl/%s.snippet.tpl';
         } else {
-            $fpath_pattern = null;
+            SucuriScan::throwException('Invalid template type');
+            return ''; /* empty page */
         }
 
-        if ($fpath_pattern !== null) {
-            $output = '';
-            $fpath = sprintf($fpath_pattern, WP_PLUGIN_DIR, SUCURISCAN_PLUGIN_FOLDER, $template);
+        $output = ''; /* initialize response as an empty string */
+        $fpath = sprintf($pattern, SUCURISCAN_PLUGIN_PATH, $template);
 
-            if (file_exists($fpath) && is_readable($fpath)) {
-                $output = @file_get_contents($fpath);
+        if (file_exists($fpath) && is_readable($fpath)) {
+            $output = @file_get_contents($fpath);
 
-                $params['SucuriURL'] = SUCURISCAN_URL;
+            $params['SucuriURL'] = SUCURISCAN_URL;
 
-                // Detect the current page URL.
-                if ($_page = self::get('page', '_page')) {
-                    $params['CurrentURL'] = SucuriScan::admin_url('admin.php?page=' . $_page);
-                } else {
-                    $params['CurrentURL'] = SucuriScan::admin_url();
-                }
-
-                // Replace the global pseudo-variables in the section/snippets templates.
-                if ($template == 'base'
-                    && array_key_exists('PageContent', $params)
-                    && @preg_match('/%%SUCURI\.(.+)%%/', $params['PageContent'])
-                ) {
-                    $params['PageContent'] = self::replacePseudoVars($params['PageContent'], $params);
-                }
-
-                $output = self::replacePseudoVars($output, $params);
+            // Detect the current page URL.
+            if ($_page = self::get('page', '_page')) {
+                $params['CurrentURL'] = SucuriScan::adminURL('admin.php?page=' . $_page);
+            } else {
+                $params['CurrentURL'] = SucuriScan::adminURL();
             }
 
-            if ($template == 'base' || $type != 'page') {
-                return $output;
+            // Replace the global pseudo-variables in the section/snippets templates.
+            if ($template == 'base'
+                && array_key_exists('PageContent', $params)
+                && @preg_match('/%%SUCURI\.(.+)%%/', $params['PageContent'])
+            ) {
+                $params['PageContent'] = self::replacePseudoVars($params['PageContent'], $params);
             }
 
-            return self::getBaseTemplate($output, $params);
+            $output = self::replacePseudoVars($output, $params);
         }
 
-        return '';
+        if ($template == 'base' || $type != 'page') {
+            return $output;
+        }
+
+        return self::getBaseTemplate($output, $params);
     }
 
     /**
@@ -342,7 +308,7 @@ class SucuriScanTemplate extends SucuriScanRequest
                 proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>',
         );
 
-        if (!empty($template) && $template != 'none') {
+        if (!empty($template) && $template !== 'none') {
             $params['Content'] = self::getSection($template);
         }
 
@@ -352,8 +318,8 @@ class SucuriScanTemplate extends SucuriScanRequest
             }
         }
 
-        $params['Visibility'] = 'sucuriscan-' . $params['Visibility'];
-        $params['Identifier'] = 'sucuriscan-' . $template . '-modal';
+        $params['Visibility'] = SUCURISCAN . '-' . $params['Visibility'];
+        $params['Identifier'] = SUCURISCAN . '-' . $params['Identifier'] . '-modal';
         $params = self::sharedParams('modal', $params);
 
         return self::getTemplate('modalwindow', $params, 'section');
@@ -385,10 +351,16 @@ class SucuriScanTemplate extends SucuriScanRequest
         $options = '';
 
         foreach ($allowed_values as $option_name => $option_label) {
+            $selected = '';
+
+            if ($option_name === $selected_val) {
+                $selected = "\x20selected=\"selected\"";
+            }
+
             $options .= sprintf(
-                "<option %s value='%s'>%s</option>\n",
-                ($option_name === $selected_val ? 'selected="selected"' : ''),
+                "<option value=\"%s\"%s>%s</option>\n",
                 SucuriScan::escape($option_name),
+                $selected, /* do not escape HTML */
                 SucuriScan::escape($option_label)
             );
         }
@@ -422,6 +394,8 @@ class SucuriScanTemplate extends SucuriScanRequest
         $html_links = '';
         $page_number = self::pageNumber();
         $max_pages = ceil($total_items / $max_per_page);
+        $final_page = $max_pages;
+        $start_page = 1;
         $extra_url = '';
 
         // Fix for inline anchor URLs.
@@ -430,8 +404,19 @@ class SucuriScanTemplate extends SucuriScanRequest
             $extra_url = $match[2];
         }
 
+        // Keep the number of pagination buttons at limit.
+        if ($max_pages > SUCURISCAN_MAX_PAGINATION_BUTTONS) {
+            $final_page = SUCURISCAN_MAX_PAGINATION_BUTTONS;
+            $middle = $final_page / 2; /* middle point */
+
+            if ($page_number > $middle) {
+                $start_page = $page_number - ($middle - 1);
+                $final_page = $page_number + $middle;
+            }
+        }
+
         // Generate the HTML links for the pagination.
-        for ($j = 1; $j <= $max_pages; $j++) {
+        for ($j = $start_page; $j <= $final_page; $j++) {
             $link_class = 'sucuriscan-pagination-link';
 
             if ($page_number == $j) {

@@ -1,5 +1,5 @@
 
-<tr class="%%SUCURI.AccessLog.CssClass%%">
+<tr>
     <td>
         <div class="sucuriscan-firewall-accesslog sucuriscan-monospace">
             <div class="sucuriscan-accesslog-origin">

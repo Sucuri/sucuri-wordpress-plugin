@@ -1,6 +1,6 @@
 
-<div class="postbox">
-    <h3>API Service Communication</h3>
+<div class="sucuriscan-panel">
+    <h3 class="sucuriscan-title">API Service Communication</h3>
 
     <div class="inside">
         <p>
@@ -25,7 +25,7 @@
         <div class="sucuriscan-inline-alert-error sucuriscan-%%SUCURI.ApiStatus.ErrorVisibility%%">
             <p>
                 Disabling the API service communication will stop the event monitoring, consider
-                to enable the <a href="%%SUCURI.URL.Settings%%#selfhosting">Log Exporter</a> to
+                to enable the <a href="%%SUCURI.URL.Settings%%#general">Log Exporter</a> to
                 keep the monitoring working while the HTTP requests are ignored, otherwise an
                 attacker may execute an action that will not be registered in the security logs
                 and you will not have a way to investigate the attack in the future.
@@ -34,11 +34,32 @@
 
         <div class="sucuriscan-hstatus sucuriscan-hstatus-%%SUCURI.ApiStatus.StatusNum%%">
             <span>API Service Communication is %%SUCURI.ApiStatus.Status%%</span>
+            &mdash;
+            <span class="sucuriscan-monospace">%%SUCURI.ApiStatus.ServiceURL%%</span>
             <form action="%%SUCURI.URL.Settings%%#apiservice" method="post">
                 <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
                 <input type="hidden" name="sucuriscan_api_service" value="%%SUCURI.ApiStatus.SwitchValue%%" />
-                <button type="submit" class="button-primary %%SUCURI.ApiStatus.SwitchCssClass%%">%%SUCURI.ApiStatus.SwitchText%%</button>
+                <button type="submit" class="button button-primary">%%SUCURI.ApiStatus.SwitchText%%</button>
             </form>
         </div>
+
+        <p>
+            Select which interface will be used to send the HTTP requests to the
+            external API services, the plugin will try to use the best option
+            automatically and rescue the requests when any of the options is not
+            available. Be sure to understand the purpose of this option before
+            you try to modify it.
+        </p>
+
+        <form action="%%SUCURI.URL.Settings%%#apiservice" method="post">
+            <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
+            <fieldset class="sucuriscan-clearfix">
+                <label>HTTP Request Handler:</label>
+                <select name="sucuriscan_api_handler">
+                    %%%SUCURI.ApiHandlerOptions%%%
+                </select>
+                <button type="submit" class="button button-primary">Proceed</button>
+            </fieldset>
+        </form>
     </div>
 </div>

@@ -1,43 +1,43 @@
 
-<div class="wrap sucuriscan-wrap">
-
-    <h2 id="warnings_hook"></h2>
-
-    <div class="sucuriscan-header sucuriscan-clearfix">
-        <a href="https://sucuri.net/signup" target="_blank" title="Sucuri Security" class="sucuriscan-logo">
-            <img src="%%SUCURI.SucuriURL%%/inc/images/logo.png" alt="Sucuri Security" />
-        </a>
-        <h2>Sucuri Security %%SUCURI.PageTitle%%</h2>
-        <a class="button button-hero button-primary sucuriscan-review-hero"
-        href="https://goo.gl/aByqP5" target="_blank">Review Plugin</a>
-    </div>
-
-    <h2 class="nav-tab-wrapper sucuriscan-navbar">
-        %%%SUCURI.Navbar%%%
+<div class="wrap sucuriscan-container">
+    <h2 id="warnings_hook">
+        <!-- Dynamically populated via JavaScript -->
     </h2>
 
-    <div class="sucuriscan-maincontent sucuriscan-clearfix">
+    %%%SUCURI.GenerateAPIKey.Modal%%%
 
-        <div class="sucuriscan-leftside sucuriscan-%%SUCURI.LayoutType%% sucuriscan-%%SUCURI.PageStyleClass%%">
-
-            %%%SUCURI.PageContent%%%
-
+    <div class="sucuriscan-header sucuriscan-clearfix">
+        <div class="sucuriscan-pull-left">
+            <a href="https://sucuri.net/signup" target="_blank" title="Sucuri Security" class="sucuriscan-logo">
+                <img src="%%SUCURI.SucuriURL%%/inc/images/pluginlogo.png" alt="Sucuri Inc." />
+            </a>
+            <span class="sucuriscan-subtitle">WP Plugin</span>
+            <span class="sucuriscan-version">v%%SUCURI.PluginVersion%%</span>
         </div>
 
-        %%%SUCURI.PageSidebarContent%%%
+        <div class="sucuriscan-pull-right sucuriscan-navbar">
+            <ul>
+                <li><a href="https://goo.gl/aByqP5" target="_blank" class="button button-secondary">Review</a></li>
 
+                <li class="sucuriscan-%%SUCURI.GenerateAPIKey.Visibility%%">
+                    <a href="#" class="button button-primary sucuriscan-modal-button sucuriscan-register-site-button"
+                    data-modalid="sucuriscan-register-site">Generate API Key</a>
+                </li>
+
+                <li><a href="%%SUCURI.URL.Dashboard%%" class="button button-primary">Dashboard</a></li>
+
+                <li><a href="%%SUCURI.URL.Firewall%%" class="button button-primary">Firewall</a></li>
+
+                <li><a href="%%SUCURI.URL.Settings%%" class="button button-primary">Settings</a></li>
+            </ul>
+        </div>
     </div>
 
-    <div class="sucuriscan-footer sucuriscan-clearfix">
-        <a href="https://sucuri.net/signup" target="_blank" title="Sucuri Security" class="sucuriscan-logo">
-            <img src="%%SUCURI.SucuriURL%%/inc/images/logo.png" alt="Sucuri Security" />
-        </a>
-        <div class="sucuriscan-help">
-            <p>
-                If you have any questions about these checks or this plugin, contact us at
-                <a href="mailto:info@sucuri.net">info@sucuri.net</a> or visit
-                <a href="https://sucuri.net/" target="_blank">sucuri.net</a>
-            </p>
-        </div>
+    <div class="sucuriscan-clearfix sucuriscan-content sucuriscan-%%SUCURI.PageStyleClass%%">
+        %%%SUCURI.PageContent%%%
+    </div>
+
+    <div class="sucuriscan-clearfix sucuriscan-footer">
+        <div>Copyright &copy; %%SUCURI.Year%% Sucuri Inc. All Rights Reserved.</div>
     </div>
 </div>
