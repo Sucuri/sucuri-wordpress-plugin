@@ -135,8 +135,9 @@ class SucuriScanCache extends SucuriScan
             return false;
         }
 
-        $folder_path = $this->dataStorePath();
-        $file_path = $folder_path . '/sucuri-' . $this->datastore . '.php';
+        $filename = 'sucuri-' . $this->datastore . '.php';
+        $file_path = $this->dataStorePath($filename);
+        $folder_path = dirname($file_path);
 
         /* create the datastore parent directory. */
         if (!file_exists($folder_path)) {
@@ -152,30 +153,6 @@ class SucuriScanCache extends SucuriScan
     }
 
     /**
-     * Defines the regular expression for the cache content.
-     *
-     * Define the pattern for the regular expression that will check if a cache
-     * key is valid or not, and also will help the method that parses the file
-     * to see which characters of each line are the keys are which are the
-     * values.
-     *
-     * @param string $action Either <empty>, "header" or "content".
-     * @return string Cache key pattern.
-     */
-    private function keyPattern($action = 'valid')
-    {
-        if ($action == 'header') {
-            return '/^\/\/ ([a-z_]+)=(.*);$/';
-        }
-
-        if ($action == 'content') {
-            return '/^([0-9a-zA-Z_]+):(.+)/';
-        }
-
-        return '/^([0-9a-zA-Z_]+)$/';
-    }
-
-    /**
      * Check whether a key has a valid name or not.
      *
      * @param string $key Unique name for the data.
@@ -183,7 +160,7 @@ class SucuriScanCache extends SucuriScan
      */
     private function validKeyName($key = '')
     {
-        return (bool) @preg_match($this->keyPattern(), $key);
+        return (bool) @preg_match('/^([0-9a-zA-Z_]+)$/', $key);
     }
 
     /**
@@ -221,17 +198,20 @@ class SucuriScanCache extends SucuriScan
         $object = array();
         $object['info'] = array();
         $object['entries'] = array();
+        $header = '/^\/\/ ([a-z_]+)=(.*);$/';
+        $content = '/^([0-9a-zA-Z_]+):(.+)/';
 
         if ($lines = SucuriScanFileInfo::fileLines($this->datastore_path)) {
             foreach ($lines as $line) {
-                if (preg_match($this->keyPattern('header'), $line, $match)) {
+                if (preg_match($header, $line, $match)) {
                     $object['info'][ $match[1] ] = $match[2];
                     continue;
                 }
 
-                if (preg_match($this->keyPattern('content'), $line, $match)) {
-                    if ($this->validKeyName($match[1]) && !isset($object[$match[1]])) {
-                        $object['entries'][$match[1]] = @json_decode($match[2], $assoc);
+                if (preg_match($content, $line, $match)) {
+                    if ($this->validKeyName($match[1])) {
+                        $object['entries'][$match[1]] =
+                        @json_decode($match[2], $assoc);
                     }
                 }
             }
@@ -332,8 +312,7 @@ class SucuriScanCache extends SucuriScan
     public function set($key = '', $data = '')
     {
         if (!$this->validKeyName($key)) {
-            self::throwException('Invalid cache key name');
-            return false;
+            return self::throwException('Invalid cache key name');
         }
 
         $finfo = $this->getDatastoreContent(true);
@@ -354,8 +333,7 @@ class SucuriScanCache extends SucuriScan
     public function get($key = '', $lifetime = 0, $assoc = '')
     {
         if (!$this->validKeyName($key)) {
-            self::throwException('Invalid cache key name');
-            return false;
+            return self::throwException('Invalid cache key name');
         }
 
         $finfo = $this->getDatastoreContent($assoc === 'array');
@@ -394,8 +372,7 @@ class SucuriScanCache extends SucuriScan
     public function exists($key = '')
     {
         if (!$this->validKeyName($key)) {
-            self::throwException('Invalid cache key name');
-            return false;
+            return self::throwException('Invalid cache key name');
         }
 
         $finfo = $this->getDatastoreContent(true);
@@ -412,15 +389,13 @@ class SucuriScanCache extends SucuriScan
     public function delete($key = '')
     {
         if (!$this->validKeyName($key)) {
-            self::throwException('Invalid cache key name');
-            return false;
+            return self::throwException('Invalid cache key name');
         }
 
         $finfo = $this->getDatastoreContent(true);
 
         if (!array_key_exists($key, $finfo['entries'])) {
-            self::throwException('Cache key does not exists');
-            return false;
+            return self::throwException('Cache key does not exists');
         }
 
         unset($finfo['entries'][$key]);

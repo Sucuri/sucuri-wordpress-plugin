@@ -99,10 +99,14 @@ class SucuriScanAuditLogs
 
         if ($auditlogs) {
             $counter_i = 0;
+            $total_items = 0;
             $previousDate = '';
             $todaysDate = date('M d, Y');
-            $total_items = count($auditlogs['output_data']);
             $iterator_start = ($pageNumber - 1) * $maxPerPage;
+
+            if (array_key_exists('output_data', $auditlogs)) {
+                $total_items = count($auditlogs['output_data']);
+            }
 
             for ($i = $iterator_start; $i < $total_items; $i++) {
                 if ($counter_i > $maxPerPage) {
@@ -180,9 +184,7 @@ class SucuriScanAuditLogs
             $response['content'] = 'There are no logs.';
         }
 
-        header('Content-Type: application/json');
-        print(json_encode($response));
-        exit(0);
+        wp_send_json($response, 200);
     }
 
     /**
@@ -265,8 +267,6 @@ class SucuriScanAuditLogs
             $response['eventsPerIPAddressCategories'] = array_keys($report['events_per_ipaddress']);
         }
 
-        header('Content-Type: application/json');
-        print(json_encode($response));
-        exit(0);
+        wp_send_json($response, 200);
     }
 }

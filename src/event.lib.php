@@ -29,7 +29,7 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  * response to events is said to be event-driven, often with the goal of being
  * interactive.
  *
- * @see https://en.wikipedia.org/wiki/Event_(computing)
+ * @see https://en.wikipedia.org/wiki/Event_%28computing%29
  */
 class SucuriScanEvent extends SucuriScan
 {
@@ -48,20 +48,18 @@ class SucuriScanEvent extends SucuriScan
      */
     public static function scheduleTask($run_now = true)
     {
-        $task_name = 'sucuriscan_scheduled_scan';
+        /* stop if the user has disabled the cronjobs. */
+        if (SucuriScanOption::getOption(':scan_frequency') !== '_oneoff') {
+            $task_name = 'sucuriscan_scheduled_scan';
 
-        if (SucuriScanOption::getOption(':scan_frequency') === '_oneoff') {
-            /* Stop if the user has disabled the cronjobs. */
-            return;
-        }
+            if (!wp_next_scheduled($task_name)) {
+                wp_schedule_event(time() + 10, 'twicedaily', $task_name);
+            }
 
-        if (!wp_next_scheduled($task_name)) {
-            wp_schedule_event(time() + 10, 'twicedaily', $task_name);
-        }
-
-        if ($run_now === true) {
-            // Execute scheduled task after five minutes.
-            wp_schedule_single_event(time() + 300, $task_name);
+            if ($run_now === true) {
+                // Execute scheduled task after five minutes.
+                wp_schedule_single_event(time() + 300, $task_name);
+            }
         }
     }
 
@@ -73,14 +71,12 @@ class SucuriScanEvent extends SucuriScan
      * also add an additional option to allow the website owners to disable the
      * schedule tasks from the settings page.
      *
+     * @see https://developer.wordpress.org/reference/functions/wp_get_schedules/
+     *
      * @return array List of available cronjob frequencies.
      */
     public static function availableSchedules()
     {
-        if (!function_exists('wp_get_schedules')) {
-            return array(/* empty */);
-        }
-
         $schedules = array();
         $jobs = wp_get_schedules();
 
@@ -98,50 +94,50 @@ class SucuriScanEvent extends SucuriScan
     }
 
     /**
-     * Checks last time we ran to avoid running twice (or too often).
+     * Reports the WordPress version number to the API.
      *
-     * @param int $runtime When the filesystem scan must be scheduled to run.
-     * @param bool $force_scan Whether the filesystem scan was forced by an administrator user or not.
-     * @return bool Either TRUE or FALSE representing the success or fail of the operation respectively.
+     * @return bool True if the version number was reported, false otherwise.
      */
-    private static function verifyRun($runtime = 0, $force_scan = false)
+    public static function reportSiteVersion()
     {
-        $current_time = time();
-        $option_name = ':runtime';
-        $last_run = SucuriScanOption::getOption($option_name);
-
-        // Check if the last runtime is too near the current time.
-        if ($last_run && !$force_scan) {
-            $runtime_diff = $current_time - $runtime;
-
-            if ($last_run >= $runtime_diff) {
-                return false;
-            }
+        if (!SucuriScanAPI::getPluginKey()) {
+            return self::throwException('API key is not available');
         }
 
-        return SucuriScanOption::updateOption($option_name, $current_time);
-    }
-
-    /**
-     * Check whether the current WordPress version must be reported to the API
-     * service or not, this is to avoid duplicated information in the audit logs.
-     *
-     * @return bool True if the current WordPress version must be reported, false otherwise.
-     */
-    private static function reportSiteVersion()
-    {
-        $option_name = ':site_version';
         $wp_version = self::siteVersion();
-        $reported_version = SucuriScanOption::getOption($option_name);
+        $reported_version = SucuriScanOption::getOption(':site_version');
 
         /* use simple comparison to leverage casting */
         if ($reported_version == $wp_version) {
-            return false;
+            return self::throwException('WordPress version was already reported');
         }
 
         SucuriScanEvent::reportInfoEvent('WordPress version detected ' . $wp_version);
 
-        return SucuriScanOption::updateOption($option_name, $wp_version);
+        return SucuriScanOption::updateOption(':site_version', $wp_version);
+    }
+
+    /**
+     * Decides if the file system scanner can run or not.
+     *
+     * @param bool $force_scan Force the execution of the scanner.
+     * @return bool True if the scanner can run, false otherwise.
+     */
+    private static function runFileScanner($force_scan = false)
+    {
+        if ($force_scan) {
+            return SucuriScanOption::updateOption(':runtime', time());
+        }
+
+        $current_time = time();
+        $runtime = (int) SucuriScanOption::getOption(':runtime');
+        $diff = abs($current_time - $runtime);
+
+        if ($diff < SUCURISCAN_SCANNER_FREQUENCY) {
+            return false;
+        }
+
+        return SucuriScanOption::updateOption(':runtime', $current_time);
     }
 
     /**
@@ -154,98 +150,20 @@ class SucuriScanEvent extends SucuriScan
      */
     public static function filesystemScan($force_scan = false)
     {
-        if (!class_exists('SucuriScanFileInfo')) {
-            SucuriScan::throwException('FileInfo class does not exists');
-            return;
-        }
-
         if (!SucuriScanAPI::getPluginKey()) {
-            SucuriScan::throwException('API key is not available');
-            return;
+            return self::throwException('API key is not available');
         }
 
-        if (!self::verifyRun(SUCURISCAN_MINIMUM_RUNTIME, $force_scan)) {
-            SucuriScan::throwException('Background scanner was executed just now');
-            return false;
+        if (!self::runFileScanner($force_scan)) {
+            return self::throwException('Scanner ran a couple of minutes ago');
         }
 
-        self::reportSiteVersion();
+        $fifo = new SucuriScanFileInfo();
+        $signatures = $fifo->getDirectoryTreeMd5(ABSPATH);
 
-        $file_info = new SucuriScanFileInfo();
-        $signatures = $file_info->getDirectoryTreeMd5(ABSPATH);
+        SucuriScanOption::updateOption(':runtime', time());
 
-        if (!$signatures) {
-            SucuriScanInterface::error('The file hashes could not be retrieved.');
-            return false;
-        }
-
-        if (!SucuriScanAPI::sendHashes($signatures)) {
-            SucuriScanInterface::error('The file hashes could not be stored.');
-            return false;
-        }
-
-        return SucuriScanOption::updateOption(':runtime', time());
-    }
-
-    /**
-     * Generates an audit event log (to be sent later).
-     *
-     * @param int $severity Importance of the event that will be reported, values from one to five.
-     * @param string $message The explanation of the event.
-     * @param bool $internal Whether the event will be publicly visible or not.
-     * @return bool True if the event was logged in the monitoring service, false otherwise.
-     */
-    private static function reportEvent($severity = 0, $message = '', $internal = false)
-    {
-        $user = wp_get_current_user();
-        $remote_ip = self::getRemoteAddr();
-        $username = false;
-
-        // Identify current user in session.
-        if ($user instanceof WP_User
-            && isset($user->user_login)
-            && !empty($user->user_login)
-        ) {
-            if ($user->user_login != $user->display_name) {
-                $username = sprintf("\x20%s (%s),", $user->display_name, $user->user_login);
-            } else {
-                $username = sprintf("\x20%s,", $user->user_login);
-            }
-        }
-
-        $severity = intval($severity);
-        $severity_name = 'Info'; /* default */
-        $severities = array(
-            /* 0 */ 'Debug',
-            /* 1 */ 'Notice',
-            /* 2 */ 'Info',
-            /* 3 */ 'Warning',
-            /* 4 */ 'Error',
-            /* 5 */ 'Critical',
-        );
-
-        if (isset($severities[$severity])) {
-            $severity_name = $severities[$severity];
-        }
-
-        if ($internal === true) {
-            /* mark the event as internal if necessary. */
-            $severity_name = '@' . $severity_name;
-        }
-
-        /* remove unnecessary characters */
-        $message = strip_tags($message);
-        $message = str_replace("\r", '', $message);
-        $message = str_replace("\n", '', $message);
-        $message = str_replace("\t", '', $message);
-
-        return self::sendEventLog(sprintf(
-            '%s:%s %s; %s',
-            $severity_name,
-            $username,
-            $remote_ip,
-            $message
-        ));
+        return SucuriScanAPI::sendHashes($signatures);
     }
 
     /**
@@ -303,6 +221,63 @@ class SucuriScanEvent extends SucuriScan
         }
 
         return true;
+    }
+
+    /**
+     * Generates an audit event log (to be sent later).
+     *
+     * @param int $severity Importance of the event that will be reported, values from one to five.
+     * @param string $message The explanation of the event.
+     * @param bool $internal Whether the event will be publicly visible or not.
+     * @return bool True if the event was logged in the monitoring service, false otherwise.
+     */
+    private static function reportEvent($severity = 0, $message = '', $internal = false)
+    {
+        $user = wp_get_current_user();
+        $remote_ip = self::getRemoteAddr();
+        $username = false;
+
+        // Identify current user in session.
+        if ($user instanceof WP_User
+            && isset($user->user_login)
+            && !empty($user->user_login)
+        ) {
+            $username = sprintf("\x20%s,", $user->user_login);
+        }
+
+        $severity = intval($severity);
+        $severity_name = 'Info'; /* default */
+        $severities = array(
+            /* 0 */ 'Debug',
+            /* 1 */ 'Notice',
+            /* 2 */ 'Info',
+            /* 3 */ 'Warning',
+            /* 4 */ 'Error',
+            /* 5 */ 'Critical',
+        );
+
+        if (isset($severities[$severity])) {
+            $severity_name = $severities[$severity];
+        }
+
+        if ($internal === true) {
+            /* mark the event as internal if necessary. */
+            $severity_name = '@' . $severity_name;
+        }
+
+        /* remove unnecessary characters */
+        $message = strip_tags($message);
+        $message = str_replace("\r", '', $message);
+        $message = str_replace("\n", '', $message);
+        $message = str_replace("\t", '', $message);
+
+        return self::sendEventLog(sprintf(
+            '%s:%s %s; %s',
+            $severity_name,
+            $username,
+            $remote_ip,
+            $message
+        ));
     }
 
     /**
@@ -464,7 +439,7 @@ class SucuriScanEvent extends SucuriScan
          * (aka. the same LAN) to execute any task without triggering a security
          * alert.
          */
-        if (self::isTrustedIp()) {
+        if (self::isTrustedIP()) {
             $notify = 'disabled';
         }
 
@@ -473,32 +448,40 @@ class SucuriScanEvent extends SucuriScan
             return false;
         }
 
-        if ($event == 'post_publication') {
-            $event = 'post_update';
-        } elseif ($event == 'failed_login') {
-            $settings_url = SucuriScanTemplate::getUrl('settings');
-            $content .= "<br>\n<br>\n<em>Explanation: Someone failed to login to your "
-                . "site. If you are getting too many of these messages, it is likely your "
-                . "site is under a password guessing brute-force attack [1]. You can disable "
-                . "the failed login alerts from here [2]. Alternatively, you can consider "
-                . "to install a firewall between your website and your visitors to filter "
-                . "out these and other attacks, take a look at Sucuri Firewall [3].</em>"
-                . "<br>\n<br>\n"
-                . "[1] <a href='https://kb.sucuri.net/definitions/attacks/brute-force/password-guessing'>"
-                . "https://kb.sucuri.net/definitions/attacks/brute-force/password-guessing</a><br>\n"
-                . "[2] <a href='" . $settings_url . "'>" . $settings_url . "</a> <br>\n"
-                . "[3] <a href='https://sucuri.net/website-firewall/?wpalert'>"
-                . "https://sucuri.net/website-firewall/</a> <br>\n";
-        } elseif ($event == 'bruteforce_attack') {
-            // Send a notification even if the limit of emails per hour was reached.
-            $email_params['Force'] = true;
-        } elseif ($event == 'scan_checksums') {
-            $event = 'core_integrity_checks';
-            $email_params['Force'] = true;
-            $email_params['ForceHTML'] = true;
-        } elseif ($event == 'available_updates') {
-            $email_params['Force'] = true;
-            $email_params['ForceHTML'] = true;
+        switch ($event) {
+            case 'post_publication':
+                $event = 'post_update';
+                break;
+
+            case 'failed_login':
+                $settings_url = SucuriScanTemplate::getUrl('settings');
+                $content .= "<br>\n<br>\n<em>Explanation: Someone failed to login to your "
+                    . "site. If you are getting too many of these messages, it is likely your "
+                    . "site is under a password guessing brute-force attack [1]. You can disable "
+                    . "the failed login alerts from here [2]. Alternatively, you can consider "
+                    . "to install a firewall between your website and your visitors to filter "
+                    . "out these and other attacks, take a look at Sucuri Firewall [3].</em>"
+                    . "<br>\n<br>\n"
+                    . "[1] <a href='https://kb.sucuri.net/definitions/attacks/brute-force/password-guessing'>"
+                    . "https://kb.sucuri.net/definitions/attacks/brute-force/password-guessing</a><br>\n"
+                    . "[2] <a href='" . $settings_url . "'>" . $settings_url . "</a> <br>\n"
+                    . "[3] <a href='https://sucuri.net/website-firewall/?wpalert'>"
+                    . "https://sucuri.net/website-firewall/</a> <br>\n";
+                break;
+
+            case 'bruteforce_attack':
+                $email_params['Force'] = true;
+                break;
+
+            case 'scan_checksums':
+                $event = 'core_integrity_checks';
+                $email_params['Force'] = true;
+                $email_params['ForceHTML'] = true;
+                break;
+
+            case 'available_updates':
+                $email_params['Force'] = true;
+                $email_params['ForceHTML'] = true;
         }
 
         $title = str_replace('_', "\x20", $event);
@@ -517,66 +500,75 @@ class SucuriScanEvent extends SucuriScan
      * @param string $remote_addr The supposed ip address that will be checked.
      * @return bool True if the IP address of the user is trusted, false otherwise.
      */
-    private static function isTrustedIp($remote_addr = '')
+    public static function isTrustedIP($remote_addr = '')
     {
-        $cache = new SucuriScanCache('trustip', false);
-        $trusted_ips = $cache->getAll();
-
         if (!$remote_addr) {
             $remote_addr = SucuriScan::getRemoteAddr();
         }
 
-        $addr_md5 = md5($remote_addr);
+        $cache = new SucuriScanCache('trustip', false);
+        $trusted_ips = $cache->getAll();
 
-        // Check if the CIDR in range 32 of this IP is trusted.
-        if (is_array($trusted_ips)
-            && !empty($trusted_ips)
-            && array_key_exists($addr_md5, $trusted_ips)
-        ) {
+        if (!is_array($trusted_ips) || empty($trusted_ips)) {
+            return false;
+        }
+
+        /* check if exact IP address match is whitelisted */
+        if (array_key_exists(md5($remote_addr), $trusted_ips)) {
             return true;
         }
 
-        if ($trusted_ips) {
-            foreach ($trusted_ips as $cache_key => $ip_info) {
-                $ip_parts = explode('.', $ip_info->remote_addr);
-                $ip_pattern = false;
+        $is_trusted_ip = false;
 
-                // Generate the regular expression for a specific CIDR range.
-                switch ($ip_info->cidr_range) {
-                    case 24:
-                        $ip_pattern = sprintf('/^%d\.%d\.%d\.[0-9]{1,3}$/', $ip_parts[0], $ip_parts[1], $ip_parts[2]);
-                        break;
-                    case 16:
-                        $ip_pattern = sprintf('/^%d\.%d(\.[0-9]{1,3}) {2}$/', $ip_parts[0], $ip_parts[1]);
-                        break;
-                    case 8:
-                        $ip_pattern = sprintf('/^%d(\.[0-9]{1,3}) {3}$/', $ip_parts[0]);
-                        break;
-                }
+        /* check if the CIDR in range 32 of this IP is trusted. */
+        foreach ($trusted_ips as $cache_key => $ip_info) {
+            $ip_parts = explode('.', $ip_info->remote_addr);
+            $ip_pattern = false;
 
-                if ($ip_pattern && preg_match($ip_pattern, $remote_addr)) {
-                    return true;
-                }
+            // Generate the regular expression for a specific CIDR range.
+            switch ($ip_info->cidr_range) {
+                case 24:
+                    $ip_pattern =
+                    '/^' . $ip_parts[0]
+                    . '.' . $ip_parts[1]
+                    . '.' . $ip_parts[2]
+                    . '\.[0-9]{1,3}$/';
+                    break;
+
+                case 16:
+                    $ip_pattern =
+                    '/^' . $ip_parts[0]
+                    . '.' . $ip_parts[1]
+                    . '\.[0-9]{1,3}'
+                    . '\.[0-9]{1,3}$/';
+                    break;
+
+                case 8:
+                    $ip_pattern =
+                    '/^' . $ip_parts[0]
+                    . '\.[0-9]{1,3}'
+                    . '\.[0-9]{1,3}'
+                    . '\.[0-9]{1,3}$/';
+                    break;
+            }
+
+            if ($ip_pattern && preg_match($ip_pattern, $remote_addr)) {
+                $is_trusted_ip = true;
+                break;
             }
         }
 
-        return false;
+        return $is_trusted_ip;
     }
 
     /**
      * Generate and set a new password for a specific user not in session.
      *
-     * @param int $user_id The user identifier that will be changed, this must be different than the user in session.
-     * @return bool Either true or false in case of success or error respectively.
+     * @param int $user_id User account identifier.
+     * @return bool True if the process exit clean, false otherwise.
      */
     public static function setNewPassword($user_id = 0)
     {
-        $user_id = intval($user_id);
-
-        if (!$user_id || !function_exists('wp_generate_password')) {
-            return false;
-        }
-
         $user = get_userdata($user_id);
 
         if (!($user instanceof WP_User)) {
@@ -598,7 +590,7 @@ class SucuriScanEvent extends SucuriScan
         /* Skip per hour alert limit and force text/html content-type */
         $data_set = array('Force' => true, 'ForceHTML' => true);
 
-        SucuriScanMail::sendMail(
+        $sent = SucuriScanMail::sendMail(
             $user->user_email,
             'Password Changed',
             $message,
@@ -638,7 +630,7 @@ class SucuriScanEvent extends SucuriScan
         $old_keys_string = '';
         $old_keys = array();
 
-        if (is_array($config_lines) && is_array($new_keys)) {
+        if ($config_lines && $new_keys) {
             foreach ($config_lines as $config_line) {
                 if (@preg_match($pattern, $config_line, $match)) {
                     $key_name = $match[1];

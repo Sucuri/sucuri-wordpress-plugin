@@ -23,7 +23,7 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  * suspicious activity. This includes the ability to reset the secret security
  * keys, the password for each user account, and the installed plugins.
  */
-class SucuriScanPosthackPage extends SucuriScan
+class SucuriScanSettingsPosthack extends SucuriScanSettings
 {
     /**
      * Update the WordPress secret keys.
@@ -170,22 +170,20 @@ class SucuriScanPosthackPage extends SucuriScan
      */
     public static function resetPasswordAjax()
     {
-        if (SucuriScanRequest::post('form_action') == 'reset_user_password') {
-            $response = ''; /* ajax response */
-            $user_id = intval(SucuriScanRequest::post('user_id'));
-
-            if (SucuriScanEvent::setNewPassword($user_id)) {
-                $response = 'done'; /* operation succeeded */
-                $message = 'Password changed for user ID #' . $user_id;
-
-                SucuriScanEvent::reportNoticeEvent($message);
-            } else {
-                $response = 'error';
-            }
-
-            print($response);
-            exit(0);
+        if (SucuriScanRequest::post('form_action') !== 'reset_user_password') {
+            return;
         }
+
+        $response = 'error'; /* ajax response */
+        $user_id = intval(SucuriScanRequest::post('user_id'));
+
+        if (SucuriScanEvent::setNewPassword($user_id)) {
+            $response = 'done'; /* operation succeeded */
+            $message = 'Password changed for user ID #' . $user_id;
+            SucuriScanEvent::reportNoticeEvent($message);
+        }
+
+        wp_send_json($response, 200);
     }
 
     /**
@@ -222,33 +220,34 @@ class SucuriScanPosthackPage extends SucuriScan
      */
     public static function getPluginsAjax()
     {
-        if (SucuriScanRequest::post('form_action') == 'get_plugins_data') {
-            $allPlugins = SucuriScanAPI::getPlugins();
-            $response = '';
-
-            foreach ($allPlugins as $plugin_path => $plugin_data) {
-                $plugin_type_class = ( $plugin_data['PluginType'] == 'free' ) ? 'primary' : 'warning';
-                $input_disabled = ( $plugin_data['PluginType'] == 'free' ) ? '' : 'disabled="disabled"';
-                $plugin_status = $plugin_data['IsPluginActive'] ? 'active' : 'not active';
-                $plugin_status_class = $plugin_data['IsPluginActive'] ? 'success' : 'default';
-
-                $response .= SucuriScanTemplate::getSnippet('settings-posthack-reset-plugins', array(
-                    'ResetPlugin.Disabled' => $input_disabled,
-                    'ResetPlugin.Path' => $plugin_path,
-                    'ResetPlugin.Unique' => crc32($plugin_path),
-                    'ResetPlugin.Repository' => $plugin_data['Repository'],
-                    'ResetPlugin.Plugin' => SucuriScan::excerpt($plugin_data['Name'], 60),
-                    'ResetPlugin.Version' => $plugin_data['Version'],
-                    'ResetPlugin.Type' => $plugin_data['PluginType'],
-                    'ResetPlugin.TypeClass' => $plugin_type_class,
-                    'ResetPlugin.Status' => $plugin_status,
-                    'ResetPlugin.StatusClass' => $plugin_status_class,
-                ));
-            }
-
-            print($response);
-            exit(0);
+        if (SucuriScanRequest::post('form_action') !== 'get_plugins_data') {
+            return;
         }
+
+        $response = '';
+        $allPlugins = SucuriScanAPI::getPlugins();
+
+        foreach ($allPlugins as $plugin_path => $plugin_data) {
+            $plugin_type_class = ( $plugin_data['PluginType'] == 'free' ) ? 'primary' : 'warning';
+            $input_disabled = ( $plugin_data['PluginType'] == 'free' ) ? '' : 'disabled="disabled"';
+            $plugin_status = $plugin_data['IsPluginActive'] ? 'active' : 'not active';
+            $plugin_status_class = $plugin_data['IsPluginActive'] ? 'success' : 'default';
+
+            $response .= SucuriScanTemplate::getSnippet('settings-posthack-reset-plugins', array(
+                'ResetPlugin.Disabled' => $input_disabled,
+                'ResetPlugin.Path' => $plugin_path,
+                'ResetPlugin.Unique' => crc32($plugin_path),
+                'ResetPlugin.Repository' => $plugin_data['Repository'],
+                'ResetPlugin.Plugin' => SucuriScan::excerpt($plugin_data['Name'], 60),
+                'ResetPlugin.Version' => $plugin_data['Version'],
+                'ResetPlugin.Type' => $plugin_data['PluginType'],
+                'ResetPlugin.TypeClass' => $plugin_type_class,
+                'ResetPlugin.Status' => $plugin_status,
+                'ResetPlugin.StatusClass' => $plugin_status_class,
+            ));
+        }
+
+        wp_send_json($response, true);
     }
 
     /**
@@ -258,64 +257,65 @@ class SucuriScanPosthackPage extends SucuriScan
      */
     public static function resetPluginAjax()
     {
-        if (SucuriScanInterface::checkNonce() && SucuriScanRequest::post('form_action') == 'reset_plugin') {
-            $response = ''; /* output for the request */
-            $plugin = SucuriScanRequest::post(':plugin_name');
-            $allPlugins = SucuriScanAPI::getPlugins();
+        if (SucuriScanRequest::post('form_action') !== 'reset_plugin') {
+            return;
+        }
 
-            /* Check if the plugin actually exists */
-            if (!array_key_exists($plugin, $allPlugins)) {
-                $response = '<span class="sucuriscan-label-default">not installed</span>';
-            } elseif ($allPlugins[$plugin]['IsFreePlugin'] !== true) {
-                // Ignore plugins not listed in the WordPress repository.
-                // This usually applies to premium plugins. They cannot be downloaded from
-                // a reliable source because we can't check the checksum of the files nor
-                // we can verify if the installation of the new code will work or not.
-                $response = '<span class="sucuriscan-label-danger">plugin is premium</span>';
-            } elseif (!is_writable($allPlugins[$plugin]['InstallationPath'])) {
-                $response = '<span class="sucuriscan-label-danger">not writable</span>';
-            } elseif (!class_exists('SucuriScanPluginInstallerSkin')) {
-                $response = '<span class="sucuriscan-label-danger">missing library</span>';
+        $response = ''; /* request response */
+        $plugin = SucuriScanRequest::post(':plugin_name');
+        $allPlugins = SucuriScanAPI::getPlugins();
+
+        /* Check if the plugin actually exists */
+        if (!array_key_exists($plugin, $allPlugins)) {
+            $response = '<span class="sucuriscan-label-default">not installed</span>';
+        } elseif ($allPlugins[$plugin]['IsFreePlugin'] !== true) {
+            // Ignore plugins not listed in the WordPress repository.
+            // This usually applies to premium plugins. They cannot be downloaded from
+            // a reliable source because we can't check the checksum of the files nor
+            // we can verify if the installation of the new code will work or not.
+            $response = '<span class="sucuriscan-label-danger">plugin is premium</span>';
+        } elseif (!is_writable($allPlugins[$plugin]['InstallationPath'])) {
+            $response = '<span class="sucuriscan-label-danger">not writable</span>';
+        } elseif (!class_exists('SucuriScanPluginInstallerSkin')) {
+            $response = '<span class="sucuriscan-label-danger">missing library</span>';
+        } else {
+            // Get data associated to the plugin.
+            $data = $allPlugins[$plugin];
+            $info = SucuriScanAPI::getRemotePluginData($data['RepositoryName']);
+            $hash = substr(md5(microtime(true)), 0, 8);
+            $newpath = $data['InstallationPath'] . '_' . $hash;
+
+            if (!$info) {
+                $response = '<span class="sucuriscan-label-danger">cannot download</span>';
+            } elseif (!rename($data['InstallationPath'], $newpath)) {
+                $response = '<span class="sucuriscan-label-danger">cannot backup</span>';
             } else {
-                // Get data associated to the plugin.
-                $data = $allPlugins[$plugin];
-                $info = SucuriScanAPI::getRemotePluginData($data['RepositoryName']);
-                $hash = substr(md5(microtime(true)), 0, 8);
-                $newpath = $data['InstallationPath'] . '_' . $hash;
+                ob_start();
+                $upgrader_skin = new SucuriScanPluginInstallerSkin();
+                $upgrader = new Plugin_Upgrader($upgrader_skin);
+                $upgrader->install($info['download_link']);
+                $output = ob_get_contents();
+                ob_end_clean();
 
-                if (!$info) {
-                    $response = '<span class="sucuriscan-label-danger">cannot download</span>';
-                } elseif (!rename($data['InstallationPath'], $newpath)) {
-                    $response = '<span class="sucuriscan-label-danger">cannot backup</span>';
+                if (!file_exists($data['InstallationPath'])) {
+                    /* Revert backup to its original location */
+                    @rename($newpath, $data['InstallationPath']);
+                    $response = '<span class="sucuriscan-label-danger">cannot install</span>';
                 } else {
-                    ob_start();
-                    $upgrader_skin = new SucuriScanPluginInstallerSkin();
-                    $upgrader = new Plugin_Upgrader($upgrader_skin);
-                    $upgrader->install($info['download_link']);
-                    $output = ob_get_contents();
-                    ob_end_clean();
+                    /* Destroy the backup of the plugin */
+                    $fifo = new SucuriScanFileInfo();
+                    $fifo->ignore_files = false;
+                    $fifo->ignore_directories = false;
+                    $fifo->skip_directories = false;
+                    $fifo->removeDirectoryTree($newpath);
 
-                    if (!file_exists($data['InstallationPath'])) {
-                        /* Revert backup to its original location */
-                        @rename($newpath, $data['InstallationPath']);
-                        $response = '<span class="sucuriscan-label-danger">cannot install</span>';
-                    } else {
-                        /* Destroy the backup of the plugin */
-                        $fifo = new SucuriScanFileInfo();
-                        $fifo->ignore_files = false;
-                        $fifo->ignore_directories = false;
-                        $fifo->skip_directories = false;
-                        $fifo->removeDirectoryTree($newpath);
-
-                        $installed = SucuriScan::escape('Installed v' . $info['version']);
-                        $response = '<span class="sucuriscan-label-success">' . $installed . '</span>';
-                    }
+                    $installed = SucuriScan::escape('Installed v' . $info['version']);
+                    $response = '<span class="sucuriscan-label-success">' . $installed . '</span>';
                 }
             }
-
-            print($response);
-            exit(0);
         }
+
+        wp_send_json($response, 200);
     }
 
     /**
@@ -411,16 +411,16 @@ class SucuriScanPosthackPage extends SucuriScan
      */
     public static function availableUpdatesAjax()
     {
-        if (SucuriScanRequest::post('form_action') == 'get_available_updates') {
-            $response = SucuriScanPosthackPage::availableUpdatesContent();
-
-            if (!$response) {
-                $response = '<tr><td colspan="5">No updates available.</td></tr>';
-            }
-
-            header('Content-Type: text/html; charset=UTF-8');
-            print($response);
-            exit(0);
+        if (SucuriScanRequest::post('form_action') !== 'get_available_updates') {
+            return;
         }
+
+        $response = SucuriScanSettingsPosthack::availableUpdatesContent();
+
+        if (!$response) {
+            $response = '<tr><td colspan="5">No updates available.</td></tr>';
+        }
+
+        wp_send_json($response, 200);
     }
 }

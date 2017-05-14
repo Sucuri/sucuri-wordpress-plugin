@@ -39,13 +39,13 @@ class SucuriScanHook extends SucuriScanEvent
      */
     public static function hookAttachmentAdd($id = 0)
     {
+        $title = 'unknown';
+        $mime_type = 'unknown';
+
         if ($data = get_post($id)) {
             $id = $data->ID;
             $title = $data->post_title;
             $mime_type = $data->post_mime_type;
-        } else {
-            $title = 'unknown';
-            $mime_type = 'unknown';
         }
 
         $message = sprintf('Media file added; ID: %s; name: %s; type: %s', $id, $title, $mime_type);
@@ -194,54 +194,52 @@ class SucuriScanHook extends SucuriScanEvent
      */
     public static function hookLoginFailure($title = '')
     {
-        if (empty($title)) {
-            $title = 'Unknown';
-        }
-
-        $title = sanitize_user($title, true);
         $password = SucuriScanRequest::post('pwd');
-        $message = 'User authentication failed: ' . $title
-        . '; password: ' . $password;
+        $title = empty($title) ? 'Unknown' : sanitize_user($title, true);
+        $message = 'User authentication failed: ' . $title . '; password: ' . $password;
 
         self::reportErrorEvent($message);
 
         self::notifyEvent('failed_login', $message);
 
-        // Log the failed login in the internal datastore for future reports.
-        $logged = sucuriscan_log_failed_login($title, $password);
+        /* log the failed login in the internal storage */
+        sucuriscan_log_failed_login($title, $password);
 
-        // Check if the quantity of failed logins will be considered as a brute-force attack.
-        if ($logged) {
-            $failed_logins = sucuriscan_get_failed_logins();
+        /* report brute-force attack if necessary */
+        if ($logins = sucuriscan_get_failed_logins()) {
+            $max_time = 3600; /* report logins in the last hour */
+            $maximum = SucuriScanOption::getOption(':maximum_failed_logins');
 
-            if ($failed_logins) {
-                $max_time = 3600;
-                $maximum_failed_logins = SucuriScanOption::getOption('sucuriscan_maximum_failed_logins');
-
+            if ($logins['diff_time'] <= $max_time && $logins['count'] >= $maximum) {
                 /**
-                 * If the time passed is within the hour, and the quantity of failed logins
-                 * registered in the datastore file is bigger than the maximum quantity of
-                 * failed logins allowed per hour (value configured by the administrator in the
-                 * settings page), then send an email notification reporting the event and
-                 * specifying that it may be a brute-force attack against the login page.
+                 * Report brute-force attack with latest failed logins.
+                 *
+                 * If the time passed is within the hour, and the quantity
+                 * of failed logins registered in the datastore file is
+                 * bigger than the maximum quantity of failed logins allowed
+                 * per hour (value configured by the administrator in the
+                 * settings page), then send an email notification reporting
+                 * the event and specifying that it may be a brute-force
+                 * attack against the login page.
                  */
-                if ($failed_logins['diff_time'] <= $max_time
-                    && $failed_logins['count'] >= $maximum_failed_logins
-                ) {
-                    sucuriscan_report_failed_logins($failed_logins);
-                } /**
-                 * If there time passed is superior to the hour, then reset the content of the
-                 * datastore file containing the failed logins so far, any entry in that file
-                 * will not be considered as part of a brute-force attack (if it exists) because
-                 * the time passed between the first and last login attempt is big enough to
-                 * mitigate the attack. We will consider the current failed login event as the
-                 * first entry of that file in case of future attempts during the next sixty
-                 * minutes.
+                sucuriscan_report_failed_logins($logins);
+            } elseif ($logins['diff_time'] > $max_time) {
+                /**
+                 * Reset old failed login logs.
+                 *
+                 * If there time passed is superior to the hour, then reset the
+                 * content of the datastore file containing the failed logins so
+                 * far, any entry in that file will not be considered as part of
+                 * a brute-force attack (if it exists) because the time passed
+                 * between the first and last login attempt is big enough to
+                 * mitigate the attack.
+                 *
+                 * We will consider the current failed login event as the first
+                 * entry of that file in case of future attempts during the next
+                 * sixty minutes.
                  */
-                elseif ($failed_logins['diff_time'] > $max_time) {
-                    sucuriscan_reset_failed_logins();
-                    sucuriscan_log_failed_login($title);
-                }
+                sucuriscan_reset_failed_logins();
+                sucuriscan_log_failed_login($title, $password);
             }
         }
     }
@@ -265,10 +263,7 @@ class SucuriScanHook extends SucuriScanEvent
      */
     public static function hookLoginSuccess($title = '')
     {
-        if (empty($title)) {
-            $title = 'Unknown';
-        }
-
+        $title = empty($title) ? 'Unknown' : $title;
         $message = 'User authentication succeeded: ' . $title;
         self::reportNoticeEvent($message);
         self::notifyEvent('success_login', $message);
@@ -284,17 +279,15 @@ class SucuriScanHook extends SucuriScanEvent
      */
     public static function hookOptionsManagement()
     {
-        // Detect any Wordpress settings modification.
-        if (current_user_can('manage_options')
-            && SucuriScanOption::checkOptionsNonce()
-        ) {
-            // Get the settings available in the database and compare them with the submission.
+        /* detect any Wordpress settings modification */
+        if (current_user_can('manage_options') && SucuriScanOption::checkOptionsNonce()) {
+            /* compare settings in the database with the modified ones */
             $options_changed = SucuriScanOption::whatOptionsWereChanged($_POST);
             $options_changed_str = '';
             $options_changed_simple = '';
             $options_changed_count = 0;
 
-            // Generate the list of options changed.
+            /* determine which options were modified */
             foreach ($options_changed['original'] as $option_name => $option_value) {
                 $options_changed_count += 1;
                 $options_changed_str .= sprintf(
@@ -311,29 +304,27 @@ class SucuriScanHook extends SucuriScanEvent
                 );
             }
 
-            // Get the option group (name of the page where the request was originated).
-            $option_page = isset($_POST['option_page']) ? $_POST['option_page'] : 'options';
-            $page_referer = false;
+            /* identify the origin of the request */
+            $option_page = isset($_POST['option_page'])
+            ? $_POST['option_page'] : 'options';
+            $page_referer = 'Common';
 
-            // Check which of these option groups where modified.
             switch ($option_page) {
                 case 'options':
                     $page_referer = 'Global';
                     break;
-                case 'general':    /* no_break */
-                case 'writing':    /* no_break */
-                case 'reading':    /* no_break */
+
                 case 'discussion': /* no_break */
+                case 'general':    /* no_break */
                 case 'media':      /* no_break */
-                case 'permalink':
+                case 'permalink':  /* no_break */
+                case 'reading':    /* no_break */
+                case 'writing':    /* no_break */
                     $page_referer = ucwords($option_page);
-                    break;
-                default:
-                    $page_referer = 'Common';
                     break;
             }
 
-            if ($page_referer && $options_changed_count > 0) {
+            if ($options_changed_count) {
                 $message = $page_referer . ' settings changed';
                 SucuriScanEvent::reportErrorEvent(sprintf(
                     '%s: (multiple entries): %s',
@@ -489,16 +480,13 @@ class SucuriScanHook extends SucuriScanEvent
         if (current_user_can('install_plugins')
             && SucuriScanRequest::get('action', '(install|upload)-plugin')
         ) {
-            if (isset($_FILES['pluginzip'])) {
-                $plugin = self::escape($_FILES['pluginzip']['name']);
-            } else {
-                $plugin = SucuriScanRequest::get('plugin', '.+');
+            $plugin = SucuriScanRequest::get('plugin', '.+');
 
-                if (!$plugin) {
-                    $plugin = 'Unknown';
-                }
+            if (isset($_FILES['pluginzip'])) {
+                $plugin = $_FILES['pluginzip']['name'];
             }
 
+            $plugin = $plugin ? $plugin : 'Unknown';
             $message = 'Plugin installed: ' . self::escape($plugin);
             SucuriScanEvent::reportWarningEvent($message);
             self::notifyEvent('plugin_installed', $message);
@@ -591,11 +579,8 @@ class SucuriScanHook extends SucuriScanEvent
             $out['inserted'] = $data->post_date;
             $out['modified'] = $data->post_modified;
             $out['guid'] = $data->guid;
-            $out['title'] = $data->post_title;
-
-            if (empty($data->post_title)) {
-                $out['title'] = '(empty)';
-            }
+            $out['title'] = empty($data->post_title)
+                ? '(empty)' : $data->post_title;
 
             $cache->add('post_' . $id, $out);
         }
@@ -611,16 +596,13 @@ class SucuriScanHook extends SucuriScanEvent
         $pieces = array();
         $cache = new SucuriScanCache('hookdata');
         $data = $cache->get('post_' . $id);
-
-        if (!$data) {
-            $data = array('id' => $id);
-        }
+        $data = $data ? $data : array('id' => $id);
 
         foreach ($data as $keyname => $value) {
             $pieces[] = sprintf('Post %s: %s', $keyname, $value);
         }
 
-        $data = $cache->delete('post_' . $id);
+        $cache->delete('post_' . $id);
         $entries = implode(',', $pieces); /* merge all entries together */
         self::reportWarningEvent('Post deleted: (multiple entries): ' . $entries);
     }
@@ -635,7 +617,7 @@ class SucuriScanHook extends SucuriScanEvent
     public static function hookPostStatus($new = '', $old = '', $post = null)
     {
         if (!property_exists($post, 'ID')) {
-            return;
+            return self::throwException('Ignore corrupted post data');
         }
 
         $post_type = 'post'; /* either post or page */
@@ -646,7 +628,7 @@ class SucuriScanHook extends SucuriScanEvent
 
         /* check if email alerts are disabled for this type */
         if (SucuriScanOption::isIgnoredEvent($post_type)) {
-            return;
+            return self::throwException('Skip events for ignored post-types');
         }
 
         $pieces = array();
@@ -675,12 +657,12 @@ class SucuriScanHook extends SucuriScanEvent
      */
     public static function hookPostTrash($id = 0)
     {
+        $title = 'Unknown';
+        $status = 'none';
+
         if ($data = get_post($id)) {
             $title = $data->post_title;
             $status = $data->post_status;
-        } else {
-            $title = 'Unknown';
-            $status = 'none';
         }
 
         $message = sprintf(
@@ -773,9 +755,7 @@ class SucuriScanHook extends SucuriScanEvent
      */
     public static function hookRetrievePassword($title = '')
     {
-        if (empty($title)) {
-            $title = 'unknown';
-        }
+        $title = empty($title) ? 'unknown' : $title;
 
         self::reportErrorEvent('Password retrieval attempt: ' . $title);
     }
@@ -791,10 +771,7 @@ class SucuriScanHook extends SucuriScanEvent
             && SucuriScanRequest::getOrPost('stylesheet', '.+')
         ) {
             $theme = SucuriScanRequest::getOrPost('stylesheet', '.+');
-
-            if (!$theme) {
-                $theme = 'Unknown';
-            }
+            $theme = $theme ? $theme : 'Unknown';
 
             $message = 'Theme deleted: ' . self::escape($theme);
             SucuriScanEvent::reportWarningEvent($message);
@@ -832,10 +809,7 @@ class SucuriScanHook extends SucuriScanEvent
             && SucuriScanRequest::get('action', 'install-theme')
         ) {
             $theme = SucuriScanRequest::get('theme', '.+');
-
-            if (!$theme) {
-                $theme = 'Unknown';
-            }
+            $theme = $theme ? $theme : 'Unknown';
 
             $message = 'Theme installed: ' . self::escape($theme);
             SucuriScanEvent::reportWarningEvent($message);
@@ -850,10 +824,7 @@ class SucuriScanHook extends SucuriScanEvent
      */
     public static function hookThemeSwitch($title = '')
     {
-        if (empty($title)) {
-            $title = 'unknown';
-        }
-
+        $title = empty($title) ? 'unknown' : $title;
         $message = 'Theme activated: ' . $title;
         self::reportWarningEvent($message);
         self::notifyEvent('theme_activated', $message);
@@ -922,14 +893,14 @@ class SucuriScanHook extends SucuriScanEvent
      */
     public static function hookUserRegister($id = 0)
     {
+        $title = 'unknown';
+        $email = 'user@domain.com';
+        $roles = 'none';
+
         if ($data = get_userdata($id)) {
             $title = $data->user_login;
             $email = $data->user_email;
             $roles = @implode(', ', $data->roles);
-        } else {
-            $title = 'unknown';
-            $email = 'user@domain.com';
-            $roles = 'none';
         }
 
         $message = sprintf(

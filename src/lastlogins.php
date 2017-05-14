@@ -40,8 +40,6 @@ function sucuriscan_lastlogins_admins()
 
     foreach ((array) $admins as $admin) {
         $last_logins = sucuriscan_get_logins(5, 0, $admin->ID);
-        $admin->lastlogins = $last_logins['entries'];
-
         $user_snippet = array(
             'AdminUsers.Username' => $admin->user_login,
             'AdminUsers.Email' => $admin->user_email,
@@ -52,13 +50,16 @@ function sucuriscan_lastlogins_admins()
             'AdminUsers.NoLastLoginsTable' => 'hidden',
         );
 
-        if (!empty($admin->lastlogins)) {
+        if ($last_logins
+            && isset($last_logins['entries'])
+            && !empty($last_logins['entries'])
+        ) {
             $user_snippet['AdminUsers.NoLastLogins'] = 'hidden';
             $user_snippet['AdminUsers.NoLastLoginsTable'] = 'visible';
             $user_snippet['AdminUsers.RegisteredAt'] = 'Unknown';
 
-            foreach ($admin->lastlogins as $i => $lastlogin) {
-                if ($i == 0) {
+            foreach ($last_logins['entries'] as $i => $lastlogin) {
+                if ($i === 0) {
                     $user_snippet['AdminUsers.RegisteredAt'] = SucuriScan::datetime(
                         $lastlogin->user_registered_timestamp
                     );
@@ -105,48 +106,49 @@ function sucuriscan_lastlogins_all()
         SucuriScanInterface::error('Last-logins datastore file is not writable: <code>' . $fpath . '</code>');
     }
 
-    $last_logins = sucuriscan_get_logins($max_per_page, $offset);
-    $params['UserList.Total'] = $last_logins['total'];
+    if ($last_logins = sucuriscan_get_logins($max_per_page, $offset)) {
+        $params['UserList.Total'] = $last_logins['total'];
 
-    if ($last_logins['total'] > $max_per_page) {
-        $params['UserList.PaginationVisibility'] = 'visible';
-    }
-
-    if ($last_logins['total'] > 0) {
-        $params['UserList.NoItemsVisibility'] = 'hidden';
-    }
-
-    foreach ($last_logins['entries'] as $user) {
-        $user_dataset = array(
-            'UserList.Number' => $user->line_num,
-            'UserList.UserId' => $user->user_id,
-            'UserList.Username' => 'Unknown',
-            'UserList.Displayname' => '',
-            'UserList.Email' => '',
-            'UserList.Registered' => '',
-            'UserList.RemoteAddr' => $user->user_remoteaddr,
-            'UserList.Hostname' => $user->user_hostname,
-            'UserList.Datetime' => $user->user_lastlogin,
-            'UserList.TimeAgo' => SucuriScan::timeAgo($user->user_lastlogin),
-            'UserList.UserURL' => SucuriScan::adminURL('user-edit.php?user_id=' . $user->user_id),
-        );
-
-        if ($user->user_exists) {
-            $user_dataset['UserList.Username'] = $user->user_login;
-            $user_dataset['UserList.Displayname'] = $user->display_name;
-            $user_dataset['UserList.Email'] = $user->user_email;
-            $user_dataset['UserList.Registered'] = $user->user_registered;
+        if ($last_logins['total'] > $max_per_page) {
+            $params['UserList.PaginationVisibility'] = 'visible';
         }
 
-        $params['UserList'] .= SucuriScanTemplate::getSnippet('lastlogins-all', $user_dataset);
-    }
+        if ($last_logins['total'] > 0) {
+            $params['UserList.NoItemsVisibility'] = 'hidden';
+        }
 
-    // Generate the pagination for the list.
-    $params['UserList.Pagination'] = SucuriScanTemplate::pagination(
-        '%%SUCURI.URL.Lastlogins%%',
-        $last_logins['total'],
-        $max_per_page
-    );
+        foreach ($last_logins['entries'] as $user) {
+            $user_dataset = array(
+                'UserList.Number' => $user->line_num,
+                'UserList.UserId' => $user->user_id,
+                'UserList.Username' => 'Unknown',
+                'UserList.Displayname' => '',
+                'UserList.Email' => '',
+                'UserList.Registered' => '',
+                'UserList.RemoteAddr' => $user->user_remoteaddr,
+                'UserList.Hostname' => $user->user_hostname,
+                'UserList.Datetime' => $user->user_lastlogin,
+                'UserList.TimeAgo' => SucuriScan::timeAgo($user->user_lastlogin),
+                'UserList.UserURL' => SucuriScan::adminURL('user-edit.php?user_id=' . $user->user_id),
+            );
+
+            if ($user->user_exists) {
+                $user_dataset['UserList.Username'] = $user->user_login;
+                $user_dataset['UserList.Displayname'] = $user->display_name;
+                $user_dataset['UserList.Email'] = $user->user_email;
+                $user_dataset['UserList.Registered'] = $user->user_registered;
+            }
+
+            $params['UserList'] .= SucuriScanTemplate::getSnippet('lastlogins-all', $user_dataset);
+        }
+
+        // Generate the pagination for the list.
+        $params['UserList.Pagination'] = SucuriScanTemplate::pagination(
+            '%%SUCURI.URL.Lastlogins%%',
+            $last_logins['total'],
+            $max_per_page
+        );
+    }
 
     return SucuriScanTemplate::getSection('lastlogins-all', $params);
 }
@@ -275,16 +277,14 @@ function sucuriscan_get_logins($limit = 10, $offset = 0, $user_id = 0)
     );
 
     if (!$datastore_filepath) {
-        SucuriScan::throwException('Invalid last-logins storage file');
-        return $last_logins;
+        return SucuriScan::throwException('Invalid last-logins storage file');
     }
 
     $parsed_lines = 0;
     $data_lines = SucuriScanFileInfo::fileLines($datastore_filepath);
 
     if (!$data_lines) {
-        SucuriScan::throwException('No last-logins data is available');
-        return $last_logins;
+        return SucuriScan::throwException('No last-logins data is available');
     }
 
     /**
@@ -405,7 +405,10 @@ if (!function_exists('sucuri_get_user_lastlogin')) {
             // Select the penultimate entry, not the last one.
             $last_logins = sucuriscan_get_logins(2, 0, $current_user->ID);
 
-            if (isset($last_logins['entries'][1])) {
+            if ($last_logins
+                && isset($last_logins['entries'])
+                && isset($last_logins['entries'][1])
+            ) {
                 $row = $last_logins['entries'][1];
                 $page_url = SucuriScanTemplate::getUrl('lastlogins');
                 $message = sprintf(

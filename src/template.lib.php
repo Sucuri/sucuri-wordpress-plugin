@@ -34,30 +34,36 @@ class SucuriScanTemplate extends SucuriScanRequest
     /**
      * Replace all pseudo-variables from a string of characters.
      *
+     * @see http://php.net/manual/en/function.gettype.php
+     *
      * @param string $content The content of a template file which contains pseudo-variables.
      * @param array $params List of pseudo-variables that will be replaced in the template.
      * @return string The content of the template with the pseudo-variables replated.
      */
     private static function replacePseudoVars($content = '', $params = array())
     {
-        if (!is_array($params)) {
-            return '';
-        }
+        $params = is_array($params) ? $params : array();
 
         foreach ($params as $keyname => $kvalue) {
             $tplkey = 'SUCURI.' . $keyname;
             $with_escape = '%%' . $tplkey . '%%';
             $wout_escape = '%%%' . $tplkey . '%%%';
 
-            if (!is_string($kvalue) && !is_numeric($kvalue)) {
-                $kvalue = ''; /* empty */
+            if (is_bool($kvalue)) {
+                $kvalue = ($kvalue === true) ? 'True' : 'False';
+            } elseif (!is_string($kvalue) && !is_numeric($kvalue)) {
+                $kvalue = gettype($kvalue);
             }
 
             if (strpos($content, $wout_escape) !== false) {
                 $content = str_replace($wout_escape, $kvalue, $content);
-            } elseif (strpos($content, $with_escape) !== false) {
+                continue;
+            }
+
+            if (strpos($content, $with_escape) !== false) {
                 $kvalue = SucuriScan::escape($kvalue);
                 $content = str_replace($with_escape, $kvalue, $content);
+                continue;
             }
         }
 
@@ -142,15 +148,14 @@ class SucuriScanTemplate extends SucuriScanRequest
             $url_path .= '_' . strtolower($page);
         }
 
-        if (SucuriScan::isMultiSite()) {
-            $url_path = str_replace(
-                'wp-admin/network/admin-ajax.php',
-                'wp-admin/admin-ajax.php',
-                $url_path
-            );
-        }
+        /* convert URL to multisite format */
+        $networkURL = str_replace(
+            'wp-admin/network/admin-ajax.php',
+            'wp-admin/admin-ajax.php',
+            $url_path
+        );
 
-        return $url_path;
+        return SucuriScan::isMultiSite() ? $networkURL : $url_path;
     }
 
     /**
@@ -232,46 +237,37 @@ class SucuriScanTemplate extends SucuriScanRequest
      */
     public static function getTemplate($template = '', $params = array(), $type = 'page')
     {
-        if (!is_array($params)) {
-            $params = array();
+        $params = is_array($params) ? $params : array();
+
+        $filenames = array(
+            'page' => '%s/inc/tpl/%s.html.tpl',
+            'section' => '%s/inc/tpl/%s.html.tpl',
+            'snippet' => '%s/inc/tpl/%s.snippet.tpl',
+        );
+
+        if (!array_key_exists($type, $filenames)) {
+            return (string) SucuriScan::throwException('Invalid template type');
         }
 
-        if ($type == 'page') {
-            $pattern = '%s/inc/tpl/%s.html.tpl';
-        } elseif ($type == 'section') {
-            $pattern = '%s/inc/tpl/%s.html.tpl';
-        } elseif ($type == 'snippet') {
-            $pattern = '%s/inc/tpl/%s.snippet.tpl';
-        } else {
-            SucuriScan::throwException('Invalid template type');
-            return ''; /* empty page */
+        $output = ''; /* initialize response */
+        $_page = self::get('page', '_page');
+        $params['SucuriURL'] = SUCURISCAN_URL;
+        $trailing = $_page ? 'admin.php?page=' . $_page : '';
+        $params['CurrentURL'] = SucuriScan::adminURL($trailing);
+
+        /* load raw content from the specified template file */
+        $fpath = sprintf($filenames[$type], SUCURISCAN_PLUGIN_PATH, $template);
+        $output = SucuriScanFileInfo::fileContent($fpath);
+
+        /* replace the global pseudo-variables in the section/snippets templates. */
+        if ($template == 'base'
+            && array_key_exists('PageContent', $params)
+            && @preg_match('/%%SUCURI\.(.+)%%/', $params['PageContent'])
+        ) {
+            $params['PageContent'] = self::replacePseudoVars($params['PageContent'], $params);
         }
 
-        $output = ''; /* initialize response as an empty string */
-        $fpath = sprintf($pattern, SUCURISCAN_PLUGIN_PATH, $template);
-
-        if (file_exists($fpath) && is_readable($fpath)) {
-            $output = @file_get_contents($fpath);
-
-            $params['SucuriURL'] = SUCURISCAN_URL;
-
-            // Detect the current page URL.
-            if ($_page = self::get('page', '_page')) {
-                $params['CurrentURL'] = SucuriScan::adminURL('admin.php?page=' . $_page);
-            } else {
-                $params['CurrentURL'] = SucuriScan::adminURL();
-            }
-
-            // Replace the global pseudo-variables in the section/snippets templates.
-            if ($template == 'base'
-                && array_key_exists('PageContent', $params)
-                && @preg_match('/%%SUCURI\.(.+)%%/', $params['PageContent'])
-            ) {
-                $params['PageContent'] = self::replacePseudoVars($params['PageContent'], $params);
-            }
-
-            $output = self::replacePseudoVars($output, $params);
-        }
+        $output = self::replacePseudoVars($output, $params);
 
         if ($template == 'base' || $type != 'page') {
             return $output;
@@ -364,7 +360,7 @@ class SucuriScanTemplate extends SucuriScanRequest
     {
         $options = '';
 
-        foreach ($allowed_values as $option_name => $option_label) {
+        foreach ((array) $allowed_values as $option_name => $option_label) {
             $selected = '';
 
             if ($option_name === $selected_val) {

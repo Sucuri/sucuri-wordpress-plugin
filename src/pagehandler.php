@@ -54,18 +54,10 @@ function sucuriscan_firewall_page()
 {
     SucuriScanInterface::checkPageVisibility();
 
-    // Process all form submissions.
-    $nonce = SucuriScanInterface::checkNonce();
-    sucuriscan_firewall_form_submissions($nonce);
-
-    // Get the dynamic values for the template variables.
-    $api_key = SucuriScanAPI::getFirewallKey();
-
-    // Page pseudo-variables initialization.
     $params = array(
-        'Firewall.Settings' => sucuriscan_firewall_settings($api_key),
-        'Firewall.AuditLogs' => sucuriscan_firewall_auditlogs(),
-        'Firewall.ClearCache' => sucuriscan_firewall_clearcache($nonce),
+        'Firewall.Settings' => SucuriScanFirewall::settingsPage(),
+        'Firewall.AuditLogs' => SucuriScanFirewall::auditlogsPage(),
+        'Firewall.ClearCache' => SucuriScanFirewall::clearCachePage(),
     );
 
     echo SucuriScanTemplate::getTemplate('firewall', $params);
@@ -129,11 +121,11 @@ function sucuriscan_settings_page()
     $params['Settings.General.ImportExport'] = sucuriscan_settings_general_importexport($nonce);
 
     /* settings - scanner */
-    $params['Settings.Scanner.Options'] = sucuriscan_settings_scanner_options();
+    $params['Settings.Scanner.Options'] = SucuriScanSettingsScanner::options();
     $params['Settings.Scanner.IntegrityDiffUtility'] = SucuriScanSettingsIntegrity::diffUtility($nonce);
     $params['Settings.Scanner.IntegrityLanguage'] = SucuriScanSettingsIntegrity::language($nonce);
     $params['Settings.Scanner.IntegrityCache'] = SucuriScanSettingsIntegrity::cache($nonce);
-    $params['Settings.Scanner.IgnoreFolders'] = sucuriscan_settings_scanner_ignore_folders($nonce);
+    $params['Settings.Scanner.IgnoreFolders'] = SucuriScanSettingsScanner::ignoreFolders($nonce);
 
     /* settings - hardening */
     $params['Settings.Hardening.Firewall'] = SucuriScanHardeningPage::firewall();
@@ -150,10 +142,10 @@ function sucuriscan_settings_page()
     $params['Settings.Hardening.WhitelistPHPFiles'] = SucuriScanHardeningPage::whitelistPHPFiles();
 
     /* settings - posthack */
-    $params['Settings.Posthack.SecurityKeys'] = SucuriScanPosthackPage::securityKeys();
-    $params['Settings.Posthack.ResetPassword'] = SucuriScanPosthackPage::resetPassword();
-    $params['Settings.Posthack.ResetPlugins'] = SucuriScanPosthackPage::resetPlugins();
-    $params['Settings.Posthack.AvailableUpdates'] = SucuriScanPosthackPage::availableUpdates();
+    $params['Settings.Posthack.SecurityKeys'] = SucuriScanSettingsPosthack::securityKeys();
+    $params['Settings.Posthack.ResetPassword'] = SucuriScanSettingsPosthack::resetPassword();
+    $params['Settings.Posthack.ResetPlugins'] = SucuriScanSettingsPosthack::resetPlugins();
+    $params['Settings.Posthack.AvailableUpdates'] = SucuriScanSettingsPosthack::availableUpdates();
 
     /* settings - alerts */
     $params['Settings.Alerts.Recipients'] = sucuriscan_settings_alerts_recipients($nonce);
@@ -185,21 +177,17 @@ function sucuriscan_ajax()
     SucuriScanInterface::checkPageVisibility();
 
     if (SucuriScanInterface::checkNonce()) {
-        SucuriScanIntegrity::ajaxIntegrity();
-        SucuriScanIntegrity::ajaxIntegrityDiffUtility();
-
         SucuriScanAuditLogs::ajaxAuditLogs();
         SucuriScanAuditLogs::ajaxAuditLogsReport();
-
-        sucuriscan_firewall_auditlogs_ajax();
-
-        sucuriscan_settings_ignorescan_ajax();
-
-        SucuriScanPosthackPage::getPluginsAjax();
-        SucuriScanPosthackPage::resetPluginAjax();
-        SucuriScanPosthackPage::resetPasswordAjax();
-        SucuriScanPosthackPage::availableUpdatesAjax();
+        SucuriScanFirewall::auditlogsAjax();
+        SucuriScanIntegrity::ajaxIntegrity();
+        SucuriScanIntegrity::ajaxIntegrityDiffUtility();
+        SucuriScanSettingsPosthack::availableUpdatesAjax();
+        SucuriScanSettingsPosthack::getPluginsAjax();
+        SucuriScanSettingsPosthack::resetPasswordAjax();
+        SucuriScanSettingsPosthack::resetPluginAjax();
+        SucuriScanSettingsScanner::ignoreFoldersAjax();
     }
 
-    wp_die();
+    wp_send_json(array('ok' => false, 'error' => 'invalid ajax action'), 200);
 }

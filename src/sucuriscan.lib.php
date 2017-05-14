@@ -45,8 +45,11 @@ class SucuriScan
                 $message
             );
 
+            /* throw catchable errors via tests */
             throw new Exception($message, $code);
         }
+
+        return false; /* for backward compatibility */
     }
 
     /**
@@ -236,7 +239,9 @@ class SucuriScan
     public static function adminURL($url = '')
     {
         if (self::isMultiSite()) {
+            // @codeCoverageIgnoreStart
             return network_admin_url($url);
+            // @codeCoverageIgnoreEnd
         }
 
         return admin_url($url);
@@ -330,8 +335,9 @@ class SucuriScan
     public static function runScheduledTask()
     {
         SucuriScanEvent::filesystemScan();
+        SucuriScanEvent::reportSiteVersion();
         SucuriScanIntegrity::getIntegrityStatus(true);
-        SucuriScanPosthackPage::availableUpdatesContent(true);
+        SucuriScanSettingsPosthack::availableUpdatesContent(true);
     }
 
     /**
@@ -548,7 +554,7 @@ class SucuriScan
          * the site as protected by a firewall. A fake key can be used to bypass the DNS
          * checking, but that is not something that will affect us, only the client.
          */
-        if (!$status && SucuriScanAPI::getFirewallKey()) {
+        if (!$status && SucuriScanFirewall::getKey()) {
             $status = true;
         }
 

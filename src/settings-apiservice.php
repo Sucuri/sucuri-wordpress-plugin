@@ -24,8 +24,6 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  */
 function sucuriscan_settings_apiservice_status($nonce)
 {
-    global $sucuriscan_api_handlers;
-
     $params = array();
 
     $params['ApiStatus.StatusNum'] = '1';
@@ -47,19 +45,6 @@ function sucuriscan_settings_apiservice_status($nonce)
             SucuriScanOption::updateOption(':api_service', $action_d);
             SucuriScanInterface::info($message);
         }
-
-        if ($api_handler = SucuriScanRequest::post(':api_handler')) {
-            if (array_key_exists($api_handler, $sucuriscan_api_handlers)) {
-                $message = 'API request handler set to <code>' . $api_handler . '</code>';
-
-                SucuriScanOption::updateOption(':api_handler', $api_handler);
-                SucuriScanEvent::reportWarningEvent($message);
-                SucuriScanEvent::notifyEvent('plugin_change', $message);
-                SucuriScanInterface::info($message);
-            } else {
-                SucuriScanInterface::error('Invalid value for the API request handler.');
-            }
-        }
     }
 
     $api_service = SucuriScanOption::getOption(':api_service');
@@ -72,12 +57,6 @@ function sucuriscan_settings_apiservice_status($nonce)
         $params['ApiStatus.WarningVisibility'] = 'hidden';
         $params['ApiStatus.ErrorVisibility'] = 'visible';
     }
-
-    $api_handler = SucuriScanOption::getOption(':api_handler');
-    $params['ApiHandlerOptions'] = SucuriScanTemplate::selectOptions(
-        $sucuriscan_api_handlers,
-        $api_handler
-    );
 
     return SucuriScanTemplate::getSection('settings-apiservice-status', $params);
 }

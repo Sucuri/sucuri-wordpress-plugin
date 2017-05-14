@@ -70,31 +70,26 @@ class SucuriScanHardening extends SucuriScan
      */
     public static function hardenDirectory($directory = '')
     {
-        if (file_exists($directory)
-            && is_writable($directory)
-            && is_dir($directory)
-        ) {
-            $fhandle = false;
-            $target = self::htaccess($directory);
-            $deny_rules = self::getRules();
-
-            if (file_exists($target)) {
-                self::fixPreviousHardening($directory);
-                $fhandle = @fopen($target, 'a');
-            } else {
-                $fhandle = @fopen($target, 'w');
-            }
-
-            if ($fhandle) {
-                $rules_str = "\n" . implode("\n", $deny_rules) . "\n";
-                $written = @fwrite($fhandle, $rules_str);
-                @fclose($fhandle);
-
-                return (bool) ($written !== false);
-            }
+        if (!is_dir($directory) || !is_writable($directory)) {
+            return self::throwException('Directory is not usable');
         }
 
-        return false;
+        $fhandle = false;
+        $target = self::htaccess($directory);
+
+        if (file_exists($target)) {
+            self::fixPreviousHardening($directory);
+            $fhandle = @fopen($target, 'a');
+        } else {
+            $fhandle = @fopen($target, 'w');
+        }
+
+        $deny_rules = self::getRules();
+        $rules_text = implode("\n", $deny_rules);
+        $written = @fwrite($fhandle, "\n" . $rules_text . "\n");
+        @fclose($fhandle);
+
+        return (bool) ($written !== false);
     }
 
     /**
@@ -107,25 +102,23 @@ class SucuriScanHardening extends SucuriScan
      */
     public static function unhardenDirectory($directory = '')
     {
-        if (self::isHardened($directory)) {
-            $fpath = self::htaccess($directory);
-
-            if ($content = SucuriScanFileInfo::fileContent($fpath)) {
-                $deny_rules = self::getRules();
-                $rules_str = implode("\n", $deny_rules);
-                $content = str_replace($rules_str, '', $content);
-                $written = @file_put_contents($fpath, $content);
-                $trimmed = trim($content);
-
-                if (!filesize($fpath) || empty($trimmed)) {
-                    @unlink($fpath);
-                }
-
-                return (bool) ($written !== false);
-            }
+        if (!self::isHardened($directory)) {
+            return self::throwException('Directory is not hardened');
         }
 
-        return false;
+        $fpath = self::htaccess($directory);
+        $content = SucuriScanFileInfo::fileContent($fpath);
+        $deny_rules = self::getRules();
+        $rules_text = implode("\n", $deny_rules);
+        $content = str_replace($rules_text, '', $content);
+        $written = @file_put_contents($fpath, $content);
+        $trimmed = trim($content);
+
+        if (!filesize($fpath) || empty($trimmed)) {
+            @unlink($fpath);
+        }
+
+        return (bool) ($written !== false);
     }
 
     /**
@@ -137,19 +130,18 @@ class SucuriScanHardening extends SucuriScan
     private static function fixPreviousHardening($directory = '')
     {
         $fpath = self::htaccess($directory);
+        $content = SucuriScanFileInfo::fileContent($fpath);
+        $rules = "<Files *.php>\ndeny from all\n</Files>";
 
-        if ($content = SucuriScanFileInfo::fileContent($fpath)) {
-            $rules = "<Files *.php>\ndeny from all\n</Files>";
-
-            if (strpos($content, $rules) !== false) {
-                $content = str_replace($rules, '', $content);
-                $written = @file_put_contents($fpath, $content);
-
-                return (bool) ($written !== false);
-            }
+        /* no previous hardening rules exist */
+        if (strpos($content, $rules) === false) {
+            return true;
         }
 
-        return true;
+        $content = str_replace($rules, '', $content);
+        $written = @file_put_contents($fpath, $content);
+
+        return (bool) ($written !== false);
     }
 
     /**
@@ -160,18 +152,16 @@ class SucuriScanHardening extends SucuriScan
      */
     public static function isHardened($directory = '')
     {
-        if (file_exists($directory) && is_dir($directory)) {
-            $fpath = self::htaccess($directory);
-
-            if ($content = SucuriScanFileInfo::fileContent($fpath)) {
-                $rules = self::getRules();
-                $rules_str = implode("\n", $rules);
-
-                return (bool) (strpos($content, $rules_str) !== false);
-            }
+        if (!is_dir($directory)) {
+            return false;
         }
 
-        return false;
+        $fpath = self::htaccess($directory);
+        $content = SucuriScanFileInfo::fileContent($fpath);
+        $deny_rules = self::getRules();
+        $rules_text = implode("\n", $deny_rules);
+
+        return (bool) (strpos($content, $rules_text) !== false);
     }
 
     /**
@@ -184,10 +174,8 @@ class SucuriScanHardening extends SucuriScan
     {
         $folder = str_replace(ABSPATH, '', $folder);
         $bpath = rtrim(ABSPATH, DIRECTORY_SEPARATOR);
-        $folder_path = $bpath . '/' . $folder;
-        $htaccess = $folder_path . '/.htaccess';
 
-        return $htaccess;
+        return $bpath . '/' . $folder . '/.htaccess';
     }
 
     /**
@@ -272,8 +260,7 @@ class SucuriScanHardening extends SucuriScan
         $content = SucuriScanFileInfo::fileContent($htaccess);
 
         if (!$content || !is_writable($htaccess)) {
-            self::throwException('Cannot dewhitelist file; no permissions.');
-            return false;
+            return self::throwException('Cannot dewhitelist file; no permissions.');
         }
 
         $rules = self::whitelistRule($file);
@@ -292,13 +279,9 @@ class SucuriScanHardening extends SucuriScan
     public static function getWhitelisted($folder = '')
     {
         $htaccess = self::htaccess($folder);
+        $content = SucuriScanFileInfo::fileContent($htaccess);
+        @preg_match_all('/<Files (\S+)>/', $content, $matches);
 
-        if ($content = SucuriScanFileInfo::fileContent($htaccess)) {
-            if (@preg_match_all('/<Files (\S+)>/', $content, $matches)) {
-                return $matches[1];
-            }
-        }
-
-        return array(/* empty list */);
+        return $matches[1] /* empty for no matches */;
     }
 }

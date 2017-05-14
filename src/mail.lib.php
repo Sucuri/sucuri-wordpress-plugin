@@ -49,74 +49,53 @@ class SucuriScanMail extends SucuriScanOption
     {
         $headers = array();
         $subject = ucwords(strtolower($subject));
-        $force = false;
-        $debug = false;
+        $force = (bool) (isset($data_set['Force']) && $data_set['Force']);
+        unset($data_set['Force']); /* remove to prevent inheritance */
 
-        // Check whether the mail will be printed in the site instead of sent.
-        if (isset($data_set['Debug']) && $data_set['Debug']) {
-            $debug = true;
-            unset($data_set['Debug']);
-        }
-
-        // Check whether the mail will be even if the limit per hour was reached or not.
-        if (isset($data_set['Force']) && $data_set['Force']) {
-            $force = true;
-            unset($data_set['Force']);
-        }
-
-        // Check whether the email alerts will be sent in HTML or Plain/Text.
+        /* check whether the email alerts will be sent in HTML or plain/text */
         if (self::prettifyMails() || (isset($data_set['ForceHTML']) && $data_set['ForceHTML'])) {
-            $headers = array( 'content-type: text/html' );
+            $headers = array('Content-Type: text/html');
             $data_set['PrettifyType'] = 'pretty';
             unset($data_set['ForceHTML']);
         } else {
+            $headers = array('Content-Type: text/plain');
             $message = strip_tags($message);
         }
 
-        if (!self::emailsPerHourReached() || $force || $debug) {
-            /* check if we need to load a template file to wrap the message */
-            if (!array_key_exists('UseRawHTML', $data_set) || !$data_set['UseRawHTML']) {
-                $message = self::prettifyMail($subject, $message, $data_set);
-            }
-
-            if ($debug) {
-                die($message);
-            }
-
-            $subject = self::getEmailSubject($subject);
-
-            /**
-             * WordPress uses a library named PHPMailer [1] to send emails through the
-             * provided method wp_mail [2], unfortunately the debug information is
-             * completely removed and this makes it difficult to troubleshoots issues
-             * reported by users when the SMTP server in their sites is misconfigured. To
-             * reduce the number of tickets related with this issue we will provide an
-             * option to allow the users to choose which technique will be used to send the
-             * alerts.
-             *
-             * [1] https://github.com/PHPMailer/PHPMailer
-             * [2] https://developer.wordpress.org/reference/functions/wp_mail/
-             *
-             * @var boolean
-             */
-            if (SucuriScanOption::isEnabled(':use_wpmail')) {
-                $mail_sent = wp_mail($email, $subject, $message, $headers);
-            } else {
-                $headers = implode("\r\n", $headers);
-                $mail_sent = @mail($email, $subject, $message, $headers);
-            }
-
-            if ($mail_sent) {
-                $emails_sent_num = (int) self::getOption(':emails_sent');
-
-                self::updateOption(':emails_sent', $emails_sent_num + 1);
-                self::updateOption(':last_email_at', time());
-
-                return true;
-            }
+        if (self::emailsPerHourReached() && !$force) {
+            return self::throwException('Maximum number of emails per hour reached');
         }
 
-        return false;
+        /* check if we need to load a template file to wrap the message */
+        if (!array_key_exists('UseRawHTML', $data_set) || !$data_set['UseRawHTML']) {
+            $message = self::prettifyMail($subject, $message, $data_set);
+        }
+
+        $subject = self::getEmailSubject($subject);
+
+        /**
+         * WordPress uses a library named PHPMailer to send emails through the
+         * provided method wp_mail, unfortunately the debug information is
+         * completely removed and this makes it difficult to troubleshoots
+         * issues reported by users when the SMTP server in their sites is
+         * misconfigured. To reduce the number of tickets related with this
+         * issue we will provide an option to allow the users to choose which
+         * technique will be used to send the alerts.
+         *
+         * @see https://github.com/PHPMailer/PHPMailer
+         * @see https://developer.wordpress.org/reference/functions/wp_mail/
+         */
+        if (SucuriScanOption::isEnabled(':use_wpmail')) {
+            wp_mail($email, $subject, $message, $headers);
+        } else {
+            @mail($email, $subject, $message, implode("\r\n", $headers));
+        }
+
+        $mails_sent = (int) self::getOption(':emails_sent');
+        self::updateOption(':emails_sent', $mails_sent + 1);
+        self::updateOption(':last_email_at', time());
+
+        return true; /* assume mail delivery */
     }
 
     /**
@@ -128,31 +107,15 @@ class SucuriScanMail extends SucuriScanOption
     private static function getEmailSubject($event = '')
     {
         $subject = self::getOption(':email_subject');
-
-        /**
-         * Probably a bad value in the options table. Delete the entry from the database
-         * and call this method to try again, it will probably fall in an infinite
-         * loop, but this is the easiest way to control this procedure.
-         */
-        if (!$subject) {
-            self::deleteOption(':email_subject');
-
-            return self::getEmailSubject($event);
-        }
-
-        $subject = strip_tags($subject);
+        $subject = strip_tags((string) $subject);
         $subject = str_replace(':event', $event, $subject);
         $subject = str_replace(':domain', self::getDomain(), $subject);
         $subject = str_replace(':remoteaddr', self::getRemoteAddr(), $subject);
 
-        /**
-         * Extract user data from the current session.
-         *
-         * Get the data of the user in the current session only if the pseudo-tags for
-         * the username and/or email address are necessary to build the email subject,
-         * otherwise this operation may delay the sending of the alerts.
-         */
-        if (preg_match('/:(username|email)/', $subject)) {
+        /* include data from the user in session, if necessary */
+        if (strpos($subject, ':username') !== false
+            || strpos($subject, ':email') !== false
+        ) {
             $user = wp_get_current_user();
             $username = 'unknown';
             $eaddress = 'unknown';
@@ -211,7 +174,7 @@ class SucuriScanMail extends SucuriScanOption
                     if ($prettify_type == 'pretty') {
                         $message .= sprintf("<li>%s</li>\n", $msg_part);
                     } else {
-                        $message .= sprintf("- %s\n", $msg_part);
+                        $message .= sprintf("\n- %s", $msg_part);
                     }
                 }
 

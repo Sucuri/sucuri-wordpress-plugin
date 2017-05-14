@@ -162,9 +162,9 @@ define('SUCURISCAN_AUDITLOGS_PER_PAGE', 50);
 define('SUCURISCAN_MAX_PAGINATION_BUTTONS', 20);
 
 /**
- * The minimum quantity of seconds to wait before each filesystem scan.
+ * Frequency of the file system scans in seconds.
  */
-define('SUCURISCAN_MINIMUM_RUNTIME', 10800);
+define('SUCURISCAN_SCANNER_FREQUENCY', 10800);
 
 /**
  * The life time of the cache for the results of the SiteCheck scans.
@@ -214,13 +214,11 @@ require_once('src/interface.lib.php');
 require_once('src/auditlogs.lib.php');
 require_once('src/sitecheck.lib.php');
 require_once('src/integrity.lib.php');
+require_once('src/firewall.lib.php');
 require_once('src/installer-skin.lib.php');
 
 /* Load page and ajax handlers */
 require_once('src/pagehandler.php');
-
-/* Load handlers for main pages. */
-require_once('src/firewall.php');
 
 /* Load handlers for main pages (lastlogins). */
 require_once('src/lastlogins.php');

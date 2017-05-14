@@ -108,11 +108,6 @@ if (defined('SUCURISCAN')) {
         '480' => '480 failed logins per hour',
     );
 
-    $sucuriscan_api_handlers = array(
-        'curl' => 'Curl - libcurl',
-        'socket' => 'Socket - fsockopen',
-    );
-
     $sucuriscan_no_notices_in = array(
         /* Value of the page parameter to ignore. */
     );
@@ -264,5 +259,5 @@ if (defined('SUCURISCAN')) {
      * of certain files is going to stay as it is due to the configuration on the
      * edge of the servers.
      */
-    add_action('save_post', 'sucuriscanFirewallClearCacheSavePost');
+    add_action('save_post', 'SucuriScanFirewall::clearCacheHook');
 }

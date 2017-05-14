@@ -31,6 +31,8 @@ if (class_exists('SucuriScanInterface') && class_exists('SucuriScanRequest')) {
          * after the operation has finished.
          *
          * @see WP_Upgrader_Skin
+         *
+         * @codeCoverageIgnore
          */
         class SucuriScanPluginInstallerSkin extends Plugin_Installer_Skin
         {

@@ -65,9 +65,7 @@ class SucuriScanIntegrity
             return;
         }
 
-        $response = self::getIntegrityStatus();
-        print($response);
-        exit(0);
+        wp_send_json(self::getIntegrityStatus(), 200);
     }
 
     /**
@@ -380,8 +378,11 @@ class SucuriScanIntegrity
         $version = SucuriScan::siteVersion();
         $filepath = SucuriScanRequest::post('filepath');
 
+        ob_start();
         print(SucuriScanCommand::diffHTML($filepath, $version));
-        exit(0);
+        $response = ob_get_clean();
+
+        wp_send_json($response, 200);
     }
 
     /**

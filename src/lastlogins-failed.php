@@ -137,7 +137,7 @@ function sucuriscan_failed_logins_datastore_path($get_old_logs = false, $reset =
     }
 
     // Return the datastore path if the file exists (or was created).
-    if (file_exists($datastore_path) && is_readable($datastore_path)) {
+    if (is_readable($datastore_path)) {
         return $datastore_path;
     }
 

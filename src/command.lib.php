@@ -49,16 +49,16 @@ class SucuriScanCommand extends SucuriScan
      */
     public static function exists($cmd)
     {
-        if (!self::canExecuteCommands()) {
-            self::throwException('Cannot execute external commands');
-            return false;
+        $out = '';
+        $err = 255;
+
+        if (self::canExecuteCommands()) {
+            $command = sprintf('command -v %s 1>/dev/null', escapeshellarg($cmd));
+            @exec($command, $out, $err); /* ignore output and capture errors */
         }
 
-        @exec('command -v ' . escapeshellarg($cmd) . ' > /dev/null 2>&1', $out, $err);
-
         if ($err !== 0) {
-            self::throwException('Command ' . $cmd . ' does not exists');
-            return false;
+            return self::throwException('Command ' . $cmd . ' does not exists');
         }
 
         return true;
@@ -73,17 +73,15 @@ class SucuriScanCommand extends SucuriScan
      */
     public static function diff($a, $b)
     {
-        if (!self::exists('diff')) {
-            return;
+        $out = ''; /* default empty */
+
+        if (self::exists('diff')) {
+            @exec(sprintf(
+                'diff -u -- %s %s 2> /dev/null',
+                escapeshellarg($a),
+                escapeshellarg($b)
+            ), $out, $err);
         }
-
-        $command = sprintf(
-            'diff -u -- %s %s 2> /dev/null',
-            escapeshellarg($a),
-            escapeshellarg($b)
-        );
-
-        @exec($command, $out, $err);
 
         return $out;
     }
@@ -110,35 +108,29 @@ class SucuriScanCommand extends SucuriScan
         $checksums = SucuriScanAPI::getOfficialChecksums($version);
 
         if (!$checksums) {
-            SucuriScanInterface::error('WordPress version is not supported.');
-            return;
+            return SucuriScanInterface::error('WordPress version is not supported.');
         }
 
         if (!array_key_exists($filepath, $checksums)) {
-            SucuriScanInterface::error('File is not part of the official WordPress installation.');
-            return;
+            return SucuriScanInterface::error('File is not part of the official WordPress installation.');
         }
 
         if (!file_exists(ABSPATH . '/' . $filepath)) {
-            SucuriScanInterface::error('Cannot check the integrity of a non-existing file.');
-            return;
+            return SucuriScanInterface::error('Cannot check the integrity of a non-existing file.');
         }
 
+        $output = ''; /* initialize empty with no differences */
         $tempfile = tempnam(sys_get_temp_dir(), SUCURISCAN . '-integrity-');
-        $handle = @fopen($tempfile, 'w'); /* delete after the comparison */
 
-        if (!$handle) {
-            self::throwException('Temporary file cannot be created.');
-            return ''; /* empty diff output */
+        if ($handle = @fopen($tempfile, 'w')) {
+            $a = $tempfile; /* original file to compare */
+            $b = ABSPATH . '/' . $filepath; /* modified */
+            $content = SucuriScanAPI::getOriginalCoreFile($filepath, $version);
+            @fwrite($handle, $content); /* create a copy of the original file */
+            $output = self::diff($a, $b);
+            @fclose($tempfile);
+            @unlink($tempfile);
         }
-
-        $a = $tempfile; /* original file to compare */
-        $b = ABSPATH . '/' . $filepath; /* modified */
-        $content = SucuriScanAPI::getOriginalCoreFile($filepath, $version);
-        @fwrite($handle, $content); /* create a copy of the original file */
-        $output = self::diff($a, $b);
-        @fclose($tempfile);
-        @unlink($tempfile);
 
         if (!is_array($output) || empty($output)) {
             return ''; /* no differences found */

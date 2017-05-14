@@ -232,6 +232,7 @@ class SucuriScanInterface
     public static function checkPageVisibility()
     {
         if (!function_exists('current_user_can') || !current_user_can('manage_options')) {
+            SucuriScan::throwException('Access denied; cannot manage options');
             wp_die(__('Access denied by <b>Sucuri Scanner</b>.'));
         }
     }
@@ -250,8 +251,8 @@ class SucuriScanInterface
             $nonce_value = SucuriScanRequest::post($nonce_name, '_nonce');
 
             if (!$nonce_value || !wp_verify_nonce($nonce_value, $nonce_name)) {
+                SucuriScan::throwException('Nonce is invalid');
                 wp_die(__('WordPress Nonce verification failed, try again going back and checking the form.'));
-
                 return false;
             }
         }
@@ -272,11 +273,11 @@ class SucuriScanInterface
         /**
          * Do not render notice during user authentication.
          *
-         * There are some special cases when the error or warning messages should not be
-         * rendered to the end user because it may break the default functionality of
-         * the request handler. For instance, rendering an HTML alert like this when the
-         * user authentication process is executed may cause a "headers already sent"
-         * error.
+         * There are some special cases when the error or warning messages
+         * should not be rendered to the end user because it may break the
+         * default functionality of the request handler. For instance, rendering
+         * an HTML alert like this when the user authentication process is
+         * executed may cause a "headers already sent" error.
          */
         if (!empty($_POST)
             && SucuriScanRequest::post('log')
@@ -286,8 +287,10 @@ class SucuriScanInterface
             $display_notice = false;
         }
 
-        // Display the HTML notice to the current user.
+        /* display the HTML notice to the current user */
         if ($display_notice === true && !empty($message)) {
+            $message = SUCURISCAN_ADMIN_NOTICE_PREFIX . "\x20" . $message;
+
             SucuriScan::throwException($message, $type);
 
             echo SucuriScanTemplate::getSection('notification-admin', array(
@@ -305,7 +308,8 @@ class SucuriScanInterface
      */
     public static function error($msg = '')
     {
-        self::adminNotice('error', SUCURISCAN_ADMIN_NOTICE_PREFIX . "\x20" . $msg);
+        self::adminNotice('error', $msg);
+        return false; /* assume failure */
     }
 
     /**
@@ -315,6 +319,7 @@ class SucuriScanInterface
      */
     public static function info($msg = '')
     {
-        self::adminNotice('updated', SUCURISCAN_ADMIN_NOTICE_PREFIX . "\x20" . $msg);
+        self::adminNotice('updated', $msg);
+        return true; /* assume success */
     }
 }

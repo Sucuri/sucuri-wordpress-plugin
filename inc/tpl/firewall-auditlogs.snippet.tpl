@@ -38,6 +38,6 @@
                 <span class="sucuriscan-accesslog-label">Referer:</span>
                 <span>%%SUCURI.AccessLog.HttpReferer%%</span>
             </div>
-        </span>
+        </div>
     </td>
 </tr>
