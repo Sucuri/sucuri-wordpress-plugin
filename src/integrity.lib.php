@@ -379,22 +379,6 @@ class SucuriScanIntegrity
 
         $version = SucuriScan::siteVersion();
         $filepath = SucuriScanRequest::post('filepath');
-        $checksums = SucuriScanAPI::getOfficialChecksums($version);
-
-        if (!$checksums) {
-            SucuriScanInterface::error('WordPress version is not supported.');
-            return;
-        }
-
-        if (!array_key_exists($filepath, $checksums)) {
-            SucuriScanInterface::error('File is not part of the official WordPress installation.');
-            return;
-        }
-
-        if (!file_exists(ABSPATH . '/' . $filepath)) {
-            SucuriScanInterface::error('Cannot check the integrity of a non-existing file.');
-            return;
-        }
 
         print(SucuriScanCommand::diffHTML($filepath, $version));
         exit(0);

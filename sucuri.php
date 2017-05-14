@@ -47,13 +47,20 @@ $sucuriscan_dependencies = array(
     'wp_remote_post',
 );
 
-// Terminate execution if any of the functions mentioned above is not defined.
+/* terminate execution if dependencies are not met */
 foreach ($sucuriscan_dependencies as $dependency) {
     if (!function_exists($dependency)) {
         /* Report invalid access if possible. */
         header('HTTP/1.1 403 Forbidden');
         exit(0);
     }
+}
+
+/* check if installation path is available */
+if (!defined('ABSPATH')) {
+    /* Report invalid access if possible. */
+    header('HTTP/1.1 403 Forbidden');
+    exit(0);
 }
 
 /**
@@ -173,11 +180,6 @@ define('SUCURISCAN_GET_PLUGINS_LIFETIME', 1800);
  * The maximum execution time of a HTTP request before timeout.
  */
 define('SUCURISCAN_MAX_REQUEST_TIMEOUT', 60);
-
-/**
- * The maximum execution time for SiteCheck requests before timeout.
- */
-define('SUCURISCAN_MAX_SITECHECK_TIMEOUT', 60);
 
 /**
  * Sets the text that will preceed the admin notices.

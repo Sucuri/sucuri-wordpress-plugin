@@ -54,10 +54,7 @@ class SucuriScanCommand extends SucuriScan
             return false;
         }
 
-        $command = 'command -v ' . $cmd . ' &> /dev/null';
-        $command = escapeshellcmd($command);
-
-        @exec($command, $out, $err);
+        @exec('command -v ' . escapeshellarg($cmd) . ' > /dev/null 2>&1', $out, $err);
 
         if ($err !== 0) {
             self::throwException('Command ' . $cmd . ' does not exists');
@@ -110,6 +107,23 @@ class SucuriScanCommand extends SucuriScan
      */
     public static function diffHTML($filepath, $version)
     {
+        $checksums = SucuriScanAPI::getOfficialChecksums($version);
+
+        if (!$checksums) {
+            SucuriScanInterface::error('WordPress version is not supported.');
+            return;
+        }
+
+        if (!array_key_exists($filepath, $checksums)) {
+            SucuriScanInterface::error('File is not part of the official WordPress installation.');
+            return;
+        }
+
+        if (!file_exists(ABSPATH . '/' . $filepath)) {
+            SucuriScanInterface::error('Cannot check the integrity of a non-existing file.');
+            return;
+        }
+
         $tempfile = tempnam(sys_get_temp_dir(), SUCURISCAN . '-integrity-');
         $handle = @fopen($tempfile, 'w'); /* delete after the comparison */
 
@@ -130,7 +144,7 @@ class SucuriScanCommand extends SucuriScan
             return ''; /* no differences found */
         }
 
-        $response = '<ul class="' . SUCURISCAN . '-diff-content">';
+        $response = "<ul class='" . SUCURISCAN . "-diff-content'>\n";
 
         foreach ($output as $key => $line) {
             $number = $key + 1; /* line number */
@@ -160,7 +174,7 @@ class SucuriScanCommand extends SucuriScan
             );
         }
 
-        $response .= '</ul>';
+        $response .= "</ul>\n";
 
         return $response;
     }

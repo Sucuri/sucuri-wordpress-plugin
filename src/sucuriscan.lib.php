@@ -116,19 +116,16 @@ class SucuriScan
     }
 
     /**
-     * Encodes the less-than, greater-than, ampersand, double quote and single quote
-     * characters, will never double encode entities.
+     * Encodes the less-than, greater-than, ampersand, double quote and single
+     * quote characters, will never double encode entities.
      *
+     * @see https://developer.wordpress.org/reference/functions/esc_attr/
      * @param string $text The text which is to be encoded.
      * @return string The encoded text with HTML entities.
      */
     public static function escape($text = '')
     {
-        if (function_exists('esc_attr')) {
-            return esc_attr($text);
-        }
-
-        return htmlspecialchars($text);
+        return esc_attr($text);
     }
 
     /**
@@ -240,9 +237,9 @@ class SucuriScan
     {
         if (self::isMultiSite()) {
             return network_admin_url($url);
-        } else {
-            return admin_url($url);
         }
+
+        return admin_url($url);
     }
 
     /**
@@ -255,14 +252,19 @@ class SucuriScan
         global $wp_version;
 
         if ($wp_version === null) {
-            $wp_version_path = ABSPATH . WPINC . '/version.php';
+            $filename = ABSPATH . '/' . WPINC . '/version.php';
+            $lines = SucuriScanFileInfo::fileLines($filename);
 
-            if (file_exists($wp_version_path)) {
-                include($wp_version_path);
-                $wp_version = isset($wp_version) ? $wp_version : '0.0';
-            } else {
-                $option_version = get_option('version');
-                $wp_version = $option_version ? $option_version : '0.0';
+            foreach ($lines as $line) {
+                if (strpos($line, '$wp_version') === 0) {
+                    $version = str_replace("\x20", '', $line);
+                    $index = strpos($version, "'");
+                    $version = substr($version, $index+1);
+                    $index = strpos($version, "'");
+                    $version = substr($version, 0, $index);
+                    $wp_version = $version;
+                    break;
+                }
             }
         }
 
@@ -276,49 +278,40 @@ class SucuriScan
      */
     public static function getWPConfigPath()
     {
-        if (defined('ABSPATH')) {
-            $file_path = ABSPATH . '/wp-config.php';
+        $filename = ABSPATH . '/wp-config.php';
 
-            // if wp-config.php doesn't exist, or is not readable check one directory up.
-            if (!file_exists($file_path)) {
-                $file_path = ABSPATH . '/../wp-config.php';
-            }
-
-            // Remove duplicated double slashes.
-            $file_path = @realpath($file_path);
-
-            if ($file_path) {
-                return $file_path;
-            }
+        /* check one directory up */
+        if (!file_exists($filename)) {
+            $filename = ABSPATH . '/../wp-config.php';
         }
 
-        return false;
+        return @realpath($filename);
     }
 
     /**
      * Find and retrieve the absolute path of the main WordPress htaccess file.
      *
-     * @return string|bool Absolute path of the main WordPress htaccess file.
+     * @return string Absolute path of the main WordPress htaccess file.
      */
     public static function getHtaccessPath()
     {
-        if (defined('ABSPATH')) {
-            $base_dirs = array(
-                rtrim(ABSPATH, '/'),
-                dirname(ABSPATH),
-                dirname(dirname(ABSPATH)),
-            );
+        $result = '';
+        $base_dirs = array(
+            rtrim(ABSPATH, '/'),
+            dirname(ABSPATH),
+            dirname(dirname(ABSPATH)),
+        );
 
-            foreach ($base_dirs as $base_dir) {
-                $htaccess_path = sprintf('%s/.htaccess', $base_dir);
+        foreach ($base_dirs as $base_dir) {
+            $htaccess_path = sprintf('%s/.htaccess', $base_dir);
 
-                if (file_exists($htaccess_path)) {
-                    return $htaccess_path;
-                }
+            if (file_exists($htaccess_path)) {
+                $result = $htaccess_path;
+                break;
             }
         }
 
-        return false;
+        return $result;
     }
 
     /**
@@ -337,7 +330,6 @@ class SucuriScan
     public static function runScheduledTask()
     {
         SucuriScanEvent::filesystemScan();
-
         SucuriScanIntegrity::getIntegrityStatus(true);
         SucuriScanPosthackPage::availableUpdatesContent(true);
     }
@@ -476,15 +468,12 @@ class SucuriScan
     /**
      * Get the clean version of the current domain.
      *
+     * @see https://developer.wordpress.org/reference/functions/get_site_url/
      * @param bool $return_tld Returns the top-level domain instead.
      * @return string The domain of the current site.
      */
     public static function getDomain($return_tld = false)
     {
-        if (!function_exists('get_site_url')) {
-            self::throwException('Built-in WordPress function get_site_url is missing');
-        }
-
         $site_url = get_site_url();
         $pattern = '/([fhtps]+:\/\/)?([^:\/]+)(:[0-9:]+)?(\/.*)?/';
         $replacement = ($return_tld === true) ? '$2' : '$2$3$4';
@@ -596,31 +585,24 @@ class SucuriScan
     /**
      * Get user data by field and data.
      *
+     * @see https://developer.wordpress.org/reference/functions/get_user_by/
      * @param int $identifier User account identifier.
-     * @throws Exception If the WordPress function is missing.
      * @return array WordPress user object with data.
      */
     public static function getUserByID($identifier = 0)
     {
-        if (!function_exists('get_user_by')) {
-            self::throwException('Built-in WordPress function get_user_by is missing');
-        }
-
         return get_user_by('id', $identifier);
     }
 
     /**
      * Retrieve a list of all admin user accounts.
      *
+     * @see https://developer.wordpress.org/reference/functions/get_users/
      * @return array|bool List of admin users, false otherwise.
      */
     public static function getAdminUsers()
     {
-        if (function_exists('get_users')) {
-            return get_users(array('role' => 'administrator'));
-        }
-
-        return false;
+        return get_users(array('role' => 'administrator'));
     }
 
     /**
@@ -656,15 +638,12 @@ class SucuriScan
     /**
      * Returns the current time measured in the number of seconds since the Unix Epoch.
      *
+     * @see https://developer.wordpress.org/reference/functions/current_time/
      * @return int Return current Unix timestamp.
      */
     public static function localTime()
     {
-        if (function_exists('current_time')) {
-            return current_time('timestamp');
-        }
-
-        return time();
+        return current_time('timestamp', false);
     }
 
     /**
@@ -715,7 +694,7 @@ class SucuriScan
         $local_time = self::localTime();
         $diff = abs($local_time - intval($timestamp));
 
-        if ($diff == 0) {
+        if ($diff < 3) {
             return 'just now';
         }
 
@@ -748,11 +727,7 @@ class SucuriScan
      */
     public static function isValidIP($remote_addr = '')
     {
-        if (function_exists('filter_var')) {
-            return (bool) filter_var($remote_addr, FILTER_VALIDATE_IP);
-        }
-
-        return false;
+        return (bool) @filter_var($remote_addr, FILTER_VALIDATE_IP);
     }
 
 
@@ -764,13 +739,15 @@ class SucuriScan
      */
     public static function isValidCIDR($remote_addr = '')
     {
+        $status = false;
+
         if (preg_match('/^([0-9\.]{7,15})\/(8|16|24)$/', $remote_addr, $match)) {
             if (self::isValidIP($match[1])) {
-                return true;
+                $status = true;
             }
         }
 
-        return false;
+        return $status;
     }
 
     /**
@@ -812,11 +789,7 @@ class SucuriScan
      */
     public static function isValidEmail($email = '')
     {
-        if (function_exists('filter_var')) {
-            return (bool) filter_var($email, FILTER_VALIDATE_EMAIL);
-        }
-
-        return false;
+        return (bool) @filter_var($email, FILTER_VALIDATE_EMAIL);
     }
 
     /**
@@ -845,15 +818,20 @@ class SucuriScan
      */
     public static function isMultiList($list = array())
     {
-        if (!empty($list)) {
-            foreach ((array) $list as $item) {
-                if (is_array($item)) {
-                    return true;
-                }
+        if (empty($list)) {
+            return false;
+        }
+
+        $status = false;
+
+        foreach ((array) $list as $item) {
+            if (is_array($item)) {
+                $status = true;
+                break;
             }
         }
 
-        return false;
+        return $status;
     }
 
     /**

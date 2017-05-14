@@ -138,53 +138,41 @@ class SucuriScanCache extends SucuriScan
         $folder_path = $this->dataStorePath();
         $file_path = $folder_path . '/sucuri-' . $this->datastore . '.php';
 
-        // Create the datastore parent directory.
+        /* create the datastore parent directory. */
         if (!file_exists($folder_path)) {
             @mkdir($folder_path, 0755, true);
         }
 
-        // Create the datastore file is it does not exists and the folder is writable.
-        if (!file_exists($file_path)
-            && is_writable($folder_path)
-            && $auto_create === true
-        ) {
+        /* create the cache file if necessary and the folder is writable. */
+        if (!file_exists($file_path) && is_writable($folder_path) && $auto_create) {
             @file_put_contents($file_path, $this->datastoreInfo());
-        }
-
-        // Continue the operation after an attemp to create the datastore file.
-        if (!file_exists($file_path)
-            || !is_writable($file_path)
-            || !is_readable($file_path)
-        ) {
-            return false;
         }
 
         return $file_path;
     }
 
     /**
-     * Define the pattern for the regular expression that will check if a cache key
-     * is valid or not, and also will help the method that parses the file to see
-     * which characters of each line are the keys are which are the values.
+     * Defines the regular expression for the cache content.
      *
-     * @param string $action Either "valid", "content", or "header".
+     * Define the pattern for the regular expression that will check if a cache
+     * key is valid or not, and also will help the method that parses the file
+     * to see which characters of each line are the keys are which are the
+     * values.
+     *
+     * @param string $action Either <empty>, "header" or "content".
      * @return string Cache key pattern.
      */
     private function keyPattern($action = 'valid')
     {
-        if ($action == 'valid') {
-            return '/^([0-9a-zA-Z_]+)$/';
+        if ($action == 'header') {
+            return '/^\/\/ ([a-z_]+)=(.*);$/';
         }
 
         if ($action == 'content') {
             return '/^([0-9a-zA-Z_]+):(.+)/';
         }
 
-        if ($action == 'header') {
-            return '/^\/\/ ([a-z_]+)=(.*);$/';
-        }
-
-        return '/^$/'; /* match nothing */
+        return '/^([0-9a-zA-Z_]+)$/';
     }
 
     /**
@@ -195,7 +183,7 @@ class SucuriScanCache extends SucuriScan
      */
     private function validKeyName($key = '')
     {
-        return (bool) @preg_match($this->keyPattern('valid'), $key);
+        return (bool) @preg_match($this->keyPattern(), $key);
     }
 
     /**
@@ -221,40 +209,35 @@ class SucuriScanCache extends SucuriScan
     }
 
     /**
-     * Retrieve and parse the datastore file, and generate a rainbow table with the
-     * key names and decoded data as the values of each entry. Duplicated key names
-     * will be removed automatically while adding the keys to the array and their
-     * values will correspond to the first occurrence found in the file.
+     * Retrieve and parse the cache file and generate a hash table with the keys
+     * and decoded data as the values of each entry. Duplicated key names will
+     * be merged automatically.
      *
-     * @param bool $assoc When TRUE returned objects will be converted into associative arrays.
+     * @param bool $assoc Force object to array conversion.
      * @return array Rainbow table with the key names and decoded values.
      */
     private function getDatastoreContent($assoc = false)
     {
-        $data_object = array(
-            'info' => array(),
-            'entries' => array(),
-        );
+        $object = array();
+        $object['info'] = array();
+        $object['entries'] = array();
 
-        if ($this->usable_datastore) {
-            $data_lines = SucuriScanFileInfo::fileLines($this->datastore_path);
+        if ($lines = SucuriScanFileInfo::fileLines($this->datastore_path)) {
+            foreach ($lines as $line) {
+                if (preg_match($this->keyPattern('header'), $line, $match)) {
+                    $object['info'][ $match[1] ] = $match[2];
+                    continue;
+                }
 
-            if (!empty($data_lines)) {
-                foreach ($data_lines as $line) {
-                    if (preg_match($this->keyPattern('header'), $line, $match)) {
-                        $data_object['info'][ $match[1] ] = $match[2];
-                    } elseif (preg_match($this->keyPattern('content'), $line, $match)) {
-                        if ($this->validKeyName($match[1])
-                            && !array_key_exists($match[1], $data_object)
-                        ) {
-                            $data_object['entries'][$match[1]] = @json_decode($match[2], $assoc);
-                        }
+                if (preg_match($this->keyPattern('content'), $line, $match)) {
+                    if ($this->validKeyName($match[1]) && !isset($object[$match[1]])) {
+                        $object['entries'][$match[1]] = @json_decode($match[2], $assoc);
                     }
                 }
             }
         }
 
-        return $data_object;
+        return $object;
     }
 
     /**
@@ -325,53 +308,6 @@ class SucuriScanCache extends SucuriScan
     }
 
     /**
-     * Execute the action using the key name and data specified.
-     *
-     * @param string $key Unique name for the data.
-     * @param mixed $data Data to associate to the key.
-     * @param string $action Either add, set, get, or delete.
-     * @param int $lifetime Life time of the key in the datastore file.
-     * @param bool $assoc When TRUE returned objects will be converted into associative arrays.
-     * @return bool TRUE if the operation finished successfully, FALSE otherwise.
-     */
-    private function handleKeyData($key = '', $data = null, $action = '', $lifetime = 0, $assoc = false)
-    {
-        if ($this->validKeyName($key)
-            && $this->usable_datastore
-        ) {
-            $finfo = $this->getDatastoreContent($assoc);
-
-            if ($action == 'set' || $action == 'add') {
-                $finfo['entries'][$key] = $data;
-
-                return $this->saveNewEntries($finfo);
-            } elseif ($action == 'get') {
-                if (!$this->dataHasExpired($lifetime, $finfo)
-                    && array_key_exists($key, $finfo['entries'])
-                ) {
-                    return $finfo['entries'][$key];
-                }
-            } elseif ($action == 'get_all') {
-                if (!$this->dataHasExpired($lifetime, $finfo)) {
-                    return $finfo['entries'];
-                }
-            } elseif ($action == 'exists') {
-                if (!$this->dataHasExpired($lifetime, $finfo)
-                    && array_key_exists($key, $finfo['entries'])
-                ) {
-                    return true;
-                }
-            } elseif ($action == 'delete') {
-                unset($finfo['entries'][$key]);
-
-                return $this->saveNewEntries($finfo);
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * JSON-encode the data and store it in the datastore file identifying it with
      * the key name, the data will be added to the file even if the key is
      * duplicated, but when getting the value of the same key later again it will
@@ -383,7 +319,7 @@ class SucuriScanCache extends SucuriScan
      */
     public function add($key = '', $data = '')
     {
-        return $this->handleKeyData($key, $data, 'add');
+        return $this->set($key, $data);
     }
 
     /**
@@ -395,7 +331,16 @@ class SucuriScanCache extends SucuriScan
      */
     public function set($key = '', $data = '')
     {
-        return $this->handleKeyData($key, $data, 'set');
+        if (!$this->validKeyName($key)) {
+            self::throwException('Invalid cache key name');
+            return false;
+        }
+
+        $finfo = $this->getDatastoreContent(true);
+
+        $finfo['entries'][$key] = $data;
+
+        return $this->saveNewEntries($finfo);
     }
 
     /**
@@ -408,9 +353,18 @@ class SucuriScanCache extends SucuriScan
      */
     public function get($key = '', $lifetime = 0, $assoc = '')
     {
-        $assoc = ($assoc === 'array' ? true : $assoc);
+        if (!$this->validKeyName($key)) {
+            self::throwException('Invalid cache key name');
+            return false;
+        }
 
-        return $this->handleKeyData($key, null, 'get', $lifetime, $assoc);
+        $finfo = $this->getDatastoreContent($assoc === 'array');
+
+        if ($this->dataHasExpired($lifetime, $finfo)) {
+            return false;
+        }
+
+        return @$finfo['entries'][$key];
     }
 
     /**
@@ -422,9 +376,13 @@ class SucuriScanCache extends SucuriScan
      */
     public function getAll($lifetime = 0, $assoc = '')
     {
-        $assoc = ($assoc === 'array' ? true : $assoc);
+        $finfo = $this->getDatastoreContent($assoc === 'array');
 
-        return $this->handleKeyData('temp', null, 'get_all', $lifetime, $assoc);
+        if ($this->dataHasExpired($lifetime, $finfo)) {
+            return false;
+        }
+
+        return $finfo['entries'];
     }
 
     /**
@@ -435,7 +393,14 @@ class SucuriScanCache extends SucuriScan
      */
     public function exists($key = '')
     {
-        return $this->handleKeyData($key, null, 'exists');
+        if (!$this->validKeyName($key)) {
+            self::throwException('Invalid cache key name');
+            return false;
+        }
+
+        $finfo = $this->getDatastoreContent(true);
+
+        return array_key_exists($key, $finfo['entries']);
     }
 
     /**
@@ -446,7 +411,21 @@ class SucuriScanCache extends SucuriScan
      */
     public function delete($key = '')
     {
-        return $this->handleKeyData($key, null, 'delete');
+        if (!$this->validKeyName($key)) {
+            self::throwException('Invalid cache key name');
+            return false;
+        }
+
+        $finfo = $this->getDatastoreContent(true);
+
+        if (!array_key_exists($key, $finfo['entries'])) {
+            self::throwException('Cache key does not exists');
+            return false;
+        }
+
+        unset($finfo['entries'][$key]);
+
+        return $this->saveNewEntries($finfo);
     }
 
     /**

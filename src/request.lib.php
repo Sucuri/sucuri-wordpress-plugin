@@ -36,7 +36,7 @@ class SucuriScanRequest extends SucuriScan
      * @param string $pattern Optional pattern to match allowed values.
      * @return array|string|bool Value from the global _GET or _POST variable.
      */
-    public static function request($list = array(), $key = '', $pattern = '')
+    private static function request($list = array(), $key = '', $pattern = '')
     {
         $key = self::varPrefix($key);
 
@@ -57,9 +57,6 @@ class SucuriScanRequest extends SucuriScan
                         break;
                     case '_array':
                         $pattern = '_array';
-                        break;
-                    case '_yyyymmdd':
-                        $pattern = '/^[0-9]{4}(\-[0-9]{2}) {2}$/';
                         break;
                     default:
                         $pattern = '/^'.$pattern.'$/';
