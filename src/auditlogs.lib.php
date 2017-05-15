@@ -47,6 +47,12 @@ class SucuriScanAuditLogs
      * enabled the security log exporter, the method will retrieve the logs from
      * the local server with the limitation that only the latest entries in the
      * file will be processed.
+     *
+     * @codeCoverageIgnore - Notice that there is a test case that covers this
+     * code, but since the WP-Send-JSON method uses die() to stop any further
+     * output it means that XDebug cannot cover the next line, leaving a report
+     * with a missing line in the coverage. Since the test case takes care of
+     * the functionality of this code we will assume that it is fully covered.
      */
     public static function ajaxAuditLogs()
     {
@@ -214,6 +220,12 @@ class SucuriScanAuditLogs
      * processes and extracts relevant information from the latest security logs.
      * By default the plugin will use the latest 500 logs but the website owner
      * can increase or decrease this value to reduce or extend the statistics.
+     *
+     * @codeCoverageIgnore - Notice that there is a test case that covers this
+     * code, but since the WP-Send-JSON method uses die() to stop any further
+     * output it means that XDebug cannot cover the next line, leaving a report
+     * with a missing line in the coverage. Since the test case takes care of
+     * the functionality of this code we will assume that it is fully covered.
      */
     public static function ajaxAuditLogsReport()
     {

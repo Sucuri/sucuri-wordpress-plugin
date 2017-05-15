@@ -160,6 +160,8 @@ if (defined('SUCURISCAN')) {
          * normally as always but for multisite installations the menu items
          * must be available only in the network panel and hidden in the
          * administration panel of the subsites.
+         *
+         * @codeCoverageIgnore
          */
         function sucuriscan_add_menu_page()
         {

@@ -185,6 +185,7 @@ class SucuriScanFileInfo extends SucuriScan
 
             $this->ignored_directories = SucuriScanFSScanner::getIgnoredDirectories();
 
+            // @codeCoverageIgnoreStart
             try {
                 if ($this->run_recursively) {
                     $flags = FilesystemIterator::KEY_AS_PATHNAME
@@ -200,10 +201,9 @@ class SucuriScanFileInfo extends SucuriScan
                     $objects = new DirectoryIterator($directory);
                 }
             } catch (RuntimeException $exception) {
-                // @codeCoverageIgnoreStart
                 SucuriScanEvent::reportException($exception);
-                // @codeCoverageIgnoreEnd
             }
+            // @codeCoverageIgnoreEnd
 
             foreach ($objects as $fifo) {
                 $filepath = $fifo->getRealPath();

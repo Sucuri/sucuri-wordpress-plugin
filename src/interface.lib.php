@@ -58,7 +58,7 @@ class SucuriScanInterface
         wp_register_style(
             'sucuriscan1',
             SUCURISCAN_URL . '/inc/css/styles.css',
-            array(/* empty*/),
+            array(/* empty */),
             $asset
         );
         wp_enqueue_style('sucuriscan1');
@@ -66,7 +66,7 @@ class SucuriScanInterface
         wp_register_script(
             'sucuriscan1',
             SUCURISCAN_URL . '/inc/js/scripts.js',
-            array(/* empty*/),
+            array(/* empty */),
             $asset
         );
         wp_enqueue_script('sucuriscan1');
@@ -75,7 +75,7 @@ class SucuriScanInterface
             wp_register_style(
                 'sucuriscan2',
                 SUCURISCAN_URL . '/inc/css/c3.min.css',
-                array(/* empty*/),
+                array(/* empty */),
                 $asset
             );
             wp_enqueue_style('sucuriscan2');
@@ -83,7 +83,7 @@ class SucuriScanInterface
             wp_register_script(
                 'sucuriscan2',
                 SUCURISCAN_URL . '/inc/js/d3.min.js',
-                array(/* empty*/),
+                array(/* empty */),
                 $asset
             );
             wp_enqueue_script('sucuriscan2');
@@ -91,7 +91,7 @@ class SucuriScanInterface
             wp_register_script(
                 'sucuriscan3',
                 SUCURISCAN_URL . '/inc/js/c3.min.js',
-                array(/* empty*/),
+                array(/* empty */),
                 $asset
             );
             wp_enqueue_script('sucuriscan3');
@@ -101,7 +101,7 @@ class SucuriScanInterface
             wp_register_style(
                 'sucuriscan3',
                 SUCURISCAN_URL . '/inc/css/flags.min.css',
-                array(/* empty*/),
+                array(/* empty */),
                 $asset
             );
             wp_enqueue_style('sucuriscan3');
@@ -135,7 +135,9 @@ class SucuriScanInterface
 
                 if (file_exists($plugin_directory)) {
                     if (is_plugin_active($plugin)) {
+                        // @codeCoverageIgnoreStart
                         deactivate_plugins($plugin);
+                        // @codeCoverageIgnoreEnd
                     }
 
                     $finfo->removeDirectoryTree($plugin_directory);
@@ -182,6 +184,8 @@ class SucuriScanInterface
      * number is different than the number defined in the constant that comes
      * with this code then we can consider this as an update, in which case we
      * will execute certain actions and/or display some messages.
+     *
+     * @codeCoverageIgnore
      */
     public static function noticeAfterUpdate()
     {
@@ -228,6 +232,8 @@ class SucuriScanInterface
 
     /**
      * Check whether a user has the permissions to see a page from the plugin.
+     *
+     * @codeCoverageIgnore
      */
     public static function checkPageVisibility()
     {
@@ -241,6 +247,8 @@ class SucuriScanInterface
      * Verify the nonce of the previous page after a form submission. If the
      * validation fails the execution of the script will be stopped and a dead page
      * will be printed to the client using the official WordPress method.
+     *
+     * @codeCoverageIgnore
      *
      * @return bool True if the nonce is valid, false otherwise.
      */
@@ -262,6 +270,8 @@ class SucuriScanInterface
 
     /**
      * Prints a HTML alert in the WordPress admin interface.
+     *
+     * @codeCoverageIgnore
      *
      * @param string $type The type of alert, it can be either Updated or Error.
      * @param string $message The message that will be printed in the alert.

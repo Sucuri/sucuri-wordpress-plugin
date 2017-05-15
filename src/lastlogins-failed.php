@@ -308,9 +308,7 @@ function sucuriscan_get_failed_logins($get_old_logs = false, $offset = 0, $limit
  */
 function sucuriscan_log_failed_login($user_login = '', $wrong_password = '')
 {
-    $datastore_path = sucuriscan_failed_logins_datastore_path();
-
-    if ($datastore_path) {
+    if ($storage = sucuriscan_failed_logins_datastore_path()) {
         $login_data = json_encode(array(
             'user_login' => $user_login,
             'user_password' => $wrong_password,
@@ -319,15 +317,11 @@ function sucuriscan_log_failed_login($user_login = '', $wrong_password = '')
             'user_agent' => SucuriScan::getUserAgent(),
         ));
 
-        $written = @file_put_contents(
-            $datastore_path,
+        return (bool) @file_put_contents(
+            $storage,
             $login_data . "\n",
             FILE_APPEND
         );
-
-        if ($written > 0) {
-            return true;
-        }
     }
 
     return false;
