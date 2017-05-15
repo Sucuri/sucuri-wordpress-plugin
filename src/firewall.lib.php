@@ -16,6 +16,9 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     exit(1);
 }
 
+/**
+ * Defines methods to interact with Sucuri Firewall's API service.
+ */
 class SucuriScanFirewall extends SucuriScanAPI
 {
     /**
@@ -311,8 +314,6 @@ class SucuriScanFirewall extends SucuriScanAPI
      * feature. The plugin will display a warning in this case.
      *
      * @codeCoverageIgnore
-     *
-     * @return string HTML with the security logs from the Firewall.
      */
     public static function auditlogsAjax()
     {

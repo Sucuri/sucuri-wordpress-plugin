@@ -215,8 +215,6 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
 
     /**
      * Process the Ajax request to retrieve the plugins metadata.
-     *
-     * @return string HTML code for a table with the plugins metadata.
      */
     public static function getPluginsAjax()
     {
@@ -252,8 +250,6 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
 
     /**
      * Process the Ajax request to reset one free plugin.
-     *
-     * @return string Status of the plugin reset procedure.
      */
     public static function resetPluginAjax()
     {
@@ -406,8 +402,6 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
 
     /**
      * Process the Ajax request to retrieve the available updates.
-     *
-     * @return string HTML code for a table with the updates information.
      */
     public static function availableUpdatesAjax()
     {

@@ -49,8 +49,8 @@ class SucuriScanCommand extends SucuriScan
      */
     public static function exists($cmd)
     {
-        $out = '';
         $err = 255;
+        $out = array();
 
         if (self::canExecuteCommands()) {
             $command = sprintf('command -v %s 1>/dev/null', escapeshellarg($cmd));
@@ -73,7 +73,7 @@ class SucuriScanCommand extends SucuriScan
      */
     public static function diff($a, $b)
     {
-        $out = ''; /* default empty */
+        $out = array(); /* default empty */
 
         if (self::exists('diff')) {
             @exec(sprintf(
@@ -101,7 +101,7 @@ class SucuriScanCommand extends SucuriScan
      *
      * @param string $filepath Relative path to the core WordPress file.
      * @param string $version Version number of the WordPress installation.
-     * @return string HTML code with the diff report.
+     * @return string|bool HTML code with the diff report, false on failure.
      */
     public static function diffHTML($filepath, $version)
     {

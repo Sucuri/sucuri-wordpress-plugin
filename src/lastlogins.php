@@ -265,7 +265,7 @@ if (!function_exists('sucuri_set_lastlogin')) {
  * @param int $limit How many entries will be returned from the operation.
  * @param int $offset Initial point where the logs will be start counting.
  * @param int $user_id Optional user identifier to filter the results.
- * @return array The list of all the user logins, and total of entries registered.
+ * @return array|bool All user logins, false on failure.
  */
 function sucuriscan_get_logins($limit = 10, $offset = 0, $user_id = 0)
 {

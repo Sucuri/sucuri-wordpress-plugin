@@ -107,6 +107,7 @@ class SucuriScanAPI extends SucuriScanOption
             return self::throwException('Only GET and POST methods allowed');
         }
 
+        $response = null;
         $timeout = self::requestTimeout();
         $args = is_array($args) ? $args : array();
 

@@ -16,6 +16,9 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     exit(1);
 }
 
+/**
+ * Returns the HTML to configure the scanner.
+ */
 class SucuriScanSettingsScanner extends SucuriScanSettings
 {
     /**
@@ -78,8 +81,6 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
 
     /**
      * Returns a list of directories in the website.
-     *
-     * @return string List of directories in the website.
      */
     public static function ignoreFoldersAjax()
     {
