@@ -122,7 +122,7 @@ class SucuriScanIntegrity
                 @list($status_type, $file_path) =
                 explode('@', $file_meta, 2);
 
-                if ($file_path && $status_type && $status_type === $action) {
+                if ($file_path && $status_type) {
                     $full_path = ABSPATH . '/' . $file_path;
 
                     switch ($action) {
