@@ -167,6 +167,11 @@ class SucuriScanAuditLogs
                     $snippet_data['AuditLog.Extra'] .= '</ul>';
                 }
 
+                /* simplify the details of events with low metadata */
+                if (strpos($audit_log['message'], 'status has been changed')) {
+                    $snippet_data['AuditLog.Extra'] = implode(",\x20", $audit_log['file_list']);
+                }
+
                 $response['content'] .= SucuriScanTemplate::getSnippet('auditlogs', $snippet_data);
                 $counter_i += 1;
             }
