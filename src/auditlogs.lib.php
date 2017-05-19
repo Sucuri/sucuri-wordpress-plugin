@@ -31,6 +31,8 @@ class SucuriScanAuditLogs
     {
         $params = array();
 
+        $params['AuditLogs.Lifetime'] = SUCURISCAN_AUDITLOGS_LIFETIME;
+
         return SucuriScanTemplate::getSection('auditlogs', $params);
     }
 
@@ -277,6 +279,39 @@ class SucuriScanAuditLogs
             $ips = array_values($report['events_per_ipaddress']);
             $response['eventsPerIPAddressSeries'] = array_merge(array('data'), $ips);
             $response['eventsPerIPAddressCategories'] = array_keys($report['events_per_ipaddress']);
+        }
+
+        wp_send_json($response, 200);
+    }
+
+    /**
+     * Deletes the cache file with the auditlogs data.
+     *
+     * @codeCoverageIgnore - Notice that there is a test case that covers this
+     * code, but since the WP-Send-JSON method uses die() to stop any further
+     * output it means that XDebug cannot cover the next line, leaving a report
+     * with a missing line in the coverage. Since the test case takes care of
+     * the functionality of this code we will assume that it is fully covered.
+     */
+    public static function ajaxAuditLogsResetCache()
+    {
+        if (SucuriScanRequest::post('form_action') !== 'reset_auditlogs_cache') {
+            return;
+        }
+
+        $response = array();
+        $cache = new SucuriScanCache('auditlogs');
+        $cacheInfo = $cache->getDatastoreInfo();
+        $filename = $cacheInfo['fpath'];
+        $response['path'] = basename($filename);
+        $response['ok'] = false;
+
+        if (!file_exists($filename)) {
+            $response['error'] = 'cache does not exists';
+        } elseif (!is_writable($filename)) {
+            $response['error'] = 'cache is not resetable';
+        } else {
+            $response['ok'] = (bool) @unlink($filename);
         }
 
         wp_send_json($response, 200);

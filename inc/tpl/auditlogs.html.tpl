@@ -53,6 +53,18 @@ jQuery(function ($) {
         event.preventDefault();
         sucuriscanLoadAuditLogs($(this).attr('data-page'));
     });
+
+    $('.sucuriscan-auditlog-table').on('click', '.sucuriscan-reset-auditlogs', function (event) {
+        event.preventDefault();
+        $.post('%%SUCURI.AjaxURL.Dashboard%%', {
+            action: 'sucuriscan_ajax',
+            sucuriscan_page_nonce: '%%SUCURI.PageNonce%%',
+            form_action: 'reset_auditlogs_cache',
+        }, function (data) {
+            console.log(data);
+            sucuriscanLoadAuditLogs(0, true);
+        });
+    });
 });
 </script>
 
@@ -70,6 +82,13 @@ jQuery(function ($) {
 
     <div class="sucuriscan-auditlog-response">
         <em>Loading...</em>
+    </div>
+
+    <div>
+        <small>
+            This data is cached for %%SUCURI.AuditLogs.Lifetime%% seconds
+            &mdash; <a href="#" class="sucuriscan-reset-auditlogs">refresh</a>
+        </small>
     </div>
 
     <div class="sucuriscan-clearfix">
