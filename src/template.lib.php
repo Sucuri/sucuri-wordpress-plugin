@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Code related to the template.lib.php interface.
+ *
+ * @package Sucuri Security
+ * @subpackage template.lib.php
+ * @copyright Since 2010 Sucuri Inc.
+ */
+
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     if (!headers_sent()) {
         /* Report invalid access if possible. */
@@ -26,26 +34,36 @@ class SucuriScanTemplate extends SucuriScanRequest
     /**
      * Replace all pseudo-variables from a string of characters.
      *
-     * @param  string $content The content of a template file which contains pseudo-variables.
-     * @param  array  $params  List of pseudo-variables that will be replaced in the template.
-     * @return string          The content of the template with the pseudo-variables replated.
+     * @see http://php.net/manual/en/function.gettype.php
+     *
+     * @param string $content The content of a template file which contains pseudo-variables.
+     * @param array $params List of pseudo-variables that will be replaced in the template.
+     * @return string The content of the template with the pseudo-variables replated.
      */
     private static function replacePseudoVars($content = '', $params = array())
     {
-        if (!is_array($params)) {
-            return false;
-        }
+        $params = is_array($params) ? $params : array();
 
         foreach ($params as $keyname => $kvalue) {
             $tplkey = 'SUCURI.' . $keyname;
             $with_escape = '%%' . $tplkey . '%%';
             $wout_escape = '%%%' . $tplkey . '%%%';
 
+            if (is_bool($kvalue)) {
+                $kvalue = ($kvalue === true) ? 'True' : 'False';
+            } elseif (!is_string($kvalue) && !is_numeric($kvalue)) {
+                $kvalue = gettype($kvalue);
+            }
+
             if (strpos($content, $wout_escape) !== false) {
                 $content = str_replace($wout_escape, $kvalue, $content);
-            } elseif (strpos($content, $with_escape) !== false) {
+                continue;
+            }
+
+            if (strpos($content, $with_escape) !== false) {
                 $kvalue = SucuriScan::escape($kvalue);
                 $content = str_replace($with_escape, $kvalue, $content);
+                continue;
             }
         }
 
@@ -55,9 +73,9 @@ class SucuriScanTemplate extends SucuriScanRequest
     /**
      * Gather and generate the information required globally by all the template files.
      *
-     * @param  string $target Scenario where the params are going to be replaced.
-     * @param  array  $params Key-value array with variables shared with the template.
-     * @return array          Additional list of variables for the template files.
+     * @param string $target Scenario where the params are going to be replaced.
+     * @param array $params Key-value array with variables shared with the template.
+     * @return array Additional list of variables for the template files.
      */
     private static function sharedParams($target = null, $params = array())
     {
@@ -105,8 +123,8 @@ class SucuriScanTemplate extends SucuriScanRequest
     /**
      * Return a string indicating the visibility of a HTML component.
      *
-     * @param  boolean $visible Whether the condition executed returned a positive value or not.
-     * @return string           A string indicating the visibility of a HTML component.
+     * @param bool $visible Whether the condition executed returned a positive value or not.
+     * @return string A string indicating the visibility of a HTML component.
      */
     public static function visibility($visible = false)
     {
@@ -117,9 +135,9 @@ class SucuriScanTemplate extends SucuriScanRequest
      * Generate an URL pointing to the page indicated in the method and that must
      * be loaded through the administrator panel.
      *
-     * @param  string  $page Short name of the page that will be generated.
-     * @param  boolean $ajax True if the URL should point to the Ajax handler.
-     * @return string        Full string containing the link of the page.
+     * @param string $page Short name of the page that will be generated.
+     * @param bool $ajax True if the URL should point to the Ajax handler.
+     * @return string Full string containing the link of the page.
      */
     public static function getUrl($page = '', $ajax = false)
     {
@@ -130,23 +148,22 @@ class SucuriScanTemplate extends SucuriScanRequest
             $url_path .= '_' . strtolower($page);
         }
 
-        if (SucuriScan::isMultiSite()) {
-            $url_path = str_replace(
-                'wp-admin/network/admin-ajax.php',
-                'wp-admin/admin-ajax.php',
-                $url_path
-            );
-        }
+        /* convert URL to multisite format */
+        $networkURL = str_replace(
+            'wp-admin/network/admin-ajax.php',
+            'wp-admin/admin-ajax.php',
+            $url_path
+        );
 
-        return $url_path;
+        return SucuriScan::isMultiSite() ? $networkURL : $url_path;
     }
 
     /**
      * Generate an URL pointing to the page indicated in the method and that must
      * be loaded through the Ajax handler of the administrator panel.
      *
-     * @param  string $page Short name of the page that will be generated.
-     * @return string       Full string containing the link of the page.
+     * @param string $page Short name of the page that will be generated.
+     * @return string Full string containing the link of the page.
      */
     public static function getAjaxUrl($page = '')
     {
@@ -158,8 +175,8 @@ class SucuriScanTemplate extends SucuriScanRequest
      * template files, this will also generate the navigation bar and detect which
      * items in it are selected by the current page.
      *
-     * @param  array  $params Key-value array with pseudo-variables shared with the template.
-     * @return array          A complementary list of pseudo-variables for the template files.
+     * @param array $params Key-value array with pseudo-variables shared with the template.
+     * @return array A complementary list of pseudo-variables for the template files.
      */
     private static function linksAndNavbar($params = array())
     {
@@ -194,9 +211,9 @@ class SucuriScanTemplate extends SucuriScanRequest
      * by the dynamic variables provided by the developer through one of the parameters
      * of the function.
      *
-     * @param  string $html   The HTML content of a template file with its pseudo-variables parsed.
-     * @param  array  $params Key-value array with pseudo-variables shared with the template.
-     * @return string         The formatted HTML content of the base template.
+     * @param string $html The HTML content of a template file with its pseudo-variables parsed.
+     * @param array $params Key-value array with pseudo-variables shared with the template.
+     * @return string The formatted HTML content of the base template.
      */
     public static function getBaseTemplate($html = '', $params = array())
     {
@@ -213,53 +230,44 @@ class SucuriScanTemplate extends SucuriScanRequest
      * by the dynamic variables provided by the developer through one of the parameters
      * of the function.
      *
-     * @param  string  $template Filename of the template that will be used to generate the page.
-     * @param  array   $params   Key-value array with pseudo-variables shared with the template.
-     * @param  boolean $type     Template type; either page, section or snippet.
-     * @return string            Formatted HTML code after pseudo-variables replacement.
+     * @param string $template Filename of the template that will be used to generate the page.
+     * @param array $params Key-value array with pseudo-variables shared with the template.
+     * @param string $type Template type; either page, section or snippet.
+     * @return string Formatted HTML code after pseudo-variables replacement.
      */
     public static function getTemplate($template = '', $params = array(), $type = 'page')
     {
-        if (!is_array($params)) {
-            $params = array();
+        $params = is_array($params) ? $params : array();
+
+        $filenames = array(
+            'page' => '%s/inc/tpl/%s.html.tpl',
+            'section' => '%s/inc/tpl/%s.html.tpl',
+            'snippet' => '%s/inc/tpl/%s.snippet.tpl',
+        );
+
+        if (!array_key_exists($type, $filenames)) {
+            return (string) SucuriScan::throwException('Invalid template type');
         }
 
-        if ($type == 'page') {
-            $pattern = '%s/inc/tpl/%s.html.tpl';
-        } elseif ($type == 'section') {
-            $pattern = '%s/inc/tpl/%s.html.tpl';
-        } elseif ($type == 'snippet') {
-            $pattern = '%s/inc/tpl/%s.snippet.tpl';
-        } else {
-            SucuriScan::throwException('Invalid template type');
-            return ''; /* empty page */
+        $output = ''; /* initialize response */
+        $_page = self::get('page', '_page');
+        $params['SucuriURL'] = SUCURISCAN_URL;
+        $trailing = $_page ? 'admin.php?page=' . $_page : '';
+        $params['CurrentURL'] = SucuriScan::adminURL($trailing);
+
+        /* load raw content from the specified template file */
+        $fpath = sprintf($filenames[$type], SUCURISCAN_PLUGIN_PATH, $template);
+        $output = SucuriScanFileInfo::fileContent($fpath);
+
+        /* replace the global pseudo-variables in the section/snippets templates. */
+        if ($template == 'base'
+            && array_key_exists('PageContent', $params)
+            && @preg_match('/%%SUCURI\.(.+)%%/', $params['PageContent'])
+        ) {
+            $params['PageContent'] = self::replacePseudoVars($params['PageContent'], $params);
         }
 
-        $output = ''; /* initialize response as an empty string */
-        $fpath = sprintf($pattern, SUCURISCAN_PLUGIN_PATH, $template);
-
-        if (file_exists($fpath) && is_readable($fpath)) {
-            $output = @file_get_contents($fpath);
-
-            $params['SucuriURL'] = SUCURISCAN_URL;
-
-            // Detect the current page URL.
-            if ($_page = self::get('page', '_page')) {
-                $params['CurrentURL'] = SucuriScan::adminURL('admin.php?page=' . $_page);
-            } else {
-                $params['CurrentURL'] = SucuriScan::adminURL();
-            }
-
-            // Replace the global pseudo-variables in the section/snippets templates.
-            if ($template == 'base'
-                && array_key_exists('PageContent', $params)
-                && @preg_match('/%%SUCURI\.(.+)%%/', $params['PageContent'])
-            ) {
-                $params['PageContent'] = self::replacePseudoVars($params['PageContent'], $params);
-            }
-
-            $output = self::replacePseudoVars($output, $params);
-        }
+        $output = self::replacePseudoVars($output, $params);
 
         if ($template == 'base' || $type != 'page') {
             return $output;
@@ -273,9 +281,9 @@ class SucuriScanTemplate extends SucuriScanRequest
      * by the dynamic variables provided by the developer through one of the parameters
      * of the function.
      *
-     * @param  string $template Filename of the template that will be used to generate the page.
-     * @param  array  $params   Key-value array with pseudo-variables shared with the template.
-     * @return string           The formatted HTML page after replace all the pseudo-variables.
+     * @param string $template Filename of the template that will be used to generate the page.
+     * @param array $params Key-value array with pseudo-variables shared with the template.
+     * @return string The formatted HTML page after replace all the pseudo-variables.
      */
     public static function getSection($template = '', $params = array())
     {
@@ -289,9 +297,9 @@ class SucuriScanTemplate extends SucuriScanRequest
      * by the dynamic variables provided by the developer through one of the parameters
      * of the function.
      *
-     * @param  string $template Filename of the template that will be used to generate the page.
-     * @param  array  $params   Key-value array with pseudo-variables shared with the template.
-     * @return string           The formatted HTML page after replace all the pseudo-variables.
+     * @param string $template Filename of the template that will be used to generate the page.
+     * @param array $params Key-value array with pseudo-variables shared with the template.
+     * @return string The formatted HTML page after replace all the pseudo-variables.
      */
     public static function getModal($template = '', $params = array())
     {
@@ -330,27 +338,29 @@ class SucuriScanTemplate extends SucuriScanRequest
      * by the dynamic variables provided by the developer through one of the parameters
      * of the function.
      *
-     * @param  string $template Filename of the template that will be used to generate the page.
-     * @param  array  $params   Key-value array with pseudo-variables shared with the template.
-     * @return string           The formatted HTML page after replace all the pseudo-variables.
+     * @param string $template Filename of the template that will be used to generate the page.
+     * @param array $params Key-value array with pseudo-variables shared with the template.
+     * @return string The formatted HTML page after replace all the pseudo-variables.
      */
     public static function getSnippet($template = '', $params = array())
     {
+        $params = self::sharedParams('snippet', $params);
+
         return self::getTemplate($template, $params, 'snippet');
     }
 
     /**
      * Generate the HTML code necessary to render a list of options in a form.
      *
-     * @param  array  $allowed_values List with keys and values allowed for the options.
-     * @param  string $selected_val   Value of the option that will be selected by default.
-     * @return string                 Option list for a select form field.
+     * @param array $allowed_values List with keys and values allowed for the options.
+     * @param string|int $selected_val Value of the option that will be selected by default.
+     * @return string Option list for a select form field.
      */
     public static function selectOptions($allowed_values = array(), $selected_val = '')
     {
         $options = '';
 
-        foreach ($allowed_values as $option_name => $option_label) {
+        foreach ((array) $allowed_values as $option_name => $option_label) {
             $selected = '';
 
             if ($option_name === $selected_val) {
@@ -371,7 +381,7 @@ class SucuriScanTemplate extends SucuriScanRequest
     /**
      * Detect which number in a pagination was clicked.
      *
-     * @return integer Page number of the link clicked in a pagination.
+     * @return int Page number of the link clicked in a pagination.
      */
     public static function pageNumber()
     {
@@ -383,10 +393,10 @@ class SucuriScanTemplate extends SucuriScanRequest
     /**
      * Generate the HTML code to display a pagination.
      *
-     * @param  string  $base_url     Base URL for the links before the page number.
-     * @param  integer $total_items  Total quantity of items retrieved from a query.
-     * @param  integer $max_per_page Maximum number of items that will be shown per page.
-     * @return string                HTML code for a pagination generated using the provided data.
+     * @param string $base_url Base URL for the links before the page number.
+     * @param int $total_items Total quantity of items retrieved from a query.
+     * @param int $max_per_page Maximum number of items that will be shown per page.
+     * @return string HTML code for a pagination generated using the provided data.
      */
     public static function pagination($base_url = '', $total_items = 0, $max_per_page = 1)
     {

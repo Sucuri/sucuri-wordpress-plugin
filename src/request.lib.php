@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Code related to the request.lib.php interface.
+ *
+ * @package Sucuri Security
+ * @subpackage request.lib.php
+ * @copyright Since 2010 Sucuri Inc.
+ */
+
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     if (!headers_sent()) {
         /* Report invalid access if possible. */
@@ -19,58 +27,50 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
 class SucuriScanRequest extends SucuriScan
 {
     /**
-     * Returns the value stored in a specific index in the global _GET, _POST or
-     * _REQUEST variables, you can specify a pattern as the second argument to
-     * match allowed values.
+     * Returns the value of the _GET, _POST or _REQUEST key.
      *
-     * @param  array  $list    The array where the specified key will be searched.
-     * @param  string $key     Name of the index where the requested variable is supposed to be.
-     * @param  string $pattern Optional pattern to match allowed values in the requested key.
-     * @return string          The value stored in the specified key inside the global _GET variable.
+     * You can pass an additional parameter to execute a regular expression that
+     * will return False if the value doesn't matches what the RegExp defined.
+     * Very useful to whitelist user input besides form validations.
+     *
+     * @param array $list The array where the specified key will be searched.
+     * @param string $key Name of the variable contained in _POST.
+     * @param string $pattern Optional pattern to match allowed values.
+     * @return array|string|bool Value from the global _GET or _POST variable.
      */
-    public static function request($list = array(), $key = '', $pattern = '')
+    private static function request($list = array(), $key = '', $pattern = '')
     {
-        $key = self::varPrefix($key);
+        $key = self::varPrefix((string) $key);
 
-        if (is_array($list)
-            && is_string($key)
-            && isset($list[ $key ])
-        ) {
-            // Select the key from the list and escape its content.
-            $key_value = $list[ $key ];
+        if (!is_array($list) || !isset($list[$key])) {
+            return false;
+        }
 
-            // Define regular expressions for specific value types.
-            if ($pattern === '') {
-                $pattern = '/.*/';
-            } else {
-                switch ($pattern) {
-                    case '_nonce':
-                        $pattern = '/^[a-z0-9]{10}$/';
-                        break;
-                    case '_page':
-                        $pattern = '/^[a-z_]+$/';
-                        break;
-                    case '_array':
-                        $pattern = '_array';
-                        break;
-                    case '_yyyymmdd':
-                        $pattern = '/^[0-9]{4}(\-[0-9]{2}) {2}$/';
-                        break;
-                    default:
-                        $pattern = '/^'.$pattern.'$/';
-                        break;
-                }
-            }
+        $key_value = $list[$key]; /* raw request parameter */
 
-            // If the request data is an array, then only cast the value.
-            if ($pattern == '_array' && is_array($key_value)) {
-                return (array) $key_value;
-            }
+        /* if the request data is an array, then only cast the value. */
+        if ($pattern === '_array' && is_array($key_value)) {
+            return (array) $key_value;
+        }
 
-            // Check the format of the request data with a regex defined above.
-            if (@preg_match($pattern, $key_value)) {
-                return self::escape($key_value);
-            }
+        /* match WordPress nonce */
+        if ($pattern === '_nonce') {
+            $pattern = '[a-z0-9]{10}';
+        }
+
+        /* match valid page identifier */
+        if ($pattern === '_page') {
+            $pattern = '[a-z_]+';
+        }
+
+        /* match every data format */
+        if ($pattern === '') {
+            $pattern = '.*';
+        }
+
+        /* check the format of the request data with a regex defined above. */
+        if (@preg_match('/^' . $pattern . '$/', $key_value)) {
+            return self::escape($key_value);
         }
 
         return false;
@@ -80,9 +80,9 @@ class SucuriScanRequest extends SucuriScan
      * Returns the value stored in a specific index in the global _GET variable,
      * you can specify a pattern as the second argument to match allowed values.
      *
-     * @param  string $key     Name of the index where the requested variable is supposed to be.
-     * @param  string $pattern Optional pattern to match allowed values in the requested key.
-     * @return string          The value stored in the specified key inside the global _GET variable.
+     * @param string $key Name of the variable contained in _GET.
+     * @param string $pattern Optional pattern to match allowed values.
+     * @return array|string Value from the global _GET variable.
      */
     public static function get($key = '', $pattern = '')
     {
@@ -93,9 +93,9 @@ class SucuriScanRequest extends SucuriScan
      * Returns the value stored in a specific index in the global _POST variable,
      * you can specify a pattern as the second argument to match allowed values.
      *
-     * @param  string $key     Name of the index where the requested variable is supposed to be.
-     * @param  string $pattern Optional pattern to match allowed values in the requested key.
-     * @return string          The value stored in the specified key inside the global _POST variable.
+     * @param string $key Name of the variable contained in _POST.
+     * @param string $pattern Optional pattern to match allowed values.
+     * @return array|string Value from the global _POST variable.
      */
     public static function post($key = '', $pattern = '')
     {
@@ -106,9 +106,9 @@ class SucuriScanRequest extends SucuriScan
      * Returns the value stored in a specific index in the global _REQUEST variable,
      * you can specify a pattern as the second argument to match allowed values.
      *
-     * @param  string $key     Name of the index where the requested variable is supposed to be.
-     * @param  string $pattern Optional pattern to match allowed values in the requested key.
-     * @return string          The value stored in the specified key inside the global _POST variable.
+     * @param string $key Name of the variable contained in _REQUEST.
+     * @param string $pattern Optional pattern to match allowed values.
+     * @return array|string Value from the global _REQUEST variable.
      */
     public static function getOrPost($key = '', $pattern = '')
     {

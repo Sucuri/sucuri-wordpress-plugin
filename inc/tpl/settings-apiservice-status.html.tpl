@@ -42,24 +42,5 @@
                 <button type="submit" class="button button-primary">%%SUCURI.ApiStatus.SwitchText%%</button>
             </form>
         </div>
-
-        <p>
-            Select which interface will be used to send the HTTP requests to the
-            external API services, the plugin will try to use the best option
-            automatically and rescue the requests when any of the options is not
-            available. Be sure to understand the purpose of this option before
-            you try to modify it.
-        </p>
-
-        <form action="%%SUCURI.URL.Settings%%#apiservice" method="post">
-            <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
-            <fieldset class="sucuriscan-clearfix">
-                <label>HTTP Request Handler:</label>
-                <select name="sucuriscan_api_handler">
-                    %%%SUCURI.ApiHandlerOptions%%%
-                </select>
-                <button type="submit" class="button button-primary">Proceed</button>
-            </fieldset>
-        </form>
     </div>
 </div>

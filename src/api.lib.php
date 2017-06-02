@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Code related to the api.lib.php interface.
+ *
+ * @package Sucuri Security
+ * @subpackage api.lib.php
+ * @copyright Since 2010 Sucuri Inc.
+ */
+
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     if (!headers_sent()) {
         /* Report invalid access if possible. */
@@ -39,7 +47,7 @@ class SucuriScanAPI extends SucuriScanOption
      * timeout should be in the range of ten seconds, or fifteen if the DNS lookups
      * are slow.
      *
-     * @return integer Seconds to consider a HTTP request timeout.
+     * @return int Seconds to consider a HTTP request timeout.
      */
     public static function requestTimeout()
     {
@@ -55,20 +63,6 @@ class SucuriScanAPI extends SucuriScanOption
     }
 
     /**
-     * Generate an user-agent for the HTTP requests.
-     *
-     * @return string An user-agent for the HTTP requests.
-     */
-    private static function userAgent()
-    {
-        return sprintf(
-            'WordPress/%s; %s',
-            self::siteVersion(),
-            self::getDomain()
-        );
-    }
-
-    /**
      * Alternative to the built-in PHP method http_build_query.
      *
      * Some PHP installations with different encoding or with different language
@@ -76,8 +70,8 @@ class SucuriScanAPI extends SucuriScanOption
      * URL, because of this we decided to write our own URL query builder to
      * keep control of the output.
      *
-     * @param  array  $params May be an array or object containing properties.
-     * @return string         Returns a URL-encoded string.
+     * @param array $params May be an array or object containing properties.
+     * @return string Returns a URL-encoded string.
      */
     private static function buildQuery($params = array())
     {
@@ -91,290 +85,78 @@ class SucuriScanAPI extends SucuriScanOption
         return substr($trail, 1);
     }
 
-    private static function canCurlFollowRedirection()
-    {
-        $safe_mode = ini_get('safe_mode');
-        $open_basedir = ini_get('open_basedir');
-
-        if ($safe_mode === '1' || $safe_mode === 'On') {
-            return false;
-        }
-
-        if (!empty($open_basedir)) {
-            return false;
-        }
-
-        return true;
-    }
-
     /**
-     * Communicates with a remote URL and retrieves its content.
-     *
-     * Curl is a reflective object-oriented programming language for interactive
-     * web applications whose goal is to provide a smoother transition between
-     * formatting and programming. It makes it possible to embed complex objects
-     * in simple documents without needing to switch between programming
-     * languages or development platforms.
-     *
-     * Using Curl instead of the custom WordPress HTTP methods allow us to
-     * control the functionality at 100% without expecting breaking changes in
-     * newer versions of the code. For exampe, as of WordPress 4.6.x the result
-     * of executing the methods prefixed with "wp_remote_" returns an object
-     * WP_HTTP_Requests_Response that is not compatible with older implementations
-     * of the plugin.
+     * Sends a HTTP request via WordPress WP_HTTP class.
      *
      * @see https://secure.php.net/manual/en/book.curl.php
+     * @see https://developer.wordpress.org/reference/classes/wp_http/request/
      *
-     * @param  string $url    The target URL where the request will be sent.
-     * @param  string $method HTTP method that will be used to send the request.
-     * @param  array  $params Parameters for the request defined in an associative array.
-     * @param  array  $args   Request arguments like the timeout, headers, cookies, etc.
-     * @return array          Response object after the HTTP request is executed.
+     * @param string $url The target URL where the request will be sent.
+     * @param string $method HTTP method that will be used to send the request.
+     * @param array $params Parameters for the request defined in an associative array.
+     * @param array $args Request arguments like the timeout, headers, cookies, etc.
+     * @return array|string|bool HTTP response, JSON-decoded array, or false on failure.
      */
     public static function apiCall($url = '', $method = 'GET', $params = array(), $args = array())
     {
-        if ($url && ($method === 'GET' || $method === 'POST')) {
-            $handler = SucuriScanOption::getOption(':api_handler');
-
-            if (getenv('SUCURISCAN_API_DEBUG') !== false) {
-                printf(
-                    "curl -X%s \"%s?%s\"\n",
-                    $method,
-                    $url, /* request target */
-                    self::buildQuery($params)
-                );
-            }
-
-            if (!function_exists('curl_init') || $handler === 'socket') {
-                $params['socket'] = 'true';
-                $output = self::apiCallSocket($url, $method, $params, $args);
-            } else {
-                $params['curl'] = 'true';
-                $output = self::apiCallCurl($url, $method, $params, $args);
-            }
-
-            $result = @json_decode($output, true);
-
-            if ($result) {
-                return $result;
-            }
-
-            return $output;
-        }
-
-        return false;
-    }
-
-    private static function apiCallCurl($url = '', $method = 'GET', $params = array(), $args = array())
-    {
         if (!$url) {
-            SucuriScan::throwException('URL is invalid');
-            return false;
-        }
-
-        if (!function_exists('curl_init')) {
-            SucuriScan::throwException('CURL is not available');
-            return false;
+            return self::throwException('URL is invalid');
         }
 
         if ($method !== 'GET' && $method !== 'POST') {
-            SucuriScan::throwException('Only GET and POST methods allowed');
-            return false;
+            return self::throwException('Only GET and POST methods allowed');
         }
 
-        $curl = curl_init();
+        $response = null;
         $timeout = self::requestTimeout();
+        $args = is_array($args) ? $args : array();
 
-        if (is_array($args) && isset($args['timeout'])) {
-            $timeout = $args['timeout'];
+        if (isset($args['timeout'])) {
+            $timeout = (int) $args['timeout'];
         }
 
-        // Add random request parameter to avoid request reset.
-        if (!empty($params) && !array_key_exists('time', $params)) {
+        /* include request arguments */
+        $args['method'] = $method;
+        $args['timeout'] = $timeout;
+        $args['redirection'] = 5;
+        $args['httpversion'] = '1.1';
+        $args['blocking'] = true;
+        $args['sslverify'] = true;
+
+        if (!array_key_exists('time', $params)) {
             $params['time'] = time();
         }
 
-        if ($method === 'GET'
-            && is_array($params)
-            && !empty($params)
-        ) {
+        /* support HTTP GET requests */
+        if ($method === 'GET') {
+            $args['body'] = null;
             $url .= '?' . self::buildQuery($params);
+            $response = wp_remote_get($url, $args);
         }
 
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_USERAGENT, self::userAgent());
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
-        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $timeout);
-        curl_setopt($curl, CURLOPT_TIMEOUT, $timeout * 2);
-
-        if (self::canCurlFollowRedirection()) {
-            curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
-            curl_setopt($curl, CURLOPT_MAXREDIRS, 2);
-        }
-
+        /* support HTTP POST requests */
         if ($method === 'POST') {
-            curl_setopt($curl, CURLOPT_POST, true);
-            curl_setopt($curl, CURLOPT_POSTFIELDS, self::buildQuery($params));
+            $args['body'] = $params;
+            $response = wp_remote_post($url, $args);
         }
 
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
-
-        $output = curl_exec($curl);
-        $errors = curl_error($curl);
-
-        curl_close($curl);
-
-        if (empty($output) && !empty($errors)) {
-            /* report errors to the unit-tests */
-            SucuriScan::throwException($errors);
-            $output = $errors;
+        if (is_wp_error($response)) {
+            return self::throwException($response->get_error_message());
         }
 
-        return $output;
-    }
-
-    private static function apiCallSocket($url = '', $method = 'GET', $params = array(), $args = array())
-    {
-        if (!function_exists('fsockopen')) {
-            SucuriScan::throwException('fsockopen is not available');
-            return false;
+        /* try to return a JSON-encode object */
+        if ($data = @json_decode($response['body'], true)) {
+            return $data; /* associative array */
         }
 
-        $timeout = self::requestTimeout();
-
-        if (is_array($args) && isset($args['timeout'])) {
-            $timeout = $args['timeout'];
-        }
-
-        // Add random request parameter to avoid request reset.
-        if (!empty($params) && !array_key_exists('time', $params)) {
-            $params['time'] = time();
-        }
-
-        if ($method === 'GET'
-            && is_array($params)
-            && !empty($params)
-        ) {
-            $url .= '?' . self::buildQuery($params);
-        }
-
-        $url_parts = parse_url($url);
-
-        if (!is_array($url_parts)
-            || !array_key_exists('host', $url_parts)
-            || !array_key_exists('scheme', $url_parts)
-        ) {
-            SucuriScan::throwException('URL is invalid; no host or scheme: ' . $url);
-            return false;
-        }
-
-        $host = $url_parts['host'];
-        $path = '/';
-        $port = 80;
-
-        if ($url_parts['scheme'] === 'https') {
-            $host = sprintf('ssl://%s', $url_parts['host']);
-            $port = 443;
-        }
-
-        if (array_key_exists('path', $url_parts)) {
-            $path = $url_parts['path'];
-        }
-
-        if (array_key_exists('query', $url_parts)) {
-            $path .= '?' . $url_parts['query'];
-        }
-
-        $socket = fsockopen($host, $port, $errno, $errstr, $timeout);
-
-        if (!$socket) {
-            SucuriScan::throwException('socket could not be opened');
-            return false;
-        }
-
-        $headers = '';
-        $response = '';
-
-        $out = sprintf("%s %s HTTP/1.1\r\n", $method, $path);
-        $out .= "Accept: */*\r\n";
-        $out .= sprintf("Host: %s\r\n", $url_parts['host']);
-        $out .= sprintf("User-Agent: %s\r\n", self::userAgent());
-        $out .= "Connection: Close\r\n";
-
-        if ($method === 'POST') {
-            $query = self::buildQuery($params);
-            $out .= sprintf("Content-Length: %s\r\n", strlen($query));
-            $out .= "Content-Type: application/x-www-form-urlencoded; charset=utf-8\r\n";
-            $out .= "\r\n" . $query;
-        }
-
-        fwrite($socket, $out . "\r\n");
-
-        while (strpos($headers, "\r\n\r\n") === false) {
-            $headers .= fread($socket, 1);
-        }
-
-        $chunk = '';
-        $segmented = false;
-
-        while (!feof($socket)) {
-            $byte = fread($socket, 1);
-
-            if ($byte === "\r") { /* CR */
-                fread($socket, 1); /* LF */
-
-                if (strlen($chunk) <= 4) {
-                    /* Chunk size, ignore */
-                } else {
-                    $segmented = true;
-                    $response .= $chunk;
-                }
-
-                /* Reset and continue */
-                $chunk = '';
-                continue;
-            }
-
-            $chunk .= $byte;
-        }
-
-        if ($segmented === false) {
-            $response = $chunk;
-        }
-
-        fclose($socket);
-
-        /* Follow explicit redirection */
-        if (stripos($headers, 'location:') !== false) {
-            if (@preg_match('/ocation:(.+)\r\n/', $headers, $match)) {
-                return self::apiCallSocket(
-                    trim($match[1]),
-                    $method,
-                    $params,
-                    $args
-                );
-            }
-
-            SucuriScan::throwException('redirection without next target');
-            return false;
-        }
-
-        /* Return if we reached the destination */
-        if (strpos($headers, '200 OK')) {
-            return $response;
-        }
-
-        SucuriScan::throwException('unexpected http status code');
-        return false;
+        return $response['body'];
     }
 
     /**
      * Check whether the plugin API key is valid or not.
      *
-     * @param  string  $api_key An unique string to identify this installation.
-     * @return boolean          True if the API key is valid, false otherwise.
+     * @param string $api_key An unique string to identify this installation.
+     * @return bool True if the API key is valid, false otherwise.
      */
     private static function isValidKey($api_key = '')
     {
@@ -384,17 +166,14 @@ class SucuriScanAPI extends SucuriScanOption
     /**
      * Store the API key locally.
      *
-     * @param  string  $api_key  An unique string of characters to identify this installation.
-     * @param  boolean $validate Whether the format of the key should be validated before store it.
-     * @return boolean           Either true or false if the key was saved successfully or not respectively.
+     * @param string $api_key An unique string of characters to identify this installation.
+     * @param bool $validate Whether the format of the key should be validated before store it.
+     * @return bool Either true or false if the key was saved successfully or not respectively.
      */
     public static function setPluginKey($api_key = '', $validate = false)
     {
-        if ($validate) {
-            if (!self::isValidKey($api_key)) {
-                SucuriScanInterface::error('Invalid API key format');
-                return false;
-            }
+        if ($validate && !self::isValidKey($api_key)) {
+            return SucuriScanInterface::error('Invalid API key format');
         }
 
         if (!empty($api_key)) {
@@ -407,7 +186,7 @@ class SucuriScanAPI extends SucuriScanOption
     /**
      * Retrieve the API key from the local storage.
      *
-     * @return string|boolean The API key or false if it does not exists.
+     * @return string|bool The API key or false if it does not exists.
      */
     public static function getPluginKey()
     {
@@ -423,63 +202,13 @@ class SucuriScanAPI extends SucuriScanOption
     }
 
     /**
-     * Check and return the API key for the plugin.
-     *
-     * In this plugin the key is a pair of two strings concatenated by a single
-     * slash, the first part of it is in fact the key and the second part is the
-     * unique identifier of the site in the remote server.
-     *
-     * @return array|boolean false if the key is invalid or not present, an array otherwise.
-     */
-    public static function getFirewallKey()
-    {
-        $option_name = ':cloudproxy_apikey';
-        $api_key = self::getOption($option_name);
-
-        // Check the validity of the API key.
-        $match = self::isValidFirewallKey($api_key, true);
-
-        if ($match) {
-            return array(
-                'string' => $match[1].'/'.$match[2],
-                'k' => $match[1],
-                's' => $match[2],
-            );
-        }
-
-        return false;
-    }
-
-    /**
-     * Check whether the firewall API key is valid or not.
-     *
-     * @param  string  $api_key      The firewall API key.
-     * @param  boolean $return_match Whether the parts of the API key must be returned or not.
-     * @return boolean               true if the API key specified is valid, false otherwise.
-     */
-    public static function isValidFirewallKey($api_key = '', $return_match = false)
-    {
-        $pattern = '/^([a-z0-9]{32})\/([a-z0-9]{32})$/';
-
-        if ($api_key && preg_match($pattern, $api_key, $match)) {
-            if ($return_match) {
-                return $match;
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
      * Call an action from the remote API interface of our WordPress service.
      *
-     * @param  string  $method       HTTP method that will be used to send the request.
-     * @param  array   $params       Parameters for the request defined in an associative array of key-value.
-     * @param  boolean $send_api_key Whether the API key should be added to the request parameters or not.
-     * @param  array   $args         Request arguments like the timeout, redirections, headers, cookies, etc.
-     * @return array                 Response object after the HTTP request is executed.
+     * @param string $method HTTP method that will be used to send the request.
+     * @param array $params Parameters for the request defined in an associative array of key-value.
+     * @param bool $send_api_key Whether the API key should be added to the request parameters or not.
+     * @param array $args Request arguments like the timeout, redirections, headers, cookies, etc.
+     * @return array|bool Response object after the HTTP request is executed.
      */
     public static function apiCallWordpress($method = 'GET', $params = array(), $send_api_key = true, $args = array())
     {
@@ -501,75 +230,11 @@ class SucuriScanAPI extends SucuriScanOption
     }
 
     /**
-     * Call an action from the remote API interface of our firewall service.
-     *
-     * @param  string $method HTTP method that will be used to send the request.
-     * @param  array  $params Parameters for the request defined in an associative array of key-value.
-     * @return array          Response object after the HTTP request is executed.
-     */
-    public static function apiCallFirewall($method = 'GET', $params = array())
-    {
-        $send_request = false;
-
-        if (isset($params['k']) && isset($params['s'])) {
-            $send_request = true;
-        } else {
-            $api_key = self::getFirewallKey();
-
-            if ($api_key) {
-                $send_request = true;
-                $params['k'] = $api_key['k'];
-                $params['s'] = $api_key['s'];
-            }
-        }
-
-        if ($send_request) {
-            $url = SUCURISCAN_CLOUDPROXY_API;
-            $params[ SUCURISCAN_CLOUDPROXY_API_VERSION ] = 1;
-            unset($params['string']);
-
-            return self::apiCall($url, $method, $params);
-        }
-
-        return false;
-    }
-
-    /**
      * Determine whether an API response was successful or not checking the expected
      * generic variables and types, in case of an error a notification will appears
      * in the administrator panel explaining the result of the operation.
      *
-     * @param  array   $response HTTP response after API endpoint execution.
-     * @param  boolean $enqueue  Add the log to the local queue on a failure.
-     * @return boolean           False if the API call failed, true otherwise.
-     */
-    private static function handleResponse($response = array(), $enqueue = true)
-    {
-        if (!$response) {
-            return false;
-        }
-
-        if (is_array($response)
-            && array_key_exists('status', $response)
-            && intval($response['status']) === 1
-        ) {
-            return true;
-        }
-
-        if (is_array($response)
-            && array_key_exists('messages', $response)
-            && !empty($response['messages'])
-        ) {
-            return self::handleErrorResponse($response, $enqueue);
-        }
-
-        if (is_string($response) && !empty($response)) {
-            SucuriScanInterface::error($response);
-        }
-    }
-
-    /**
-     * Process failures in the HTTP response.
+     * For failures in the HTTP response:
      *
      * Log file not found: means that the API key used to execute the request is
      * not associated to the website, this may indicate that either the key was
@@ -595,76 +260,86 @@ class SucuriScanAPI extends SucuriScanOption
      * verification, this option it disable automatically when the error is detected
      * for the first time.
      *
-     * @param  array   $response HTTP response after API endpoint execution.
-     * @param  boolean $enqueue  Add the log to the local queue on a failure.
-     * @return boolean           False if the API call failed, true otherwise.
+     * @param array $response HTTP response after API endpoint execution.
+     * @param bool $enqueue Add the log to the local queue on a failure.
+     * @return bool False if the API call failed, true otherwise.
      */
-    private static function handleErrorResponse($response = array(), $enqueue = true)
+    public static function handleResponse($response = array(), $enqueue = true)
     {
-        $msg = 'Unknown error, there is no more information.';
+        if (!$response || getenv('SUCURISCAN_NO_API_HANDLE')) {
+            return false;
+        }
 
         if (is_array($response)
-            && array_key_exists('messages', $response)
-            && !empty($response['messages'])
+            && array_key_exists('status', $response)
+            && intval($response['status']) === 1
         ) {
-            $msg = implode(".\x20", $response['messages']);
-            $raw = $msg; /* Keep a copy of the original message. */
-
-            // Special response for invalid API keys.
-            if (stripos($raw, 'log file not found') !== false) {
-                $key = SucuriScanOption::getOption(':api_key');
-                $msg .= '; this generally happens when you add an invalid API '
-                . 'key, the key will be deleted automatically to hide these w'
-                . 'arnings, if you want to recover it go to the settings page'
-                . ' and use the recover button to send the key to your email '
-                . 'address: ' . SucuriScan::escape($key);
-
-                SucuriScanOption::deleteOption(':api_key');
-            }
-
-            // Special response for invalid firewall API keys.
-            if (stripos($raw, 'wrong api key') !== false) {
-                $key = SucuriScanOption::getOption(':cloudproxy_apikey');
-                $msg .= '; invalid firewall API key: ' . SucuriScan::escape($key);
-
-                SucuriScanInterface::error($msg);
-                $msg = ''; /* Force premature error message. */
-
-                SucuriScanOption::deleteOption(':cloudproxy_apikey');
-                SucuriScanOption::setAddrHeader('REMOTE_ADDR');
-                SucuriScanOption::setRevProxy('disable');
-            }
-
-            // Stop SSL peer verification on connection failures.
-            if (stripos($raw, 'no alternative certificate')
-                || stripos($raw, 'error setting certificate')
-                || stripos($raw, 'SSL connect error')
-            ) {
-                $msg .= 'Your website seems to use an old version of the Open'
-                . 'SSL library or the CURL extension was compiled without sup'
-                . 'port for the algorithm used on the API service. Contact yo'
-                . 'ur hosting provider to fix this issue.';
-            }
-
-            // Check if the MX records as missing for API registration.
-            if (strpos($raw, 'Invalid email') !== false) {
-                $msg = 'Email has an invalid format, or the host '
-                . 'associated to the email has no MX records.';
-            }
+            return true;
         }
 
-        if (!empty($msg) && $enqueue) {
-            SucuriScanInterface::error($msg);
+        if (is_string($response) && !empty($response)) {
+            return SucuriScanInterface::error($response);
         }
 
-        return false;
+        if (!is_array($response)
+            || !isset($response['messages'])
+            || empty($response['messages'])
+        ) {
+            return SucuriScanInterface::error('Unknown error, there is no information.');
+        }
+
+        $msg = implode(".\x20", $response['messages']);
+        $raw = $msg; /* Keep a copy of the original message. */
+
+        // Special response for invalid API keys.
+        if (stripos($raw, 'log file not found') !== false) {
+            $key = SucuriScanOption::getOption(':api_key');
+            $msg .= '; this generally happens when you add an invalid API '
+            . 'key, the key will be deleted automatically to hide these w'
+            . 'arnings, if you want to recover it go to the settings page'
+            . ' and use the recover button to send the key to your email '
+            . 'address: ' . SucuriScan::escape($key);
+
+            SucuriScanOption::deleteOption(':api_key');
+        }
+
+        // Special response for invalid firewall API keys.
+        if (stripos($raw, 'wrong api key') !== false) {
+            $key = SucuriScanOption::getOption(':cloudproxy_apikey');
+            $msg .= '; invalid firewall API key: ' . SucuriScan::escape($key);
+
+            SucuriScanOption::setRevProxy('disable', true);
+            SucuriScanOption::setAddrHeader('REMOTE_ADDR', true);
+            SucuriScanOption::deleteOption(':cloudproxy_apikey');
+
+            return SucuriScanInterface::error($msg);
+        }
+
+        // Stop SSL peer verification on connection failures.
+        if (stripos($raw, 'no alternative certificate')
+            || stripos($raw, 'error setting certificate')
+            || stripos($raw, 'SSL connect error')
+        ) {
+            $msg .= '. Your website seems to use an old version of the Open'
+            . 'SSL library or the CURL extension was compiled without suppo'
+            . 'rt for the algorithm used on the API service. Contact your h'
+            . 'osting provider to fix this issue.';
+        }
+
+        // Check if the MX records as missing for API registration.
+        if (strpos($raw, 'Invalid email') !== false) {
+            $msg = 'Email has an invalid format, or the host '
+            . 'associated to the email has no MX records.';
+        }
+
+        return SucuriScanInterface::error($enqueue ? $msg : '');
     }
 
     /**
      * Send a request to the API to register this site.
      *
-     * @param  string  $email Optional email address for the registration.
-     * @return boolean        True if the API key was generated, false otherwise.
+     * @param string $email Optional email address for the registration.
+     * @return bool True if the API key was generated, false otherwise.
      */
     public static function registerSite($email = '')
     {
@@ -681,11 +356,9 @@ class SucuriScanAPI extends SucuriScanOption
         if (self::handleResponse($response)) {
             self::setPluginKey($response['output']['api_key']);
 
-            SucuriScanEvent::scheduleTask();
+            SucuriScanEvent::scheduleTask(); /* install scheduled tasks */
             SucuriScanEvent::notifyEvent('plugin_change', 'Site registered and API key generated');
-            SucuriScanInterface::info('The API key for your site was successfully generated and saved.');
-
-            return true;
+            return SucuriScanInterface::info('The API key for your site was successfully generated and saved.');
         }
 
         return false;
@@ -694,7 +367,7 @@ class SucuriScanAPI extends SucuriScanOption
     /**
      * Send a request to recover a previously registered API key.
      *
-     * @return boolean true if the API key was sent to the administrator email, false otherwise.
+     * @return bool True if the API key was sent to the admin email, false otherwise.
      */
     public static function recoverKey()
     {
@@ -708,9 +381,7 @@ class SucuriScanAPI extends SucuriScanOption
 
         if (self::handleResponse($response)) {
             SucuriScanEvent::notifyEvent('plugin_change', 'API key recovered for domain: ' . $clean_domain);
-            SucuriScanInterface::info($response['output']['message']);
-
-            return true;
+            return SucuriScanInterface::info($response['output']['message']);
         }
 
         return false;
@@ -722,30 +393,28 @@ class SucuriScanAPI extends SucuriScanOption
      * settings or files in the administrator panel, or a notification generated by
      * this plugin.
      *
-     * @param  string  $event   Event triggered by the core system functions.
-     * @param  integer $time    Timestamp when the event was originally triggered.
-     * @param  boolean $enqueue Add the log to the local queue on a failure.
-     * @return boolean          True if the event was logged, false otherwise.
+     * @param string $event Event triggered by the core system functions.
+     * @param int $time Timestamp when the event was originally triggered.
+     * @param bool $enqueue Add the log to the local queue on a failure.
+     * @return bool True if the event was logged, false otherwise.
      */
     public static function sendLog($event = '', $time = 0, $enqueue = true)
     {
-        if (!empty($event)) {
-            $params = array();
-            $params['a'] = 'send_log';
-            $params['m'] = $event;
-
-            if (intval($time) > 0) {
-                $params['time'] = (int) $time;
-            }
-
-            $response = self::apiCallWordpress('POST', $params, true);
-
-            if (self::handleResponse($response, $enqueue)) {
-                return true;
-            }
+        if (empty($event)) {
+            return self::throwException('Event identifier cannot be empty');
         }
 
-        return false;
+        $params = array();
+        $params['a'] = 'send_log';
+        $params['m'] = $event;
+
+        if (intval($time) > 0) {
+            $params['time'] = (int) $time;
+        }
+
+        $response = self::apiCallWordpress('POST', $params, true);
+
+        return self::handleResponse($response, $enqueue);
     }
 
     /**
@@ -755,8 +424,6 @@ class SucuriScanAPI extends SucuriScanOption
      * because of a connection failure or misconfiguration. Each successful call
      * will remove the log from the queue and the failures will keep them until the
      * next method call is executed.
-     *
-     * @return void
      */
     public static function sendLogsFromQueue()
     {
@@ -765,25 +432,8 @@ class SucuriScanAPI extends SucuriScanOption
 
         if (is_array($entries) && !empty($entries)) {
             foreach ($entries as $key => $entry) {
-                $result = self::sendLog(
-                    $entry->message,
-                    $entry->created_at,
-                    false
-                );
-
-                if ($result === true) {
+                if (self::sendLog($entry->message, $entry->created_at, false)) {
                     $cache->delete($key);
-                } else {
-                    /**
-                     * Stop loop on failures.
-                     *
-                     * If the log was successfully sent to the API service then we can continue
-                     * sending the other logs in the queue, otherwise the operation must be stopped
-                     * so it can be executed next time when the service is online, not stopping the
-                     * operation when one or more of the API calls fails will cause a very long
-                     * delay in the load of the page that is being requested.
-                     */
-                    break;
                 }
             }
         }
@@ -792,8 +442,8 @@ class SucuriScanAPI extends SucuriScanOption
     /**
      * Retrieve the event logs registered by the API service.
      *
-     * @param  integer $lines How many lines from the log file will be retrieved.
-     * @return string         The response of the API service.
+     * @param int $lines Maximum number of logs to return.
+     * @return array|bool The data structure with the logs.
      */
     public static function getAuditLogs($lines = 50)
     {
@@ -809,43 +459,38 @@ class SucuriScanAPI extends SucuriScanOption
         return self::parseAuditLogs($response);
     }
 
+    /**
+     * Gets the security logs from the local server (if enabled).
+     *
+     * @param int $limit Maximum number of logs to return.
+     * @return array|bool The data structure with the logs.
+     */
     public static function getSelfHostingLogs($limit = 0)
     {
         if (SucuriScanOption::isDisabled(':selfhosting_monitor')) {
-            SucuriScan::throwException('Self-hosting monitor is disabled');
-            return false;
-        }
-
-        if (!class_exists('SplFileObject')) {
-            SucuriScan::throwException('SplFileObject is not available');
-            return false;
-        }
-
-        $fpath = SucuriScanOption::getOption(':selfhosting_fpath');
-
-        if (!is_readable($fpath)) {
-            SucuriScan::throwException('Self-hosting log file is not readable');
-            return false;
+            return self::throwException('Self-hosting monitor is disabled');
         }
 
         $auditlogs = array();
-        $domain = SucuriScan::getDomain(true);
-        $category = sprintf("\x20WordPressAudit %s", $domain);
-        $file = new SplFileObject($fpath);
-        $file->seek(PHP_INT_MAX);
-        $total = $file->key();
+        $fpath = SucuriScanOption::getOption(':selfhosting_fpath');
+        $category = "\x20WordPressAudit\x20" . SucuriScan::getDomain(true);
 
-        if ($total > $limit) {
-            $file->seek($total - $limit);
-        } else {
-            $file->seek(0);
-        }
+        if (class_exists('SplFileObject') && is_readable($fpath)) {
+            $file = new SplFileObject($fpath);
+            $file->seek(PHP_INT_MAX);
+            $total = $file->key();
+            $offset = $total - $limit;
+            $file->seek($offset>0 ? $offset : 0);
 
-        while (!$file->eof()) {
-            $line = $file->current();
-            $line = str_replace($category, '', $line);
-            $auditlogs[] = trim($line);
-            $file->next();
+            while (!$file->eof()) {
+                $line = $file->current();
+                $line = str_replace($category, '', $line);
+                $line = trim($line); /* remove new line */
+                if (!empty($line)) {
+                    $auditlogs[] = $line;
+                }
+                $file->next();
+            }
         }
 
         return self::parseAuditLogs(array(
@@ -858,19 +503,22 @@ class SucuriScanAPI extends SucuriScanOption
         ));
     }
 
+    /**
+     * Reads, parses and extracts relevant data from the security logs.
+     *
+     * @param array $response JSON-decoded logs.
+     * @return array Full data extracted from the logs.
+     */
     private static function parseAuditLogs($response)
     {
-        if (!is_array($response) || !array_key_exists('output', $response)) {
-            return false; /* missing data; stop response parser */
-        }
-
+        $response = is_array($response) ? $response : array();
         $response['output_data'] = array();
         $log_pattern = '/^([0-9\-]+) ([0-9:]+) (\S+) : (.+)/';
         $extra_pattern = '/(.+ \(multiple entries\):) (.+)/';
         $generic_pattern = '/^@?([A-Z][a-z]{3,7}): ([^;]+; )?(.+)/';
         $auth_pattern = '/^User authentication (succeeded|failed): ([^<;]+)/';
 
-        foreach ($response['output'] as $log) {
+        foreach ((array) @$response['output'] as $log) {
             if (@preg_match($log_pattern, $log, $log_match)) {
                 $log_data = array(
                     'event' => 'notice',
@@ -886,39 +534,38 @@ class SucuriScanAPI extends SucuriScanOption
                     'file_list_count' => 0,
                 );
 
-                // Extract and fix the date and time using the Eastern time zone.
+                /* extract and fix the date and time using the Eastern time zone */
                 $datetime = sprintf('%s %s EDT', $log_match[1], $log_match[2]);
                 $log_data['timestamp'] = strtotime($datetime);
                 $log_data['datetime'] = date('Y-m-d H:i:s', $log_data['timestamp']);
                 $log_data['date'] = date('Y-m-d', $log_data['timestamp']);
                 $log_data['time'] = date('H:i:s', $log_data['timestamp']);
 
-                // Extract more information from the generic audit logs.
+                /* extract more information from the generic audit logs */
                 $log_data['message'] = str_replace('<br>', '; ', $log_data['message']);
 
                 if (@preg_match($generic_pattern, $log_data['message'], $log_extra)) {
                     $log_data['event'] = strtolower($log_extra[1]);
                     $log_data['message'] = trim($log_extra[3]);
 
-                    // Extract the username and remote address from the log.
+                    /* extract the username and remote address from the log */
                     if (!empty($log_extra[2])) {
                         $username_address = rtrim($log_extra[2], ";\x20");
+                        $log_data['remote_addr'] = $username_address;
 
-                        // Separate the username from the remote address.
+                        /* separate the username from the remote address */
                         if (strpos($username_address, ",\x20") !== false) {
                             $usip_parts = explode(",\x20", $username_address, 2);
 
                             if (count($usip_parts) == 2) {
-                                // Separate the username from the display name.
+                                /* separate the username from the display name */
                                 $log_data['username'] = @preg_replace('/^.+ \((.+)\)$/', '$1', $usip_parts[0]);
                                 $log_data['remote_addr'] = $usip_parts[1];
                             }
-                        } else {
-                            $log_data['remote_addr'] = $username_address;
                         }
                     }
 
-                    // Fix old user authentication logs for backward compatibility.
+                    /* fix old user authentication logs for backward compatibility */
                     $log_data['message'] = str_replace(
                         'logged in',
                         'authentication succeeded',
@@ -930,7 +577,7 @@ class SucuriScanAPI extends SucuriScanOption
                     }
                 }
 
-                // Extract more information from the special formatted logs.
+                /* extract more information from the special formatted logs */
                 if (@preg_match($extra_pattern, $log_data['message'], $log_extra)) {
                     $log_data['message'] = $log_extra[1];
                     $log_extra[2] = str_replace(', new size', '; new size', $log_extra[2]);
@@ -959,12 +606,14 @@ class SucuriScanAPI extends SucuriScanOption
         return $response;
     }
 
+    /**
+     * Modifies some of the security logs to detail the information.
+     *
+     * @param array $data Valid security log data structure.
+     * @return array|bool Modified security log.
+     */
     private static function getLogsHotfix($data)
     {
-        if (!isset($data['message'])) {
-            return false;
-        }
-
         /**
          * PHP Compatibility Checker
          *
@@ -976,8 +625,9 @@ class SucuriScanAPI extends SucuriScanOption
          *
          * @see https://wordpress.org/plugins/php-compatibility-checker/
          */
-        if (strpos($data['message'], 'Wpephpcompat_jobs') === 0
-            && preg_match('/identifier: ([0-9]+); name: (.+)/', $data['message'], $match)
+        if (isset($data['message'])
+            && strpos($data['message'], 'Wpephpcompat_jobs') === 0
+            && preg_match('/ID: ([0-9]+); name: (.+)/', $data['message'], $match)
         ) {
             $data['message'] = sprintf(
                 'WP Engine PHP Compatibility Checker: %s (created post #%d as cache)',
@@ -1009,8 +659,8 @@ class SucuriScanAPI extends SucuriScanOption
     /**
      * Parse the event logs with multiple entries.
      *
-     * @param  string $event_log Event log that will be processed.
-     * @return array             List of parts of the event log.
+     * @param string $event_log Event log that will be processed.
+     * @return array List of parts of the event log.
      */
     public static function parseMultipleEntries($event_log = '')
     {
@@ -1027,8 +677,8 @@ class SucuriScanAPI extends SucuriScanOption
     /**
      * Collect the information for the audit log report.
      *
-     * @param  integer $lines How many lines from the log file will be retrieved.
-     * @return array          All the information necessary to display the audit logs report.
+     * @param int $lines How many lines from the log file will be retrieved.
+     * @return array|bool All the information necessary to display the audit logs report.
      */
     public static function getAuditReport($lines = 50)
     {
@@ -1063,14 +713,13 @@ class SucuriScanAPI extends SucuriScanOption
 
             // Collect information for each report chart.
             foreach ($audit_logs['output_data'] as $event) {
-                $report['total_events'] += 1;
+                $_username = SucuriScan::escape($event['username']);
+                $_remote_addr = SucuriScan::escape($event['remote_addr']);
 
-                // Increment the number of events for this event type.
-                if (array_key_exists($event['event'], $report['events_per_type'])) {
-                    $report['events_per_type'][ $event['event'] ] += 1;
-                } else {
-                    $report['events_per_type'][ $event['event'] ] = 1;
-                }
+                @$report['total_events']++;
+                @$report['events_per_user'][$_username]++;
+                @$report['events_per_type'][$event['event']]++;
+                @$report['events_per_ipaddress'][$_remote_addr]++;
 
                 // Find the lowest datetime among the filtered events.
                 if ($event['timestamp'] <= $report['start_timestamp']
@@ -1084,40 +733,20 @@ class SucuriScanAPI extends SucuriScanOption
                     $report['end_timestamp'] = $event['timestamp'];
                 }
 
-                // Increment the number of events generated by this user account.
-                $_username = SucuriScan::escape($event['username']);
-                if (array_key_exists($_username, $report['events_per_user'])) {
-                    $report['events_per_user'][$_username] += 1;
-                } else {
-                    $report['events_per_user'][$_username] = 1;
-                }
-
-                // Increment the number of events generated from this remote address.
-                $_remote_addr = SucuriScan::escape($event['remote_addr']);
-                if (array_key_exists($_remote_addr, $report['events_per_ipaddress'])) {
-                    $report['events_per_ipaddress'][$_remote_addr] += 1;
-                } else {
-                    $report['events_per_ipaddress'][$_remote_addr] = 1;
-                }
-
                 // Detect successful and failed user authentications.
-                $auth_pattern = '/^User authentication (succeeded|failed):/';
-
-                if (@preg_match($auth_pattern, $event['message'], $match)) {
+                if (@preg_match('/^User authentication (succeeded|failed):/', $event['message'], $match)) {
                     if ($match[1] == 'succeeded') {
-                        $report['events_per_login']['successful'] += 1;
+                        $report['events_per_login']['successful']++;
                     } else {
-                        $report['events_per_login']['failed'] += 1;
+                        $report['events_per_login']['failed']++;
                     }
                 } elseif (@preg_match('/^User logged in:/', $event['message'])) {
                     // Backward compatibility for previous user login messages.
-                    $report['events_per_login']['successful'] += 1;
+                    $report['events_per_login']['successful']++;
                 }
             }
 
-            if ($report['total_events'] > 0) {
-                return $report;
-            }
+            return $report['total_events'] ? $report : false;
         }
 
         return false;
@@ -1129,220 +758,41 @@ class SucuriScanAPI extends SucuriScanOption
      * information of the audit logs alerting the administrator of suspicious
      * changes in the system.
      *
-     * @param  string  $hashes The information gathered after the scanning of the site's files.
-     * @return boolean         true if the hashes were stored, false otherwise.
+     * @param string $hashes The information gathered after the scanning of the site's files.
+     * @return bool True if the hashes were stored, false otherwise.
      */
     public static function sendHashes($hashes = '')
     {
-        if (!empty($hashes)) {
-            $response = self::apiCallWordpress('POST', array(
-                'a' => 'send_hashes',
-                'h' => $hashes,
-            ));
-
-            if (self::handleResponse($response)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Retrieve the public settings of the account associated with the API keys
-     * registered by the administrator of the site. This method will send a HTTP
-     * request to the remote API service and process its response, when successful
-     * it will return an array/object containing the public attributes of the site.
-     *
-     * @param  boolean $api_key The firewall API key.
-     * @return array            A hash with the settings of a firewall account.
-     */
-    public static function getFirewallSettings($api_key = false)
-    {
-        $params = array('a' => 'show_settings');
-
-        if ($api_key) {
-            $params = array_merge($params, $api_key);
-        }
-
-        $response = self::apiCallFirewall('GET', $params);
-
-        if (self::handleResponse($response)) {
-            return $response['output'];
-        }
-
-        return false;
-    }
-
-    /**
-     * Flush the cache of the site(s) associated with the API key.
-     *
-     * @param  boolean $api_key The firewall API key.
-     * @return string           Message explaining the result of the operation.
-     */
-    public static function clearFirewallCache($api_key = false)
-    {
-        $params = array( 'a' => 'clear_cache' );
-
-        if ($api_key) {
-            $params = array_merge($params, $api_key);
-        }
-
-        $response = self::apiCallFirewall('GET', $params);
-
-        if (self::handleResponse($response)) {
-            return $response;
-        }
-
-        return false;
-    }
-
-    /**
-     * Retrieve the audit logs of the account associated with the API keys
-     * registered b the administrator of the site. This method will send a HTTP
-     * request to the remote API service and process its response, when successful
-     * it will return an array/object containing a list of requests blocked by our
-     * firewall.
-     *
-     * By default the logs that will be retrieved are from today, if you need to see
-     * the logs of previous days you will need to add a new parameter to the request
-     * URL named "date" with format yyyy-mm-dd.
-     *
-     * @param  string  $api_key The firewall API key.
-     * @param  string  $date    Retrieve the data from this date.
-     * @param  string  $query   Filter the data to match this query.
-     * @param  integer $limit   Retrieve this maximum of data.
-     * @param  integer $offset  Retrieve the data from this point.
-     * @return array            Objects with details of each blocked request.
-     */
-    public static function firewallAuditLogs($api_key, $date = '', $query = '', $limit = 10, $offset = 0)
-    {
-        $params = array(
-            'a' => 'audit_trails',
-            'date' => $date,
-            'query' => $query,
-            'limit' => $limit,
-            'offset' => $offset,
-        );
-
-        if (is_array($api_key) && !empty($api_key)) {
-            $params = array_merge($params, $api_key);
-        }
-
-        $response = self::apiCallFirewall('GET', $params);
-
-        if (self::handleResponse($response)) {
-            return $response['output'];
-        }
-
-        return false;
-    }
-
-    /**
-     * Scan a website through the public SiteCheck API [1] for known malware,
-     * blacklisting status, website errors, and out-of-date software.
-     *
-     * [1] https://sitecheck.sucuri.net/
-     *
-     * @param  string  $domain The clean version of the website's domain.
-     * @param  boolean $clear  Request the results from a fresh scan or not.
-     * @return object          JSON encoded website scan results.
-     */
-    public static function getSitecheckResults($domain = '', $clear = true)
-    {
-        if (empty($domain)) {
+        if (empty($hashes)) {
             return false;
         }
 
-        $params = array();
-        $timeout = (int) SucuriScanOption::getOption(':sitecheck_timeout');
-        $params['scan'] = $domain;
-        $params['fromwp'] = 2;
-        $params['json'] = 1;
+        $response = self::apiCallWordpress('POST', array(
+            'a' => 'send_hashes',
+            'h' => $hashes,
+        ));
 
-        // Request a fresh scan or not.
-        if ($clear === true) {
-            $params['clear'] = 1;
-        }
-
-        $response = self::apiCall(
-            'https://sitecheck.sucuri.net/',
-            'GET',
-            $params,
-            array(
-                'assoc' => true,
-                'timeout' => $timeout,
-            )
-        );
-
-        return $response;
+        return self::handleResponse($response);
     }
 
     /**
-     * Extract detailed information from a SiteCheck malware payload.
+     * Generates a new set of WordPress security keys.
      *
-     * @param  array $malware Array with two entries with basic malware information.
-     * @return array          Detailed information of the malware found by SiteCheck.
-     */
-    public static function getSitecheckMalware($malware = array())
-    {
-        if (count($malware) >= 2) {
-            $data_set = array(
-                'alert_message' => '',
-                'infected_url' => '',
-                'malware_type' => '',
-                'malware_docs' => '',
-                'malware_payload' => '',
-            );
-
-            // Extract the information from the alert message.
-            $alert_parts = explode(':', $malware[0], 2);
-
-            if (isset($alert_parts[1])) {
-                $data_set['alert_message'] = $alert_parts[0];
-                $data_set['infected_url'] = trim($alert_parts[1]);
-            }
-
-            // Extract the information from the malware message.
-            $malware_parts = explode("\n", $malware[1]);
-
-            if (isset($malware_parts[1])) {
-                if (@preg_match('/(.+)\. Details: (.+)/', $malware_parts[0], $match)) {
-                    $data_set['malware_type'] = $match[1];
-                    $data_set['malware_docs'] = $match[2];
-                }
-
-                $data_set['malware_payload'] = trim($malware_parts[1]);
-            }
-
-            return $data_set;
-        }
-
-        return false;
-    }
-
-    /**
-     * Retrieve a new set of keys for the WordPress configuration file using the
-     * official API provided by WordPress itself.
-     *
-     * @return array A list of the new set of keys generated by WordPress API.
+     * @return array New set of WordPress security keys.
      */
     public static function getNewSecretKeys()
     {
+        $new_keys = array();
         $pattern = self::secretKeyPattern();
         $response = self::apiCall('https://api.wordpress.org/secret-key/1.1/salt/', 'GET');
 
         if ($response && @preg_match_all($pattern, $response, $match)) {
-            $new_keys = array();
-
-            foreach ($match[1] as $i => $value) {
-                $new_keys[$value] = $match[3][$i];
+            foreach ($match[1] as $key => $value) {
+                $new_keys[$value] = $match[3][$key];
             }
-
-            return $new_keys;
         }
 
-        return false;
+        return $new_keys;
     }
 
     /**
@@ -1350,11 +800,12 @@ class SucuriScanAPI extends SucuriScanOption
      *
      * @see Release Archive https://wordpress.org/download/release-archive/
      *
-     * @param  integer $version Valid version number of the WordPress project.
-     * @return object           Associative object with the relative filepath and the checksums of the project files.
+     * @param string|int $version Valid version number of the WordPress project.
+     * @return array|bool Associative object with the relative filepath and the checksums of the project files.
      */
     public static function getOfficialChecksums($version = 0)
     {
+        $result = false;
         $language = SucuriScanOption::getOption(':language');
         $response = self::apiCall(
             'https://api.wordpress.org/core/checksums/1.0/',
@@ -1365,51 +816,39 @@ class SucuriScanAPI extends SucuriScanOption
             )
         );
 
-        if (is_array($response)
-            && array_key_exists('checksums', $response)
-            && !empty($response['checksums'])
-        ) {
-            if (count((array) $response['checksums']) <= 1
-                && array_key_exists($version, $response['checksums'])
-            ) {
-                return $response['checksums'][$version];
-            } else {
-                return $response['checksums'];
-            }
+        if (is_array($response) && isset($response['checksums'])) {
+            $result = isset($response['checksums'][$version])
+            ? $response['checksums'][$version]
+            : $response['checksums'];
         }
 
-        return false;
+        return $result;
     }
 
     /**
-     * Check the plugins directory and retrieve all plugin files with plugin data.
-     * This method will also retrieve the URL and name of the repository/page
-     * where it is being published at the WordPress plugins market.
+     * Returns the metadata of all the installed plugins.
      *
-     * @return array Key is the plugin file path and the value is an array of the plugin data.
+     * @see https://developer.wordpress.org/reference/functions/is_plugin_active/
+     *
+     * @return array List of plugins with associated metadata.
      */
     public static function getPlugins()
     {
-        // Check if the cache library was loaded.
-        $can_cache = class_exists('SucuriScanCache');
+        $cache = new SucuriScanCache('plugindata');
+        $cached_data = $cache->get('plugins', SUCURISCAN_GET_PLUGINS_LIFETIME, 'array');
 
-        if ($can_cache) {
-            $cache = new SucuriScanCache('plugindata');
-            $cached_data = $cache->get('plugins', SUCURISCAN_GET_PLUGINS_LIFETIME, 'array');
-
-            // Return the previously cached results of this function.
-            if ($cached_data !== false) {
-                return $cached_data;
-            }
+        /* use cache data instead of API */
+        if ($cached_data) {
+            return $cached_data;
         }
 
         // Get the plugin's basic information from WordPress transient data.
         $plugins = get_plugins();
-        $pattern = '/^http(s)?:\/\/wordpress\.org\/plugins\/(.*)\/$/';
         $wp_market = 'https://wordpress.org/plugins/%s/';
+        $pattern = '/^http(s)?:\/\/wordpress\.org\/plugins\/(.*)\/$/';
 
         // Loop through each plugin data and complement its information with more attributes.
-        foreach ($plugins as $plugin_path => $plugin_data) {
+        foreach ($plugins as $path => $plugin_data) {
             // Default values for the plugin extra attributes.
             $repository = '';
             $repository_name = '';
@@ -1429,48 +868,30 @@ class SucuriScanAPI extends SucuriScanOption
                 $repository_name = $match[2];
                 $is_free_plugin = true;
             } else {
-                if (strpos($plugin_path, '/') !== false) {
-                    $plugin_path_parts = explode('/', $plugin_path, 2);
-                } else {
-                    $plugin_path_parts = explode('.', $plugin_path, 2);
-                }
+                $delimiter = strpos($path, '/') ? '/' : '.';
+                $parts = explode($delimiter, $path, 2);
+                $possible_repository = sprintf($wp_market, $parts[0]);
+                $resp = wp_remote_head($possible_repository);
 
-                if (isset($plugin_path_parts[0])) {
-                    $possible_repository = sprintf($wp_market, $plugin_path_parts[0]);
-                    $resp = wp_remote_head($possible_repository);
-
-                    if (!is_wp_error($resp)
-                        && $resp['response']['code'] == 200
-                    ) {
-                        $repository = $possible_repository;
-                        $repository_name = $plugin_path_parts[0];
-                        $is_free_plugin = true;
-                    }
+                if (!is_wp_error($resp) && $resp['response']['code'] == 200) {
+                    $repository = $possible_repository;
+                    $repository_name = $parts[0];
+                    $is_free_plugin = true;
                 }
             }
 
             // Complement the plugin's information with these attributes.
-            $plugins[$plugin_path]['Repository'] = $repository;
-            $plugins[$plugin_path]['RepositoryName'] = $repository_name;
-            $plugins[$plugin_path]['InstallationPath'] = sprintf('%s/%s', WP_PLUGIN_DIR, $repository_name);
-            $plugins[$plugin_path]['IsFreePlugin'] = $is_free_plugin;
-            $plugins[$plugin_path]['PluginType'] = ( $is_free_plugin ? 'free' : 'premium' );
-            $plugins[$plugin_path]['IsPluginActive'] = false;
-            $plugins[$plugin_path]['IsPluginInstalled'] = false;
-
-            if (is_plugin_active($plugin_path)) {
-                $plugins[$plugin_path]['IsPluginActive'] = true;
-            }
-
-            if (is_dir($plugins[$plugin_path]['InstallationPath'])) {
-                $plugins[$plugin_path]['IsPluginInstalled'] = true;
-            }
+            $plugins[$path]['Repository'] = $repository;
+            $plugins[$path]['RepositoryName'] = $repository_name;
+            $plugins[$path]['InstallationPath'] = sprintf('%s/%s', WP_PLUGIN_DIR, $repository_name);
+            $plugins[$path]['PluginType'] = ( $is_free_plugin ? 'free' : 'premium' );
+            $plugins[$path]['IsPluginInstalled'] = is_dir($plugins[$path]['InstallationPath']);
+            $plugins[$path]['IsPluginActive'] = is_plugin_active($path);
+            $plugins[$path]['IsFreePlugin'] = $is_free_plugin;
         }
 
-        if ($can_cache) {
-            // Add the information of the plugins to the file-based cache.
-            $cache->add('plugins', $plugins);
-        }
+        /* cache data for future usage */
+        $cache->add('plugins', $plugins);
 
         return $plugins;
     }
@@ -1489,21 +910,16 @@ class SucuriScanAPI extends SucuriScanOption
      *
      * The second filter, 'plugins_api', is the result that would be returned.
      *
-     * @param  string $plugin Frienly name of the plugin.
-     * @return object         Object on success, WP_Error on failure.
+     * @param string $plugin Frienly name of the plugin.
+     * @return array|bool Object on success, WP_Error on failure.
      */
     public static function getRemotePluginData($plugin = '')
     {
-        if (!empty($plugin)) {
-            $url = sprintf('https://api.wordpress.org/plugins/info/1.0/%s.json', $plugin);
-            $response = self::apiCall($url, 'GET');
+        $url = sprintf('https://api.wordpress.org/plugins/info/1.0/%s.json', $plugin);
+        $response = self::apiCall($url, 'GET'); /* ignore plugin existence */
+        $response = ($response === 'null') ? false : $response;
 
-            if ($response) {
-                return $response;
-            }
-        }
-
-        return false;
+        return $response ? $response : false;
     }
 
     /**
@@ -1515,25 +931,27 @@ class SucuriScanAPI extends SucuriScanOption
      * @see https://i18n.svn.wordpress.org/
      * @see https://core.svn.wordpress.org/tags/VERSION_NUMBER/
      *
-     * @param  string $filepath Relative file path of a project core file.
-     * @param  string $version  Optional site version, default will be the global version number.
-     * @return string           Full content of the official file retrieved, false if the file was not found.
+     * @param string $filepath Relative path of a core file.
+     * @param string|int $version Optional Wordpress version number.
+     * @return string|bool Original code for the core file, false otherwise.
      */
     public static function getOriginalCoreFile($filepath = '', $version = 0)
     {
-        if (!empty($filepath)) {
-            if ($version == 0) {
-                $version = self::siteVersion();
-            }
-
-            $url = sprintf('https://core.svn.wordpress.org/tags/%s/%s', $version, $filepath);
-            $response = self::apiCall($url, 'GET');
-
-            if ($response) {
-                return $response;
-            }
+        if (empty($filepath)) {
+            return false;
         }
 
-        return false;
+        if ($version == 0) {
+            $version = self::siteVersion();
+        }
+
+        $url = sprintf('https://core.svn.wordpress.org/tags/%s/%s', $version, $filepath);
+        $response = self::apiCall($url, 'GET');
+
+        if (strpos($response, '404 Not Found') !== false) {
+            return self::throwException('WordPress version is not supported anymore');
+        }
+
+        return $response ? $response : false;
     }
 }

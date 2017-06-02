@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Code related to the command.lib.php interface.
+ *
+ * @package Sucuri Security
+ * @subpackage command.lib.php
+ * @copyright Since 2010 Sucuri Inc.
+ */
+
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     if (!headers_sent()) {
         /* Report invalid access if possible. */
@@ -23,7 +31,7 @@ class SucuriScanCommand extends SucuriScan
      * commands. In this specific case, we want to know if the generic exec method
      * is enabled or not to allow the execution of system programs.
      *
-     * @return boolean True if the exec method is enabled, false otherwise.
+     * @return bool True if the exec method is enabled, false otherwise.
      */
     private static function canExecuteCommands()
     {
@@ -33,73 +41,102 @@ class SucuriScanCommand extends SucuriScan
         return !in_array('exec', $methods);
     }
 
+    /**
+     * Checks if an external command exists or not.
+     *
+     * @param string $cmd Name of the external command.
+     * @return bool True if the command exists, false otherwise.
+     */
     public static function exists($cmd)
     {
-        if (!self::canExecuteCommands()) {
-            self::throwException('Cannot execute external commands');
-            return false;
+        $err = 255;
+        $out = array();
+
+        if (self::canExecuteCommands()) {
+            $command = sprintf('command -v %s 1>/dev/null', escapeshellarg($cmd));
+            @exec($command, $out, $err); /* ignore output and capture errors */
         }
 
-        $command = 'command -v ' . $cmd . ' &> /dev/null';
-        $command = escapeshellcmd($command);
-
-        @exec($command, $out, $err);
-
         if ($err !== 0) {
-            self::throwException('Command ' . $cmd . ' does not exists');
-            return false;
+            return self::throwException('Command ' . $cmd . ' does not exists');
         }
 
         return true;
     }
 
     /**
-     * Compare files line by line.
+     * Compares two files line by line.
      *
-     * @param  string $a File path of the original file.
-     * @param  string $b File path of the modified file.
-     * @return array     Line-by-line changes (if any).
+     * @param string $a File path of the original file.
+     * @param string $b File path of the modified file.
+     * @return array Line-by-line changes (if any).
      */
     public static function diff($a, $b)
     {
-        if (!self::exists('diff')) {
-            return;
+        $out = array(); /* default empty */
+
+        if (self::exists('diff')) {
+            @exec(sprintf(
+                'diff -u -- %s %s 2> /dev/null',
+                escapeshellarg($a),
+                escapeshellarg($b)
+            ), $out, $err);
         }
-
-        $command = sprintf(
-            'diff -u -- %s %s 2> /dev/null',
-            escapeshellarg($a),
-            escapeshellarg($b)
-        );
-
-        @exec($command, $out, $err);
 
         return $out;
     }
 
+    /**
+     * Generates the HTML code with the diff output.
+     *
+     * The method takes the relative path of a core WordPress file, then tries
+     * to download a fresh copy of such file from the official WordPress API. If
+     * the download succeeds the method will write the content of this file into
+     * a temporary resource. Then it will use the Unix diff utility to find all
+     * the differences between the original code and the one present in the site.
+     *
+     * If there are differences, the method will write the HTML code to report
+     * them in the dashboard. Some basic CSS classes will be attached to some of
+     * the elements in the code to facilitate the styling of the diff report.
+     *
+     * @param string $filepath Relative path to the core WordPress file.
+     * @param string $version Version number of the WordPress installation.
+     * @return string|bool HTML code with the diff report, false on failure.
+     */
     public static function diffHTML($filepath, $version)
     {
-        $tempfile = tempnam(sys_get_temp_dir(), SUCURISCAN . '-integrity-');
-        $handle = @fopen($tempfile, 'w'); /* delete after the comparison */
+        $checksums = SucuriScanAPI::getOfficialChecksums($version);
 
-        if (!$handle) {
-            self::throwException('Temporary file cannot be created.');
-            return ''; /* empty diff output */
+        if (!$checksums) {
+            return SucuriScanInterface::error('WordPress version is not supported.');
         }
 
-        $a = $tempfile; /* original file to compare */
-        $b = ABSPATH . '/' . $filepath; /* modified */
-        $content = SucuriScanAPI::getOriginalCoreFile($filepath, $version);
-        @fwrite($handle, $content); /* create a copy of the original file */
-        $output = self::diff($a, $b);
-        @fclose($tempfile);
-        @unlink($tempfile);
+        if (!array_key_exists($filepath, $checksums)) {
+            return SucuriScanInterface::error('File is not part of the official WordPress installation.');
+        }
+
+        if (!file_exists(ABSPATH . '/' . $filepath)) {
+            return SucuriScanInterface::error('Cannot check the integrity of a non-existing file.');
+        }
+
+        $output = ''; /* initialize empty with no differences */
+        $tempfile = tempnam(sys_get_temp_dir(), SUCURISCAN . '-integrity-');
+
+        if ($handle = @fopen($tempfile, 'w')) {
+            $a = $tempfile; /* original file to compare */
+            $b = ABSPATH . '/' . $filepath; /* modified */
+            $content = SucuriScanAPI::getOriginalCoreFile($filepath, $version);
+            @fwrite($handle, $content); /* create a copy of the original file */
+            $output = self::diff($a, $b);
+            @fclose($tempfile);
+            @unlink($tempfile);
+        }
 
         if (!is_array($output) || empty($output)) {
             return ''; /* no differences found */
         }
 
-        $response = '<ul class="' . SUCURISCAN . '-diff-content">';
+        $response = "<ul class='" . SUCURISCAN . "-diff-content'>\n";
 
         foreach ($output as $key => $line) {
             $number = $key + 1; /* line number */
@@ -129,7 +166,7 @@ class SucuriScanCommand extends SucuriScan
             );
         }
 
-        $response .= '</ul>';
+        $response .= "</ul>\n";
 
         return $response;
     }

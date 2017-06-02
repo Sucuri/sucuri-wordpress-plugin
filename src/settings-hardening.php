@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Code related to the settings-hardening.php interface.
+ *
+ * @package Sucuri Security
+ * @subpackage settings-hardening.php
+ * @copyright Since 2010 Sucuri Inc.
+ */
+
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     if (!headers_sent()) {
         /* Report invalid access if possible. */
@@ -8,6 +16,9 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     exit(1);
 }
 
+/**
+ * Renders the content of the plugin's hardening page.
+ */
 class SucuriScanHardeningPage extends SucuriScan
 {
     /**
@@ -15,8 +26,8 @@ class SucuriScanHardeningPage extends SucuriScan
      * a specific part of the WordPress installation, if the Status variable is
      * set as a positive integer the button is shown as "unharden".
      *
-     * @param  array  $args Array with template variables to replace.
-     * @return string       HTML code with the replaced template variables.
+     * @param array $args Array with template variables to replace.
+     * @return string HTML code with the replaced template variables.
      */
     private static function drawSection($args = array())
     {
@@ -44,6 +55,12 @@ class SucuriScanHardeningPage extends SucuriScan
         return SucuriScanTemplate::getSnippet('settings-hardening-options', $params);
     }
 
+    /**
+     * Checks if the request has a valid nonce to prevent a CSRF.
+     *
+     * @param string $function Name of the action that was executed.
+     * @return bool True if the request has a valid CSRF protection.
+     */
     private static function processRequest($function)
     {
         return (bool) (
@@ -52,13 +69,21 @@ class SucuriScanHardeningPage extends SucuriScan
         );
     }
 
+    /**
+     * Checks if the Firewall service is enabled and configured.
+     *
+     * WAF is a protection layer for your web site, blocking all sort of attacks
+     * (brute force attempts, DDoS, SQL injections, etc) and helping it remain
+     * malware and blacklist free. This test checks if your site is using Sucuri
+     * Firewall to protect your site.
+     */
     public static function firewall()
     {
         $params = array();
 
         if (self::processRequest(__FUNCTION__)) {
             SucuriScanInterface::error('The firewall is a premium service that
-            you need purchase at — <a href="https://goo.gl/qfNkMq" target="_blank">
+            you need purchase at - <a href="https://goo.gl/qfNkMq" target="_blank">
             Sucuri Firewall</a>');
         }
 
@@ -82,10 +107,13 @@ class SucuriScanHardeningPage extends SucuriScan
     }
 
     /**
-     * Check whether the version number of the WordPress installed is the latest
-     * version available officially.
+     * Checks if the WordPress version is the latest available.
      *
-     * @return void
+     * Why keep your site updated? WordPress is an open-source project which
+     * means that with every update the details of the changes made to the
+     * source code are made public, if there were security fixes then someone
+     * with malicious intent can use this information to attack any site that
+     * has not been upgraded.
      */
     public static function wpversion()
     {
@@ -115,10 +143,19 @@ class SucuriScanHardeningPage extends SucuriScan
     }
 
     /**
-     * Check the version number of the PHP interpreter set to work with the site,
-     * is considered that old versions of the PHP interpreter are insecure.
+     * Checks if the server is using a modern PHP version.
      *
-     * @return void
+     * Each release branch of PHP is fully supported for two years from its
+     * initial stable release. During this period, bugs and security issues that
+     * have been reported are fixed and are released in regular point releases.
+     * After this two year period of active support, each branch is then
+     * supported for an additional year for critical security issues only.
+     * Releases during this period are made on an as-needed basis: there may be
+     * multiple point releases, or none, depending on the number of reports.
+     * Once the three years of support are completed, the branch reaches its end
+     * of life and is no longer supported.
+     *
+     * @see http://php.net/supported-versions.php
      */
     public static function phpversion()
     {
@@ -126,7 +163,7 @@ class SucuriScanHardeningPage extends SucuriScan
 
         if (self::processRequest(__FUNCTION__)) {
             SucuriScanInterface::error('Ask your hosting provider to install an
-            updated version of PHP — <a href="http://php.net/supported-versions.php"
+            updated version of PHP - <a href="http://php.net/supported-versions.php"
             target="_blank">List of PHP Supported Versions</a>');
         }
 
@@ -150,8 +187,6 @@ class SucuriScanHardeningPage extends SucuriScan
      * Notify the state of the hardening for the removal of the Generator tag in
      * HTML code printed by WordPress to show the current version number of the
      * installation.
-     *
-     * @return void
      */
     public static function wpgenerator()
     {
@@ -172,6 +207,9 @@ class SucuriScanHardeningPage extends SucuriScan
         return self::drawSection($params);
     }
 
+    /**
+     * Offers information to apply a hardening to an Nginx installation.
+     */
     public static function nginxphp()
     {
         if (!SucuriScan::isNginxServer()) {
@@ -183,7 +221,7 @@ class SucuriScanHardeningPage extends SucuriScan
         if (self::processRequest(__FUNCTION__)) {
             SucuriScanInterface::error('Read the official WordPress guidelines
             to learn how to restrict access to PHP files in sensitive directories
-            — <a href="https://codex.wordpress.org/Nginx#Global_restrictions_file"
+            - <a href="https://codex.wordpress.org/Nginx#Global_restrictions_file"
             target="_blank">Nginx Global Restrictions For WordPress</a>');
         }
 
@@ -206,8 +244,6 @@ class SucuriScanHardeningPage extends SucuriScan
      * A htaccess file is placed in the upload folder denying the access to any php
      * file that could be uploaded through a vulnerability in a Plugin, Theme or
      * WordPress itself.
-     *
-     * @return void
      */
     public static function wpuploads()
     {
@@ -268,8 +304,6 @@ class SucuriScanHardeningPage extends SucuriScan
      * A htaccess file is placed in the content folder denying the access to any php
      * file that could be uploaded through a vulnerability in a Plugin, Theme or
      * WordPress itself.
-     *
-     * @return void
      */
     public static function wpcontent()
     {
@@ -330,8 +364,6 @@ class SucuriScanHardeningPage extends SucuriScan
      * file that could be uploaded through a vulnerability in a Plugin, Theme or
      * WordPress itself, there are some exceptions for some specific files that must
      * be available publicly.
-     *
-     * @return void
      */
     public static function wpincludes()
     {
@@ -394,8 +426,6 @@ class SucuriScanHardeningPage extends SucuriScan
      * Check whether the "readme.html" file is still available in the root of the
      * site or not, which can lead to an attacker to know which version number of
      * Wordpress is being used and search for possible vulnerabilities.
-     *
-     * @return void
      */
     public static function readme()
     {
@@ -435,8 +465,6 @@ class SucuriScanHardeningPage extends SucuriScan
     /**
      * Check whether the main administrator user still has the default name "admin"
      * or not, which can lead to an attacker to perform a brute force attack.
-     *
-     * @return void
      */
     public static function adminuser()
     {
@@ -470,8 +498,6 @@ class SucuriScanHardeningPage extends SucuriScan
 
     /**
      * Enable or disable the user of the built-in Wordpress file editor.
-     *
-     * @return void
      */
     public static function fileeditor()
     {
@@ -564,6 +590,15 @@ class SucuriScanHardeningPage extends SucuriScan
         return self::drawSection($params);
     }
 
+    /**
+     * Whitelist individual PHP files.
+     *
+     * Allows an admin to whitelist individual PHP files after the directory has
+     * been hardened. Since the hardening rules denies access to all PHP files
+     * contained in such directory, 3rd-party plugins and themes that makes use
+     * of these direct requests will stop working. The admins will want to allow
+     * direct access to certain PHP files.
+     */
     public static function whitelistPHPFiles()
     {
         $params = array(
@@ -607,9 +642,7 @@ class SucuriScanHardeningPage extends SucuriScan
 
         // Read the access control file and retrieve the whitelisted files.
         foreach ($allowed_folders as $folder) {
-            $files = SucuriScanHardening::getWhitelisted($folder);
-
-            if ($files !== false) {
+            if ($files = SucuriScanHardening::getWhitelisted($folder)) {
                 $params['HardeningWhitelist.NoItemsVisibility'] = 'hidden';
 
                 foreach ($files as $file) {

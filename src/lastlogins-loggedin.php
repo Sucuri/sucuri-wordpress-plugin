@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Code related to the lastlogins-loggedin.php interface.
+ *
+ * @package Sucuri Security
+ * @subpackage lastlogins-loggedin.php
+ * @copyright Since 2010 Sucuri Inc.
+ */
+
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     if (!headers_sent()) {
         /* Report invalid access if possible. */
@@ -51,8 +59,8 @@ function sucuriscan_loggedin_users_panel()
 /**
  * Get a list of all the registered users that are currently in session.
  *
- * @param  boolean $add_current_user Whether the current user should be added to the list or not.
- * @return array                     List of registered users currently in session.
+ * @param bool $add_current_user Whether the current user should be added to the list or not.
+ * @return array List of registered users currently in session.
  */
 function sucuriscan_get_online_users($add_current_user = false)
 {
@@ -83,8 +91,8 @@ function sucuriscan_get_online_users($add_current_user = false)
  *
  * Useful when you are removing users and need the list of the remaining users.
  *
- * @param  array   $logged_in_users List of registered users currently in session.
- * @return boolean                  Either TRUE or FALSE representing the success or fail of the operation.
+ * @param array $logged_in_users List of registered users currently in session.
+ * @return bool Either TRUE or FALSE representing the success or fail of the operation.
  */
 function sucuriscan_save_online_users($logged_in_users = array())
 {
@@ -101,8 +109,6 @@ if (!function_exists('sucuriscan_unset_online_user_on_logout')) {
     /**
      * Remove a logged in user from the list of registered users in session when
      * the logout page is requested.
-     *
-     * @return void
      */
     function sucuriscan_unset_online_user_on_logout()
     {
@@ -120,11 +126,11 @@ if (!function_exists('sucuriscan_unset_online_user_on_logout')) {
  * Remove a logged in user from the list of registered users in session using
  * the user identifier and the ip address of the last computer used to login.
  *
- * @param  integer $user_id     User identifier of the account that will be logged out.
- * @param  integer $remote_addr IP address of the computer where the user logged in.
- * @return boolean              Either TRUE or FALSE representing the success or fail of the operation.
+ * @param int $user_id User ID of the account that will be logged out.
+ * @param string $remote_addr IP address of the computer where the user logged in.
+ * @return bool Either TRUE or FALSE representing the success or fail of the operation.
  */
-function sucuriscan_unset_online_user($user_id = 0, $remote_addr = 0)
+function sucuriscan_unset_online_user($user_id = 0, $remote_addr = '')
 {
     $logged_in_users = sucuriscan_get_online_users();
 
@@ -147,9 +153,8 @@ if (!function_exists('sucuriscan_set_online_user')) {
     /**
      * Add an user account to the list of registered users in session.
      *
-     * @param  string  $user_login The name of the user account that just logged in the site.
-     * @param  boolean $user       The WordPress object containing all the information associated to the user.
-     * @return void
+     * @param string $user_login The name of the user account that just logged in the site.
+     * @param bool $user The WordPress object containing all the information associated to the user.
      */
     function sucuriscan_set_online_user($user_login = '', $user = false)
     {

@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Code related to the hardening.lib.php interface.
+ *
+ * @package Sucuri Security
+ * @subpackage hardening.lib.php
+ * @copyright Since 2010 Sucuri Inc.
+ */
+
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     if (!headers_sent()) {
         /* Report invalid access if possible. */
@@ -57,36 +65,31 @@ class SucuriScanHardening extends SucuriScan
      * The permissions to modify the file are checked before anything else, this
      * method is self-contained.
      *
-     * @param  string  $directory Valid directory path where to place the access rules.
-     * @return boolean            True if the rules are successfully added, false otherwise.
+     * @param string $directory Valid directory path where to place the access rules.
+     * @return bool True if the rules are successfully added, false otherwise.
      */
     public static function hardenDirectory($directory = '')
     {
-        if (file_exists($directory)
-            && is_writable($directory)
-            && is_dir($directory)
-        ) {
-            $fhandle = false;
-            $target = self::htaccess($directory);
-            $deny_rules = self::getRules();
-
-            if (file_exists($target)) {
-                self::fixPreviousHardening($directory);
-                $fhandle = @fopen($target, 'a');
-            } else {
-                $fhandle = @fopen($target, 'w');
-            }
-
-            if ($fhandle) {
-                $rules_str = "\n" . implode("\n", $deny_rules) . "\n";
-                $written = @fwrite($fhandle, $rules_str);
-                @fclose($fhandle);
-
-                return (bool) ($written !== false);
-            }
+        if (!is_dir($directory) || !is_writable($directory)) {
+            return self::throwException('Directory is not usable');
         }
 
-        return false;
+        $fhandle = false;
+        $target = self::htaccess($directory);
+
+        if (file_exists($target)) {
+            self::fixPreviousHardening($directory);
+            $fhandle = @fopen($target, 'a');
+        } else {
+            $fhandle = @fopen($target, 'w');
+        }
+
+        $deny_rules = self::getRules();
+        $rules_text = implode("\n", $deny_rules);
+        $written = @fwrite($fhandle, "\n" . $rules_text . "\n");
+        @fclose($fhandle);
+
+        return (bool) ($written !== false);
     }
 
     /**
@@ -94,92 +97,98 @@ class SucuriScanHardening extends SucuriScan
      * all files with certain extension in any mixed case. The file is truncated if
      * after the operation its size is equals to zero.
      *
-     * @param  string  $directory Valid directory path where to access rules are.
-     * @return boolean            True if the rules are successfully deleted, false otherwise.
+     * @param string $directory Valid directory path where to access rules are.
+     * @return bool True if the rules are successfully deleted, false otherwise.
      */
     public static function unhardenDirectory($directory = '')
     {
-        if (self::isHardened($directory)) {
-            $deny_rules = self::getRules();
-            $fpath = self::htaccess($directory);
-            $content = @file_get_contents($fpath);
-
-            if ($content) {
-                $rules_str = implode("\n", $deny_rules);
-                $content = str_replace($rules_str, '', $content);
-                $written = @file_put_contents($fpath, $content);
-                $trimmed = trim($content);
-
-                if (!filesize($fpath) || empty($trimmed)) {
-                    @unlink($fpath);
-                }
-
-                return (bool) ($written !== false);
-            }
+        if (!self::isHardened($directory)) {
+            return self::throwException('Directory is not hardened');
         }
 
-        return false;
+        $fpath = self::htaccess($directory);
+        $content = SucuriScanFileInfo::fileContent($fpath);
+        $deny_rules = self::getRules();
+        $rules_text = implode("\n", $deny_rules);
+        $content = str_replace($rules_text, '', $content);
+        $written = @file_put_contents($fpath, $content);
+        $trimmed = trim($content);
+
+        if (!filesize($fpath) || empty($trimmed)) {
+            @unlink($fpath);
+        }
+
+        return (bool) ($written !== false);
     }
 
     /**
      * Remove the hardening applied in previous versions.
      *
-     * @param  string  $directory Valid directory path.
-     * @return boolean            True if the access control file was fixed.
+     * @param string $directory Valid directory path.
+     * @return bool True if the access control file was fixed.
      */
     private static function fixPreviousHardening($directory = '')
     {
         $fpath = self::htaccess($directory);
-        $content = @file_get_contents($fpath);
+        $content = SucuriScanFileInfo::fileContent($fpath);
         $rules = "<Files *.php>\ndeny from all\n</Files>";
 
-        if ($content) {
-            if (strpos($content, $rules) !== false) {
-                $content = str_replace($rules, '', $content);
-                $written = @file_put_contents($fpath, $content);
-
-                return (bool) ($written !== false);
-            }
+        /* no previous hardening rules exist */
+        if (strpos($content, $rules) === false) {
+            return true;
         }
 
-        return true;
+        $content = str_replace($rules, '', $content);
+        $written = @file_put_contents($fpath, $content);
+
+        return (bool) ($written !== false);
     }
 
     /**
      * Check whether a directory is hardened or not.
      *
-     * @param  string  $directory Valid directory path.
-     * @return boolean            True if the directory is hardened, false otherwise.
+     * @param string $directory Valid directory path.
+     * @return bool True if the directory is hardened, false otherwise.
      */
     public static function isHardened($directory = '')
     {
-        if (file_exists($directory) && is_dir($directory)) {
-            $fpath = self::htaccess($directory);
-
-            if (file_exists($fpath) && is_readable($fpath)) {
-                $rules = self::getRules();
-                $rules_str = implode("\n", $rules);
-                $content = @file_get_contents($fpath);
-
-                if (strpos($content, $rules_str) !== false) {
-                    return true;
-                }
-            }
+        if (!is_dir($directory)) {
+            return false;
         }
 
-        return false;
+        $fpath = self::htaccess($directory);
+        $content = SucuriScanFileInfo::fileContent($fpath);
+        $deny_rules = self::getRules();
+        $rules_text = implode("\n", $deny_rules);
+
+        return (bool) (strpos($content, $rules_text) !== false);
     }
 
+    /**
+     * Returns the path to the Apache access control file.
+     *
+     * @param string $folder Folder where the htaccess file is supposed to be.
+     * @return string Path to the htaccess file in the specified folder.
+     */
     private static function htaccess($folder = '')
     {
         $folder = str_replace(ABSPATH, '', $folder);
         $bpath = rtrim(ABSPATH, DIRECTORY_SEPARATOR);
-        $folder_path = $bpath . '/' . $folder;
-        $htaccess = $folder_path . '/.htaccess';
 
-        return $htaccess;
+        return $bpath . '/' . $folder . '/.htaccess';
     }
 
+    /**
+     * Generates Apache access control rules for a file.
+     *
+     * Assumming that the directory hosting the specified file is hardened, this
+     * method will generate the necessary rules to whitelist such file so anyone
+     * can send a direct request to it. The method will generate both the rules
+     * for Apache 2.4 and a compatibility conditional for older versions.
+     *
+     * @param string $file File to be ignored by the hardening.
+     * @return string Access control rules to whitelist the file.
+     */
     private static function whitelistRule($file = '')
     {
         $file = str_replace('/', '', $file);
@@ -199,51 +208,80 @@ class SucuriScanHardening extends SucuriScan
         );
     }
 
+    /**
+     * Whitelists a file in the specified folder.
+     *
+     * If the website owner has applied the hardening to the folder where the
+     * specified file is located, all the requests sent directly to the file
+     * will be blocked by the web server using its access control module. An
+     * admin can ignore this hardening in one or more files if direct access to
+     * it is required, as is the case with some 3rd-party plugins and themes.
+     *
+     * @param string $file File to be ignored by the hardening.
+     * @param string $folder Folder hosting the specified file.
+     * @return bool True if the file has been whitelisted, false otherwise.
+     */
     public static function whitelist($file = '', $folder = '')
     {
         $htaccess = self::htaccess($folder);
 
-        if (file_exists($htaccess)) {
-            if (is_writable($htaccess)) {
-                $rules = "\n" . self::whitelistRule($file);
-                @file_put_contents($htaccess, $rules, FILE_APPEND);
-            } else {
-                throw new Exception('Access control file is not writable');
-            }
-        } else {
+        if (!file_exists($htaccess)) {
             throw new Exception('Access control file does not exists');
         }
+
+        if (!is_writable($htaccess)) {
+            throw new Exception('Access control file is not writable');
+        }
+
+        return (bool) @file_put_contents(
+            $htaccess,
+            "\n" . self::whitelistRule($file),
+            FILE_APPEND
+        );
     }
 
+    /**
+     * Dewhitelists a file in the specified folder.
+     *
+     * If the website owner has applied the hardening to the folder where the
+     * specified file is located, all the requests sent directly to the file
+     * will be blocked by the web server using its access control module. If an
+     * admin has whitelisted a file in this folder because a 3rd-party plugin or
+     * theme required it, they can decide to revert the whitelisting using this
+     * method which is executed by one of the tools in the settings page.
+     *
+     * @param string $file File to stop ignoring from the hardening.
+     * @param string $folder Folder hosting the specified file.
+     * @return bool True if the file has been dewhitelisted, false otherwise.
+     */
     public static function dewhitelist($file = '', $folder = '')
     {
         $htaccess = self::htaccess($folder);
+        $content = SucuriScanFileInfo::fileContent($htaccess);
 
-        if (file_exists($htaccess)
-            && is_readable($htaccess)
-            && is_writable($htaccess)
-        ) {
-            $content = file_get_contents($htaccess);
-            $rules = self::whitelistRule($file);
-            $content = str_replace($rules, '', $content);
-            $content = rtrim($content) . "\n";
-
-            @file_put_contents($htaccess, $content);
+        if (!$content || !is_writable($htaccess)) {
+            return self::throwException('Cannot dewhitelist file; no permissions.');
         }
+
+        $rules = self::whitelistRule($file);
+        $content = str_replace($rules, '', $content);
+        $content = rtrim($content) . "\n";
+
+        return (bool) @file_put_contents($htaccess, $content);
     }
 
+    /**
+     * Returns a list of whitelisted files in folder.
+     *
+     * @param string $folder Directory to scan for whitelisted files.
+     * @return array List of whitelisted files, false on failure.
+     */
     public static function getWhitelisted($folder = '')
     {
         $htaccess = self::htaccess($folder);
+        $content = SucuriScanFileInfo::fileContent($htaccess);
+        @preg_match_all('/<Files (\S+)>/', $content, $matches);
 
-        if (file_exists($htaccess) && is_readable($htaccess)) {
-            $content = file_get_contents($htaccess);
-
-            if (@preg_match_all('/<Files (\S+)>/', $content, $matches)) {
-                return $matches[1];
-            }
-        }
-
-        return false;
+        return $matches[1] /* empty for no matches */;
     }
 }

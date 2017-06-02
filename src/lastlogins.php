@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Code related to the lastlogins.php interface.
+ *
+ * @package Sucuri Security
+ * @subpackage lastlogins.php
+ * @copyright Since 2010 Sucuri Inc.
+ */
+
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     if (!headers_sent()) {
         /* Report invalid access if possible. */
@@ -8,6 +16,9 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     exit(1);
 }
 
+/**
+ * Placeholder for the last logins interface.
+ */
 class SucuriScanLastLogins extends SucuriScan
 {
 }
@@ -16,8 +27,6 @@ class SucuriScanLastLogins extends SucuriScan
  * List all the user administrator accounts.
  *
  * @see https://codex.wordpress.org/Class_Reference/WP_User_Query
- *
- * @return void
  */
 function sucuriscan_lastlogins_admins()
 {
@@ -31,8 +40,6 @@ function sucuriscan_lastlogins_admins()
 
     foreach ((array) $admins as $admin) {
         $last_logins = sucuriscan_get_logins(5, 0, $admin->ID);
-        $admin->lastlogins = $last_logins['entries'];
-
         $user_snippet = array(
             'AdminUsers.Username' => $admin->user_login,
             'AdminUsers.Email' => $admin->user_email,
@@ -43,13 +50,16 @@ function sucuriscan_lastlogins_admins()
             'AdminUsers.NoLastLoginsTable' => 'hidden',
         );
 
-        if (!empty($admin->lastlogins)) {
+        if ($last_logins
+            && isset($last_logins['entries'])
+            && !empty($last_logins['entries'])
+        ) {
             $user_snippet['AdminUsers.NoLastLogins'] = 'hidden';
             $user_snippet['AdminUsers.NoLastLoginsTable'] = 'visible';
             $user_snippet['AdminUsers.RegisteredAt'] = 'Unknown';
 
-            foreach ($admin->lastlogins as $i => $lastlogin) {
-                if ($i == 0) {
+            foreach ($last_logins['entries'] as $i => $lastlogin) {
+                if ($i === 0) {
                     $user_snippet['AdminUsers.RegisteredAt'] = SucuriScan::datetime(
                         $lastlogin->user_registered_timestamp
                     );
@@ -96,48 +106,49 @@ function sucuriscan_lastlogins_all()
         SucuriScanInterface::error('Last-logins datastore file is not writable: <code>' . $fpath . '</code>');
     }
 
-    $last_logins = sucuriscan_get_logins($max_per_page, $offset);
-    $params['UserList.Total'] = $last_logins['total'];
+    if ($last_logins = sucuriscan_get_logins($max_per_page, $offset)) {
+        $params['UserList.Total'] = $last_logins['total'];
 
-    if ($last_logins['total'] > $max_per_page) {
-        $params['UserList.PaginationVisibility'] = 'visible';
-    }
-
-    if ($last_logins['total'] > 0) {
-        $params['UserList.NoItemsVisibility'] = 'hidden';
-    }
-
-    foreach ($last_logins['entries'] as $user) {
-        $user_dataset = array(
-            'UserList.Number' => $user->line_num,
-            'UserList.UserId' => $user->user_id,
-            'UserList.Username' => 'Unknown',
-            'UserList.Displayname' => '',
-            'UserList.Email' => '',
-            'UserList.Registered' => '',
-            'UserList.RemoteAddr' => $user->user_remoteaddr,
-            'UserList.Hostname' => $user->user_hostname,
-            'UserList.Datetime' => $user->user_lastlogin,
-            'UserList.TimeAgo' => SucuriScan::timeAgo($user->user_lastlogin),
-            'UserList.UserURL' => SucuriScan::adminURL('user-edit.php?user_id=' . $user->user_id),
-        );
-
-        if ($user->user_exists) {
-            $user_dataset['UserList.Username'] = $user->user_login;
-            $user_dataset['UserList.Displayname'] = $user->display_name;
-            $user_dataset['UserList.Email'] = $user->user_email;
-            $user_dataset['UserList.Registered'] = $user->user_registered;
+        if ($last_logins['total'] > $max_per_page) {
+            $params['UserList.PaginationVisibility'] = 'visible';
         }
 
-        $params['UserList'] .= SucuriScanTemplate::getSnippet('lastlogins-all', $user_dataset);
-    }
+        if ($last_logins['total'] > 0) {
+            $params['UserList.NoItemsVisibility'] = 'hidden';
+        }
 
-    // Generate the pagination for the list.
-    $params['UserList.Pagination'] = SucuriScanTemplate::pagination(
-        '%%SUCURI.URL.Lastlogins%%',
-        $last_logins['total'],
-        $max_per_page
-    );
+        foreach ($last_logins['entries'] as $user) {
+            $user_dataset = array(
+                'UserList.Number' => $user->line_num,
+                'UserList.UserId' => $user->user_id,
+                'UserList.Username' => 'Unknown',
+                'UserList.Displayname' => '',
+                'UserList.Email' => '',
+                'UserList.Registered' => '',
+                'UserList.RemoteAddr' => $user->user_remoteaddr,
+                'UserList.Hostname' => $user->user_hostname,
+                'UserList.Datetime' => $user->user_lastlogin,
+                'UserList.TimeAgo' => SucuriScan::timeAgo($user->user_lastlogin),
+                'UserList.UserURL' => SucuriScan::adminURL('user-edit.php?user_id=' . $user->user_id),
+            );
+
+            if ($user->user_exists) {
+                $user_dataset['UserList.Username'] = $user->user_login;
+                $user_dataset['UserList.Displayname'] = $user->display_name;
+                $user_dataset['UserList.Email'] = $user->user_email;
+                $user_dataset['UserList.Registered'] = $user->user_registered;
+            }
+
+            $params['UserList'] .= SucuriScanTemplate::getSnippet('lastlogins-all', $user_dataset);
+        }
+
+        // Generate the pagination for the list.
+        $params['UserList.Pagination'] = SucuriScanTemplate::pagination(
+            '%%SUCURI.URL.Lastlogins%%',
+            $last_logins['total'],
+            $max_per_page
+        );
+    }
 
     return SucuriScanTemplate::getSection('lastlogins-all', $params);
 }
@@ -156,7 +167,7 @@ function sucuriscan_lastlogins_datastore_filepath()
  * Check whether the user's last login datastore file exists or not, if not then
  * we try to create the file and check again the success of the operation.
  *
- * @return string Absolute filepath where the user's last login information is stored.
+ * @return string|bool Path to the storage file if exists, false otherwise.
  */
 function sucuriscan_lastlogins_datastore_exists()
 {
@@ -177,7 +188,7 @@ function sucuriscan_lastlogins_datastore_exists()
  * Check whether the user's last login datastore file is writable or not, if not
  * we try to set the right permissions and check again the success of the operation.
  *
- * @return boolean Whether the user's last login datastore file is writable or not.
+ * @return string|bool Path to the storage file if writable, false otherwise.
  */
 function sucuriscan_lastlogins_datastore_is_writable()
 {
@@ -200,7 +211,7 @@ function sucuriscan_lastlogins_datastore_is_writable()
  * Check whether the user's last login datastore file is readable or not, if not
  * we try to set the right permissions and check again the success of the operation.
  *
- * @return boolean Whether the user's last login datastore file is readable or not.
+ * @return string|bool Path to the storage file if readable, false otherwise.
  */
 function sucuriscan_lastlogins_datastore_is_readable()
 {
@@ -217,8 +228,7 @@ if (!function_exists('sucuri_set_lastlogin')) {
     /**
      * Add a new user session to the list of last user logins.
      *
-     * @param  string $user_login The name of the user account involved in the operation.
-     * @return void
+     * @param string $user_login The name of the user account involved in the operation.
      */
     function sucuriscan_set_lastlogin($user_login = '')
     {
@@ -236,7 +246,11 @@ if (!function_exists('sucuri_set_lastlogin')) {
                 'user_lastlogin' => current_time('mysql')
             );
 
-            @file_put_contents($datastore_filepath, json_encode($login_info)."\n", FILE_APPEND);
+            @file_put_contents(
+                $datastore_filepath,
+                json_encode($login_info) . "\n",
+                FILE_APPEND
+            );
         }
     }
     add_action('wp_login', 'sucuriscan_set_lastlogin', 50);
@@ -248,10 +262,10 @@ if (!function_exists('sucuri_set_lastlogin')) {
  * The results of this operation can be filtered by specific user identifiers,
  * or limiting the quantity of entries.
  *
- * @param  integer $limit   How many entries will be returned from the operation.
- * @param  integer $offset  Initial point where the logs will be start counting.
- * @param  integer $user_id Optional user identifier to filter the results.
- * @return array            The list of all the user logins, and total of entries registered.
+ * @param int $limit How many entries will be returned from the operation.
+ * @param int $offset Initial point where the logs will be start counting.
+ * @param int $user_id Optional user identifier to filter the results.
+ * @return array|bool All user logins, false on failure.
  */
 function sucuriscan_get_logins($limit = 10, $offset = 0, $user_id = 0)
 {
@@ -263,16 +277,14 @@ function sucuriscan_get_logins($limit = 10, $offset = 0, $user_id = 0)
     );
 
     if (!$datastore_filepath) {
-        SucuriScan::throwException('Invalid last-logins storage file');
-        return $last_logins;
+        return SucuriScan::throwException('Invalid last-logins storage file');
     }
 
     $parsed_lines = 0;
     $data_lines = SucuriScanFileInfo::fileLines($datastore_filepath);
 
     if (!$data_lines) {
-        SucuriScan::throwException('No last-logins data is available');
-        return $last_logins;
+        return SucuriScan::throwException('No last-logins data is available');
     }
 
     /**
@@ -355,10 +367,10 @@ if (!function_exists('sucuri_login_redirect')) {
      * Hook for the wp-login action to redirect the user to a specific URL after
      * his successfully login to the administrator interface.
      *
-     * @param  string  $redirect_to The redirect destination URL.
-     * @param  object  $request     The requested redirect destination URL passed as a parameter.
-     * @param  boolean $user        WP_User object if login was successful, WP_Error object otherwise.
-     * @return string               URL where the browser must be redirected to.
+     * @param string $redirect_to The redirect destination URL.
+     * @param object $request The requested redirect destination URL passed as a parameter.
+     * @param bool $user WP_User object if login was successful, WP_Error object otherwise.
+     * @return string URL where the browser must be redirected to.
      */
     function sucuriscan_login_redirect($redirect_to = '', $request = null, $user = false)
     {
@@ -382,8 +394,6 @@ if (!function_exists('sucuri_login_redirect')) {
 if (!function_exists('sucuri_get_user_lastlogin')) {
     /**
      * Display the last user login at the top of the admin interface.
-     *
-     * @return void
      */
     function sucuriscan_get_user_lastlogin()
     {
@@ -395,7 +405,10 @@ if (!function_exists('sucuri_get_user_lastlogin')) {
             // Select the penultimate entry, not the last one.
             $last_logins = sucuriscan_get_logins(2, 0, $current_user->ID);
 
-            if (isset($last_logins['entries'][1])) {
+            if ($last_logins
+                && isset($last_logins['entries'])
+                && isset($last_logins['entries'][1])
+            ) {
                 $row = $last_logins['entries'][1];
                 $page_url = SucuriScanTemplate::getUrl('lastlogins');
                 $message = sprintf(

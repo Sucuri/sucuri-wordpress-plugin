@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Code related to the settings-webinfo.php interface.
+ *
+ * @package Sucuri Security
+ * @subpackage settings-webinfo.php
+ * @copyright Since 2010 Sucuri Inc.
+ */
+
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     if (!headers_sent()) {
         /* Report invalid access if possible. */
@@ -11,7 +19,7 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
 /**
  * Gather information from the server, database engine, and PHP interpreter.
  *
- * @return array A list of pseudo-variables and values that will replace them in the HTML template.
+ * @return string HTML for the system info page.
  */
 function sucuriscan_settings_webinfo_details()
 {
@@ -199,7 +207,7 @@ function sucuriscan_settings_webinfo_wpconfig()
  */
 function sucuriscan_settings_webinfo_htaccess()
 {
-    $htaccess_path = SucuriScan::getHtaccessPath();
+    $htaccess = SucuriScan::getHtaccessPath();
     $params = array(
         'HTAccess.Content' => '',
         'HTAccess.TextareaVisible' => 'hidden',
@@ -209,15 +217,15 @@ function sucuriscan_settings_webinfo_htaccess()
         'HTAccess.Fpath' => 'unknown',
     );
 
-    if ($htaccess_path) {
-        $htaccess_rules = @file_get_contents($htaccess_path);
+    if ($htaccess) {
+        $rules = SucuriScanFileInfo::fileContent($htaccess);
 
         $params['HTAccess.TextareaVisible'] = 'visible';
-        $params['HTAccess.Content'] = $htaccess_rules;
-        $params['HTAccess.Fpath'] = $htaccess_path;
+        $params['HTAccess.Content'] = $rules;
+        $params['HTAccess.Fpath'] = $htaccess;
         $params['HTAccess.FoundVisible'] = 'visible';
 
-        if (sucuriscan_htaccess_is_standard($htaccess_rules)) {
+        if (sucuriscan_htaccess_is_standard($rules)) {
             $params['HTAccess.StandardVisible'] = 'visible';
         }
     } else {
@@ -234,17 +242,14 @@ function sucuriscan_settings_webinfo_htaccess()
  * (generally based on mod_deflate) to compress and/or generate static files for
  * cache.
  *
- * @param  string  $rules Content of the main htaccess file.
- * @return boolean        True if the htaccess has the standard rules, false otherwise.
+ * @param string $rules Content of the main htaccess file.
+ * @return bool True if the htaccess has the standard rules, false otherwise.
  */
-function sucuriscan_htaccess_is_standard($rules = false)
+function sucuriscan_htaccess_is_standard($rules = '')
 {
-    if ($rules === false) {
-        $rules = '';
-        $htaccess_path = SucuriScan::getHtaccessPath();
-
-        if ($htaccess_path) {
-            $rules = @file_get_contents($htaccess_path);
+    if (!$rules) {
+        if ($htaccess = SucuriScan::getHtaccessPath()) {
+            $rules = SucuriScanFileInfo::fileContent($htaccess);
         }
     }
 

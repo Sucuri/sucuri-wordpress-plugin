@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Code related to the globals.php interface.
+ *
+ * @package Sucuri Security
+ * @subpackage globals.php
+ * @copyright Since 2010 Sucuri Inc.
+ */
+
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     if (!headers_sent()) {
         /* Report invalid access if possible. */
@@ -100,11 +108,6 @@ if (defined('SUCURISCAN')) {
         '480' => '480 failed logins per hour',
     );
 
-    $sucuriscan_api_handlers = array(
-        'curl' => 'Curl - libcurl',
-        'socket' => 'Socket - fsockopen',
-    );
-
     $sucuriscan_no_notices_in = array(
         /* Value of the page parameter to ignore. */
     );
@@ -150,13 +153,16 @@ if (defined('SUCURISCAN')) {
         add_action('admin_init', 'SucuriScanInterface::noticeAfterUpdate');
     }
 
-    /**
-     * Display extension menu and submenu items in the correct interface. For single
-     * site installations the menu items can be displayed normally as always but for
-     * multisite installations the menu items must be available only in the network
-     * panel and hidden in the administration panel of the subsites.
-     */
     if (function_exists('add_action')) {
+        /**
+         * Display extension menu and submenu items in the correct interface.
+         * For single site installations the menu items can be displayed
+         * normally as always but for multisite installations the menu items
+         * must be available only in the network panel and hidden in the
+         * administration panel of the subsites.
+         *
+         * @codeCoverageIgnore
+         */
         function sucuriscan_add_menu_page()
         {
             global $sucuriscan_pages;
@@ -255,5 +261,5 @@ if (defined('SUCURISCAN')) {
      * of certain files is going to stay as it is due to the configuration on the
      * edge of the servers.
      */
-    add_action('save_post', 'sucuriscanFirewallClearCacheSavePost');
+    add_action('save_post', 'SucuriScanFirewall::clearCacheHook');
 }

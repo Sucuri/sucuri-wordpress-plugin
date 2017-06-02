@@ -3,9 +3,9 @@
 Plugin Name: Sucuri Security - Auditing, Malware Scanner and Hardening
 Plugin URI: https://wordpress.sucuri.net/
 Description: The <a href="https://sucuri.net/" target="_blank">Sucuri</a> plugin provides the website owner the best Activity Auditing, SiteCheck Remote Malware Scanning, Effective Security Hardening and Post-Hack features. SiteCheck will check for malware, spam, blacklisting and other security issues like .htaccess redirects, hidden eval code, etc. The best thing about it is it's completely free.
-Author: Sucuri, INC
+Author: Sucuri Inc.
+Author URI: https://sucuri.net/
 Version: 1.8.3
-Author URI: https://sucuri.net
 */
 
 
@@ -19,11 +19,12 @@ Author URI: https://sucuri.net
  * prevent unwanted access to code with unmet dependencies.
  *
  * @package   Sucuri Security
- * @author    Daniel Cid   <dcid@sucuri.net>
- * @copyright Since 2010-2015 Sucuri Inc.
- * @license   Released under the GPL - see LICENSE file for details.
- * @link      https://wordpress.sucuri.net/
+ * @author    Daniel Cid <dcid@sucuri.net>
+ * @license   Released under the GPL.
+ * @copyright Since 2010 Sucuri Inc.
  * @since     File available since Release 0.1
+ * @link      https://wordpress.org/plugins/sucuri-scanner/
+ * @link      https://wordpress.sucuri.net/
  */
 define('SUCURISCAN_INIT', true);
 
@@ -46,13 +47,20 @@ $sucuriscan_dependencies = array(
     'wp_remote_post',
 );
 
-// Terminate execution if any of the functions mentioned above is not defined.
+/* terminate execution if dependencies are not met */
 foreach ($sucuriscan_dependencies as $dependency) {
     if (!function_exists($dependency)) {
         /* Report invalid access if possible. */
         header('HTTP/1.1 403 Forbidden');
         exit(0);
     }
+}
+
+/* check if installation path is available */
+if (!defined('ABSPATH')) {
+    /* Report invalid access if possible. */
+    header('HTTP/1.1 403 Forbidden');
+    exit(0);
 }
 
 /**
@@ -154,9 +162,9 @@ define('SUCURISCAN_AUDITLOGS_PER_PAGE', 50);
 define('SUCURISCAN_MAX_PAGINATION_BUTTONS', 20);
 
 /**
- * The minimum quantity of seconds to wait before each filesystem scan.
+ * Frequency of the file system scans in seconds.
  */
-define('SUCURISCAN_MINIMUM_RUNTIME', 10800);
+define('SUCURISCAN_SCANNER_FREQUENCY', 10800);
 
 /**
  * The life time of the cache for the results of the SiteCheck scans.
@@ -172,11 +180,6 @@ define('SUCURISCAN_GET_PLUGINS_LIFETIME', 1800);
  * The maximum execution time of a HTTP request before timeout.
  */
 define('SUCURISCAN_MAX_REQUEST_TIMEOUT', 60);
-
-/**
- * The maximum execution time for SiteCheck requests before timeout.
- */
-define('SUCURISCAN_MAX_SITECHECK_TIMEOUT', 60);
 
 /**
  * Sets the text that will preceed the admin notices.
@@ -211,13 +214,11 @@ require_once('src/interface.lib.php');
 require_once('src/auditlogs.lib.php');
 require_once('src/sitecheck.lib.php');
 require_once('src/integrity.lib.php');
+require_once('src/firewall.lib.php');
 require_once('src/installer-skin.lib.php');
 
 /* Load page and ajax handlers */
 require_once('src/pagehandler.php');
-
-/* Load handlers for main pages. */
-require_once('src/firewall.php');
 
 /* Load handlers for main pages (lastlogins). */
 require_once('src/lastlogins.php');
@@ -230,7 +231,6 @@ require_once('src/settings.php');
 require_once('src/settings-general.php');
 require_once('src/settings-scanner.php');
 require_once('src/settings-integrity.php');
-require_once('src/settings-sitecheck.php');
 require_once('src/settings-hardening.php');
 require_once('src/settings-posthack.php');
 require_once('src/settings-alerts.php');
@@ -240,19 +240,41 @@ require_once('src/settings-webinfo.php');
 /* Load global variables and triggers */
 require_once('src/globals.php');
 
+/**
+ * Uninstalls the plugin, its settings and reverts the hardening.
+ *
+ * When the user decides to deactivate and/or uninstall the plugin it will call
+ * this method to delete all traces of data inserted into the database by older
+ * versions of the code, will remove the scheduled task, will delte the options
+ * inserted into the sub-database associated to a multi-site installation, will
+ * revert the hardening applied to the core directories, and will delete all the
+ * security logs, cache and additional data stored in the storage directory.
+ */
 function sucuriscan_deactivate()
 {
-    /* Remove scheduled task from the system */
+    global $wpdb;
+
+    if ($wpdb) {
+        /* Delete all the possible plugin related options from the database */
+        $sql = "SELECT * FROM {$wpdb->options} WHERE option_name LIKE 'sucuriscan%'";
+        $options = $wpdb->get_results($sql);
+        foreach ($options as $option) {
+            delete_site_option($option->option_name);
+            delete_option($option->option_name);
+        }
+    }
+
+    /* Delete scheduled task from the system */
     wp_clear_scheduled_hook('sucuriscan_scheduled_scan');
 
-    /* Remove settings from the database if they exist */
+    /* Delete settings from the database if they exist */
     $options = SucuriScanOption::getDefaultOptionNames();
     foreach ($options as $option_name) {
         delete_site_option($option_name);
         delete_option($option_name);
     }
 
-    /* Remove hardening in standard directories */
+    /* Delete hardening in standard directories */
     SucuriScanHardening::dewhitelist('ms-files.php', 'wp-includes');
     SucuriScanHardening::dewhitelist('wp-tinymce.php', 'wp-includes');
     SucuriScanHardening::unhardenDirectory(WP_CONTENT_DIR);
@@ -260,7 +282,7 @@ function sucuriscan_deactivate()
     SucuriScanHardening::unhardenDirectory(ABSPATH . '/wp-includes');
     SucuriScanHardening::unhardenDirectory(ABSPATH . '/wp-admin');
 
-    /* Remove cache files from disk */
+    /* Delete cache files from disk */
     $fifo = new SucuriScanFileInfo();
     $fifo->ignore_files = false;
     $fifo->ignore_directories = false;

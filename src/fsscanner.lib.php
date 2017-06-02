@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Code related to the fsscanner.lib.php interface.
+ *
+ * @package Sucuri Security
+ * @subpackage fsscanner.lib.php
+ * @copyright Since 2010 Sucuri Inc.
+ */
+
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     if (!headers_sent()) {
         /* Report invalid access if possible. */
@@ -22,8 +30,8 @@ class SucuriScanFSScanner extends SucuriScan
     /**
      * Retrieve the last time when the filesystem scan was ran.
      *
-     * @param  boolean $format Whether the timestamp must be formatted as date/time or not.
-     * @return string          The timestamp of the runtime, or an string with the date/time.
+     * @param bool $format Whether the timestamp must be formatted as date/time or not.
+     * @return string The timestamp of the runtime, or an string with the date/time.
      */
     public static function getFilesystemRuntime($format = false)
     {
@@ -37,51 +45,39 @@ class SucuriScanFSScanner extends SucuriScan
             return $runtime;
         }
 
-        if ($format) {
-            return 'Unknown';
-        }
-
-        return false;
+        return 'Unknown';
     }
 
     /**
      * Add a new directory path to the list of ignored paths.
      *
-     * @param  string  $directory_path The (full) absolute path of a directory.
-     * @return boolean                 TRUE if the directory path was added to the list, FALSE otherwise.
+     * @param string $path The (full) absolute path of a directory.
+     * @return bool TRUE if the directory path was added to the list, FALSE otherwise.
      */
-    public static function ignoreDirectory($directory_path = '')
+    public static function ignoreDirectory($path = '')
     {
         $cache = new SucuriScanCache('ignorescanning');
-
-        // Use the checksum of the directory path as the cache key.
-        $cache_key = md5($directory_path);
-        $resource_type = SucuriScanFileInfo::getResourceType($directory_path);
+        $resource_type = SucuriScanFileInfo::getResourceType($path);
         $cache_value = array(
-            'directory_path' => $directory_path,
+            'directory_path' => $path,
             'ignored_at' => self::localTime(),
             'resource_type' => $resource_type,
         );
-        $cached = $cache->add($cache_key, $cache_value);
 
-        return $cached;
+        return $cache->add(md5($path), $cache_value);
     }
 
     /**
      * Remove a directory path from the list of ignored paths.
      *
-     * @param  string  $directory_path The (full) absolute path of a directory.
-     * @return boolean                 TRUE if the directory path was removed to the list, FALSE otherwise.
+     * @param string $path The (full) absolute path of a directory.
+     * @return bool TRUE if the directory path was removed to the list, FALSE otherwise.
      */
-    public static function unignoreDirectory($directory_path = '')
+    public static function unignoreDirectory($path = '')
     {
         $cache = new SucuriScanCache('ignorescanning');
 
-        // Use the checksum of the directory path as the cache key.
-        $cache_key = md5($directory_path);
-        $removed = $cache->delete($cache_key);
-
-        return $removed;
+        return $cache->delete(md5($path));
     }
 
     /**
@@ -163,7 +159,7 @@ class SucuriScanFSScanner extends SucuriScan
         $file_info = new SucuriScanFileInfo();
         $file_info->ignore_files = true;
         $file_info->ignore_directories = true;
-        $directory_list = $file_info->getDiretoriesOnly(ABSPATH);
+        $directory_list = $file_info->getDirectoriesOnly(ABSPATH);
 
         if ($directory_list) {
             $response['is_not_ignored'] = $directory_list;

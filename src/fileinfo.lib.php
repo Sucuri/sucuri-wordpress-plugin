@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Code related to the fileinfo.lib.php interface.
+ *
+ * @package Sucuri Security
+ * @subpackage fileinfo.lib.php
+ * @copyright Since 2010 Sucuri Inc.
+ */
+
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     if (!headers_sent()) {
         /* Report invalid access if possible. */
@@ -74,8 +82,161 @@ class SucuriScanFileInfo extends SucuriScan
         $this->ignore_files = true;
         $this->ignore_directories = true;
         $this->ignored_directories = array();
-        $this->run_recursively = true;
         $this->skip_directories = true;
+        $this->run_recursively = true;
+    }
+
+    /**
+     * Checks if the file scanner is usable.
+     *
+     * @link https://www.php.net/manual/en/class.splfileobject.php
+     *
+     * @return bool True if PHP class "SplFileObject" is available.
+     */
+    public static function isSplAvailable()
+    {
+        return (bool) (class_exists('SplFileObject') && class_exists('FilesystemIterator'));
+    }
+
+    /**
+     * Ignores a file if the extension is not supported.
+     *
+     * Note: This is an approach that is intentionally naive.
+     *
+     * @param string $path Path to the file.
+     * @return True if the file must be ignored.
+     */
+    private function ignoreFile($path)
+    {
+        return (bool) (
+            $this->ignore_files
+            && strpos($path, '.js') === false
+            && strpos($path, '.css') === false
+            && strpos($path, '.txt') === false
+            && strpos($path, '.htm') === false
+            && strpos($path, '.php') === false
+            && strpos($path, '.ini') === false
+            && strpos($path, '.htaccess') === false
+        );
+    }
+
+    /**
+     * Ignores a folder if the extension is not supported.
+     *
+     * Note: This is an approach that is intentionally naive.
+     *
+     * @param string $path Path to the folder.
+     * @return True if the folder must be ignored.
+     */
+    private function ignoreFolder($path)
+    {
+        return (bool) ($this->ignore_directories && (
+            strpos($path, 'wp-content/backup') !== false
+            || strpos($path, 'wp-content/cache') !== false
+            || strpos($path, 'wp-content/uploads') !== false
+            || strpos($path, 'wp-content/w3tc') !== false
+        ));
+    }
+
+    /**
+     * Ignores files specified by the admins.
+     *
+     * @param string $path Path to the file or directory.
+     * @return boolean True if the path has to be ignored.
+     */
+    private function isIgnoredPath($path)
+    {
+        $shouldBeIgnored = false;
+
+        if (is_array($this->ignored_directories)
+            && isset($this->ignored_directories['directories'])
+            && !empty($this->ignored_directories['directories'])
+        ) {
+            foreach ($this->ignored_directories['directories'] as $ignored) {
+                if (strpos($path, $ignored) !== false) {
+                    $shouldBeIgnored = true;
+                    break;
+                }
+            }
+        }
+
+        return $shouldBeIgnored;
+    }
+
+    /**
+     * Reads a directory and retrieves all its files.
+     *
+     * @see http://www.php.net/manual/en/class.recursivedirectoryiterator.php
+     * @see http://php.net/manual/en/class.recursivedirectoryiterator.php
+     * @see http://php.net/manual/en/class.filesystemiterator.php
+     * @see http://php.net/manual/en/class.directoryiterator.php
+     * @see http://php.net/manual/en/class.splfileinfo.php
+     *
+     * @param string $directory Where to execute the scanner.
+     * @param string $filterby Either "file" or "directory".
+     * @return array List of files in the specified directory.
+     */
+    public function getDirectoryTree($directory = '', $filterby = 'file')
+    {
+        $files = array();
+
+        if (is_dir($directory)) {
+            $objects = array();
+
+            $this->ignored_directories = SucuriScanFSScanner::getIgnoredDirectories();
+
+            // @codeCoverageIgnoreStart
+            try {
+                if ($this->run_recursively) {
+                    $flags = FilesystemIterator::KEY_AS_PATHNAME
+                        | FilesystemIterator::CURRENT_AS_FILEINFO
+                        | FilesystemIterator::SKIP_DOTS
+                        | FilesystemIterator::UNIX_PATHS;
+                    $objects = new RecursiveIteratorIterator(
+                        new RecursiveDirectoryIterator($directory, $flags),
+                        RecursiveIteratorIterator::SELF_FIRST,
+                        RecursiveIteratorIterator::CATCH_GET_CHILD
+                    );
+                } else {
+                    $objects = new DirectoryIterator($directory);
+                }
+            } catch (RuntimeException $exception) {
+                SucuriScanEvent::reportException($exception);
+            }
+            // @codeCoverageIgnoreEnd
+
+            foreach ($objects as $fifo) {
+                $filepath = $fifo->getRealPath();
+
+                /* check files and directories */
+                if ($this->isIgnoredPath($filepath)) {
+                    continue;
+                }
+
+                /* check only files */
+                if ($fifo->isFile()
+                    && $filterby === 'file'
+                    && !$this->ignoreFile($filepath)
+                    && !$this->ignoreFolder($filepath)
+                ) {
+                    $files[] = $filepath;
+                    continue;
+                }
+
+                /* check only directories */
+                if ($fifo->isDir()
+                    && $filterby === 'directory'
+                    && !$this->ignoreFolder($filepath)
+                ) {
+                    $files[] = $filepath;
+                    continue;
+                }
+            }
+
+            sort($files);
+        }
+
+        return array_map(array('SucuriScan', 'fixPath'), $files);
     }
 
     /**
@@ -84,9 +245,9 @@ class SucuriScanFileInfo extends SucuriScan
      * and md5sum of that file. Some folders and files will be ignored depending
      * on some rules defined by the developer.
      *
-     * @param  string  $directory Parent directory where the filesystem scan will start.
-     * @param  boolean $as_array  Whether the result of the operation will be returned as an array or string.
-     * @return array              List of files in the main and subdirectories of the folder specified.
+     * @param string $directory Where to execute the scanner.
+     * @param bool $as_array Return the file list as an array.
+     * @return array|string|bool List of files in this project.
      */
     public function getDirectoryTreeMd5($directory = '', $as_array = false)
     {
@@ -99,8 +260,7 @@ class SucuriScanFileInfo extends SucuriScan
         }
 
         if (!$files) {
-            self::throwException('No files were found');
-            return $signatures;
+            return self::throwException('No files were found');
         }
 
         sort($files); /* sort file list alphabetically */
@@ -129,247 +289,33 @@ class SucuriScanFileInfo extends SucuriScan
     }
 
     /**
-     * Retrieve a list with all the files contained in the main and subdirectories
-     * of the folder specified. Some folders and files will be ignored depending
-     * on some rules defined by the developer.
+     * Retrieves a list of unique directory paths.
      *
-     * @param  string $directory Parent directory where the filesystem scan will start.
-     * @return array             List of files in the main and subdirectories of the folder specified.
+     * @param string $directory Directory path to scan.
+     * @return array A list of unique directory paths.
      */
-    public function getDirectoryTree($directory = '')
+    public function getDirectoriesOnly($directory = '')
     {
-        if (!file_exists($directory) && !is_dir($directory)) {
-            return false;
-        }
+        $tree = $this->getDirectoryTree($directory, 'directory');
 
-        $tree = array();
-
-        $this->ignored_directories = SucuriScanFSScanner::getIgnoredDirectories();
-
-        $tree = $this->getDirectoryTreeWithSpl($directory);
-
-        if (!is_array($tree) || empty($tree)) {
-            return false;
-        }
-
-        sort($tree); /* sort directory tree alphabetically */
-
-        return array_map(array('SucuriScan', 'fixPath'), $tree);
+        return array_merge(array($directory), $tree);
     }
 
     /**
-     * Check whether the built-in class SplFileObject is available in the system
-     * or not, it is required to have PHP >= 5.1.0. The SplFileObject class offers
-     * an object oriented interface for a file.
+     * Deletes a directory recursively.
      *
-     * @link https://www.php.net/manual/en/class.splfileobject.php
-     *
-     * @return boolean Whether the PHP class "SplFileObject" is available or not.
-     */
-    public static function isSplAvailable()
-    {
-        return (bool) (class_exists('SplFileObject') && class_exists('FilesystemIterator'));
-    }
-
-    /**
-     * Retrieve a list with all the files contained in the main and subdirectories
-     * of the folder specified. Some folders and files will be ignored depending
-     * on some rules defined by the developer.
-     *
-     * @link https://www.php.net/manual/en/class.recursivedirectoryiterator.php
-     * @see  RecursiveDirectoryIterator extends FilesystemIterator
-     * @see  FilesystemIterator         extends DirectoryIterator
-     * @see  DirectoryIterator          extends SplFileInfo
-     * @see  SplFileInfo
-     *
-     * @param  string $directory Parent directory where the filesystem scan will start.
-     * @return array             List of files in the main and subdirectories of the folder specified.
-     */
-    private function getDirectoryTreeWithSpl($directory = '')
-    {
-        $files = array();
-        $filepath = @realpath($directory);
-        $objects = array();
-
-        // Exception for directory name must not be empty.
-        if (!$filepath) {
-            self::throwException('Directory path is invalid');
-            return false;
-        }
-
-        try {
-            if ($this->run_recursively) {
-                $flags = FilesystemIterator::KEY_AS_PATHNAME
-                    | FilesystemIterator::CURRENT_AS_FILEINFO
-                    | FilesystemIterator::SKIP_DOTS
-                    | FilesystemIterator::UNIX_PATHS;
-                $objects = new RecursiveIteratorIterator(
-                    new RecursiveDirectoryIterator($filepath, $flags),
-                    RecursiveIteratorIterator::SELF_FIRST,
-                    RecursiveIteratorIterator::CATCH_GET_CHILD
-                );
-            } else {
-                $objects = new DirectoryIterator($filepath);
-            }
-        } catch (RuntimeException $exception) {
-            SucuriScanEvent::reportException($exception);
-        }
-
-        foreach ($objects as $filepath => $fileinfo) {
-            $filename = $fileinfo->getFilename();
-
-            if ($this->ignoreFolderPath(null, $filename)) {
-                /* skip irrelevant files from the scan */
-                continue;
-            }
-
-            if ($this->skip_directories && $fileinfo->isDir()) {
-                /* skip irrelevant directories from the scan */
-                continue;
-            }
-
-            if ($this->run_recursively) {
-                $directory = dirname($filepath);
-            } else {
-                $directory = $fileinfo->getPath();
-                $filepath = $directory . '/' . $filename;
-            }
-
-            if ($this->ignoreFolderPath($directory, $filename)
-                || $this->ignoreFilePath($filename)
-            ) {
-                continue;
-            }
-
-            $files[] = $filepath;
-        }
-
-        return $files;
-    }
-
-    /**
-     * Skip some specific directories and file paths from the filesystem scan.
-     *
-     * @param  string  $directory Directory where the scanner is located at the moment.
-     * @param  string  $filename  Name of the folder or file being scanned at the moment.
-     * @return boolean            Either TRUE or FALSE representing that the scan should ignore this folder or not.
-     */
-    private function ignoreFolderPath($directory = '', $filename = '')
-    {
-        // Ignoring current and parent folders.
-        if ($filename == '.' || $filename == '..') {
-            return true;
-        }
-
-        if ($this->ignore_directories) {
-            // Ignore directories based on a common regular expression.
-            $filepath = @realpath($directory . '/' . $filename);
-            $pattern = '/\/wp-content\/(uploads|cache|backup|w3tc)/';
-
-            /* silence regexp match if the file is not readable */
-            if (@preg_match($pattern, $filepath)) {
-                return true;
-            }
-
-            // Ignore directories specified by the administrator.
-            if (!empty($this->ignored_directories)) {
-                foreach ($this->ignored_directories['directories'] as $ignored_dir) {
-                    if (strpos($directory, $ignored_dir) !== false
-                        || strpos($filepath, $ignored_dir) !== false
-                    ) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Skip some specific files from the filesystem scan.
-     *
-     * @param  string  $filename Name of the folder or file being scanned at the moment.
-     * @return boolean           Either TRUE or FALSE representing that the scan should ignore this filename or not.
-     */
-    private function ignoreFilePath($filename = '')
-    {
-        if (!$this->ignore_files) {
-            return false;
-        }
-
-        // Ignoring backup files from our clean ups.
-        if (strpos($filename, '_sucuribackup.') !== false) {
-            return true;
-        }
-
-        // Ignore files specified by the administrator.
-        if (!empty($this->ignored_directories)) {
-            foreach ($this->ignored_directories['directories'] as $ignored_dir) {
-                if (strpos($ignored_dir, $filename) !== false) {
-                    return true;
-                }
-            }
-        }
-
-        // Any file maching one of these rules WILL NOT be ignored.
-        if (( strpos($filename, '.php') !== false) ||
-            ( strpos($filename, '.htm') !== false) ||
-            ( strpos($filename, '.js') !== false) ||
-            ( strcmp($filename, '.htaccess') == 0     ) ||
-            ( strcmp($filename, 'php.ini') == 0     )
-        ) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Retrieve a list of unique directory paths.
-     *
-     * @param  array $dir_tree A list of files under a directory.
-     * @return array           A list of unique directory paths.
-     */
-    public function getDiretoriesOnly($dir_tree = array())
-    {
-        $dirs = array();
-
-        if (is_string($dir_tree)) {
-            $dir_tree = $this->getDirectoryTree($dir_tree);
-        }
-
-        if (is_array($dir_tree) && !empty($dir_tree)) {
-            foreach ($dir_tree as $filepath) {
-                $dir_path = dirname($filepath);
-
-                if (!in_array($dir_path, $dirs)) {
-                    if (is_array($this->ignored_directories)
-                        && array_key_exists('directories', $this->ignored_directories)
-                        && is_array($this->ignored_directories['directories'])
-                        && in_array($dir_path, $this->ignored_directories['directories'])
-                    ) {
-                        continue;
-                    }
-
-                    $dirs[] = $dir_path;
-                }
-            }
-        }
-
-        return $dirs;
-    }
-
-    /**
-     * Remove a directory recursively.
-     *
-     * @param  string  $directory Path of the existing directory that will be removed.
-     * @return boolean            TRUE if all the files and folder inside the directory were removed.
+     * @param string $directory Path of the existing directory that will be removed.
+     * @return bool TRUE if all the files and folder inside the directory were removed.
      */
     public function removeDirectoryTree($directory = '')
     {
+        /* force complete scan */
+        $this->ignore_files = false;
+        $this->skip_directories = false;
+        $this->ignore_directories = false;
+
         /* delete all the regular files and symbolic links */
-        if ($dir_tree = $this->getDirectoryTree($directory)) {
+        if ($dir_tree = $this->getDirectoryTree($directory, 'file')) {
             foreach ($dir_tree as $filename) {
                 if (is_file($filename) || is_link($filename)) {
                     @unlink($filename);
@@ -381,9 +327,9 @@ class SucuriScanFileInfo extends SucuriScan
             /**
              * Evaluates the difference between the length of two strings.
              *
-             * @param  string  $a First string of characters that will be measured.
-             * @param  string  $b Second string of characters that will be measured.
-             * @return integer    The difference in length between the two strings.
+             * @param string $a First string of characters that will be measured.
+             * @param string $b Second string of characters that will be measured.
+             * @return int The difference in length between the two strings.
              */
             function sucuriscanStrlenDiff($a = '', $b = '')
             {
@@ -391,8 +337,8 @@ class SucuriScanFileInfo extends SucuriScan
             }
         }
 
-        /* delete all directories starting from the deepest level */
-        if ($dir_tree = $this->getDirectoryTree($directory)) {
+        /* delete directories starting from the deepest level */
+        if ($dir_tree = $this->getDirectoryTree($directory, 'directory')) {
             $dir_tree = array_unique($dir_tree);
             usort($dir_tree, 'sucuriscanStrlenDiff');
             foreach ($dir_tree as $dir_path) {
@@ -403,7 +349,7 @@ class SucuriScanFileInfo extends SucuriScan
         @rmdir($directory); /* attempt to delete parent */
 
         /* check if we deleted all the files and sub-directories */
-        return (bool) ($this->getDirectoryTree($directory) === false);
+        return (bool) !($this->getDirectoryTree($directory));
     }
 
     /**
@@ -414,25 +360,21 @@ class SucuriScanFileInfo extends SucuriScan
      * equals in order to avoid ambiguous results when the file exists, is
      * readable, but is empty.
      *
-     * @param  string $fpath Relative or absolute path of the file.
-     * @return string        Content of the file, false if not accessible.
+     * @param string $path Relative or absolute path of the file.
+     * @return string Content of the file, false if not accessible.
      */
-    public static function fileContent($fpath = '')
+    public static function fileContent($path = '')
     {
-        if (!file_exists($fpath) || !is_readable($fpath)) {
-            return false;
-        }
-
-        return @file_get_contents($fpath);
+        return (string) (is_readable($path) ? @file_get_contents($path) : '');
     }
 
     /**
-     * Return the lines of a file as an array, it will automatically remove the new
-     * line characters from the end of each line, and skip empty lines from the
-     * list.
+     * Returns the lines of a file as an array, it will automatically remove the
+     * new line characters from the end of each line, and skip empty lines from
+     * the list.
      *
-     * @param  string $filepath Path to the file.
-     * @return array            An array where each element is a line in the file.
+     * @param string $filepath Path to the file.
+     * @return array An array where each element is a line in the file.
      */
     public static function fileLines($filepath = '')
     {
@@ -442,8 +384,8 @@ class SucuriScanFileInfo extends SucuriScan
     /**
      * Tells whether the filename is a directory, symbolic link, or file.
      *
-     * @param  string $path Path to the file.
-     * @return string       Type of resource: dir, link, file.
+     * @param string $path Path to the file.
+     * @return string Type of resource: dir, link, file.
      */
     public static function getResourceType($path = '')
     {

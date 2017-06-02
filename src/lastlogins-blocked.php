@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Code related to the lastlogins-blocked.php interface.
+ *
+ * @package Sucuri Security
+ * @subpackage lastlogins-blocked.php
+ * @copyright Since 2010 Sucuri Inc.
+ */
+
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     if (!headers_sent()) {
         /* Report invalid access if possible. */
@@ -8,8 +16,26 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     exit(1);
 }
 
+/**
+ * Allows the website owner to block usernames.
+ *
+ * An admin can select one or more usernames from the list of failed login and
+ * block them so the next time someone tries to log into the website with that
+ * username the operation will be stopped before the request hits the database.
+ *
+ * Notice that this feature does not allows the website owner to block requests
+ * coming from a specific IP address. This is because the feature already exists
+ * in the Firewall service and it also provides a better filtering mechanism for
+ * any other suspicious login attempt. We will encourage people to leverage the
+ * power of the Firewall.
+ */
 class SucuriScanBlockedUsers extends SucuriScanLastLogins
 {
+    /**
+     * Renders the page with a list of blocked usernames.
+     *
+     * @return string HTML code with a list of blocked usernames.
+     */
     public static function page()
     {
         $output = array();
@@ -45,6 +71,11 @@ class SucuriScanBlockedUsers extends SucuriScanLastLogins
         return SucuriScanTemplate::getSection('lastlogins-blockedusers', $output);
     }
 
+    /**
+     * Blocks one or more usernames.
+     *
+     * @param array $users List of usernames.
+     */
     public static function block($users = array())
     {
         if (is_array($users) && !empty($users)) {
@@ -70,6 +101,11 @@ class SucuriScanBlockedUsers extends SucuriScanLastLogins
         }
     }
 
+    /**
+     * Unblocks one or more usernames.
+     *
+     * @param array $users List of usernames.
+     */
     public static function unblock($users = array())
     {
         if (is_array($users) && !empty($users)) {
@@ -86,6 +122,14 @@ class SucuriScanBlockedUsers extends SucuriScanLastLogins
         }
     }
 
+    /**
+     * Stops an user login attempt.
+     *
+     * This method will run right after the user submits the login form. We will
+     * check to see if the username has been blocked by an admin and proceed
+     * according to the expected behavior. Either we will stop the request right
+     * here or let it propagate to the authentication checker.
+     */
     public static function blockUserLogin()
     {
         if (class_exists('SucuriScanRequest')
@@ -116,6 +160,13 @@ class SucuriScanBlockedUsers extends SucuriScanLastLogins
         }
     }
 
+    /**
+     * Finds the first login attempt of a specific username.
+     *
+     * @param array $logs List of failed login attempts.
+     * @param string $user Username to be inspected.
+     * @return int Timestamp of the first login attempt.
+     */
     private static function firstAttempt($logs, $user)
     {
         $attempts = array();
@@ -127,12 +178,19 @@ class SucuriScanBlockedUsers extends SucuriScanLastLogins
         }
 
         if (empty($attempts)) {
-            return null;
+            return -1;
         }
 
         return min($attempts);
     }
 
+    /**
+     * Finds the last login attempt of a specific username.
+     *
+     * @param array $logs List of failed login attempts.
+     * @param string $user Username to be inspected.
+     * @return int Timestamp of the last login attempt.
+     */
     private static function lastAttempt($logs, $user)
     {
         $attempts = array();
@@ -144,7 +202,7 @@ class SucuriScanBlockedUsers extends SucuriScanLastLogins
         }
 
         if (empty($attempts)) {
-            return null;
+            return -1;
         }
 
         return max($attempts);

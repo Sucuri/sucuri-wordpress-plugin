@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Code related to the settings-apiservice.php interface.
+ *
+ * @package Sucuri Security
+ * @subpackage settings-apiservice.php
+ * @copyright Since 2010 Sucuri Inc.
+ */
+
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     if (!headers_sent()) {
         /* Report invalid access if possible. */
@@ -8,10 +16,14 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     exit(1);
 }
 
+/**
+ * Returns the HTML to configure the API service status.
+ *
+ * @param bool $nonce True if the CSRF protection worked, false otherwise.
+ * @return string HTML for the API service status option.
+ */
 function sucuriscan_settings_apiservice_status($nonce)
 {
-    global $sucuriscan_api_handlers;
-
     $params = array();
 
     $params['ApiStatus.StatusNum'] = '1';
@@ -33,19 +45,6 @@ function sucuriscan_settings_apiservice_status($nonce)
             SucuriScanOption::updateOption(':api_service', $action_d);
             SucuriScanInterface::info($message);
         }
-
-        if ($api_handler = SucuriScanRequest::post(':api_handler')) {
-            if (array_key_exists($api_handler, $sucuriscan_api_handlers)) {
-                $message = 'API request handler set to <code>' . $api_handler . '</code>';
-
-                SucuriScanOption::updateOption(':api_handler', $api_handler);
-                SucuriScanEvent::reportWarningEvent($message);
-                SucuriScanEvent::notifyEvent('plugin_change', $message);
-                SucuriScanInterface::info($message);
-            } else {
-                SucuriScanInterface::error('Invalid value for the API request handler.');
-            }
-        }
     }
 
     $api_service = SucuriScanOption::getOption(':api_service');
@@ -59,15 +58,15 @@ function sucuriscan_settings_apiservice_status($nonce)
         $params['ApiStatus.ErrorVisibility'] = 'visible';
     }
 
-    $api_handler = SucuriScanOption::getOption(':api_handler');
-    $params['ApiHandlerOptions'] = SucuriScanTemplate::selectOptions(
-        $sucuriscan_api_handlers,
-        $api_handler
-    );
-
     return SucuriScanTemplate::getSection('settings-apiservice-status', $params);
 }
 
+/**
+ * Returns the HTML to configure the API service timeout.
+ *
+ * @param bool $nonce True if the CSRF protection worked, false otherwise.
+ * @return string HTML for the API service timeout option.
+ */
 function sucuriscan_settings_apiservice_timeout($nonce)
 {
     $params = array();
@@ -96,6 +95,11 @@ function sucuriscan_settings_apiservice_timeout($nonce)
     return SucuriScanTemplate::getSection('settings-apiservice-timeout', $params);
 }
 
+/**
+ * Returns the HTML to configure the API service proxy.
+ *
+ * @return string HTML for the API service proxy option.
+ */
 function sucuriscan_settings_apiservice_proxy()
 {
     $params = array(

@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Code related to the interface.lib.php interface.
+ *
+ * @package Sucuri Security
+ * @subpackage interface.lib.php
+ * @copyright Since 2010 Sucuri Inc.
+ */
+
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     if (!headers_sent()) {
         /* Report invalid access if possible. */
@@ -26,8 +34,6 @@ class SucuriScanInterface
      * execution of other functions will be generated. Things like the real IP
      * address of the client when it has been forwarded or it's behind an external
      * service like a Proxy.
-     *
-     * @return void
      */
     public static function initialize()
     {
@@ -44,8 +50,6 @@ class SucuriScanInterface
     /**
      * Define which javascript and css files will be loaded in the header of the
      * plugin pages, only when the administrator panel is accessed.
-     *
-     * @return void
      */
     public static function enqueueScripts()
     {
@@ -54,7 +58,7 @@ class SucuriScanInterface
         wp_register_style(
             'sucuriscan1',
             SUCURISCAN_URL . '/inc/css/styles.css',
-            array(/* empty*/),
+            array(/* empty */),
             $asset
         );
         wp_enqueue_style('sucuriscan1');
@@ -62,7 +66,7 @@ class SucuriScanInterface
         wp_register_script(
             'sucuriscan1',
             SUCURISCAN_URL . '/inc/js/scripts.js',
-            array(/* empty*/),
+            array(/* empty */),
             $asset
         );
         wp_enqueue_script('sucuriscan1');
@@ -71,7 +75,7 @@ class SucuriScanInterface
             wp_register_style(
                 'sucuriscan2',
                 SUCURISCAN_URL . '/inc/css/c3.min.css',
-                array(/* empty*/),
+                array(/* empty */),
                 $asset
             );
             wp_enqueue_style('sucuriscan2');
@@ -79,7 +83,7 @@ class SucuriScanInterface
             wp_register_script(
                 'sucuriscan2',
                 SUCURISCAN_URL . '/inc/js/d3.min.js',
-                array(/* empty*/),
+                array(/* empty */),
                 $asset
             );
             wp_enqueue_script('sucuriscan2');
@@ -87,7 +91,7 @@ class SucuriScanInterface
             wp_register_script(
                 'sucuriscan3',
                 SUCURISCAN_URL . '/inc/js/c3.min.js',
-                array(/* empty*/),
+                array(/* empty */),
                 $asset
             );
             wp_enqueue_script('sucuriscan3');
@@ -97,7 +101,7 @@ class SucuriScanInterface
             wp_register_style(
                 'sucuriscan3',
                 SUCURISCAN_URL . '/inc/css/flags.min.css',
-                array(/* empty*/),
+                array(/* empty */),
                 $asset
             );
             wp_enqueue_style('sucuriscan3');
@@ -109,8 +113,6 @@ class SucuriScanInterface
      * 1.6.0) all the functionality of the others will be merged here, this will
      * remove duplicated functionality, duplicated bugs and/or duplicated
      * maintenance reports allowing us to focus in one unique project.
-     *
-     * @return void
      */
     public static function handleOldPlugins()
     {
@@ -133,7 +135,9 @@ class SucuriScanInterface
 
                 if (file_exists($plugin_directory)) {
                     if (is_plugin_active($plugin)) {
+                        // @codeCoverageIgnoreStart
                         deactivate_plugins($plugin);
+                        // @codeCoverageIgnoreEnd
                     }
 
                     $finfo->removeDirectoryTree($plugin_directory);
@@ -145,8 +149,6 @@ class SucuriScanInterface
     /**
      * Create a folder in the WordPress upload directory where the plugin will
      * store all the temporal or dynamic information.
-     *
-     * @return void
      */
     public static function createStorageFolder()
     {
@@ -183,7 +185,7 @@ class SucuriScanInterface
      * with this code then we can consider this as an update, in which case we
      * will execute certain actions and/or display some messages.
      *
-     * @return void
+     * @codeCoverageIgnore
      */
     public static function noticeAfterUpdate()
     {
@@ -218,27 +220,11 @@ class SucuriScanInterface
          * security related newsletter where they can learn about better security
          * practices and get alerts from public vulnerabilities disclosures.
          *
-         * The plugin will set a hidden (non-modifiable) option in the settings
-         * file to let it know that we already sent this email. In most cases this
-         * will be enough to avoid unnecessary spam, but if the website owner
-         * decides to reset the plugin settings, or for some reason, the settings
-         * file is not writable.
-         *
          * @date Featured added at - May 01, 2017
          */
-        if (SucuriScanOption::getOption(':newsletter_invitation') !== 'sent') {
-            SucuriScanMail::sendMail(
-                SucuriScan::getSiteEmail(),
-                'Newsletter Invitation',
-                SucuriScanTemplate::getSection('notification-newsletter'),
-                array(
-                    'Force' => true,
-                    'ForceHTML' => true,
-                    'UseRawHTML' => true,
-                )
-            );
-            SucuriScanOption::updateOption(':newsletter_invitation', 'sent');
-        }
+        self::info('Do you want to get vulnerability disclosures? Subscribe to '
+        . 'our newsletter <a href="http://sucuri.hs-sites.com/subscribe-to-secu'
+        . 'rity" target="_blank">here</a>');
 
         /* update the version number in the plugin settings. */
         SucuriScanOption::updateOption(':plugin_version', SUCURISCAN_VERSION);
@@ -247,11 +233,12 @@ class SucuriScanInterface
     /**
      * Check whether a user has the permissions to see a page from the plugin.
      *
-     * @return void
+     * @codeCoverageIgnore
      */
     public static function checkPageVisibility()
     {
         if (!function_exists('current_user_can') || !current_user_can('manage_options')) {
+            SucuriScan::throwException('Access denied; cannot manage options');
             wp_die(__('Access denied by <b>Sucuri Scanner</b>.'));
         }
     }
@@ -261,7 +248,9 @@ class SucuriScanInterface
      * validation fails the execution of the script will be stopped and a dead page
      * will be printed to the client using the official WordPress method.
      *
-     * @return boolean Either TRUE or FALSE if the nonce is valid or not respectively.
+     * @codeCoverageIgnore
+     *
+     * @return bool True if the nonce is valid, false otherwise.
      */
     public static function checkNonce()
     {
@@ -270,8 +259,8 @@ class SucuriScanInterface
             $nonce_value = SucuriScanRequest::post($nonce_name, '_nonce');
 
             if (!$nonce_value || !wp_verify_nonce($nonce_value, $nonce_name)) {
+                SucuriScan::throwException('Nonce is invalid');
                 wp_die(__('WordPress Nonce verification failed, try again going back and checking the form.'));
-
                 return false;
             }
         }
@@ -282,9 +271,10 @@ class SucuriScanInterface
     /**
      * Prints a HTML alert in the WordPress admin interface.
      *
-     * @param  string $type    The type of alert, it can be either Updated or Error.
-     * @param  string $message The message that will be printed in the alert.
-     * @return void
+     * @codeCoverageIgnore
+     *
+     * @param string $type The type of alert, it can be either Updated or Error.
+     * @param string $message The message that will be printed in the alert.
      */
     private static function adminNotice($type = 'updated', $message = '')
     {
@@ -293,11 +283,11 @@ class SucuriScanInterface
         /**
          * Do not render notice during user authentication.
          *
-         * There are some special cases when the error or warning messages should not be
-         * rendered to the end user because it may break the default functionality of
-         * the request handler. For instance, rendering an HTML alert like this when the
-         * user authentication process is executed may cause a "headers already sent"
-         * error.
+         * There are some special cases when the error or warning messages
+         * should not be rendered to the end user because it may break the
+         * default functionality of the request handler. For instance, rendering
+         * an HTML alert like this when the user authentication process is
+         * executed may cause a "headers already sent" error.
          */
         if (!empty($_POST)
             && SucuriScanRequest::post('log')
@@ -307,8 +297,10 @@ class SucuriScanInterface
             $display_notice = false;
         }
 
-        // Display the HTML notice to the current user.
+        /* display the HTML notice to the current user */
         if ($display_notice === true && !empty($message)) {
+            $message = SUCURISCAN_ADMIN_NOTICE_PREFIX . "\x20" . $message;
+
             SucuriScan::throwException($message, $type);
 
             echo SucuriScanTemplate::getSection('notification-admin', array(
@@ -322,82 +314,22 @@ class SucuriScanInterface
     /**
      * Prints a HTML alert of type ERROR in the WordPress admin interface.
      *
-     * @param  string $msg The message that will be printed in the alert.
-     * @return void
+     * @param string $msg The message that will be printed in the alert.
      */
     public static function error($msg = '')
     {
-        self::adminNotice('error', SUCURISCAN_ADMIN_NOTICE_PREFIX . "\x20" . $msg);
+        self::adminNotice('error', $msg);
+        return false; /* assume failure */
     }
 
     /**
      * Prints a HTML alert of type INFO in the WordPress admin interface.
      *
-     * @param  string $msg The message that will be printed in the alert.
-     * @return void
+     * @param string $msg The message that will be printed in the alert.
      */
     public static function info($msg = '')
     {
-        self::adminNotice('updated', SUCURISCAN_ADMIN_NOTICE_PREFIX . "\x20" . $msg);
-    }
-
-    /**
-     * Decide if the API key generator needs to be visible.
-     *
-     * Once the user activates the plugin an information bar will appear at the
-     * top of the admin interface advising him to generate an unique API key for
-     * his website, this will allow him to activate additional features of the
-     * plugin that are only available while the API key is present.
-     *
-     * If the user doesn't generates the key right after the activation in the
-     * plugins page we have to keep the information bar visible in certain pages
-     * to remind him. This is, the home page of the admin dashboard, the plugins
-     * page, and any of the pages associated to the plugin.
-     *
-     * @return boolean Display the API key generator button or not.
-     */
-    private static function displayNoticesHere()
-    {
-        global $sucuriscan_pages;
-
-        $page = SucuriScanRequest::get('page');
-        $script = (string) @$_SERVER['SCRIPT_NAME'];
-        $visibility = array(
-            '/wp-admin/index.php',
-            '/wp-admin/plugins.php',
-        );
-
-        if ($page
-            && is_array($sucuriscan_pages)
-            && array_key_exists($page, $sucuriscan_pages)
-        ) {
-            return true;
-        }
-
-        if (in_array($script, $visibility)) {
-            return true;
-        }
-
-        /**
-         * Retry using a reverse name.
-         *
-         * People might choose to install WordPress in a sublevel of the
-         * document root, this changes the structure of the script name
-         * variable. To address this incompatibility we will iterate over all
-         * the visible pages and check the reverse version of the string with
-         * the reverse version of the script name, if the beginning of the
-         * string matches then we will consider the page available.
-         */
-        $script = strrev($script);
-
-        foreach ($visibility as $visible) {
-            $elbis = strrev($visible);
-
-            if (strpos($script, $elbis) === 0) {
-                return true;
-            }
-        }
-
-        return false;
+        self::adminNotice('updated', $msg);
+        return true; /* assume success */
     }
 }

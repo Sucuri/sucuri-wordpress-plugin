@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Code related to the settings-alerts.php interface.
+ *
+ * @package Sucuri Security
+ * @subpackage settings-alerts.php
+ * @copyright Since 2010 Sucuri Inc.
+ */
+
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     if (!headers_sent()) {
         /* Report invalid access if possible. */
@@ -8,6 +16,17 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     exit(1);
 }
 
+/**
+ * Returns the HTML to configure who receives the email alerts.
+ *
+ * By default the plugin sends the email notifications about the security events
+ * to the first email address used during the installation of the website. This
+ * is usually the email of the website owner. The plugin allows to add more
+ * emails to the list so the alerts are sent to other people.
+ *
+ * @param bool $nonce True if the CSRF protection worked, false otherwise.
+ * @return string HTML for the email alert recipients.
+ */
 function sucuriscan_settings_alerts_recipients($nonce)
 {
     $params = array();
@@ -89,6 +108,15 @@ function sucuriscan_settings_alerts_recipients($nonce)
     return SucuriScanTemplate::getSection('settings-alerts-recipients', $params);
 }
 
+/**
+ * Returns the HTML to configure the list of trusted IPs.
+ *
+ * The plugin will not report security events coming from these IP addresses. If
+ * the users are all from the same network, like in an office, they can include
+ * the IP of the entire LAN as a valid CIDR format.
+ *
+ * @return string HTML for the trusted IP addresses.
+ */
 function sucuriscan_settings_alerts_trustedips()
 {
     $params = array();
@@ -151,6 +179,12 @@ function sucuriscan_settings_alerts_trustedips()
     return SucuriScanTemplate::getSection('settings-alerts-trustedips', $params);
 }
 
+/**
+ * Returns the HTML to configure the subject for the email alerts.
+ *
+ * @param bool $nonce True if the CSRF protection worked, false otherwise.
+ * @return string HTML for the email alert subject option.
+ */
 function sucuriscan_settings_alerts_subject($nonce)
 {
     global $sucuriscan_email_subjects;
@@ -236,6 +270,12 @@ function sucuriscan_settings_alerts_subject($nonce)
     return SucuriScanTemplate::getSection('settings-alerts-subject', $params);
 }
 
+/**
+ * Returns the HTML to configure the maximum number of alerts per hour.
+ *
+ * @param bool $nonce True if the CSRF protection worked, false otherwise.
+ * @return string HTML for the maximum number of alerts per hour.
+ */
 function sucuriscan_settings_alerts_perhour($nonce)
 {
     global $sucuriscan_emails_per_hour;
@@ -267,6 +307,12 @@ function sucuriscan_settings_alerts_perhour($nonce)
     return SucuriScanTemplate::getSection('settings-alerts-perhour', $params);
 }
 
+/**
+ * Returns the HTML to configure the trigger for the brute-force alerts.
+ *
+ * @param bool $nonce True if the CSRF protection worked, false otherwise.
+ * @return string HTML for the trigger for the brute-force alerts.
+ */
 function sucuriscan_settings_alerts_bruteforce($nonce)
 {
     global $sucuriscan_maximum_failed_logins;
@@ -297,6 +343,12 @@ function sucuriscan_settings_alerts_bruteforce($nonce)
     return SucuriScanTemplate::getSection('settings-alerts-bruteforce', $params);
 }
 
+/**
+ * Returns the HTML to configure which alerts will be sent.
+ *
+ * @param bool $nonce True if the CSRF protection worked, false otherwise.
+ * @return string HTML for the alerts that will be sent.
+ */
 function sucuriscan_settings_alerts_events($nonce)
 {
     global $sucuriscan_notify_options;
@@ -377,6 +429,11 @@ function sucuriscan_settings_alerts_events($nonce)
     return SucuriScanTemplate::getSection('settings-alerts-events', $params);
 }
 
+/**
+ * Returns the HTML to configure the post-types that will be ignored.
+ *
+ * @return string HTML for the ignored post-types.
+ */
 function sucuriscan_settings_alerts_ignore_posts()
 {
     $notify_new_site_content = SucuriScanOption::getOption(':notify_post_publication');
