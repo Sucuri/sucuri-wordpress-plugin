@@ -641,8 +641,10 @@ body.sucuri-security_page_sucuriscan_hardening {
 .sucuriscan-integrity-incorrect .sucuriscan-subtitle {
     color: #f33924;
 }
-.sucuriscan-integrity-incorrect .sucuriscan-table em {
-    color: #d95c52;
+.sucuriscan-integrity-incorrect .sucuriscan-table .sucuriscan-tooltip {
+    left: 5px;
+    position: relative;
+    top: 3px;
 }
 .sucuriscan-container .sucuriscan-integrity-diff-utility {
     margin-bottom: 20px;

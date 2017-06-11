@@ -417,7 +417,7 @@ if (!function_exists('sucuri_get_user_lastlogin')) {
                     SucuriScan::escape($row->user_remoteaddr),
                     SucuriScan::escape($row->user_hostname)
                 );
-                $message .= "\x20(<a href='" . $page_url . "'>view all logs</a>)";
+                $message .= "\x20<a href='" . $page_url . "'>view all logs</a>";
                 SucuriScanInterface::info($message);
             }
         }

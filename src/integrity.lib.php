@@ -231,7 +231,6 @@ class SucuriScanIntegrity
         $params['Integrity.BadVisibility'] = 'hidden';
         $params['Integrity.GoodVisibility'] = 'hidden';
         $params['Integrity.FailureVisibility'] = 'visible';
-        $params['Integrity.NotFixableVisibility'] = 'hidden';
         $params['Integrity.FalsePositivesVisibility'] = 'hidden';
 
         /* Check if we have already ignored irrelevant files */
@@ -273,12 +272,27 @@ class SucuriScanIntegrity
                         // Add extra information to the file list.
                         $file_size = @filesize($full_filepath);
                         $file_size_human = ''; /* empty */
-                        $is_fixable_text = ''; /* empty */
 
-                        // Check whether the file can be fixed automatically or not.
+                        /* error message if the file cannot be fixed */
+                        $error = '';
+                        $visibility = 'hidden';
+
                         if ($file_info['is_fixable'] !== true) {
-                            $is_fixable_text = '(no permission)';
-                            $params['Integrity.NotFixableVisibility'] = 'visible';
+                            $visibility = 'visible';
+
+                            if ($list_type === 'added') {
+                                $error = 'The plugin has no permission to delete this file because '
+                                . 'it was created by a different system user who has more privileges '
+                                . 'than your account. Please use FTP to delete it.';
+                            } elseif ($list_type === 'modified') {
+                                $error = 'The plugin has no permission to restore this file because '
+                                . 'it was modified by a different system user who has more privileges '
+                                . 'than your account. Please use FTP to restore it.';
+                            } elseif ($list_type === 'removed') {
+                                $error = 'The plugin has no permission to restore this file because '
+                                . 'its directory is owned by a different system user who has more '
+                                . 'privileges than your account. Please use FTP to restore it.';
+                            }
                         }
 
                         // Pretty-print the file size in human-readable form.
@@ -295,7 +309,8 @@ class SucuriScanIntegrity
                             'Integrity.FileSizeHuman' => $file_size_human,
                             'Integrity.FileSizeNumber' => number_format($file_size),
                             'Integrity.ModifiedAt' => SucuriScan::datetime($file_info['modified_at']),
-                            'Integrity.IsNotFixable' => $is_fixable_text,
+                            'Integrity.ErrorVisibility' => $visibility,
+                            'Integrity.ErrorMessage' => $error,
                         ));
                         $affected_files++;
                         $counter++;
