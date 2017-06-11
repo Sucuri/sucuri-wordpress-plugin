@@ -1,6 +1,30 @@
 
 %%%SUCURI.Integrity%%%
 
+<script type="text/javascript">
+/* global jQuery */
+/* jshint camelcase: false */
+jQuery(function ($) {
+    $.post('%%SUCURI.AjaxURL.Dashboard%%', {
+        action: 'sucuriscan_ajax',
+        sucuriscan_page_nonce: '%%SUCURI.PageNonce%%',
+        form_action: 'malware_scan',
+    }, function (data) {
+        $('#sucuriscan-title-iframes').html(data.iframes.title);
+        $('#sucuriscan-title-links').html(data.links.title);
+        $('#sucuriscan-title-scripts').html(data.scripts.title);
+
+        $('#sucuriscan-tabs-iframes').html(data.iframes.content);
+        $('#sucuriscan-tabs-links').html(data.links.content);
+        $('#sucuriscan-tabs-scripts').html(data.scripts.content);
+
+        $('#sucuriscan-malware').html(data.malware);
+        $('#sucuriscan-blacklist').html(data.blacklist);
+        $('#sucuriscan-recommendations').html(data.recommendations);
+    });
+});
+</script>
+
 <div class="sucuriscan-clearfix">
     <div class="sucuriscan-pull-left sucuriscan-dashboard-left">
         <div class="sucuriscan-panel">
@@ -8,9 +32,9 @@
                 <ul class="sucuriscan-clearfix sucuriscan-tabs-buttons">
                     <li><a href="%%SUCURI.URL.Dashboard%%#auditlogs">Audit Logs</a></li>
                     <li><a href="%%SUCURI.URL.Dashboard%%#stats">Statistics</a></li>
-                    <li><a href="%%SUCURI.URL.Dashboard%%#iframes">%%SUCURI.SiteCheck.iFramesTitle%%</a></li>
-                    <li><a href="%%SUCURI.URL.Dashboard%%#links">%%SUCURI.SiteCheck.LinksTitle%%</a></li>
-                    <li><a href="%%SUCURI.URL.Dashboard%%#scripts">%%SUCURI.SiteCheck.ScriptsTitle%%</a></li>
+                    <li><a href="%%SUCURI.URL.Dashboard%%#iframes" id="sucuriscan-title-iframes">%%SUCURI.SiteCheck.iFramesTitle%%</a></li>
+                    <li><a href="%%SUCURI.URL.Dashboard%%#links" id="sucuriscan-title-links">%%SUCURI.SiteCheck.LinksTitle%%</a></li>
+                    <li><a href="%%SUCURI.URL.Dashboard%%#scripts" id="sucuriscan-title-scripts">%%SUCURI.SiteCheck.ScriptsTitle%%</a></li>
                 </ul>
 
                 <div class="sucuriscan-tabs-containers">

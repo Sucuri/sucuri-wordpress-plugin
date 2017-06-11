@@ -319,7 +319,11 @@ class SucuriScanIntegrity
             : false;
         }
 
-        $params['SiteCheck.Details'] = SucuriScanSiteCheck::details();
+        ob_start();
+        $details = SucuriScanSiteCheck::details();
+        $errors = ob_get_clean(); /* capture possible errors */
+        $params['SiteCheck.Details'] = empty($errors) ? $details : '<br>'.$errors;
+
         $params['Integrity.DiffUtility'] = SucuriScanIntegrity::diffUtility();
 
         return ($affected_files === 0)
