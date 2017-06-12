@@ -37,7 +37,7 @@
             sent to the email address of each chosen users.
         </p>
 
-        <div class="sucuriscan-inline-alert-warning">
+        <div class="sucuriscan-inline-alert-error">
             <p>
                 If you choose to change the password of your own user, then your
                 current session will expire immediately. You will need to log

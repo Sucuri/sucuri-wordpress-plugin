@@ -386,13 +386,11 @@ body.sucuri-security_page_sucuriscan_hardening {
 }
 .wrap .sucuriscan-alert.info,
 .wrap .sucuriscan-alert.error,
-.wrap .sucuriscan-alert.warning,
 .wrap .sucuriscan-alert.success,
 .wrap .sucuriscan-alert.updated,
 .sucuriscan-inline-alert,
 .sucuriscan-inline-alert-info,
 .sucuriscan-inline-alert-error,
-.sucuriscan-inline-alert-warning,
 .sucuriscan-inline-alert-success {
     background: #ddd;
     border: 0;
@@ -413,47 +411,37 @@ body.sucuri-security_page_sucuriscan_hardening {
 .sucuriscan-inline-alert-success {
     background: #00a63f;
 }
-.wrap .sucuriscan-alert.warning,
-.sucuriscan-inline-alert-warning {
-    background: #d9c01b;
-}
 .wrap .sucuriscan-alert.info,
 .wrap .sucuriscan-alert.error,
 .wrap .sucuriscan-alert.success,
 .wrap .sucuriscan-alert.updated,
-.wrap .sucuriscan-alert.warning,
 .sucuriscan-inline-alert,
 .sucuriscan-inline-alert-info,
 .sucuriscan-inline-alert-error,
 .sucuriscan-inline-alert-success,
-.sucuriscan-inline-alert-updated,
-.sucuriscan-inline-alert-warning {
+.sucuriscan-inline-alert-updated {
     margin-bottom: 20px;
 }
 .wrap .sucuriscan-alert.info:last-child,
 .wrap .sucuriscan-alert.error:last-child,
 .wrap .sucuriscan-alert.success:last-child,
 .wrap .sucuriscan-alert.updated:last-child,
-.wrap .sucuriscan-alert.warning:last-child,
 .sucuriscan-inline-alert:last-child,
 .sucuriscan-inline-alert-info:last-child,
 .sucuriscan-inline-alert-error:last-child,
 .sucuriscan-inline-alert-success:last-child,
-.sucuriscan-inline-alert-updated:last-child,
-.sucuriscan-inline-alert-warning:last-child {
+.sucuriscan-inline-alert-updated:last-child {
     margin-bottom: 0;
 }
 .wrap .sucuriscan-alert.info a,
 .wrap .sucuriscan-alert.error a,
 .wrap .sucuriscan-alert.success a,
 .wrap .sucuriscan-alert.updated a,
-.wrap .sucuriscan-alert.warning a,
 .sucuriscan-inline-alert a,
 .sucuriscan-inline-alert-info a,
 .sucuriscan-inline-alert-error a,
 .sucuriscan-inline-alert-success a,
-.sucuriscan-inline-alert-updated a,
-.sucuriscan-inline-alert-warning a {
+.sucuriscan-inline-alert-updated a {
     color: #fff;
     text-decoration: none;
 }
@@ -461,12 +449,10 @@ body.sucuri-security_page_sucuriscan_hardening {
 .wrap .sucuriscan-alert.error p,
 .wrap .sucuriscan-alert.success p,
 .wrap .sucuriscan-alert.updated p,
-.wrap .sucuriscan-alert.warning p,
 .sucuriscan-inline-alert p,
 .sucuriscan-inline-alert-info p,
 .sucuriscan-inline-alert-error p,
-.sucuriscan-inline-alert-success p,
-.sucuriscan-inline-alert-warning p {
+.sucuriscan-inline-alert-success p {
     margin: 0;
     color: #fff;
     padding: 20px;
@@ -476,24 +462,20 @@ body.sucuri-security_page_sucuriscan_hardening {
 .wrap .sucuriscan-alert.error p a,
 .wrap .sucuriscan-alert.success p a,
 .wrap .sucuriscan-alert.updated p a,
-.wrap .sucuriscan-alert.warning p a,
 .sucuriscan-inline-alert p a,
 .sucuriscan-inline-alert-info p a,
 .sucuriscan-inline-alert-error p a,
-.sucuriscan-inline-alert-success p a,
-.sucuriscan-inline-alert-warning p a {
+.sucuriscan-inline-alert-success p a {
     text-decoration: underline;
 }
 .wrap .sucuriscan-alert.info p:last-child,
 .wrap .sucuriscan-alert.error p:last-child,
 .wrap .sucuriscan-alert.success p:last-child,
 .wrap .sucuriscan-alert.updated p:last-child,
-.wrap .sucuriscan-alert.warning p:last-child,
 .sucuriscan-inline-alert p:last-child,
 .sucuriscan-inline-alert-info p:last-child,
 .sucuriscan-inline-alert-error p:last-child,
-.sucuriscan-inline-alert-success p:last-child,
-.sucuriscan-inline-alert-warning p:last-child {
+.sucuriscan-inline-alert-success p:last-child {
     padding-bottom: 20px;
 }
 .sucuriscan-hstatus {

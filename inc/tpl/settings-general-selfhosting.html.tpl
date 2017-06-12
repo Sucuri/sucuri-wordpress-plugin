@@ -33,7 +33,7 @@
             settings of your website.
         </p>
 
-        <div class="sucuriscan-inline-alert-warning">
+        <div class="sucuriscan-inline-alert-error">
             <p>
                 Do not use a public location to store the logs, you will end up leaking
                 sensitive information about your website and the activity of your users. If you

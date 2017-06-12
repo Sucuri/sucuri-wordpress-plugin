@@ -12,7 +12,7 @@
             malicious person was able to gain access to the website.
         </p>
 
-        <div class="sucuriscan-inline-alert-warning sucuriscan-%%SUCURI.ApiStatus.WarningVisibility%%">
+        <div class="sucuriscan-inline-alert-info sucuriscan-%%SUCURI.ApiStatus.WarningVisibility%%">
             <p>
                 The latency of the HTTP requests may slow down the website depending on the
                 location of the server that is hosting it. Additionally, if the API goes down

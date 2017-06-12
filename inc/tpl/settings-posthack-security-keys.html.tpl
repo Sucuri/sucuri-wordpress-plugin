@@ -13,7 +13,7 @@
             forcing all users to login again.
         </p>
 
-        <div class="sucuriscan-inline-alert-warning">
+        <div class="sucuriscan-inline-alert-error">
             <p>Your session will expire immediately after the security keys are changed.</p>
         </div>
 

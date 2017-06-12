@@ -10,7 +10,7 @@
             of these options revert them to their original state.
         </p>
 
-        <div class="sucuriscan-inline-alert-warning">
+        <div class="sucuriscan-inline-alert-error">
             <p>
                 Enabling the alerts for failed login attempts may become an indirect mail spam
                 attack as you will receive tons of emails if your website is victim of a brute

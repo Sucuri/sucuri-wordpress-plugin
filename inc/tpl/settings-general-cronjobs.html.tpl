@@ -11,7 +11,7 @@
             remove unused elements like drafts.
         </p>
 
-        <div class="sucuriscan-inline-alert-warning">
+        <div class="sucuriscan-inline-alert-error">
             <p>
                 Note that there are some scheduled tasks <em>(registered by the base
                 system)</em> that can not be removed permanently using this tool, tasks such as

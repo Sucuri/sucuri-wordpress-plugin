@@ -24,7 +24,7 @@
             </p>
         </div>
 
-        <div class="sucuriscan-inline-alert-warning">
+        <div class="sucuriscan-inline-alert-error">
             <p>Do not block existent accounts, they will lose access forever.</p>
         </div>
 
