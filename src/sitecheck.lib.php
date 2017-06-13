@@ -92,22 +92,6 @@ class SucuriScanSiteCheck extends SucuriScanAPI
         $cache = new SucuriScanCache('sitecheck');
         $results = $cache->get('scan_results', SUCURISCAN_SITECHECK_LIFETIME, 'array');
 
-        /**
-         * Allow the user to scan foreign domains.
-         *
-         * This condition allows for the execution of the malware scanner on a
-         * website different than the one where the plugin is installed. This is
-         * basically the same as scanning any domain on the SiteCheck website.
-         * In this case, this is mostly used to allow the development execute
-         * tests and to troubleshoot issues reported by other users.
-         *
-         * @var boolean
-         */
-        if ($custom = SucuriScanRequest::get('s')) {
-            $tld = SucuriScan::escape($custom);
-            $results = false /* invalid cache */;
-        }
-
         /* return cached malware scan results. */
         if ($results && !empty($results)) {
             return $results;
@@ -259,13 +243,13 @@ class SucuriScanSiteCheck extends SucuriScanAPI
 
         $params['Malware.Content'] = '';
         $params['Malware.Color'] = 'green';
-        $params['Malware.Title'] = 'Site is Clean';
+        $params['Malware.Title'] = __('SiteClean', SUCURISCAN_TEXTDOMAIN);
         $params['Malware.CleanVisibility'] = 'visible';
         $params['Malware.InfectedVisibility'] = 'hidden';
 
         if (isset($data['MALWARE']['WARN']) && !empty($data['MALWARE']['WARN'])) {
             $params['Malware.Color'] = 'red';
-            $params['Malware.Title'] = 'Site is not Clean';
+            $params['Malware.Title'] = __('SiteNotClean', SUCURISCAN_TEXTDOMAIN);
             $params['Malware.CleanVisibility'] = 'hidden';
             $params['Malware.InfectedVisibility'] = 'visible';
 
@@ -300,7 +284,7 @@ class SucuriScanSiteCheck extends SucuriScanAPI
             return ''; /* there is not enough information to render */
         }
 
-        $params['Blacklist.Title'] = 'Not Blacklisted';
+        $params['Blacklist.Title'] = __('NotBlacklisted', SUCURISCAN_TEXTDOMAIN);
         $params['Blacklist.Color'] = 'green';
         $params['Blacklist.Content'] = '';
 
@@ -323,7 +307,7 @@ class SucuriScanSiteCheck extends SucuriScanAPI
         }
 
         if (isset($data['BLACKLIST']['WARN'])) {
-            $params['Blacklist.Title'] = 'Blacklisted';
+            $params['Blacklist.Title'] = __('Blacklisted', SUCURISCAN_TEXTDOMAIN);
             $params['Blacklist.Color'] = 'red';
         }
 
@@ -371,7 +355,10 @@ class SucuriScanSiteCheck extends SucuriScanAPI
     {
         $data = self::scanAndCollectData();
 
-        return sprintf('iFrames: %d', @count($data['LINKS']['IFRAME']));
+        return sprintf(
+            __('iFramesNum', SUCURISCAN_TEXTDOMAIN),
+            @count($data['LINKS']['IFRAME'])
+        );
     }
 
     /**
@@ -383,7 +370,10 @@ class SucuriScanSiteCheck extends SucuriScanAPI
     {
         $data = self::scanAndCollectData();
 
-        return sprintf('Links: %d', @count($data['LINKS']['URL']));
+        return sprintf(
+            __('LinksNum', SUCURISCAN_TEXTDOMAIN),
+            @count($data['LINKS']['URL'])
+        );
     }
 
     /**
@@ -404,7 +394,10 @@ class SucuriScanSiteCheck extends SucuriScanAPI
             $total += count($data['LINKS']['JSEXTERNAL']);
         }
 
-        return sprintf('Scripts: %d', $total);
+        return sprintf(
+            __('ScriptsNum', SUCURISCAN_TEXTDOMAIN),
+            $total
+        );
     }
 
     /**

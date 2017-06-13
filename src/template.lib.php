@@ -52,11 +52,8 @@ class SucuriScanTemplate extends SucuriScanRequest
     {
         if (@preg_match_all('/@@SUCURI\.(\S+)@@/', $content, $matches)) {
             foreach ($matches[0] as $key => $placeholder) {
-                $content = str_replace(
-                    $placeholder,
-                    __($matches[1][$key], 'sucuri-scanner'),
-                    $content
-                );
+                $translation = __($matches[1][$key], SUCURISCAN_TEXTDOMAIN);
+                $content = str_replace($placeholder, $translation, $content);
             }
         }
 
@@ -139,9 +136,9 @@ class SucuriScanTemplate extends SucuriScanRequest
             $params['GenerateAPIKey.Modal'] = /* register-site */
 
             SucuriScanTemplate::getModal('register-site', array(
-                'Visibility' => 'hidden',
+                'Title' => __('GenerateAPIKey', SUCURISCAN_TEXTDOMAIN),
                 'Identifier' => 'register-site',
-                'Title' => 'Sucuri API Key Generator',
+                'Visibility' => 'hidden',
             ));
         }
 
@@ -214,10 +211,9 @@ class SucuriScanTemplate extends SucuriScanRequest
      */
     private static function linksAndNavbar($params = array())
     {
-        global $sucuriscan_pages;
-
+        $pages = sucuriscan_pages();
         $params = is_array($params) ? $params : array();
-        $sub_pages = is_array($sucuriscan_pages) ? $sucuriscan_pages : array();
+        $sub_pages = is_array($pages) ? $pages : array();
 
         foreach ($sub_pages as $sub_page_func => $sub_page_title) {
             $func_parts = explode('_', $sub_page_func, 2);
@@ -342,12 +338,14 @@ class SucuriScanTemplate extends SucuriScanRequest
             'Visibility' => 'visible',
             'Identifier' => 'foobar',
             'CssClass' => '',
-            'Content' => '<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-                veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>',
+            'Content' => '<p>Lorem ipsum dolor sit amet, consectetur adipisicin'
+            . 'g elit, sed do eiusmod tempor incididunt ut labore et dolore mag'
+            . 'na aliqua. Ut enim ad minim veniam, quis nostrud exercitation ul'
+            . 'lamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute'
+            . ' irure dolor in reprehenderit in voluptate velit esse cillum dol'
+            . 'ore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat '
+            . 'non proident, sunt in culpa qui officia deserunt mollit anim id '
+            . 'est laborum.</p>',
         );
 
         if (!empty($template) && $template !== 'none') {

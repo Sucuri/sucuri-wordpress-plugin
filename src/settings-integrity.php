@@ -38,15 +38,15 @@ class SucuriScanSettingsIntegrity extends SucuriScanSettings
         $params = array();
 
         $params['DiffUtility.StatusNum'] = 0;
-        $params['DiffUtility.Status'] = 'Disabled';
-        $params['DiffUtility.SwitchText'] = 'Enable';
+        $params['DiffUtility.Status'] = __('Disabled', SUCURISCAN_TEXTDOMAIN);
+        $params['DiffUtility.SwitchText'] = __('Enable', SUCURISCAN_TEXTDOMAIN);
         $params['DiffUtility.SwitchValue'] = 'enable';
 
         if ($nonce) {
             // Enable or disable the Unix diff utility.
             if ($status = SucuriScanRequest::post(':diff_utility', '(en|dis)able')) {
                 if (!SucuriScanCommand::exists('diff')) {
-                    SucuriScanInterface::error('Your hosting provider has blocked the execution of external commands.');
+                    SucuriScanInterface::error(__('DiffUtilityMissing', SUCURISCAN_TEXTDOMAIN));
                 } else {
                     $status = $status . 'd'; /* add past tense */
                     $message = 'Integrity diff utility has been <code>' . $status . '</code>';
@@ -54,15 +54,15 @@ class SucuriScanSettingsIntegrity extends SucuriScanSettings
                     SucuriScanOption::updateOption(':diff_utility', $status);
                     SucuriScanEvent::reportInfoEvent($message);
                     SucuriScanEvent::notifyEvent('plugin_change', $message);
-                    SucuriScanInterface::info($message);
+                    SucuriScanInterface::info(__('DiffUtilityStatus', SUCURISCAN_TEXTDOMAIN));
                 }
             }
         }
 
         if (SucuriScanOption::isEnabled(':diff_utility')) {
             $params['DiffUtility.StatusNum'] = 1;
-            $params['DiffUtility.Status'] = 'Enabled';
-            $params['DiffUtility.SwitchText'] = 'Disable';
+            $params['DiffUtility.Status'] = __('Enabled', SUCURISCAN_TEXTDOMAIN);
+            $params['DiffUtility.SwitchText'] = __('Disable', SUCURISCAN_TEXTDOMAIN);
             $params['DiffUtility.SwitchValue'] = 'disable';
         }
 
@@ -84,14 +84,14 @@ class SucuriScanSettingsIntegrity extends SucuriScanSettings
             // Configure the language for the core integrity checks.
             if ($language = SucuriScanRequest::post(':set_language')) {
                 if (array_key_exists($language, $languages)) {
-                    $message = 'Language for the core integrity checks set to <code>' . $language . '</code>';
+                    $message = 'Core integrity language set to <code>' . $language . '</code>';
 
                     SucuriScanOption::updateOption(':language', $language);
                     SucuriScanEvent::reportAutoEvent($message);
                     SucuriScanEvent::notifyEvent('plugin_change', $message);
-                    SucuriScanInterface::info($message);
+                    SucuriScanInterface::info(__('IntegrityLanguage', SUCURISCAN_TEXTDOMAIN));
                 } else {
-                    SucuriScanInterface::error('Selected language is not supported.');
+                    SucuriScanInterface::error(__('NonSupportedLanguage', SUCURISCAN_TEXTDOMAIN));
                 }
             }
         }
@@ -126,10 +126,9 @@ class SucuriScanSettingsIntegrity extends SucuriScanSettings
             }
 
             if (!empty($deletedFiles)) {
-                $message = 'Core files that will not be ignored anymore: '
-                . '(multiple entries): ' . implode(',', $deletedFiles);
-                SucuriScanInterface::info('Selected files will not be ignored anymore.');
-                SucuriScanEvent::reportDebugEvent($message);
+                SucuriScanEvent::reportDebugEvent('Core files that will not be '
+                . 'ignored anymore: (multiple entries): ' . implode(',', $deletedFiles));
+                SucuriScanInterface::info(__('ItemsProcessed', SUCURISCAN_TEXTDOMAIN));
             }
         }
 

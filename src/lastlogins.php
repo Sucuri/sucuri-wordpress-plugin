@@ -44,7 +44,7 @@ function sucuriscan_lastlogins_admins()
             'AdminUsers.Username' => $admin->user_login,
             'AdminUsers.Email' => $admin->user_email,
             'AdminUsers.LastLogins' => '',
-            'AdminUsers.RegisteredAt' => 'Unknown',
+            'AdminUsers.RegisteredAt' => __('Unknown', SUCURISCAN_TEXTDOMAIN),
             'AdminUsers.UserURL' => SucuriScan::adminURL('user-edit.php?user_id=' . $admin->ID),
             'AdminUsers.NoLastLogins' => 'visible',
             'AdminUsers.NoLastLoginsTable' => 'hidden',
@@ -56,7 +56,7 @@ function sucuriscan_lastlogins_admins()
         ) {
             $user_snippet['AdminUsers.NoLastLogins'] = 'hidden';
             $user_snippet['AdminUsers.NoLastLoginsTable'] = 'visible';
-            $user_snippet['AdminUsers.RegisteredAt'] = 'Unknown';
+            $user_snippet['AdminUsers.RegisteredAt'] = __('Unknown', SUCURISCAN_TEXTDOMAIN);
 
             foreach ($last_logins['entries'] as $i => $lastlogin) {
                 if ($i === 0) {
@@ -103,7 +103,7 @@ function sucuriscan_lastlogins_all()
 
     if (!sucuriscan_lastlogins_datastore_is_writable()) {
         $fpath = SucuriScan::escape(sucuriscan_lastlogins_datastore_filepath());
-        SucuriScanInterface::error('Last-logins datastore file is not writable: <code>' . $fpath . '</code>');
+        SucuriScanInterface::error(sprintf(__('LastLoginsNotWritable'), $fpath));
     }
 
     if ($last_logins = sucuriscan_get_logins($max_per_page, $offset)) {
@@ -121,7 +121,7 @@ function sucuriscan_lastlogins_all()
             $user_dataset = array(
                 'UserList.Number' => $user->line_num,
                 'UserList.UserId' => $user->user_id,
-                'UserList.Username' => 'Unknown',
+                'UserList.Username' => __('Unknown', SUCURISCAN_TEXTDOMAIN),
                 'UserList.Displayname' => '',
                 'UserList.Email' => '',
                 'UserList.Registered' => '',
@@ -412,12 +412,12 @@ if (!function_exists('sucuri_get_user_lastlogin')) {
                 $row = $last_logins['entries'][1];
                 $page_url = SucuriScanTemplate::getUrl('lastlogins');
                 $message = sprintf(
-                    'Last login was at <b>%s</b> from <b>%s</b> <em>(%s)</em>',
+                    __('LastLoginMessage', SUCURISCAN_TEXTDOMAIN),
                     SucuriScan::datetime($row->user_lastlogin_timestamp),
                     SucuriScan::escape($row->user_remoteaddr),
-                    SucuriScan::escape($row->user_hostname)
+                    SucuriScan::escape($row->user_hostname),
+                    SucuriScan::escape($page_url)
                 );
-                $message .= "\x20<a href='" . $page_url . "'>view all logs</a>";
                 SucuriScanInterface::info($message);
             }
         }

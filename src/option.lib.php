@@ -58,7 +58,7 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_comment_monitor' => 'disabled',
             'sucuriscan_diff_utility' => 'disabled',
             'sucuriscan_dns_lookups' => 'enabled',
-            'sucuriscan_email_subject' => 'Sucuri Alert, :domain, :event',
+            'sucuriscan_email_subject' => '',
             'sucuriscan_emails_per_hour' => 5,
             'sucuriscan_emails_sent' => 0,
             'sucuriscan_ignored_events' => '',
@@ -127,16 +127,20 @@ class SucuriScanOption extends SucuriScanRequest
      */
     private static function getDefaultOptions($option = '')
     {
-        $default_options = self::getDefaultOptionValues();
+        $default = self::getDefaultOptionValues();
 
         // Use framework built-in function.
         if (function_exists('get_option')) {
             $admin_email = get_option('admin_email');
-            $default_options['sucuriscan_account'] = $admin_email;
-            $default_options['sucuriscan_notify_to'] = $admin_email;
+            $default['sucuriscan_account'] = $admin_email;
+            $default['sucuriscan_notify_to'] = $admin_email;
+
+            $default['sucuriscan_email_subject'] =
+            __('SucuriAlert', SUCURISCAN_TEXTDOMAIN)
+            . ', :domain, :event';
         }
 
-        return @$default_options[$option];
+        return @$default[$option];
     }
 
     /**
@@ -253,7 +257,7 @@ class SucuriScanOption extends SucuriScanRequest
             $value = get_option($option);
 
             if ($value !== false) {
-                if (strpos($option, 'sucuriscan_') === 0) {
+                if (strpos($option, SUCURISCAN . '_') === 0) {
                     $written = self::updateOption($option, $value);
 
                     if ($written === true) {
@@ -265,7 +269,7 @@ class SucuriScanOption extends SucuriScanRequest
             }
         }
 
-        if (strpos($option, 'sucuriscan_') === 0) {
+        if (strpos($option, SUCURISCAN . '_') === 0) {
             return self::getDefaultOptions($option);
         }
 
@@ -288,7 +292,7 @@ class SucuriScanOption extends SucuriScanRequest
      */
     public static function updateOption($option = '', $value = '')
     {
-        if (strpos($option, ':') === 0 || strpos($option, 'sucuriscan') === 0) {
+        if (strpos($option, ':') === 0 || strpos($option, SUCURISCAN) === 0) {
             $options = self::getAllOptions();
             $option = self::varPrefix($option);
             $options[$option] = $value;
@@ -311,7 +315,7 @@ class SucuriScanOption extends SucuriScanRequest
      */
     public static function deleteOption($option = '')
     {
-        if (strpos($option, ':') === 0 || strpos($option, 'sucuriscan') === 0) {
+        if (strpos($option, ':') === 0 || strpos($option, SUCURISCAN) === 0) {
             $options = self::getAllOptions();
             $option = self::varPrefix($option);
 
@@ -596,7 +600,10 @@ class SucuriScanOption extends SucuriScanRequest
             return true;
         }
 
-        return SucuriScanInterface::info($message);
+        return SucuriScanInterface::info(sprintf(
+            __('ReverseProxyStatus', SUCURISCAN_TEXTDOMAIN),
+            $action_d /* either enabled or disabled */
+        ));
     }
 
     /**
@@ -611,10 +618,10 @@ class SucuriScanOption extends SucuriScanRequest
         $allowed = SucuriScan::allowedHttpHeaders(true);
 
         if (!array_key_exists($header, $allowed)) {
-            return SucuriScanInterface::error('HTTP header is not allowed');
+            return SucuriScanInterface::error(__('DisallowedHTTPHeader', SUCURISCAN_TEXTDOMAIN));
         }
 
-        $message = 'HTTP header was set to <code>' . $header . '</code>';
+        $message = sprintf('HTTP header was set to %s', $header);
 
         self::updateOption(':addr_header', $header);
 
@@ -625,6 +632,9 @@ class SucuriScanOption extends SucuriScanRequest
             return true;
         }
 
-        return SucuriScanInterface::info($message);
+        return SucuriScanInterface::info(sprintf(
+            __('HTTPHeaderStatus', SUCURISCAN_TEXTDOMAIN),
+            $header /* one of the allowed HTTP headers */
+        ));
     }
 }

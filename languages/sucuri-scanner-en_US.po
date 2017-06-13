@@ -1,0 +1,855 @@
+msgid ""
+msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: https://sucuri.net/\n"
+"Language: en_US\n"
+"Last-Translator: Sucuri Inc. <info@sucuri.net>\n"
+"MIME-Version: 1.0\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"PO-Revision-Date: \n"
+"POT-Creation-Date: 2017-06-01 09:00-0700\n"
+"Project-Id-Version: Sucuri Scanner\n"
+
+msgid "Review"
+msgstr "Review"
+
+msgid "Dashboard"
+msgstr "Dashboard"
+
+msgid "Firewall"
+msgstr "Firewall (WAF)"
+
+msgid "LastLogins"
+msgstr "Last Logins"
+
+msgid "Settings"
+msgstr "Settings"
+
+msgid "GenerateAPIKey"
+msgstr "Generate API Key"
+
+msgid "APIKeyRecovery"
+msgstr "Plugin API Key Recovery"
+
+msgid "Copyright"
+msgstr "Copyright &copy; %%SUCURI.Year%% Sucuri Inc. All Rights Reserved."
+
+msgid "AccessDenied"
+msgstr "Access denied by Sucuri Inc."
+
+msgid "NonceFailure"
+msgstr "WordPress Nonce verification failed, try again going back and checking the form."
+
+msgid "NewsletterInvitation"
+msgstr "Do you want to get vulnerability disclosures? Subscribe to our newsletter <a href=\"http://sucuri.hs-sites.com/subscribe-to-security\" target=\"_blank\" rel=\"noopener\">here</a>"
+
+msgid "EnableAPIServiceAgain"
+msgstr "API service communication is disabled, if you just updated the plugin this might be a good opportunity to test this feature once again with the new code. Enable it again from the \"API Service\" panel located in the settings page."
+
+msgid "InvalidAPIKey"
+msgstr "Invalid API key format"
+
+msgid "ErrorNoInfo"
+msgstr "Unknown error, there is no information."
+
+msgid "ErrorLogFileNotFound"
+msgstr "; this generally happens when you add an invalid API key, the key will be deleted automatically to hide these warnings, if you want to recover it go to the settings page and use the recover button to send the key to your email address: %1$s"
+
+msgid "ErrorWrongAPIKey"
+msgstr "; invalid firewall API key: %1$s"
+
+msgid "ErrorSSLCertificate"
+msgstr ". Your website seems to use an old version of the OpenSSL library or the CURL extension was compiled without support for the algorithm used on the API service. Contact your hosting provider to fix this issue."
+
+msgid "ErrorInvalidEmail"
+msgstr "Email has an invalid format, or the host associated to the email has no MX records."
+
+msgid "AlertAPIKeySet"
+msgstr "The API key for your site was successfully generated and saved."
+
+msgid "Yes"
+msgstr "Yes"
+
+msgid "No"
+msgstr "No"
+
+msgid "Okay"
+msgstr "OK"
+
+msgid "Enable"
+msgstr "Enable"
+
+msgid "Enabled"
+msgstr "Enabled"
+
+msgid "Disable"
+msgstr "Disable"
+
+msgid "Disabled"
+msgstr "Disabled"
+
+msgid "Ignored"
+msgstr "Ignored"
+
+msgid "Done"
+msgstr "Done"
+
+msgid "Error"
+msgstr "Error"
+
+msgid "Good"
+msgstr "good"
+
+msgid "NotSet"
+msgstr "(not set)"
+
+msgid "NotRandomized"
+msgstr "not randomized"
+
+msgid "NotWritable"
+msgstr "Not Writable"
+
+msgid "ParentNotWritable"
+msgstr "File parent directory is not writable."
+
+msgid "DoesNotExist"
+msgstr "Does Not Exist"
+
+msgid "Exists"
+msgstr "Exists"
+
+msgid "Writable"
+msgstr "Writable"
+
+msgid "Today"
+msgstr "Today"
+
+msgid "NoLogs"
+msgstr "There are no logs."
+
+msgid "SelfHostingEnabled"
+msgstr "The log exporter feature has been enabled and the data file was successfully set."
+
+msgid "SelfHostingDisabled"
+msgstr "The log exporter feature has been disabled"
+
+msgid "UnsupportedWordPress"
+msgstr "WordPress version is not supported."
+
+msgid "NoWordPressFile"
+msgstr "File is not part of the official WordPress installation."
+
+msgid "CannotCheckMissingFile"
+msgstr "Cannot check the integrity of a non-existing file."
+
+msgid "ScheduledTask"
+msgstr "%1$s (every %2$d seconds)"
+
+msgid "ScheduledTaskNever"
+msgstr "Never (no execution)"
+
+msgid "SucuriAlert"
+msgstr "Sucuri Alert"
+
+msgid "UpdatedEmailSubject"
+msgstr "The email subject has been successfully updated"
+
+msgid "InvalidEmailSubject"
+msgstr "Invalid characters in the email subject."
+
+msgid "EmailSubject.available_updates"
+msgstr "Available Updates"
+
+msgid "EmailSubject.bruteforce_attack"
+msgstr "Bruteforce Attack"
+
+msgid "EmailSubject.failed_login"
+msgstr "Failed Login"
+
+msgid "EmailSubject.plugin_activated"
+msgstr "Plugin Activated"
+
+msgid "EmailSubject.plugin_change"
+msgstr "Plugin Change"
+
+msgid "EmailSubject.plugin_deactivated"
+msgstr "Plugin Deactivated"
+
+msgid "EmailSubject.plugin_deleted"
+msgstr "Plugin Deleted"
+
+msgid "EmailSubject.plugin_installed"
+msgstr "Plugin Installed"
+
+msgid "EmailSubject.plugin_updated"
+msgstr "Plugin Updated"
+
+msgid "EmailSubject.post_publication"
+msgstr "Post Publication"
+
+msgid "EmailSubject.scan_checksums"
+msgstr "Scan Checksums"
+
+msgid "EmailSubject.settings_updated"
+msgstr "Settings Updated"
+
+msgid "EmailSubject.success_login"
+msgstr "Success Login"
+
+msgid "EmailSubject.theme_activated"
+msgstr "Theme Activated"
+
+msgid "EmailSubject.theme_deleted"
+msgstr "Theme Deleted"
+
+msgid "EmailSubject.theme_editor"
+msgstr "Theme Editor"
+
+msgid "EmailSubject.theme_installed"
+msgstr "Theme Installed"
+
+msgid "EmailSubject.theme_updated"
+msgstr "Theme Updated"
+
+msgid "EmailSubject.user_registration"
+msgstr "User Registration"
+
+msgid "EmailSubject.website_updated"
+msgstr "Website Updated"
+
+msgid "EmailSubject.widget_added"
+msgstr "Widget Added"
+
+msgid "EmailSubject.widget_deleted"
+msgstr "Widget Deleted"
+
+msgid "EmailSubject.post_update"
+msgstr "Post Update"
+
+msgid "EmailSubject.core_integrity_checks"
+msgstr "Core Integrity Checks"
+
+msgid "EmailSubject.password_change"
+msgstr "Password Change"
+
+msgid "FailedLoginFooter"
+msgstr "<br><br><em>Explanation: Someone failed to login to your site. If you are getting too many of these messages, it is likely your site is under a password guessing brute-force attack [1]. You can disable the failed login alerts from here [2]. Alternatively, you can consider to install a firewall between your website and your visitors to filter out these and other attacks, take a look at Sucuri Firewall [3].</em><br><br>[1] <a href='https://kb.sucuri.net/definitions/attacks/brute-force/password-guessing'>https://kb.sucuri.net/definitions/attacks/brute-force/password-guessing</a><br>[2] <a href='%1$s'>%2$s</a> <br>[3] <a href='https://sucuri.net/website-firewall/?wpalert'>https://sucuri.net/website-firewall/</a><br>"
+
+msgid "FirewallAPIKeySet"
+msgstr "Firewall API key was successfully saved"
+
+msgid "FirewallAPIKeyUnset"
+msgstr "Firewall API key was successfully removed"
+
+msgid "FirewallAPIKeyInvalid"
+msgstr "Invalid firewall API key"
+
+msgid "FirewallAPIKeyMissing"
+msgstr "Firewall API key was not found."
+
+msgid "NoData"
+msgstr "no data available"
+
+msgid "FirewallDoCache"
+msgstr "enabled (recommended)"
+
+msgid "FirewallSiteCache"
+msgstr "site caching (using your site headers)"
+
+msgid "FirewallNoCache"
+msgstr "minimal (only for a few minutes)"
+
+msgid "FirewallNoCacheAtAll"
+msgstr "caching disabled (use with caution)"
+
+msgid "FirewallNotEnabled"
+msgstr "Firewall is not enabled on your site, or your API key is invalid."
+
+msgid "FirewallClearCacheFailure"
+msgstr "Could not clear the cache of your site, try later again."
+
+msgid "Active"
+msgstr "active"
+
+msgid "NotActive"
+msgstr "not active"
+
+msgid "Unknown"
+msgstr "unknown"
+
+msgid "Undefined"
+msgstr "Undefined"
+
+msgid "January"
+msgstr "January"
+
+msgid "February"
+msgstr "February"
+
+msgid "March"
+msgstr "March"
+
+msgid "April"
+msgstr "April"
+
+msgid "May"
+msgstr "May"
+
+msgid "June"
+msgstr "June"
+
+msgid "July"
+msgstr "July"
+
+msgid "August"
+msgstr "August"
+
+msgid "September"
+msgstr "September"
+
+msgid "October"
+msgstr "October"
+
+msgid "November"
+msgstr "November"
+
+msgid "December"
+msgstr "December"
+
+msgid "Username"
+msgstr "Username"
+
+msgid "Password"
+msgstr "Password"
+
+msgid "RemoteAddr"
+msgstr "IP Address"
+
+msgid "AttemptTimestamp"
+msgstr "Attempt Timestamp"
+
+msgid "AttemptDatetime"
+msgstr "Attempt Date/Time"
+
+msgid "ConfirmOperation"
+msgstr "You need to confirm that you understand the risk of this operation."
+
+msgid "NonSupportedAction"
+msgstr "Requested action is not supported."
+
+msgid "NonSupportedLanguage"
+msgstr "Selected language is not supported."
+
+msgid "NothingSelected"
+msgstr "Nothing was selected from the list."
+
+msgid "ItemsProcessed"
+msgstr "The selected files have been successfully processed."
+
+msgid "AllItemsProcessed"
+msgstr "<b>%1$d</b> out of <b>%2$d</b> files were successfully processed."
+
+msgid "SomeItemsProcessed"
+msgstr "Only <b>%1$d</b> out of <b>%2$d</b> files were processed."
+
+msgid "ErrorIntegrityAdded"
+msgstr "The plugin has no permission to delete this file because it was created by a different system user who has more privileges than your account. Please use FTP to delete it."
+
+msgid "ErrorIntegrityModified"
+msgstr "The plugin has no permission to restore this file because it was modified by a different system user who has more privileges than your account. Please use FTP to restore it."
+
+msgid "ErrorIntegrityRemoved"
+msgstr "The plugin has no permission to restore this file because its directory is owned by a different system user who has more privileges than your account. Please use FTP to restore it."
+
+msgid "AlertSettingsUpdated"
+msgstr "The alert settings have been updated"
+
+msgid "OptionNotifyPluginChange"
+msgstr "Receive email alerts for changes in the settings of the Sucuri plugin"
+
+msgid "OptionPrettifyMails"
+msgstr "Receive email alerts in HTML <em>(there may be issues with some mail services)</em>"
+
+msgid "OptionUseWordPressMail"
+msgstr "Use WordPress functions to send mails <em>(uncheck to use native PHP functions)</em>"
+
+msgid "OptionLastLoginRedirection"
+msgstr "Allow redirection after login to report the last-login information"
+
+msgid "OptionNotifyScanChecksums"
+msgstr "Receive email alerts for core integrity checks"
+
+msgid "OptionNotifyAvailableUpdates"
+msgstr "Receive email alerts for available updates"
+
+msgid "OptionNotifyUserRegistration"
+msgstr "Receive email alerts for new user registration"
+
+msgid "OptionNotifySuccessLogin"
+msgstr "Receive email alerts for successful login attempts"
+
+msgid "OptionNotifyFailedLogin"
+msgstr "Receive email alerts for failed login attempts <em>(you may receive tons of emails)</em>"
+
+msgid "OptionNotifyBruteforceAttack"
+msgstr "Receive email alerts for password guessing attacks <em>(summary of failed logins per hour)</em>"
+
+msgid "OptionNotifyPostPublication"
+msgstr "Receive email alerts for changes in the post status <em>(configure from Ignore Posts Changes)</em>"
+
+msgid "OptionNotifyWebsiteUpdated"
+msgstr "Receive email alerts when the WordPress version is updated"
+
+msgid "OptionNotifySettingsUpdated"
+msgstr "Receive email alerts when your website settings are updated"
+
+msgid "OptionNotifyThemeEditor"
+msgstr "Receive email alerts when a file is modified with theme/plugin editor"
+
+msgid "OptionNotifyPluginInstalled"
+msgstr "Receive email alerts when a <b>plugin is installed</b>"
+
+msgid "OptionNotifyPluginActivated"
+msgstr "Receive email alerts when a <b>plugin is activated</b>"
+
+msgid "OptionNotifyPluginDeactivated"
+msgstr "Receive email alerts when a <b>plugin is deactivated</b>"
+
+msgid "OptionNotifyPluginUpdated"
+msgstr "Receive email alerts when a <b>plugin is updated</b>"
+
+msgid "OptionNotifyPluginDeleted"
+msgstr "Receive email alerts when a <b>plugin is deleted</b>"
+
+msgid "OptionNotifyWidgetAdded"
+msgstr "Receive email alerts when a <b>widget is added</b> to a sidebar"
+
+msgid "OptionNotifyWidgetDeleted"
+msgstr "Receive email alerts when a <b>widget is deleted</b> from a sidebar"
+
+msgid "OptionNotifyThemeInstalled"
+msgstr "Receive email alerts when a <b>theme is installed</b>"
+
+msgid "OptionNotifyThemeActivated"
+msgstr "Receive email alerts when a <b>theme is activated</b>"
+
+msgid "OptionNotifyThemeUpdated"
+msgstr "Receive email alerts when a <b>theme is updated</b>"
+
+msgid "OptionNotifyThemeDeleted"
+msgstr "Receive email alerts when a <b>theme is deleted</b>"
+
+msgid "MaximumAlertsSuccess"
+msgstr "The maximum number of alerts per hour has been updated"
+
+msgid "MaximumAlertsFailure"
+msgstr "Error updating the maximum number of alerts per hour"
+
+msgid "OptionPerHour5"
+msgstr "Maximum 5 per hour"
+
+msgid "OptionPerHour10"
+msgstr "Maximum 10 per hour"
+
+msgid "OptionPerHour20"
+msgstr "Maximum 20 per hour"
+
+msgid "OptionPerHour40"
+msgstr "Maximum 40 per hour"
+
+msgid "OptionPerHour80"
+msgstr "Maximum 80 per hour"
+
+msgid "OptionPerHour160"
+msgstr "Maximum 160 per hour"
+
+msgid "BruteForceAlertSuccess"
+msgstr "The plugin will assume that your website is under a brute-force attack after %1$s failed logins are detected during the same hour"
+
+msgid "BruteForceAlertFailure"
+msgstr "Invalid number of failed logins per hour to consider your website under a brute-force attack, try another number"
+
+msgid "OptionPerHourUnlimited"
+msgstr "Unlimited alerts per hour"
+
+msgid "OptionFailedLogins30"
+msgstr "30 failed logins per hour"
+
+msgid "OptionFailedLogins60"
+msgstr "60 failed logins per hour"
+
+msgid "OptionFailedLogins120"
+msgstr "120 failed logins per hour"
+
+msgid "OptionFailedLogins240"
+msgstr "240 failed logins per hour"
+
+msgid "OptionFailedLogins480"
+msgstr "480 failed logins per hour"
+
+msgid "HTAccessIsMissing"
+msgstr "Access control file does not exists"
+
+msgid "HTAccessNotWritable"
+msgstr "Access control file is not writable"
+
+msgid "DiffUtility"
+msgstr "WordPress Integrity Diff Utility"
+
+msgid "AccountsWereBlocked"
+msgstr "Selected user accounts were blocked"
+
+msgid "AccountsWereUnblocked"
+msgstr "Selected user accounts were unblocked"
+
+msgid "LastLoginMessage"
+msgstr "Last login was at <b>%1$s</b> from <b>%2$s</b> <em>(%3$s)</em> <a href='%4$s'>view all logs</a>"
+
+msgid "LastLoginsNotWritable"
+msgstr "Last-logins data file is not writable: <code>%1$s</code>"
+
+msgid "UserInfo"
+msgstr "User: %1$s (%2$s)"
+
+msgid "ReverseProxyStatus"
+msgstr "Reverse proxy support was set to <b>%1$s</b>"
+
+msgid "HTTPHeaderStatus"
+msgstr "HTTP header was set to <code>%1$s</code>"
+
+msgid "DisallowedHTTPHeader"
+msgstr "HTTP header is not allowed"
+
+msgid "RequiresModernPHP"
+msgstr "The plugin requires PHP 5 >= 5.3.0 - OR - PHP 7"
+
+msgid "Loading"
+msgstr "Loading..."
+
+msgid "iFrames"
+msgstr "iFrames"
+
+msgid "Links"
+msgstr "Links"
+
+msgid "Scripts"
+msgstr "Scripts"
+
+msgid "iFramesNum"
+msgstr "iFrames: %1$d"
+
+msgid "LinksNum"
+msgstr "Links: %1$d"
+
+msgid "ScriptsNum"
+msgstr "Scripts: %1$d"
+
+msgid "ConfigNotFound"
+msgstr "WordPress configuration file was not found."
+
+msgid "ConfigNotWritable"
+msgstr "WordPress configuration file is not writable."
+
+msgid "LastLoginsResetSuccess"
+msgstr "Last-Logins logs were successfully reset."
+
+msgid "LastLoginsResetFailure"
+msgstr "Could not reset the last-logins data file."
+
+msgid "WillReceiveAlerts"
+msgstr "The email alerts will be sent to: <code>%1$s</code>"
+
+msgid "WillNotReceiveAlerts"
+msgstr "These emails will stop receiving alerts: <code>%1$s</code>"
+
+msgid "TestAlertSent"
+msgstr "A test alert was sent to your email, check your inbox"
+
+msgid "InvalidEmail"
+msgstr "Email format not supported."
+
+msgid "TrustedIPDuplicate"
+msgstr "The IP specified address was already added."
+
+msgid "TrustedIPAdded"
+msgstr "Events generated from this IP will be ignored: <code>%1$s</code>"
+
+msgid "TrustedIPFailure"
+msgstr "The IP address could not be added to the trusted list"
+
+msgid "TrustedIPDeleted"
+msgstr "The selected IP addresses were successfully deleted."
+
+msgid "OnlyLowerUppercase"
+msgstr "Only lowercase letters and underscores are allowed."
+
+msgid "PostTypeIgnore"
+msgstr "Receive These Alerts"
+
+msgid "PostTypeUnignore"
+msgstr "Stop These Alerts"
+
+msgid "PostTypeIgnored"
+msgstr "Post-type has been successfully ignored."
+
+msgid "PostTypeUnignored"
+msgstr "The selected post-type will not be ignored anymore."
+
+msgid "PostTypeFailure"
+msgstr "The post-type is invalid or it may be already ignored."
+
+msgid "APIServiceChanged"
+msgstr "The status of the API service has been changed"
+
+msgid "HTTPTimeoutChange"
+msgstr "The timeout for the HTTP requests has been changed"
+
+msgid "HTTPTimeoutFailure"
+msgstr "API request timeout in seconds is too high."
+
+msgid "PluginResetSuccess"
+msgstr "Local security logs, hardening and settings were deleted"
+
+msgid "StorageNotWritable"
+msgstr "Storage is not writable: <code>%1$s</code>"
+
+msgid "SiteWasRegistered"
+msgstr "Site registered successfully"
+
+msgid "NFilesWereDeleted"
+msgstr "%1$d out of %2$d files has been deleted"
+
+msgid "AvoidDocumentRoot"
+msgstr "File should not be publicly accessible."
+
+msgid "AvoidFileOverride"
+msgstr "File already exists and will not be overwritten."
+
+msgid "CronjobRunNow"
+msgstr "Execute Now (in +10 seconds)"
+
+msgid "CronjobsWillRunSoon"
+msgstr "%1$d tasks has been scheduled to run in the next ten seconds."
+
+msgid "CronjobsWereDeleted"
+msgstr "%1$d scheduled tasks have been removed."
+
+msgid "CronjobsWereReinstalled"
+msgstr "%1$d tasks has been re-scheduled to run <code>%2$s</code>.'"
+
+msgid "CronjobsWereNotSelected"
+msgstr "No scheduled tasks were selected from the list."
+
+msgid "DNSLookupStatus"
+msgstr "The status of the DNS lookups for the reverse proxy detection has been changed"
+
+msgid "CommentMonitorStatus"
+msgstr "The status of the comment monitor has been changed"
+
+msgid "AuditLogReportLimit"
+msgstr "The number of logs that will be used to generate the audit report has been changed"
+
+msgid "IncorrectEncoding"
+msgstr "Data is incorrectly encoded"
+
+msgid "ImportCount"
+msgstr "%1$d out of %2$d option have been successfully imported"
+
+msgid "ApplyHardening"
+msgstr "Apply Hardening"
+
+msgid "RevertHardening"
+msgstr "Revert Hardening"
+
+msgid "HardeningFirewallTitle"
+msgstr "Website Firewall Protection"
+
+msgid "HardeningFirewallDescription"
+msgstr "A WAF is a protection layer for your web site, blocking all sort of attacks (brute force attempts, DDoS, SQL injections, etc) and helping it remain malware and blacklist free. This test checks if your site is using Sucuri Firewall to protect your site."
+
+msgid "HardeningFirewallPurchase"
+msgstr "The firewall is a premium service that you need purchase at - <a href='https://goo.gl/qfNkMq' target='_blank'>Sucuri Firewall</a>"
+
+msgid "HardeningVersionTitle"
+msgstr "Verify WordPress Version"
+
+msgid "HardeningVersionDescription"
+msgstr "Why keep your site updated? WordPress is an open-source project which means that with every update the details of the changes made to the source code are made public, if there were security fixes then someone with malicious intent can use this information to attack any site that has not been upgraded."
+
+msgid "HardeningPHPVersionTitle"
+msgstr "Verify PHP Version"
+
+msgid "HardeningPHPVersionDescription"
+msgstr "PHP %1$s is installed."
+
+msgid "HardeningPHPVersionLifetime"
+msgstr "Ask your hosting provider to install an updated version of PHP - <a href='http://php.net/supported-versions.php' target='_blank' rel='noopener'>List of PHP Supported Versions</a>"
+
+msgid "HardeningGeneratorTitle"
+msgstr "Remove WordPress Version"
+
+msgid "HardeningGeneratorDescription"
+msgstr "It checks if your WordPress version is being leaked to the public via a HTML meta-tag. Many web vulnerability scanners use this to determine which version of the code is running in your website. They use this to find disclosed vulnerabilities associated to this version number. A vulnerability scanner can still guess which version of WordPress is installed by comparing the checksum of some static files."
+
+msgid "HardeningNginxTitle"
+msgstr "Block of Certain PHP Files"
+
+msgid "HardeningNginxDescription"
+msgstr "Block the execution of PHP files in sensitive directories. Be careful while applying this hardening option as there are many plugins and theme which rely on the ability to execute PHP files in the content directory to generate images or save temporary data. Use the 'Whitelist PHP Files' tool to add exceptions to individual files."
+
+msgid "HardeningNginxField"
+msgstr "Check Hardening"
+
+msgid "HardeningNginxSuggestion"
+msgstr "Read the official WordPress guidelines to learn how to restrict access to PHP files in sensitive directories - <a href='https://codex.wordpress.org/Nginx#Global_restrictions_file' target='_blank' rel='noopener'>Nginx Global Restrictions For WordPress</a>"
+
+msgid "HardeningUploadsTitle"
+msgstr "Block PHP Files in Uploads Directory"
+
+msgid "HardeningUploadsDescription"
+msgstr "Block the execution of PHP files in sensitive directories. Be careful while applying this hardening option as there are many plugins and theme which rely on the ability to execute PHP files in the content directory to generate images or save temporary data. Use the 'Whitelist PHP Files' tool to add exceptions to individual files."
+
+msgid "HardeningUploadsApplySuccess"
+msgstr "Hardening applied to the uploads directory"
+
+msgid "HardeningUploadsApplyFailure"
+msgstr "Error hardening directory, check the permissions."
+
+msgid "HardeningUploadsRevertSuccess"
+msgstr "Hardening reverted in the uploads directory"
+
+msgid "HardeningUploadsRevertFailure"
+msgstr "Access file is not writable, check the permissions."
+
+msgid "HardeningContentTitle"
+msgstr "Block PHP Files in WP-CONTENT Directory"
+
+msgid "HardeningContentDescription"
+msgstr "Block the execution of PHP files in sensitive directories. Be careful while applying this hardening option as there are many plugins and theme which rely on the ability to execute PHP files in the content directory to generate images or save temporary data. Use the 'Whitelist PHP Files' tool to add exceptions to individual files."
+
+msgid "HardeningContentApplySuccess"
+msgstr "Hardening applied to the content directory"
+
+msgid "HardeningContentApplyFailure"
+msgstr "Error hardening directory, check the permissions."
+
+msgid "HardeningContentRevertSuccess"
+msgstr "Hardening reverted in the content directory"
+
+msgid "HardeningContentRevertFailure"
+msgstr "Access file is not writable, check the permissions."
+
+msgid "HardeningIncludesTitle"
+msgstr "Block PHP Files in WP-INCLUDES Directory"
+
+msgid "HardeningIncludesDescription"
+msgstr "Block the execution of PHP files in sensitive directories. Be careful while applying this hardening option as there are many plugins and theme which rely on the ability to execute PHP files in the content directory to generate images or save temporary data. Use the 'Whitelist PHP Files' tool to add exceptions to individual files."
+
+msgid "HardeningIncludesApplySuccess"
+msgstr "Hardening applied to the library directory"
+
+msgid "HardeningIncludesApplyFailure"
+msgstr "Error hardening directory, check the permissions."
+
+msgid "HardeningIncludesRevertSuccess"
+msgstr "Hardening reverted in the library directory"
+
+msgid "HardeningIncludesRevertFailure"
+msgstr "Access file is not writable, check the permissions."
+
+msgid "HardeningReadmeTitle"
+msgstr "Information Leakage"
+
+msgid "HardeningReadmeDescription"
+msgstr "Checks if the WordPress README file still exists in the website. The information in this file can be used by malicious users to pin-point which disclosed vulnerabilities are associated to the website. Be aware that WordPress recreates this file automatically with every update."
+
+msgid "HardeningReadmeApplySuccess"
+msgstr "Hardening applied to the <code>readme.html</code> file"
+
+msgid "HardeningReadmeApplyFailure"
+msgstr "Cannot delete <code>%1$s/readme.html</code>"
+
+msgid "HardeningAdminUserTitle"
+msgstr "Default Admin Account"
+
+msgid "HardeningAdminUserDescription"
+msgstr "Check if the primary user account still uses the name 'admin'. This allows malicious users to easily identify which account has the highest privileges to target an attack."
+
+msgid "HardeningFileEditorTitle"
+msgstr "Plugin and Theme Editor"
+
+msgid "HardeningFileEditorDescription"
+msgstr "Disables the theme and plugin editors to prevent unwanted modifications to the code. If you are having problems reverting this hardening option please open the wp-config.php file and delete the line with the constant DISALLOW_FILE_EDIT."
+
+msgid "HardeningFileEditorApplySuccess"
+msgstr "Hardening applied to the plugin and theme editor"
+
+msgid "HardeningFileEditorRevertSuccess"
+msgstr "Hardening reverted in the plugin and theme editor"
+
+msgid "HardeningFileEditorRevertFailure"
+msgstr "File Editor was not disabled using this tool. You must scan your project for a constant defined as DISALLOW_FILE_EDIT, then either delete it or set its value to False. Any plugin/theme can disable the file editor, so it is impossible to determine the origin of the constant."
+
+msgid "PHPWhitelistSuccess"
+msgstr "The file has been whitelisted from the hardening"
+
+msgid "PHPWhitelistFailure"
+msgstr "Specified folder is not hardened by this plugin"
+
+msgid "PHPDewhitelistSuccess"
+msgstr "The selected files have been removed from the hardening exception list"
+
+msgid "DiffUtilityStatus"
+msgstr "The status of the integrity diff utility has been changed"
+
+msgid "DiffUtilityMissing"
+msgstr "Your hosting provider has blocked the execution of external commands."
+
+msgid "IntegrityLanguage"
+msgstr "The language for the core integrity checks has been changed"
+
+msgid "SecretKeysUpdated"
+msgstr "Secret keys updated successfully (summary of the operation bellow)."
+
+msgid "NotInstalled"
+msgstr "not installed"
+
+msgid "PremiumPlugin"
+msgstr "Plugin is Premium"
+
+msgid "MissingLibrary"
+msgstr "Missing Library"
+
+msgid "CannotDownload"
+msgstr "Cannot Download"
+
+msgid "CannotBackup"
+msgstr "Cannot Backup"
+
+msgid "CannotInstall"
+msgstr "Cannot Install"
+
+msgid "VersionInstalled"
+msgstr "Installed v%1$s"
+
+msgid "NewestWordPress"
+msgstr "Newest WordPress"
+
+msgid "NoUpdates"
+msgstr "There are no updates available."
+
+msgid "ScannerFreqStatus"
+msgstr "The file system scanner frequency has been changed"
+
+msgid "SiteClean"
+msgstr "Site is Clean"
+
+msgid "SiteNotClean"
+msgstr "Site is not Clean"
+
+msgid "Blacklisted"
+msgstr "Blacklisted"
+
+msgid "NotBlacklisted"
+msgstr "Not Blacklisted"

@@ -82,13 +82,13 @@ class SucuriScanEvent extends SucuriScan
 
         foreach ($jobs as $unique => $info) {
             $schedules[$unique] = sprintf(
-                '%s (every %d seconds)',
+                __('ScheduledTask', SUCURISCAN_TEXTDOMAIN),
                 $info['display'],
                 $info['interval']
             );
         }
 
-        $schedules['_oneoff'] = 'Never (no execution)';
+        $schedules['_oneoff'] = __('ScheduledTaskNever', SUCURISCAN_TEXTDOMAIN);
 
         return $schedules;
     }
@@ -455,18 +455,7 @@ class SucuriScanEvent extends SucuriScan
 
             case 'failed_login':
                 $settings_url = SucuriScanTemplate::getUrl('settings');
-                $content .= "<br>\n<br>\n<em>Explanation: Someone failed to login to your "
-                    . "site. If you are getting too many of these messages, it is likely your "
-                    . "site is under a password guessing brute-force attack [1]. You can disable "
-                    . "the failed login alerts from here [2]. Alternatively, you can consider "
-                    . "to install a firewall between your website and your visitors to filter "
-                    . "out these and other attacks, take a look at Sucuri Firewall [3].</em>"
-                    . "<br>\n<br>\n"
-                    . "[1] <a href='https://kb.sucuri.net/definitions/attacks/brute-force/password-guessing'>"
-                    . "https://kb.sucuri.net/definitions/attacks/brute-force/password-guessing</a><br>\n"
-                    . "[2] <a href='" . $settings_url . "'>" . $settings_url . "</a> <br>\n"
-                    . "[3] <a href='https://sucuri.net/website-firewall/?wpalert'>"
-                    . "https://sucuri.net/website-firewall/</a> <br>\n";
+                $content .= sprintf(__('FailedLoginFooter'), $settings_url, $settings_url);
                 break;
 
             case 'bruteforce_attack':
@@ -484,7 +473,7 @@ class SucuriScanEvent extends SucuriScan
                 $email_params['ForceHTML'] = true;
         }
 
-        $title = str_replace('_', "\x20", $event);
+        $title = __('EmailSubject.' . $event, SUCURISCAN_TEXTDOMAIN);
 
         return SucuriScanMail::sendMail(
             $email,
@@ -592,7 +581,7 @@ class SucuriScanEvent extends SucuriScan
 
         $sent = SucuriScanMail::sendMail(
             $user->user_email,
-            'Password Changed',
+            __('EmailSubject.password_change', SUCURISCAN_TEXTDOMAIN),
             $message,
             $data_set
         );

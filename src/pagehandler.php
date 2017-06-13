@@ -27,7 +27,7 @@ function sucuriscan_page()
 
     if (!SucuriScanFileInfo::isSplAvailable()) {
         /* display a warning when system dependencies are not met */
-        SucuriScanInterface::error('The plugin requires PHP 5 >= 5.3.0 - OR - PHP 7');
+        SucuriScanInterface::error(__('RequiresModernPHP', SUCURISCAN_TEXTDOMAIN));
     }
 
     /* load data for the Integrity section */
@@ -38,12 +38,12 @@ function sucuriscan_page()
     $params['AuditLogsReport'] = SucuriScanAuditLogs::pageAuditLogsReport();
 
     /* load data for the SiteCheck section */
-    $params['SiteCheck.iFramesTitle'] = 'iFrames';
-    $params['SiteCheck.LinksTitle'] = 'Links';
-    $params['SiteCheck.ScriptsTitle'] = 'Scripts';
-    $params['SiteCheck.iFramesContent'] = 'Loading...';
-    $params['SiteCheck.LinksContent'] = 'Loading...';
-    $params['SiteCheck.ScriptsContent'] = 'Loading...';
+    $params['SiteCheck.iFramesTitle'] = __('iFrames', SUCURISCAN_TEXTDOMAIN);
+    $params['SiteCheck.LinksTitle'] = __('Links', SUCURISCAN_TEXTDOMAIN);
+    $params['SiteCheck.ScriptsTitle'] = __('Scripts', SUCURISCAN_TEXTDOMAIN);
+    $params['SiteCheck.iFramesContent'] = __('Loading', SUCURISCAN_TEXTDOMAIN);
+    $params['SiteCheck.LinksContent'] = __('Loading', SUCURISCAN_TEXTDOMAIN);
+    $params['SiteCheck.ScriptsContent'] = __('Loading', SUCURISCAN_TEXTDOMAIN);
     $params['SiteCheck.Malware'] = '<div id="sucuriscan-malware"></div>';
     $params['SiteCheck.Blacklist'] = '<div id="sucuriscan-blacklist"></div>';
     $params['SiteCheck.Recommendations'] = '<div id="sucuriscan-recommendations"></div>';
@@ -82,9 +82,9 @@ function sucuriscan_lastlogins_page()
 
         if (@unlink($file_path)) {
             sucuriscan_lastlogins_datastore_exists();
-            SucuriScanInterface::info('Last-Logins logs were reset successfully.');
+            SucuriScanInterface::info(__('LastLoginsResetSuccess', SUCURISCAN_TEXTDOMAIN));
         } else {
-            SucuriScanInterface::error('Could not reset the last-logins logs.');
+            SucuriScanInterface::error(__('LastLoginsResetFailure', SUCURISCAN_TEXTDOMAIN));
         }
     }
 
