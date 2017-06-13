@@ -3,7 +3,7 @@ Contributors: dd@sucuri.net
 Donate Link: https://sucuri.net/
 Tags: malware, security, firewall, scan, spam, virus, sucuri, protection, WordPress Security, Login Security, Security Auditing, File Integrity, htaccess, phishing, backdoors, SQL Injection, RFI, LFI, XSS, CSRF, website firewall, Website Security, Performance Optimization, Zero Day, Software Vulnerability, Exploits, Hacks, Attackers, Bad Actors, Reverse Proxy, Two Factor Security, Two Factor Authentication, Security Logs, HeatBleed Vulnerability, Website Protection, Bash Vulnerability, RevSlider Vulnerability, MailPoet Vulnerability, Malware Prevention, Website Security, Website Firewall, Website AntiVirus, Security Response, Security Detection, Security Prevention
 Requires at least: 3.6
-Stable tag: 1.8.3
+Stable tag: 1.8.4
 Tested up to: 4.8.0
 
 The Sucuri WordPress Security plugin is a security toolset for security integrity monitoring, malware detection and security hardening.
@@ -216,10 +216,63 @@ No, it is not required. The Website Firewall runs in the cloud without the need 
 
 == Upgrade Notice ==
 
-= 1.8.3 =
+= 1.8.4 =
 This version adds support for the latest version of WordPress. Introduces new features and fixes some bugs reported by the WordPress community as well as bugs found by our automated testing system.
 
 == Changelog ==
+
+= 1.8.4 =
+* Modify the entire interface to offer a fresh desigh
+* Add support for internationalization via gettext
+* Modify the structure of the project for maintainability
+* Remove minified files to facilitate future contributions
+* Add warning message in the reset plugin tool page
+* Fix loading sequence for additional PHP files
+* Add restriction to prevent direct access to PHP files
+* Fix file search by name when the directory is passed
+* Add HTTP request parameters to track some settings
+* Fix reset plugin tool with the new WordPress API
+* Fix length of the pagination helper with many pages
+* Add performance boost for the failed logins page
+* Modify structure of the failed logins data analyzer
+* Fix deactivation of all the scheduled tasks from settings
+* Modify entire code base to enforce HTTPS over HTTP
+* Remove heartbeat settings after performance improvement
+* Remove unnecessary XHR event monitor and report
+* Remove deprecated functions from previous releases
+* Remove deprecated tool to scan for error_log files
+* Modify failed logins logger with wrong passwords
+* Remove plugin checksum dependency to avoid asset cache
+* Modify minimum PHP version in hardening page
+* Fix email alerts with non-existing site_url option
+* Add tool to import and export the plugin settings
+* Add uninstall instructions during deactivation of the plugin
+* Fix plugin reinstall procedure with backup and prechecks
+* Modify mechanism to ignore irrelevant WordPress core files
+* Modify list of available scheduled task frequencies
+* Fix lazy load of the CSS and Scripts on the correct pages
+* Add audit log message fixer for the wpephpcompat_jobs event
+* Fix website URL in the template for the email alerts
+* Add message in the core integrity tool for false/positives
+* Add option to reset the content of some storage files
+* Add mechanism to display self-hosting logs as fallback
+* Fix incoherent failed login processor on pagination
+* Add option to display differences in core integrity checks
+* Modify the default and maximum timeout for the API
+* Fix static data storage path to allow server migrations
+* Add option to ignore non-registered custom post-types
+* Add more details into the event that monitors post deletions
+* Fix event monitor for plugin activation and deactivation
+* Fix dynamic directory tree deletion with improved performance
+* Fix automatic deletion of conflicting plugins
+* Add event monitor for all supported post status transitions
+* Add one-time newsletter invitation after plugin updates
+* Add code to delete legacy plugin options from database
+* Modify error on non-processed files in the integrity checks
+* Fix overflow of HTTP requests to SiteCheck API on failures
+* Fix handling of the actions in the core integrity checks
+* Add message and button to reset the audit logs cache
+* Add ajax request to load malware scans for performance
 
 = 1.8.3 =
 * Removed goo.gl links

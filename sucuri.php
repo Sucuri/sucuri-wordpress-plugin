@@ -7,7 +7,7 @@
  * Author URI: https://sucuri.net/
  * Text Domain: sucuri-scanner
  * Author: Sucuri Inc.
- * Version: 1.8.3
+ * Version: 1.8.4
  */
 
 
@@ -83,7 +83,7 @@ define('SUCURISCAN', 'sucuriscan');
 /**
  * Current version of the plugin's code.
  */
-define('SUCURISCAN_VERSION', '1.8.3');
+define('SUCURISCAN_VERSION', '1.8.4');
 
 /**
  * The name of the Sucuri plugin main file.

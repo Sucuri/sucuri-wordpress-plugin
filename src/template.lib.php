@@ -50,7 +50,7 @@ class SucuriScanTemplate extends SucuriScanRequest
      */
     private static function translateContent($content = '')
     {
-        if (@preg_match_all('/@@SUCURI\.(\S+)@@/', $content, $matches)) {
+        if (@preg_match_all('/@@SUCURI\.([0-9a-zA-Z\.\_]+)@@/', $content, $matches)) {
             foreach ($matches[0] as $key => $placeholder) {
                 $translation = __($matches[1][$key], SUCURISCAN_TEXTDOMAIN);
                 $content = str_replace($placeholder, $translation, $content);
