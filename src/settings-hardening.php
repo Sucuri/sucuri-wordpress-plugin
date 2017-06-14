@@ -342,10 +342,14 @@ class SucuriScanHardeningPage extends SucuriScan
             $result = SucuriScanHardening::hardenDirectory($folder);
 
             if ($result === true) {
-                SucuriScanHardening::whitelist('wp-tinymce.php', 'wp-includes');
-                SucuriScanHardening::whitelist('ms-files.php', 'wp-includes');
-                SucuriScanEvent::reportNoticeEvent('Hardening applied to the library directory');
-                SucuriScanInterface::info(__('HardeningIncludesApplySuccess', SUCURISCAN_TEXTDOMAIN));
+                try {
+                    SucuriScanHardening::whitelist('wp-tinymce.php', 'wp-includes');
+                    SucuriScanHardening::whitelist('ms-files.php', 'wp-includes');
+                    SucuriScanEvent::reportNoticeEvent('Hardening applied to the library directory');
+                    SucuriScanInterface::info(__('HardeningIncludesApplySuccess', SUCURISCAN_TEXTDOMAIN));
+                } catch (Exception $e) {
+                    SucuriScanInterface::error($e->getMessage());
+                }
             } else {
                 SucuriScanInterface::error(__('HardeningIncludesApplyFailure', SUCURISCAN_TEXTDOMAIN));
             }

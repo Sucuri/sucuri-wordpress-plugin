@@ -65,7 +65,7 @@ function sucuriscan_settings_general_apikey($nonce)
             $fpath = SucuriScanOption::optionsFilePath();
 
             if (!is_writable($fpath)) {
-                SucuriScanInterface::error(spritnf(
+                SucuriScanInterface::error(sprintf(
                     __('StorageNotWritable', SUCURISCAN_TEXTDOMAIN),
                     $fpath /* absolute path of the data storage folder */
                 ));
@@ -632,7 +632,7 @@ function sucuriscan_settings_general_auditlogstats($nonce)
             SucuriScanOption::updateOption(':logs4report', $logs4report);
             SucuriScanEvent::reportInfoEvent($message);
             SucuriScanEvent::notifyEvent('plugin_change', $message);
-            SucuriScanInterface::info(__('AuditLogReportLimit', SUCURISCAN_TEXTDOMAIN));
+            SucuriScanInterface::info(__('LogsReportLimit', SUCURISCAN_TEXTDOMAIN));
         }
     }
 
