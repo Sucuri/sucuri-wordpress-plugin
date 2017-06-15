@@ -1,23 +1,11 @@
 
 <div class="sucuriscan-integrity-diff-utility">
     <div class="sucuriscan-inline-alert-info">
-        <p>
-            The Unix Diff Utility is enabled. You can click the files marked
-            as modified <em>(the ones with the purple flag)</em> to see the
-            differences detected by the scanner. If you consider the differences
-            to be harmless you can mark the file as fixed, otherwise it is adviced
-            to restore the original content immediately.
-        </p>
+        <p>@@SUCURI.DiffUtilityInfo@@</p>
     </div>
 
     <div class="sucuriscan-hidden sucuriscan-diff-instructions">
-        <p>
-            Lines with a <b>minus</b> sign as the prefix <em>(here in red)</em>
-            show the original code. Lines with a <b>plus</b> sign as the prefix
-            <em>(here in green)</em> show the modified code. You can read more
-            about the DIFF format from the WikiPedia article about the <a target="_blank"
-            href="https://en.wikipedia.org/wiki/Diff_utility" rel="noopener">Unix Diff Utility</a>.
-        </p>
+        <p>@@SUCURI.DiffUtilityInstructions@@</p>
     </div>
 
     %%%SUCURI.DiffUtility.Modal%%%

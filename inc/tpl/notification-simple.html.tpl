@@ -1,8 +1,8 @@
 
-Event: %%SUCURI.Subject%%
-Website: http://%%SUCURI.Website%%
-IP Address: %%SUCURI.RemoteAddress%%
-Alert Time: %%SUCURI.Time%%
+@@SUCURI.Event@@: %%SUCURI.Subject%%
+@@SUCURI.Website@@: http://%%SUCURI.Website%%
+@@SUCURI.RemoveAddr@@: %%SUCURI.RemoteAddress%%
+@@SUCURI.Datetime@@: %%SUCURI.Time%%
 %%SUCURI.User%%
 
-Notification: %%SUCURI.Message%%
+@@SUCURI.Message@@: %%SUCURI.Message%%

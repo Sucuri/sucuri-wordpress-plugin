@@ -11,10 +11,10 @@ jQuery(function ($) {
         }
 
         if (reset === true) {
-            $('.sucuriscan-auditlog-response').html('<em>Loading...</em>');
+            $('.sucuriscan-auditlog-response').html('<em>@@SUCURI.Loading@@</em>');
         }
 
-        $('.sucuriscan-pagination-loading').html('Loading...');
+        $('.sucuriscan-pagination-loading').html('@@SUCURI.Loading@@');
 
         $.post(url, {
             action: 'sucuriscan_ajax',
@@ -70,25 +70,15 @@ jQuery(function ($) {
 
 <div class="sucuriscan-auditlog-table">
     <div id="sucuriscan-auditlog-selfhosting" class="sucuriscan-inline-alert-info sucuriscan-hidden">
-        <p>
-            You don't have a valid API key to communicate with the remote API
-            service. However, the self-hosting monitor is enabled, the plugin
-            will read the logs from that file and display the data here. Notice
-            that only the latest logs will be processed to keep a low memory
-            footprint. Consider to generate a free API key to get a better
-            coverage of the activity in your website.
-        </p>
+        <p>@@SUCURI.SelfHostingFallback@@</p>
     </div>
 
     <div class="sucuriscan-auditlog-response">
-        <em>Loading...</em>
+        <em>@@SUCURI.Loading@@</em>
     </div>
 
     <div>
-        <small>
-            This data is cached for %%SUCURI.AuditLogs.Lifetime%% seconds
-            &mdash; <a href="#" class="sucuriscan-reset-auditlogs">refresh</a>
-        </small>
+        <small>@@SUCURI.AuditLogsCache@@ &mdash; <a href="#" class="sucuriscan-reset-auditlogs">@@SUCURI.Refresh@@</a></small>
     </div>
 
     <div class="sucuriscan-clearfix">

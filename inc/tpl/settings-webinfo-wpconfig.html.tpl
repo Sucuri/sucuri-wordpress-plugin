@@ -1,13 +1,13 @@
 
 <div class="sucuriscan-panel">
-    <h3 class="sucuriscan-title">WordPress Configuration Variables</h3>
+    <h3 class="sucuriscan-title">@@SUCURI.ConfigVariables@@</h3>
 
     <div class="inside">
         <table class="wp-list-table widefat sucuriscan-table">
             <thead>
                 <tr>
-                    <th>Variable</th>
-                    <th>Value</th>
+                    <th>@@SUCURI.Name@@</th>
+                    <th>@@SUCURI.Value@@</th>
                 </tr>
             </thead>
 
