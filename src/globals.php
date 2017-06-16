@@ -109,6 +109,20 @@ if (defined('SUCURISCAN')) {
          */
         function sucuriscan_load_plugin_textdomain()
         {
+            global $locale;
+
+            $filename = sprintf(
+                '%s/languages/%s-%s.po',
+                SUCURISCAN_PLUGIN_PATH,
+                SUCURISCAN_TEXTDOMAIN,
+                $locale
+            );
+
+            if (!file_exists($filename)) {
+                $locale = 'en_US';
+                setlocale(LC_ALL, 'en_US');
+            }
+
             load_plugin_textdomain(
                 SUCURISCAN_TEXTDOMAIN,
                 false, /* deprecated */
