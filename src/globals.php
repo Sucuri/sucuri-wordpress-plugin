@@ -111,14 +111,38 @@ if (defined('SUCURISCAN')) {
         {
             global $locale;
 
-            $filename = sprintf(
+            $pofile = sprintf(
                 '%s/languages/%s-%s.po',
                 SUCURISCAN_PLUGIN_PATH,
                 SUCURISCAN_TEXTDOMAIN,
                 $locale
             );
+            $mofile = sprintf(
+                '%s/languages/%s-%s.mo',
+                SUCURISCAN_PLUGIN_PATH,
+                SUCURISCAN_TEXTDOMAIN,
+                $locale
+            );
 
-            if (!file_exists($filename)) {
+            /* attempt to import the English POT file into LOCALE */
+            if (!file_exists($pofile) || !file_exists($mofile)) {
+                $en_pofile = sprintf(
+                    '%s/languages/%s-en_US.po',
+                    SUCURISCAN_PLUGIN_PATH,
+                    SUCURISCAN_TEXTDOMAIN
+                );
+                $en_mofile = sprintf(
+                    '%s/languages/%s-en_US.mo',
+                    SUCURISCAN_PLUGIN_PATH,
+                    SUCURISCAN_TEXTDOMAIN
+                );
+
+                @copy($en_pofile, $pofile);
+                @copy($en_mofile, $mofile);
+            }
+
+            /* fallback to English on language import failure */
+            if (!file_exists($pofile) || !file_exists($mofile)) {
                 $locale = 'en_US';
                 setlocale(LC_ALL, 'en_US');
             }
