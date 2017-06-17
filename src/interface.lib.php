@@ -189,8 +189,11 @@ class SucuriScanInterface
      */
     public static function noticeAfterUpdate()
     {
+        /* get version of the plugin that was previously installed */
+        $version = SucuriScanOption::getOption(':plugin_version');
+
         /* use simple comparison to force type cast. */
-        if (SucuriScanOption::getOption(':plugin_version') == SUCURISCAN_VERSION) {
+        if (headers_sent() || $version == SUCURISCAN_VERSION) {
             return;
         }
 
