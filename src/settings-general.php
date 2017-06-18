@@ -577,44 +577,6 @@ function sucuriscan_settings_general_ipdiscoverer($nonce)
 }
 
 /**
- * Renders a page with information about the comment monitor feature.
- *
- * @param bool $nonce True if the CSRF protection worked.
- * @return string Page with information about the comment monitor.
- */
-function sucuriscan_settings_general_commentmonitor($nonce)
-{
-    $params = array(
-        'CommentMonitorStatus' => __('Enabled', SUCURISCAN_TEXTDOMAIN),
-        'CommentMonitorSwitchText' => __('Disable', SUCURISCAN_TEXTDOMAIN),
-        'CommentMonitorSwitchValue' => 'disable',
-    );
-
-    // Configure the comment monitor option.
-    if ($nonce) {
-        $monitor = SucuriScanRequest::post(':comment_monitor', '(en|dis)able');
-
-        if ($monitor) {
-            $action_d = $monitor . 'd';
-            $message = 'Comment monitor was <code>' . $action_d . '</code>';
-
-            SucuriScanOption::updateOption(':comment_monitor', $action_d);
-            SucuriScanEvent::reportInfoEvent($message);
-            SucuriScanEvent::notifyEvent('plugin_change', $message);
-            SucuriScanInterface::info(__('CommentMonitorStatus', SUCURISCAN_TEXTDOMAIN));
-        }
-    }
-
-    if (SucuriScanOption::isDisabled(':comment_monitor')) {
-        $params['CommentMonitorStatus'] = __('Disabled', SUCURISCAN_TEXTDOMAIN);
-        $params['CommentMonitorSwitchText'] = __('Enable', SUCURISCAN_TEXTDOMAIN);
-        $params['CommentMonitorSwitchValue'] = 'enable';
-    }
-
-    return SucuriScanTemplate::getSection('settings-general-commentmonitor', $params);
-}
-
-/**
  * Renders a page with information about the auditlog stats feature.
  *
  * @param bool $nonce True if the CSRF protection worked.
@@ -658,7 +620,6 @@ function sucuriscan_settings_general_importexport($nonce)
         ':api_protocol',
         ':api_service',
         ':cloudproxy_apikey',
-        ':comment_monitor',
         ':diff_utility',
         ':dns_lookups',
         ':email_subject',

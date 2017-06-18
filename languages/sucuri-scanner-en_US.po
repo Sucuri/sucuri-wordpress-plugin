@@ -1466,15 +1466,6 @@ msgstr "Data Storage"
 msgid "DataStorageInfo"
 msgstr "This is the directory where the plugin will store the security logs, the list of files marked as fixed in the core integrity tool, the cache for the malware scanner and 3rd-party plugin metadata. The plugin requires write permissions in this directory as well as the files contained in it. If you prefer to keep these files in a non-public directory <em>(one level up the document root) </em> please define a constant in the <em>\"wp-config.php\"</em> file named <em>\"SUCURI_DATA_STORAGE\"</em> with the absolute path to the new directory."
 
-msgid "CommentMonitor"
-msgstr "Comment Monitor"
-
-msgid "CommentMonitorStatus"
-msgstr "The status of the comment monitor has been changed"
-
-msgid "CommentMonitorInfo"
-msgstr "User comments are the main source of spam in WordPress websites, this option enables the monitoring of data sent via the comment forms loaded in every page and post. We also use this information in an anonymous way to generate <a target=\"_blank\" href=\"https://sucuri.net/security-reports/brute-force/\">statistics</a> of usage that help us improve our service."
-
 msgid "LogsReport"
 msgstr "Audit Log Statistics"
 

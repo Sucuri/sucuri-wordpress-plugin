@@ -24,8 +24,6 @@
 
             %%%SUCURI.Settings.General.IPDiscoverer%%%
 
-            %%%SUCURI.Settings.General.CommentMonitor%%%
-
             %%%SUCURI.Settings.General.AuditLogStats%%%
 
             %%%SUCURI.Settings.General.ImportExport%%%

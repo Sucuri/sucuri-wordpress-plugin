@@ -1466,15 +1466,6 @@ msgstr "Almacenamiento de Datos"
 msgid "DataStorageInfo"
 msgstr "Este es el directorio donde el plugin guardará los registros de seguridad, el archivo con las configuraciones, la cache y datos adicionales de otras herramientas. El plugin require de permisos de escritura en este directorio así como en los archivos contenidos allí. Si usted prefiere mantener estos archivos en un directorio diferente al especificado, por favor defina una constante llamada <em>\"SUCURI_DATA_STORAGE\"</em> en el archivo de configuración de WordPress con la ruta absoluta del nuevo directorio."
 
-msgid "CommentMonitor"
-msgstr "Monitor de Comentarios"
-
-msgid "CommentMonitorStatus"
-msgstr "El estado del monitor de comentarios ha sido cambiado"
-
-msgid "CommentMonitorInfo"
-msgstr "Los comentarios de usuario son el origen principal de spam en sitios que usan WordPress, esta opción activa el monitoreo de los datos enviados a través de formularios de comentario disponibles en cada página. Nosotros también usamos esta información de forma anónima para generar <a target=\"_blank\" href=\"https://sucuri.net/security-reports/brute-force/\">estadísticas</a> de uso para ayudarnos a mejorar el servicio."
-
 msgid "LogsReport"
 msgstr "Estadísticas De Seguridad"
 

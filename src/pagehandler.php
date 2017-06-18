@@ -120,7 +120,6 @@ function sucuriscan_settings_page()
     $params['Settings.General.Cronjobs'] = sucuriscan_settings_general_cronjobs();
     $params['Settings.General.ReverseProxy'] = sucuriscan_settings_general_reverseproxy($nonce);
     $params['Settings.General.IPDiscoverer'] = sucuriscan_settings_general_ipdiscoverer($nonce);
-    $params['Settings.General.CommentMonitor'] = sucuriscan_settings_general_commentmonitor($nonce);
     $params['Settings.General.AuditLogStats'] = sucuriscan_settings_general_auditlogstats($nonce);
     $params['Settings.General.ImportExport'] = sucuriscan_settings_general_importexport($nonce);
 
