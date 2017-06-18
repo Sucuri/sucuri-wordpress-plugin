@@ -545,7 +545,7 @@ class SucuriScanSiteCheck extends SucuriScanAPI
      * with a missing line in the coverage. Since the test case takes care of
      * the functionality of this code we will assume that it is fully covered.
      */
-    function ajaxMalwareScan()
+    public static function ajaxMalwareScan()
     {
         if (SucuriScanRequest::post('form_action') !== 'malware_scan') {
             return;
