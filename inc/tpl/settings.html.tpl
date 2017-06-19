@@ -18,8 +18,6 @@
 
             %%%SUCURI.Settings.General.SelfHosting%%%
 
-            %%%SUCURI.Settings.General.Cronjobs%%%
-
             %%%SUCURI.Settings.General.ReverseProxy%%%
 
             %%%SUCURI.Settings.General.IPDiscoverer%%%
@@ -32,7 +30,7 @@
         </div>
 
         <div id="sucuriscan-tabs-scanner">
-            %%%SUCURI.Settings.Scanner.Options%%%
+            %%%SUCURI.Settings.Scanner.Cronjobs%%%
 
             %%%SUCURI.Settings.Scanner.IntegrityDiffUtility%%%
 

@@ -22,61 +22,125 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
 class SucuriScanSettingsScanner extends SucuriScanSettings
 {
     /**
-     * Returns the HTML for the project scanner options.
+     * Renders a page with information about the cronjobs feature.
      *
-     * This method renders a section in the settings page that allows the website
-     * owner to configure the functionality of the main file system scanner. This
-     * includes the frequency in which such scanner will run and information about
-     * the availability of the required dependencies.
-     *
-     * @return string HTML for the project scanner options.
+     * @param bool $nonce True if the CSRF protection worked.
+     * @return string Page with information about the cronjobs.
      */
-    public static function options()
+    public static function cronjobs()
     {
-        $params = array();
+        $params = array(
+            'Cronjobs.List' => '',
+            'Cronjobs.Total' => 0,
+            'Cronjob.Schedules' => '',
+        );
 
         $schedule_allowed = SucuriScanEvent::availableSchedules();
 
         if (SucuriScanInterface::checkNonce()) {
-            // Modify the schedule of the filesystem scanner.
-            if ($frequency = SucuriScanRequest::post(':scan_frequency')) {
-                if (array_key_exists($frequency, $schedule_allowed)) {
-                    SucuriScanOption::updateOption(':scan_frequency', $frequency);
+            // Modify the scheduled tasks (run now, remove, re-schedule).
+            $available = ($schedule_allowed === null)
+                ? SucuriScanEvent::availableSchedules()
+                : $schedule_allowed;
+            $allowed_actions = array_keys($available);
+            $allowed_actions[] = 'runnow'; /* execute in the next 10 seconds */
+            $allowed_actions[] = 'remove'; /* can be reinstalled automatically */
+            $allowed_actions = sprintf('(%s)', implode('|', $allowed_actions));
 
-                    // Remove all the scheduled tasks associated to the plugin.
-                    wp_clear_scheduled_hook('sucuriscan_scheduled_scan');
+            if ($cronjob_action = SucuriScanRequest::post(':cronjob_action', $allowed_actions)) {
+                $cronjobs = SucuriScanRequest::post(':cronjobs', '_array');
 
-                    // Install new cronjob unless the user has selected "Never".
-                    if ($frequency !== '_oneoff') {
-                        wp_schedule_event(time() + 10, $frequency, 'sucuriscan_scheduled_scan');
+                if (!empty($cronjobs)) {
+                    $total_tasks = count($cronjobs);
+
+                    if ($cronjob_action == 'runnow') {
+                        /* Force execution of the selected scheduled tasks. */
+                        SucuriScanInterface::info(sprintf(
+                            __('CronjobsWillRunSoon', SUCURISCAN_TEXTDOMAIN),
+                            $total_tasks /* some cronjobs will be ignored */
+                        ));
+                        SucuriScanEvent::reportNoticeEvent(sprintf(
+                            'Force execution of scheduled tasks: (multiple entries): %s',
+                            @implode(',', $cronjobs)
+                        ));
+
+                        foreach ($cronjobs as $task_name) {
+                            wp_schedule_single_event(time() + 10, $task_name);
+                        }
+                    } elseif ($cronjob_action == 'remove' || $cronjob_action == '_oneoff') {
+                        /* Force deletion of the selected scheduled tasks. */
+                        SucuriScanInterface::info(sprintf(
+                            __('CronjobsWereDeleted', SUCURISCAN_TEXTDOMAIN),
+                            $total_tasks /* some cronjobs will be ignored */
+                        ));
+                        SucuriScanEvent::reportNoticeEvent(sprintf(
+                            'Delete scheduled tasks: (multiple entries): %s',
+                            @implode(',', $cronjobs)
+                        ));
+
+                        foreach ($cronjobs as $task_name) {
+                            wp_clear_scheduled_hook($task_name);
+                        }
+                    } else {
+                        SucuriScanInterface::info(sprintf(
+                            __('CronjobsWereReinstalled', SUCURISCAN_TEXTDOMAIN),
+                            $total_tasks, /* some cronjobs will be ignored */
+                            $cronjob_action /* frequency to run cronjob */
+                        ));
+                        SucuriScanEvent::reportNoticeEvent(sprintf(
+                            'Re-configure scheduled tasks %s: (multiple entries): %s',
+                            $cronjob_action,
+                            @implode(',', $cronjobs)
+                        ));
+
+                        foreach ($cronjobs as $task_name) {
+                            $next_due = wp_next_scheduled($task_name);
+                            wp_schedule_event($next_due, $cronjob_action, $task_name);
+                        }
                     }
-
-                    $frequency_title = strtolower($schedule_allowed[ $frequency ]);
-                    $message = 'Scanner frequency set to <code>' . $frequency_title . '</code>';
-
-                    SucuriScanEvent::reportInfoEvent($message);
-                    SucuriScanEvent::notifyEvent('plugin_change', $message);
-                    SucuriScanInterface::info(__('ScannerFreqStatus', SUCURISCAN_TEXTDOMAIN));
+                } else {
+                    SucuriScanInterface::error(__('CronjobsWereNotSelected', SUCURISCAN_TEXTDOMAIN));
                 }
             }
         }
 
-        $scan_freq = SucuriScanOption::getOption(':scan_frequency');
+        $cronjobs = _get_cron_array();
+        $available = ($schedule_allowed === null)
+            ? SucuriScanEvent::availableSchedules()
+            : $schedule_allowed;
 
-        // Generate the HTML code for the option list in the form select fields.
-        $freq_options = SucuriScanTemplate::selectOptions($schedule_allowed, $scan_freq);
+        /* Hardcode the first one to allow the immediate execution of the cronjob(s) */
+        $params['Cronjob.Schedules'] .= '<option value="runnow">'
+        . __('CronjobRunNow', SUCURISCAN_TEXTDOMAIN) . '</option>';
 
-        $params['ScanningFrequency'] = __('Undefined', SUCURISCAN_TEXTDOMAIN);
-        $params['ScanningFrequencyOptions'] = $freq_options;
+        foreach ($available as $freq => $name) {
+            $params['Cronjob.Schedules'] .= sprintf('<option value="%s">%s</option>', $freq, $name);
+        }
+
+        foreach ($cronjobs as $timestamp => $cronhooks) {
+            foreach ((array) $cronhooks as $hook => $events) {
+                foreach ((array) $events as $key => $event) {
+                    if (empty($event['args'])) {
+                        $event['args'] = array('[]');
+                    }
+
+                    $params['Cronjobs.Total'] += 1;
+                    $params['Cronjobs.List'] .=
+                    SucuriScanTemplate::getSnippet('settings-scanner-cronjobs', array(
+                        'Cronjob.Hook' => $hook,
+                        'Cronjob.Schedule' => $event['schedule'],
+                        'Cronjob.NextTime' => SucuriScan::datetime($timestamp),
+                        'Cronjob.NextTimeHuman' => SucuriScan::humanTime($timestamp),
+                        'Cronjob.Arguments' => SucuriScan::implode(', ', $event['args']),
+                    ));
+                }
+            }
+        }
 
         $hasSPL = SucuriScanFileInfo::isSplAvailable();
         $params['NoSPL.Visibility'] = SucuriScanTemplate::visibility(!$hasSPL);
 
-        if (array_key_exists($scan_freq, $schedule_allowed)) {
-            $params['ScanningFrequency'] = $schedule_allowed[ $scan_freq ];
-        }
-
-        return SucuriScanTemplate::getSection('settings-scanner-options', $params);
+        return SucuriScanTemplate::getSection('settings-scanner-cronjobs', $params);
     }
 
     /**

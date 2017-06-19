@@ -153,6 +153,61 @@ class SucuriScan
     }
 
     /**
+     * Returns the human version of the time difference.
+     *
+     * If the timestamp is in the past in comparison with the current time, it
+     * will return a string in the form of "X time ago". If the timestamp is in
+     * the future in comparison with the current time, it will return a string
+     * in the form of "in X time". If the timestamp is the same as the current
+     * time it will return "right now".
+     *
+     * @param integer $time Unix timestamp.
+     * @return string Different between timestamp and current time.
+     */
+    public static function humanTime($time = 0)
+    {
+        $now = time();
+
+        if ($time === $now) {
+            return 'right now';
+        }
+
+        $result = '';
+        $template = '';
+        $diff = $now - $time;
+        $groups = array(
+            31536000 => 'year',
+            2592000 => 'month',
+            86400 => 'day',
+            3600 => 'hour',
+            60 => 'minute',
+            1 => 'second',
+        );
+
+        if ($time < $now) {
+            $template = '%d %s ago';
+        } else {
+            $template = 'in %d %s';
+        }
+
+        foreach ($groups as $secs => $label) {
+            $distance = abs($diff / $secs);
+
+            if ($distance >= 1) {
+                $plural = (round($distance) == 1) ? '' : 's';
+                $result = sprintf(
+                    $template,
+                    round($distance),
+                    $label . $plural
+                );
+                break;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
      * Check if the admin init hook must not be intercepted.
      *
      * @return bool True if the admin init hook must not be intercepted.
