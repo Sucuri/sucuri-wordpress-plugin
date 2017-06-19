@@ -95,7 +95,6 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_request_timeout' => 15,
             'sucuriscan_revproxy' => 'disabled',
             'sucuriscan_runtime' => 0,
-            'sucuriscan_scan_frequency' => 'twicedaily',
             'sucuriscan_selfhosting_fpath' => '',
             'sucuriscan_selfhosting_monitor' => 'disabled',
             'sucuriscan_site_version' => '0.0',

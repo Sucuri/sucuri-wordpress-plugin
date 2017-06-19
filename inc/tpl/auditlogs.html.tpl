@@ -77,10 +77,6 @@ jQuery(function ($) {
         <em>@@SUCURI.Loading@@</em>
     </div>
 
-    <div>
-        <small>@@SUCURI.AuditLogsCache@@ &mdash; <a href="#" class="sucuriscan-reset-auditlogs">@@SUCURI.Refresh@@</a></small>
-    </div>
-
     <div class="sucuriscan-clearfix">
         <ul class="sucuriscan-pull-left sucuriscan-pagination">
             <!-- Populated via JavaScript -->
@@ -89,5 +85,9 @@ jQuery(function ($) {
         <div class="sucuriscan-pull-right sucuriscan-pagination-loading">
             <!-- Populated via JavaScript -->
         </div>
+    </div>
+
+    <div>
+        <small>@@SUCURI.AuditLogsCache@@ &mdash; <a href="#" class="sucuriscan-reset-auditlogs">@@SUCURI.Refresh@@</a></small>
     </div>
 </div>
