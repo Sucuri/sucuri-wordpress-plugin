@@ -13,7 +13,7 @@
 
         <p>
             This is a list of registered <a href="https://codex.wordpress.org/Post_Types"
-            target="_blank">Post Types</a>. You will receive an email alert when
+            target="_blank" rel="noopener">Post Types</a>. You will receive an email alert when
             a custom page or post associated to any of these types is created or
             updated. Some of these are created by WordPress but the majority are
             created by 3rd-party plugins and themes to extend functionality from

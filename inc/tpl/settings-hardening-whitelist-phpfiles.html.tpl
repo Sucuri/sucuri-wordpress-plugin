@@ -20,7 +20,7 @@
                 that if you whitelist a file named <em>"thumbnail.php"</em> it will match every
                 file with the same name in all the sub-folders. If you want something more
                 specific read the <a href="https://httpd.apache.org/docs/2.4/mod/core.html"
-                target="_blank">official documentation</a>.
+                target="_blank" rel="noopener">official documentation</a>.
             </p>
         </div>
 
@@ -30,7 +30,7 @@
                 holes in your website that can be exploited by malicious users. If you do not
                 fully understand the purpose of this form and/or do not know what whitelisting
                 a PHP file means then ask for support in the <a target="_blank"
-                href="https://wordpress.org/support/plugin/sucuri-scanner">forums</a>.
+                href="https://wordpress.org/support/plugin/sucuri-scanner" rel="noopener">forums</a>.
             </p>
         </div>
 

@@ -224,7 +224,7 @@ class SucuriScanInterface
          */
         self::info('Do you want to get vulnerability disclosures? Subscribe to '
         . 'our newsletter <a href="http://sucuri.hs-sites.com/subscribe-to-secu'
-        . 'rity" target="_blank">here</a>');
+        . 'rity" target="_blank" rel="noopener">here</a>');
 
         /* update the version number in the plugin settings. */
         SucuriScanOption::updateOption(':plugin_version', SUCURISCAN_VERSION);

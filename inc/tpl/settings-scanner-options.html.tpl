@@ -17,8 +17,8 @@
         <div class="sucuriscan-inline-alert-error sucuriscan-%%SUCURI.NoSPL.Visibility%%">
             <p>
                 The scanner uses the <a href="http://php.net/manual/en/class.splfileobject.php"
-                target="_blank">PHP SPL library</a> and the <a target="_blank"
-                href="http://php.net/manual/en/class.filesystemiterator.php">
+                target="_blank" rel="noopener">PHP SPL library</a> and the <a target="_blank"
+                href="http://php.net/manual/en/class.filesystemiterator.php" rel="noopener">
                 Filesystem Iterator</a> class to scan the directory tree where
                 your website is located in the server. This library is only
                 available on PHP 5 >= 5.3.0 &mdash; OR &mdash; PHP 7; if you have

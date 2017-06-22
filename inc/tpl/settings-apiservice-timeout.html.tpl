@@ -7,7 +7,7 @@
             The plugin sends the data associated to the events triggered by WordPress when
             it considers the action is suspicious, it sends this information via HTTP requests
             using the HTTP transport protocol available in the system and the <a target="_blank"
-            href="https://developer.wordpress.org/reference/functions/wp_remote_post/">built-in
+            href="https://developer.wordpress.org/reference/functions/wp_remote_post/" rel="noopener">built-in
             functions</a> provided by WordPress, then it waits for the response.
         </p>
 

@@ -9,7 +9,7 @@
             its official features are inherited, this is useful if you need to
             pass these HTTP requests through a proxy. According to the
             <a href="https://developer.wordpress.org/reference/classes/wp_http_proxy/"
-            target="_blank">official documentation</a> you have to add some
+            target="_blank" rel="noopener">official documentation</a> you have to add some
             constants to the main configuration file: <em>WP_PROXY_HOST,
             WP_PROXY_PORT, WP_PROXY_USERNAME, WP_PROXY_PASSWORD</em>.
         </p>

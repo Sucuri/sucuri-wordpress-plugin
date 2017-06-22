@@ -24,7 +24,7 @@
                 The main <code>.htaccess</code> file in your site has the standard rules for a
                 WordPress installation. You can customize it to improve the performance and
                 change the behaviour of the redirections for pages and posts in your site. To
-                get more information visit the official documentation at <a target="_blank"
+                get more information visit the official documentation at <a target="_blank" rel="noopener"
                 href="https://codex.wordpress.org/Using_Permalinks#Creating_and_editing_.28.htaccess.29">
                 Codex WordPress - Creating and editing (.htaccess)</a>
             </p>
@@ -33,7 +33,7 @@
         <textarea readonly class="sucuriscan-full-textarea sucuriscan-monospace %%SUCURI.HTAccess.TextareaVisible%%">%%SUCURI.HTAccess.Content%%</textarea>
 
         <p>
-            <small>Source <a href="https://codex.wordpress.org/htaccess" target="_blank">Codex WordPress HTAccess</a></small>
+            <small>Source <a href="https://codex.wordpress.org/htaccess" target="_blank" rel="noopener">Codex WordPress HTAccess</a></small>
         </p>
     </div>
 </div>

@@ -116,7 +116,7 @@ This is coupled with a number of features like:
     <li>Failover and Redundancy</li>
 </ol>
 
-This is <strong>not included as a free</strong> option to the plugin, but is integrated so that if purchased you are able to activate.  If you prefer to leverage the Sucuri Firewall product by itself, you have the option to operate the <a href="https://wordpress.org/plugins/sucuri-cloudproxy-waf/" target="_blank">Website Firewall WordPress Security</a> plugin in standalone mode.
+This is <strong>not included as a free</strong> option to the plugin, but is integrated so that if purchased you are able to activate.  If you prefer to leverage the Sucuri Firewall product by itself, you have the option to operate the <a href="https://wordpress.org/plugins/sucuri-cloudproxy-waf/" target="_blank" rel="noopener">Website Firewall WordPress Security</a> plugin in standalone mode.
 
 [youtube https://www.youtube.com/watch?v=fN-3DLObLF0]
 
@@ -176,7 +176,7 @@ Yes. This plugin compliments your existing security toolsets. It is not designed
 
 = Where do I get support for this plugin? =
 
-The best place is to engage us via the <a href="https://wordpress.org/support/plugin/sucuri-scanner" target="_blank">Support Forum</a>. If you are a client, <a href="https://support.sucuri.net/support/?new" target="_blank">you can submit a ticket here</a>.
+The best place is to engage us via the <a href="https://wordpress.org/support/plugin/sucuri-scanner" target="_blank" rel="noopener">Support Forum</a>. If you are a client, <a href="https://support.sucuri.net/support/?new" target="_blank">you can submit a ticket here</a>.
 
 = Does your plugin conflict with WordFence? =
 
