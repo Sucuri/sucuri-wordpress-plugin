@@ -6,7 +6,7 @@
         <p>
             The information necessary to check the WordPress integrity uses data
             obtained from the <a href="http://codex.wordpress.org/WordPress.org_API"
-            target="_blank">WordPress API</a>. It compares this data with the
+            target="_blank" rel="noopener">WordPress API</a>. It compares this data with the
             content of the files installed in your website. By default the API
             returns this data for the English version of WordPress. If your
             website is using a non-English version of the code you will have to

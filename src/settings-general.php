@@ -198,8 +198,8 @@ function sucuriscan_settings_general_datastorage()
         $fname = ($name ? sprintf('sucuri-%s.php', $name) : '');
         $fpath = SucuriScan::dataStorePath($fname);
         $disabled = 'disabled="disabled"';
-        $iswritable = 'No Writable';
-        $exists = 'Does Not Exists';
+        $iswritable = 'Not Writable';
+        $exists = 'Does Not Exist';
         $labelExistence = 'danger';
         $labelWritability = 'default';
 

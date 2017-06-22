@@ -21,7 +21,7 @@
                 target="_blank">special caching rules</a> for Images, CSS, PDF,
                 TXT, JavaScript, media files and a few more extensions that are
                 stored on our <a href="https://en.wikipedia.org/wiki/Edge_device"
-                target="_blank">edge</a>. The only way to flush the cache for
+                target="_blank" rel="noopener">edge</a>. The only way to flush the cache for
                 these files is by clearing the firewall's cache completely
                 <em>(for the whole website)</em>.
             </p>
@@ -46,7 +46,7 @@
         </p>
 
         <p>
-            More info at <a href="https://en.wikipedia.org/wiki/Web_cache" target="_blank">
+            More info at <a href="https://en.wikipedia.org/wiki/Web_cache" target="_blank" rel="noopener">
             WikiPedia - Web Cache</a>
         </p>
 

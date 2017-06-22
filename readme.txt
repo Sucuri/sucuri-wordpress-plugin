@@ -4,7 +4,7 @@ Donate Link: https://sucuri.net/
 Tags: malware, security, firewall, scan, spam, virus, sucuri, protection, WordPress Security, Login Security, Security Auditing, File Integrity, htaccess, phishing, backdoors, SQL Injection, RFI, LFI, XSS, CSRF, website firewall, Website Security, Performance Optimization, Zero Day, Software Vulnerability, Exploits, Hacks, Attackers, Bad Actors, Reverse Proxy, Two Factor Security, Two Factor Authentication, Security Logs, HeatBleed Vulnerability, Website Protection, Bash Vulnerability, RevSlider Vulnerability, MailPoet Vulnerability, Malware Prevention, Website Security, Website Firewall, Website AntiVirus, Security Response, Security Detection, Security Prevention
 Requires at least: 3.6
 Stable tag: 1.8.3
-Tested up to: 4.7.5
+Tested up to: 4.8.0
 
 The Sucuri WordPress Security plugin is a security toolset for security integrity monitoring, malware detection and security hardening.
 
@@ -116,7 +116,7 @@ This is coupled with a number of features like:
     <li>Failover and Redundancy</li>
 </ol>
 
-This is <strong>not included as a free</strong> option to the plugin, but is integrated so that if purchased you are able to activate.  If you prefer to leverage the Sucuri Firewall product by itself, you have the option to operate the <a href="https://wordpress.org/plugins/sucuri-cloudproxy-waf/" target="_blank">Website Firewall WordPress Security</a> plugin in standalone mode.
+This is <strong>not included as a free</strong> option to the plugin, but is integrated so that if purchased you are able to activate.  If you prefer to leverage the Sucuri Firewall product by itself, you have the option to operate the <a href="https://wordpress.org/plugins/sucuri-cloudproxy-waf/" target="_blank" rel="noopener">Website Firewall WordPress Security</a> plugin in standalone mode.
 
 [youtube https://www.youtube.com/watch?v=fN-3DLObLF0]
 
@@ -176,7 +176,7 @@ Yes. This plugin compliments your existing security toolsets. It is not designed
 
 = Where do I get support for this plugin? =
 
-The best place is to engage us via the <a href="https://wordpress.org/support/plugin/sucuri-scanner" target="_blank">Support Forum</a>. If you are a client, <a href="https://support.sucuri.net/support/?new" target="_blank">you can submit a ticket here</a>.
+The best place is to engage us via the <a href="https://wordpress.org/support/plugin/sucuri-scanner" target="_blank" rel="noopener">Support Forum</a>. If you are a client, <a href="https://support.sucuri.net/support/?new" target="_blank">you can submit a ticket here</a>.
 
 = Does your plugin conflict with WordFence? =
 

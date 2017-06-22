@@ -64,7 +64,7 @@
                 the next scan, very useful when you find false positives. Additionally you can
                 restore the original content of the core files that appear as modified or deleted,
                 this will tell the plugin to download a copy of the original files from the official
-                <a href="https://core.svn.wordpress.org/tags/" target="_blank">WordPress repository</a>.
+                <a href="https://core.svn.wordpress.org/tags/" target="_blank" rel="noopener">WordPress repository</a>.
                 Deleting a file is an irreversible action, be careful.
             </p>
         </div>

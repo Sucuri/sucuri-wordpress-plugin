@@ -16,7 +16,7 @@
             show the original code. Lines with a <b>plus</b> sign as the prefix
             <em>(here in green)</em> show the modified code. You can read more
             about the DIFF format from the WikiPedia article about the <a target="_blank"
-            href="https://en.wikipedia.org/wiki/Diff_utility">Unix Diff Utility</a>.
+            href="https://en.wikipedia.org/wiki/Diff_utility" rel="noopener">Unix Diff Utility</a>.
         </p>
     </div>
 

@@ -164,7 +164,7 @@ class SucuriScanHardeningPage extends SucuriScan
         if (self::processRequest(__FUNCTION__)) {
             SucuriScanInterface::error('Ask your hosting provider to install an
             updated version of PHP - <a href="http://php.net/supported-versions.php"
-            target="_blank">List of PHP Supported Versions</a>');
+            target="_blank" rel="noopener">List of PHP Supported Versions</a>');
         }
 
         $params['Hardening.FieldName'] = __FUNCTION__;
@@ -222,7 +222,7 @@ class SucuriScanHardeningPage extends SucuriScan
             SucuriScanInterface::error('Read the official WordPress guidelines
             to learn how to restrict access to PHP files in sensitive directories
             - <a href="https://codex.wordpress.org/Nginx#Global_restrictions_file"
-            target="_blank">Nginx Global Restrictions For WordPress</a>');
+            target="_blank" rel="noopener">Nginx Global Restrictions For WordPress</a>');
         }
 
         $params['Hardening.Title'] = 'Block of Certain PHP Files';
