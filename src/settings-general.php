@@ -149,9 +149,11 @@ function sucuriscan_settings_general_datastorage()
     $params = array();
     $files = array(
         '', /* <root> */
+        'auditlogs',
         'auditqueue',
         'blockedusers',
         'failedlogins',
+        'hookdata',
         'ignorescanning',
         'integrity',
         'lastlogins',

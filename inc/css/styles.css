@@ -793,7 +793,7 @@ body.sucuri-security_page_sucuriscan_hardening {
     padding-top: 0;
 }
 .sucuriscan-auditlog-entry {
-    padding: 20px 0;
+    padding: 10px 0;
     border-bottom: 1px solid #dbdbdb;
 }
 .sucuriscan-auditlog-entry-title,
@@ -828,7 +828,7 @@ body.sucuri-security_page_sucuriscan_hardening {
     font-size: 11px;
 }
 .sucuriscan-auditlog-entry-extra ul {
-    margin-top: 20px;
+    margin-top: 5px;
 }
 .sucuriscan-auditlog-entry-extra li {
     margin-bottom: 0;
