@@ -122,7 +122,7 @@ class SucuriScanHardeningPage extends SucuriScan
         $site_version = SucuriScan::siteVersion();
 
         $params['URL.Settings'] = admin_url('update-core.php');
-        $params['Hardening.Status'] = (!is_array($updates) || empty($updates) ? 1 : 0);
+        $params['Hardening.Status'] = 0;
         $params['Hardening.FieldText'] = 'Apply Hardening';
         $params['Hardening.Title'] = 'Verify WordPress Version';
         $params['Hardening.Description'] = 'Why keep your site updated? WordPress

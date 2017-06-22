@@ -188,6 +188,14 @@ class SucuriScanIntegrity
             }
         }
 
+        if ($files_processed != $files_selected) {
+            return SucuriScanInterface::error(sprintf(
+                'Only <b>%d</b> out of <b>%d</b> files were processed.',
+                $files_processed,
+                $files_selected
+            ));
+        }
+
         return SucuriScanInterface::info(sprintf(
             '<b>%d</b> out of <b>%d</b> files were successfully processed.',
             $files_processed,

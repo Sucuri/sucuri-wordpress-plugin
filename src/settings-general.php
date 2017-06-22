@@ -100,6 +100,9 @@ function sucuriscan_settings_general_apikey($nonce)
                 }
             }
         }
+                    $api_registered_modal = SucuriScanTemplate::getModal('settings-apiregistered', array(
+                        'Title' => 'Site registered successfully',
+                    ));
 
         // Recover API key through the email registered previously.
         if (SucuriScanRequest::post(':recover_key') !== false) {

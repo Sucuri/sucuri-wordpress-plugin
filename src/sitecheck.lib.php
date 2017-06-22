@@ -32,6 +32,8 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  */
 class SucuriScanSiteCheck extends SucuriScanAPI
 {
+    private static $scanRequests;
+
     /**
      * Executes a malware scan against the specified website.
      *
@@ -109,6 +111,29 @@ class SucuriScanSiteCheck extends SucuriScanAPI
         /* return cached malware scan results. */
         if ($results && !empty($results)) {
             return $results;
+        }
+
+        /**
+         * Do not overflow the API service.
+         *
+         * If we are scanning the website for the first time or after the cache
+         * has expired, it makes no sense to let the script connect to the API
+         * more than once. If there is a failure with the first request we can
+         * assume that the same error will appear in the subsequent request, so
+         * we will return false every time a secondary scan is requested.
+         *
+         * The first scan is requested and executed normally.
+         *
+         * The second and subsequent scan requests (from the other methods) are
+         * expected to return the data from the cache, hence the position of the
+         * conditional in this specific line, right after the cache lifetime is
+         * checked. If the cache is invalid (because the first scan failed) or
+         * if the cache has expired (and the new request fails) we will assume
+         * that the other requests (around ten or so) will fail too.
+         */
+        self::$scanRequests++;
+        if (self::$scanRequests > 1) {
+            return false;
         }
 
         /* send HTTP request to SiteCheck's API service. */
@@ -273,7 +298,7 @@ class SucuriScanSiteCheck extends SucuriScanAPI
         $params['Blacklist.Color'] = 'green';
         $params['Blacklist.Content'] = '';
 
-        foreach ($data['BLACKLIST'] as $type => $proof) {
+        foreach ((array) $data['BLACKLIST'] as $type => $proof) {
             foreach ($proof as $info) {
                 $url = $info[1];
                 $title = @preg_replace(
