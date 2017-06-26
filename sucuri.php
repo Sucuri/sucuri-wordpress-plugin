@@ -1,12 +1,14 @@
 <?php
-/*
-Plugin Name: Sucuri Security - Auditing, Malware Scanner and Hardening
-Plugin URI: https://wordpress.sucuri.net/
-Description: The <a href="https://sucuri.net/" target="_blank">Sucuri</a> plugin provides the website owner the best Activity Auditing, SiteCheck Remote Malware Scanning, Effective Security Hardening and Post-Hack features. SiteCheck will check for malware, spam, blacklisting and other security issues like .htaccess redirects, hidden eval code, etc. The best thing about it is it's completely free.
-Author: Sucuri Inc.
-Author URI: https://sucuri.net/
-Version: 1.8.3
-*/
+
+/**
+ * Plugin Name: Sucuri Security - Auditing, Malware Scanner and Hardening
+ * Description: The <a href="https://sucuri.net/" target="_blank">Sucuri</a> plugin provides the website owner the best Activity Auditing, SiteCheck Remote Malware Scanning, Effective Security Hardening and Post-Hack features. SiteCheck will check for malware, spam, blacklisting and other security issues like .htaccess redirects, hidden eval code, etc. The best thing about it is it's completely free.
+ * Plugin URI: https://wordpress.sucuri.net/
+ * Author URI: https://sucuri.net/
+ * Text Domain: sucuri-scanner
+ * Author: Sucuri Inc.
+ * Version: 1.8.3
+ */
 
 
 /**
@@ -239,6 +241,25 @@ require_once('src/settings-webinfo.php');
 
 /* Load global variables and triggers */
 require_once('src/globals.php');
+
+if (function_exists('load_plugin_textdomain')) {
+    /**
+     * Loads the language files for the entire interface.
+     *
+     * Internationalization is the process of developing your plugin so it can be
+     * translated into other languages. Localization describes the process of trans-
+     * lating an internationalized plugin. Internationalization is often abbreviated
+     * as i18n (because there are 18 letters between the i and the n) and localiza-
+     * tion is abbreviated as l10n (there are 10 letters between the l and the n).
+     *
+     * @see https://codex.wordpress.org/I18n_for_WordPress_Developers
+     */
+    function sucuriscan_load_plugin_textdomain() {
+        load_plugin_textdomain('sucuri-scanner', false, SUCURISCAN_PLUGIN_FOLDER . '/languages/');
+    }
+
+    add_action('init', 'sucuriscan_load_plugin_textdomain');
+}
 
 /**
  * Uninstalls the plugin, its settings and reverts the hardening.

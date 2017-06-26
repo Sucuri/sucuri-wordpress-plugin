@@ -32,6 +32,38 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
 class SucuriScanTemplate extends SucuriScanRequest
 {
     /**
+     * Translates text using l10n and gettext.
+     *
+     * A translatable text can be inserted into any template file following this
+     * format @@SUCURI.TextID@@ where "TextID" corresponds to the msgid in the
+     * POT files. You can embed pseudo-variables into the translations like so:
+     *
+     * msgid "Copyright"
+     * msgstr "Copyright %%SUCURI.Year%% Sucuri Inc"
+     *
+     * @see https://www.gnu.org/software/gettext/
+     * @see https://codex.wordpress.org/I18n_for_WordPress_Developers
+     * @see https://developer.wordpress.org/themes/functionality/internationalization/
+     *
+     * @param string $content Content of the template to be translated.
+     * @return string New template content with the translated text.
+     */
+    private static function translateContent($content = '')
+    {
+        if (@preg_match_all('/@@SUCURI\.(\S+)@@/', $content, $matches)) {
+            foreach ($matches[0] as $key => $placeholder) {
+                $content = str_replace(
+                    $placeholder,
+                    __($matches[1][$key], 'sucuri-scanner'),
+                    $content
+                );
+            }
+        }
+
+        return $content;
+    }
+
+    /**
      * Replace all pseudo-variables from a string of characters.
      *
      * @see http://php.net/manual/en/function.gettype.php
@@ -43,6 +75,8 @@ class SucuriScanTemplate extends SucuriScanRequest
     private static function replacePseudoVars($content = '', $params = array())
     {
         $params = is_array($params) ? $params : array();
+
+        $content = self::translateContent($content);
 
         foreach ($params as $keyname => $kvalue) {
             $tplkey = 'SUCURI.' . $keyname;

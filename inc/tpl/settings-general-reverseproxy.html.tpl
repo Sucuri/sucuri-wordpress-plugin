@@ -22,7 +22,7 @@
             by the service.
         </p>
 
-        <div class="sucuriscan-inline-alert-warning">
+        <div class="sucuriscan-inline-alert-info">
             <p>
                 When this option is enabled the plugin will go through a list of common HTTP
                 headers to retrieve the real IP address of the origin of the requests. Note

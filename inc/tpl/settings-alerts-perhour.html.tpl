@@ -11,7 +11,7 @@
             alerts to receive during the same hour.
         </p>
 
-        <div class="sucuriscan-inline-alert-warning">
+        <div class="sucuriscan-inline-alert-error">
             <p>
                 If you have enabled the alerts for <a href="https://kb.sucuri.net/definitions/attacks/brute-force/password-guessing"
                 target="_blank">password guessing brute force attacks</a> and lowered the number

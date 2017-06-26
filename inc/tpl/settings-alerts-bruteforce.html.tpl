@@ -17,7 +17,7 @@
             target="_blank">Sucuri KB - Password Guessing Brute Force Attacks</a>.
         </p>
 
-        <div class="sucuriscan-inline-alert-warning">
+        <div class="sucuriscan-inline-alert-error">
             <p>This option overrides the <em>"Alerts Per Hour"</em> setting.</p>
         </div>
 

@@ -12,7 +12,7 @@
             to prevent the content to be printed.
         </p>
 
-        <div class="sucuriscan-inline-alert-warning">
+        <div class="sucuriscan-inline-alert-info">
             <p>
                 The plugin requires write permissions in this directory as well
                 as the files contained in it. If you prefer to keep these files

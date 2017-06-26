@@ -16,7 +16,7 @@
             installed.
         </p>
 
-        <div class="sucuriscan-inline-alert-warning sucuriscan-%%SUCURI.FailedLogins.WarningVisibility%%">
+        <div class="sucuriscan-inline-alert-error sucuriscan-%%SUCURI.FailedLogins.WarningVisibility%%">
             <p>
                 The option to alert possible <a href="https://kb.sucuri.net/definitions/attacks/brute-force/password-guessing"
                 target="_blank">Password Guessing Brute Force Attacks</a> is disabled, you will

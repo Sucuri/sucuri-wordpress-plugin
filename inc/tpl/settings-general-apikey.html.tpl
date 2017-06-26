@@ -30,7 +30,7 @@
             </p>
         </div>
 
-        <div class="sucuriscan-inline-alert-warning sucuriscan-%%SUCURI.InvalidDomainVisibility%%">
+        <div class="sucuriscan-inline-alert-error sucuriscan-%%SUCURI.InvalidDomainVisibility%%">
             <p>
                 Your domain <code>%%SUCURI.CleanDomain%%</code> does not seems to have a DNS
                 <code>A</code> record so it will be considered as <em>invalid</em> by the API

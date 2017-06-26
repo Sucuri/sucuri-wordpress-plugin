@@ -153,6 +153,8 @@ class SucuriScanCommand extends SucuriScan
                 $line = substr($line, 0, 4 + strlen($b) + 11);
             } elseif ($number === 3) {
                 $cssclass .= "\x20" . SUCURISCAN . '-diff-header';
+            } elseif ($line === '') {
+                /* do not touch empty lines */
             } elseif ($line[0] === '-') {
                 $cssclass .= "\x20" . SUCURISCAN . '-diff-minus';
             } elseif ($line[0] === '+') {

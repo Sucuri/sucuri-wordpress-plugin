@@ -24,7 +24,7 @@
             </p>
         </div>
 
-        <div class="sucuriscan-inline-alert-warning">
+        <div class="sucuriscan-inline-alert-error">
             <p>
                 Be warned that whitelisting a PHP file with vulnerabilities will open security
                 holes in your website that can be exploited by malicious users. If you do not

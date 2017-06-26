@@ -37,8 +37,6 @@ jQuery(function ($) {
             </div>
         </div>
 
-        %%%SUCURI.SiteCheck.Details%%%
-
         <p>Loading...</p>
     </div>
 </div>

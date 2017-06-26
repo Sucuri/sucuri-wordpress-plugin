@@ -15,7 +15,7 @@
 
         </p>
 
-        <div class="sucuriscan-inline-alert-warning">
+        <div class="sucuriscan-inline-alert-error">
             <p>
                 <b>IMPORTANT:</b> This option <em>(if enabled)</em> may slow down your website.
             </p>

@@ -164,60 +164,52 @@ class SucuriScanSiteCheck extends SucuriScanAPI
     {
         $params = array();
         $data = self::scanAndCollectData();
+        $data['details'] = array();
 
-        $params['SiteCheck.Website'] = '(unknown)';
-        $params['SiteCheck.Domain'] = '(unknown)';
-        $params['SiteCheck.ServerAddress'] = '(unknown)';
-        $params['SiteCheck.WPVersion'] = SucuriScan::siteVersion();
-        $params['SiteCheck.PHPVersion'] = phpversion();
-        $params['SiteCheck.Additional'] = '';
+        $params['SiteCheck.Metadata'] = '';
+        $data['details'][] = 'PHP Version: ' . phpversion();
+        $data['details'][] = 'Version: ' . SucuriScan::siteVersion();
 
         if (isset($data['SCAN']['SITE'])) {
             $params['SiteCheck.Website'] = $data['SCAN']['SITE'][0];
-        }
-
-        if (isset($data['SCAN']['DOMAIN'])) {
-            $params['SiteCheck.Domain'] = $data['SCAN']['DOMAIN'][0];
         }
 
         if (isset($data['SCAN']['IP'])) {
             $params['SiteCheck.ServerAddress'] = $data['SCAN']['IP'][0];
         }
 
-        $data['SCAN_ADDITIONAL'] = array();
-
         if (isset($data['SCAN']['HOSTING'])) {
-            $data['SCAN_ADDITIONAL'][] = 'Hosting: ' . $data['SCAN']['HOSTING'][0];
+            $data['details'][] = 'Hosting: ' . $data['SCAN']['HOSTING'][0];
         }
 
         if (isset($data['SCAN']['CMS'])) {
-            $data['SCAN_ADDITIONAL'][] = 'CMS: ' . $data['SCAN']['CMS'][0];
+            $data['details'][] = 'CMS: ' . $data['SCAN']['CMS'][0];
         }
 
         if (isset($data['SYSTEM']['NOTICE'])) {
-            $data['SCAN_ADDITIONAL'] = array_merge(
-                $data['SCAN_ADDITIONAL'],
+            $data['details'] = array_merge(
+                $data['details'],
                 $data['SYSTEM']['NOTICE']
             );
         }
 
         if (isset($data['SYSTEM']['INFO'])) {
-            $data['SCAN_ADDITIONAL'] = array_merge(
-                $data['SCAN_ADDITIONAL'],
+            $data['details'] = array_merge(
+                $data['details'],
                 $data['SYSTEM']['INFO']
             );
         }
 
         if (isset($data['WEBAPP']['VERSION'])) {
-            $data['SCAN_ADDITIONAL'] = array_merge(
-                $data['SCAN_ADDITIONAL'],
+            $data['details'] = array_merge(
+                $data['details'],
                 $data['WEBAPP']['VERSION']
             );
         }
 
         if (isset($data['WEBAPP']['WARN'])) {
-            $data['SCAN_ADDITIONAL'] = array_merge(
-                $data['SCAN_ADDITIONAL'],
+            $data['details'] = array_merge(
+                $data['details'],
                 $data['WEBAPP']['WARN']
             );
         }
@@ -225,16 +217,26 @@ class SucuriScanSiteCheck extends SucuriScanAPI
         if (isset($data['OUTDATEDSCAN'])) {
             foreach ($data['OUTDATEDSCAN'] as $outdated) {
                 if (isset($outdated[0]) && isset($outdated[2])) {
-                    $data['SCAN_ADDITIONAL'][] = $outdated[0] . ':' . $outdated[2];
+                    $data['details'][] = $outdated[0] . ':' . $outdated[2];
                 }
             }
         }
 
-        foreach ($data['SCAN_ADDITIONAL'] as $text) {
+        foreach ($data['details'] as $text) {
             $parts = explode(':', $text, 2);
 
             if (count($parts) === 2) {
-                $params['SiteCheck.Additional'] .=
+                /* prefer local version number over SiteCheck's */
+                if (strpos($parts[0], 'WordPress version') !== false) {
+                    continue;
+                }
+
+                /* redundant; we already know the CMS is WordPress */
+                if (strpos($parts[0], 'CMS') !== false) {
+                    continue;
+                }
+
+                $params['SiteCheck.Metadata'] .=
                 SucuriScanTemplate::getSnippet('sitecheck-details', array(
                     'SiteCheck.Title' => trim($parts[0]),
                     'SiteCheck.Value' => trim($parts[1]),
@@ -294,11 +296,15 @@ class SucuriScanSiteCheck extends SucuriScanAPI
         $params = array();
         $data = self::scanAndCollectData();
 
+        if (!isset($data['BLACKLIST']) || !is_array($data['BLACKLIST'])) {
+            return ''; /* there is not enough information to render */
+        }
+
         $params['Blacklist.Title'] = 'Not Blacklisted';
         $params['Blacklist.Color'] = 'green';
         $params['Blacklist.Content'] = '';
 
-        foreach ((array) $data['BLACKLIST'] as $type => $proof) {
+        foreach ($data['BLACKLIST'] as $type => $proof) {
             foreach ($proof as $info) {
                 $url = $info[1];
                 $title = @preg_replace(
@@ -535,5 +541,46 @@ class SucuriScanSiteCheck extends SucuriScanAPI
         }
 
         return $data;
+    }
+
+    /**
+     * Returns a JSON-encoded object with the malware scan results.
+     *
+     * @codeCoverageIgnore - Notice that there is a test case that covers this
+     * code, but since the WP-Send-JSON method uses die() to stop any further
+     * output it means that XDebug cannot cover the next line, leaving a report
+     * with a missing line in the coverage. Since the test case takes care of
+     * the functionality of this code we will assume that it is fully covered.
+     */
+    function ajaxMalwareScan()
+    {
+        if (SucuriScanRequest::post('form_action') !== 'malware_scan') {
+            return;
+        }
+
+        $response = array();
+
+        ob_start();
+        $result = SucuriScanSiteCheck::malware();
+        $errors = ob_get_clean(); /* capture possible errors */
+        $response['malware'] = empty($errors) ? $result : '';
+
+        $response['blacklist'] = SucuriScanSiteCheck::blacklist();
+        $response['recommendations'] = SucuriScanSiteCheck::recommendations();
+
+        $response['iframes'] = array(
+            'title' => SucuriScanSiteCheck::iFramesTitle(),
+            'content' => SucuriScanSiteCheck::iFramesContent(),
+        );
+        $response['links'] = array(
+            'title' => SucuriScanSiteCheck::linksTitle(),
+            'content' => SucuriScanSiteCheck::linksContent(),
+        );
+        $response['scripts'] = array(
+            'title' => SucuriScanSiteCheck::scriptsTitle(),
+            'content' => SucuriScanSiteCheck::scriptsContent(),
+        );
+
+        wp_send_json($response, 200);
     }
 }

@@ -30,19 +30,23 @@ function sucuriscan_page()
         SucuriScanInterface::error('The plugin requires PHP 5 >= 5.3.0 - OR - PHP 7');
     }
 
+    /* load data for the Integrity section */
     $params['Integrity'] = SucuriScanIntegrity::pageIntegrity();
-    $params['SiteCheck.Details'] = SucuriScanSiteCheck::details();
-    $params['SiteCheck.Malware'] = SucuriScanSiteCheck::malware();
-    $params['SiteCheck.Blacklist'] = SucuriScanSiteCheck::blacklist();
-    $params['SiteCheck.Recommendations'] = SucuriScanSiteCheck::recommendations();
-    $params['SiteCheck.iFramesTitle'] = SucuriScanSiteCheck::iFramesTitle();
-    $params['SiteCheck.LinksTitle'] = SucuriScanSiteCheck::linksTitle();
-    $params['SiteCheck.ScriptsTitle'] = SucuriScanSiteCheck::scriptsTitle();
-    $params['SiteCheck.iFramesContent'] = SucuriScanSiteCheck::iFramesContent();
-    $params['SiteCheck.LinksContent'] = SucuriScanSiteCheck::linksContent();
-    $params['SiteCheck.ScriptsContent'] = SucuriScanSiteCheck::scriptsContent();
-    $params['AuditLogsReport'] = SucuriScanAuditLogs::pageAuditLogsReport();
+
+    /* load data for the AuditLogs section */
     $params['AuditLogs'] = SucuriScanAuditLogs::pageAuditLogs();
+    $params['AuditLogsReport'] = SucuriScanAuditLogs::pageAuditLogsReport();
+
+    /* load data for the SiteCheck section */
+    $params['SiteCheck.iFramesTitle'] = 'iFrames';
+    $params['SiteCheck.LinksTitle'] = 'Links';
+    $params['SiteCheck.ScriptsTitle'] = 'Scripts';
+    $params['SiteCheck.iFramesContent'] = 'Loading...';
+    $params['SiteCheck.LinksContent'] = 'Loading...';
+    $params['SiteCheck.ScriptsContent'] = 'Loading...';
+    $params['SiteCheck.Malware'] = '<div id="sucuriscan-malware"></div>';
+    $params['SiteCheck.Blacklist'] = '<div id="sucuriscan-blacklist"></div>';
+    $params['SiteCheck.Recommendations'] = '<div id="sucuriscan-recommendations"></div>';
 
     echo SucuriScanTemplate::getTemplate('dashboard', $params);
 }
@@ -180,6 +184,7 @@ function sucuriscan_ajax()
         SucuriScanAuditLogs::ajaxAuditLogs();
         SucuriScanAuditLogs::ajaxAuditLogsReport();
         SucuriScanAuditLogs::ajaxAuditLogsResetCache();
+        SucuriScanSiteCheck::ajaxMalwareScan();
         SucuriScanFirewall::auditlogsAjax();
         SucuriScanIntegrity::ajaxIntegrity();
         SucuriScanIntegrity::ajaxIntegrityDiffUtility();

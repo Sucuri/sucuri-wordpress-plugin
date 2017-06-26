@@ -27,7 +27,7 @@
             </p>
         </div>
 
-        <div class="sucuriscan-inline-alert-warning">
+        <div class="sucuriscan-inline-alert-error">
             <p>
                 Due to our caching of JavaScript and CSS files, often, as is best practice, the
                 use of versioning during development will ensure updates going live as expected.

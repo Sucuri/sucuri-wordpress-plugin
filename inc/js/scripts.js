@@ -41,7 +41,7 @@ jQuery(document).ready(function ($) {
         var activeState = 'sucuriscan-tab-active';
         var locationHash = location.href.split('#')[1];
 
-        $('.sucuriscan-tabs-buttons a').on('click', function (event) {
+        $('.sucuriscan-container').on('click', '.sucuriscan-tabs-buttons a', function (event) {
             event.preventDefault();
 
             var button = $(this);
@@ -58,7 +58,6 @@ jQuery(document).ready(function ($) {
 
                     $('.sucuriscan-tabs-buttons a').removeClass(activeState);
                     $('.sucuriscan-tabs-containers > div').addClass(hiddenState);
-                    $('.sucuriscan-container .sucuriscan-alert').remove();
 
                     button.addClass(activeState);
                     container.addClass(visibleState);
@@ -80,7 +79,7 @@ jQuery(document).ready(function ($) {
         }
     }
 
-    $('.sucuriscan-tooltip').on('mouseover', function (event) {
+    $('.sucuriscan-container').on('mouseover', '.sucuriscan-tooltip', function (event) {
         var element = $(this);
         var content = element.attr('content');
         var tooltip = $('<div>', { 'class': 'sucuriscan-tooltip-object' });
@@ -104,7 +103,7 @@ jQuery(document).ready(function ($) {
         }
     });
 
-    $('.sucuriscan-tooltip').on('mouseout', function (event) {
+    $('.sucuriscan-container').on('mouseout', '.sucuriscan-tooltip', function (event) {
         $(this).find('.sucuriscan-tooltip-object').remove();
     });
 });
