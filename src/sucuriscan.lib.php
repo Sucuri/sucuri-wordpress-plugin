@@ -393,6 +393,7 @@ class SucuriScan
         SucuriScanEvent::reportSiteVersion();
         SucuriScanIntegrity::getIntegrityStatus(true);
         SucuriScanSettingsPosthack::availableUpdatesContent(true);
+        SucuriScanEvent::sendLogsFromQueue(); /* blocking; keep at the end */
     }
 
     /**

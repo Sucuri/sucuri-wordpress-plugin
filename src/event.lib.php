@@ -34,7 +34,7 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
 class SucuriScanEvent extends SucuriScan
 {
     /**
-     * Creates a cronjob to run the file system scanner twice-daily.
+     * Creates a cronjob to run the file system scanner.
      *
      * Right after a fresh installation of the plugin, it will create a cronjob
      * that will execute the first scan in the next five minutes. This scan will
@@ -43,23 +43,13 @@ class SucuriScanEvent extends SucuriScan
      * list with the checksum of the new file list, if there are differences we
      * will assume that someone or something modified one or more files and send
      * an email alsert about the incident.
-     *
-     * @param bool $run_now Forces the execute of the scanner right now.
      */
-    public static function scheduleTask($run_now = true)
+    public static function installScheduledTask()
     {
-        /* stop if the user has disabled the cronjobs. */
-        if (SucuriScanOption::getOption(':scan_frequency') !== '_oneoff') {
-            $task_name = 'sucuriscan_scheduled_scan';
+        $task_name = 'sucuriscan_scheduled_scan';
 
-            if (!wp_next_scheduled($task_name)) {
-                wp_schedule_event(time() + 10, 'twicedaily', $task_name);
-            }
-
-            if ($run_now === true) {
-                // Execute scheduled task after five minutes.
-                wp_schedule_single_event(time() + 300, $task_name);
-            }
+        if (!wp_next_scheduled($task_name)) {
+            wp_schedule_event(time() + 10, 'daily', $task_name);
         }
     }
 
@@ -179,10 +169,38 @@ class SucuriScanEvent extends SucuriScan
      * in a failure. However, this procedure depends on the ability of the plugin
      * to write the log into the queue when the previous request failed.
      *
-     * @param string $event_message Information about the security event.
+     * @param string $message Information about the event.
+     * @param string $timestamp Time when the event was triggered.
+     * @return bool True if the event was logged, false otherwise.
+     */
+    private static function sendLogToAPI($message = '', $timestamp = '')
+    {
+        if (empty($message)) {
+            return self::throwException('Event identifier cannot be empty');
+        }
+
+        $params = array();
+        $params['a'] = 'send_log';
+        $params['m'] = $message;
+        $params['time'] = $timestamp;
+        $args = array('timeout' => 5 /* seconds */);
+
+        $resp = SucuriScanAPI::apiCallWordpress('POST', $params, true, $args);
+
+        return (bool) (
+            is_array($resp)
+            && array_key_exists('status', $resp)
+            && intval($resp['status']) === 1
+        );
+    }
+
+    /**
+     * Sends the event message to a local queue system.
+     *
+     * @param string $message Information about the security event.
      * @return bool True if the operation succeeded, false otherwise.
      */
-    public static function sendEventLog($event_message = '')
+    public static function sendLogToQueue($message = '')
     {
         /* create storage directory if necessary */
         SucuriScanInterface::createStorageFolder();
@@ -191,9 +209,9 @@ class SucuriScanEvent extends SucuriScan
          * Self-hosted Monitor.
          *
          * Send a copy of the event log to a local file, this will allow the
-         * administrator of the server to integrate the events monitored by the plugin
-         * with a 3rd-party service like OSSEC or similar. More information in the Self-
-         * Hosting panel located in the plugin' settings page.
+         * administrator of the server to integrate the events monitored by the
+         * plugin with a 3rd-party service like OSSEC or similar. More info in
+         * the Self-Hosting panel located in the plugin' settings page.
          */
         if (function_exists('sucuriscan_selfhosting_fpath')) {
             $monitor_fpath = sucuriscan_selfhosting_fpath();
@@ -204,7 +222,7 @@ class SucuriScanEvent extends SucuriScan
                     date('Y-m-d H:i:s'),
                     SucuriScan::getTopLevelDomain(),
                     SucuriScanOption::getOption(':account'),
-                    $event_message
+                    $message
                 );
                 @file_put_contents(
                     $monitor_fpath,
@@ -214,13 +232,59 @@ class SucuriScanEvent extends SucuriScan
             }
         }
 
+        /* enqueue the event if the API is enabled */
         if (SucuriScanOption::isEnabled(':api_service')) {
-            SucuriScanAPI::sendLogsFromQueue();
-
-            return SucuriScanAPI::sendLog($event_message);
+            $cache = new SucuriScanCache('auditqueue');
+            $key = str_replace('.', '_', microtime(true));
+            $written = $cache->add($key, $message);
         }
 
         return true;
+    }
+
+    /**
+     * Sends all the events from the queue to the API.
+     */
+    public static function sendLogsFromQueue()
+    {
+        if (SucuriScanOption::isDisabled(':api_service')) {
+            return;
+        }
+
+        $cache = new SucuriScanCache('auditqueue');
+        $finfo = $cache->getDatastoreInfo();
+        $events = $cache->getAll();
+        $counter = 0;
+
+        if (!$events) {
+            return;
+        }
+
+        /* Send around 15,000 logs for maximum 30 seconds */
+        $maxtime = (int) SucuriScan::iniGet('max_execution_time');
+        $maxreqs = ($maxtime > 1) ? (500 * $maxtime) : 5000;
+
+        foreach ($events as $keyname => $message) {
+            $offset = strpos($keyname, '_');
+            $timestamp = substr($keyname, 0, $offset);
+            $status = self::sendLogToAPI($message, $timestamp);
+
+            if ($status !== true) {
+                /* API is down */
+                break;
+            }
+
+            /* dequeue event message */
+            unset($events[$keyname]);
+            $counter++;
+
+            /* avoid memory limit */
+            if ($counter >= $maxreqs) {
+                break;
+            }
+        }
+
+        $cache->override($events);
     }
 
     /**
@@ -271,7 +335,7 @@ class SucuriScanEvent extends SucuriScan
         $message = str_replace("\n", '', $message);
         $message = str_replace("\t", '', $message);
 
-        return self::sendEventLog(sprintf(
+        return self::sendLogToQueue(sprintf(
             '%s:%s %s; %s',
             $severity_name,
             $username,
@@ -647,7 +711,7 @@ class SucuriScanEvent extends SucuriScan
             }
         }
 
-        $response = array(
+        $resp = array(
             'updated' => is_writable($config_path),
             'old_keys' => $old_keys,
             'old_keys_string' => $old_keys_string,
@@ -656,10 +720,10 @@ class SucuriScanEvent extends SucuriScan
             'new_wpconfig' => $new_wpconfig,
         );
 
-        if ($response['updated']) {
+        if ($resp['updated']) {
             @file_put_contents($config_path, $new_wpconfig, LOCK_EX);
         }
 
-        return $response;
+        return $resp;
     }
 }

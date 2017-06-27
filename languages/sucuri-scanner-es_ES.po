@@ -194,6 +194,12 @@ msgstr "Los registros son guardados por %%SUCURI.AuditLogs.Lifetime%% segundos"
 msgid "Refresh"
 msgstr "Actualizar"
 
+msgid "AuditLogsQueue"
+msgstr "registros en cola"
+
+msgid "SendLogs"
+msgstr "Enviar"
+
 msgid "UnsupportedWordPress"
 msgstr "esta versión de WordPress no tiene soporte."
 

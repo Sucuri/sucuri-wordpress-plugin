@@ -181,6 +181,7 @@ function sucuriscan_ajax()
     if (SucuriScanInterface::checkNonce()) {
         SucuriScanAuditLogs::ajaxAuditLogs();
         SucuriScanAuditLogs::ajaxAuditLogsReport();
+        SucuriScanAuditLogs::ajaxAuditLogsSendLogs();
         SucuriScanAuditLogs::ajaxAuditLogsResetCache();
         SucuriScanSiteCheck::ajaxMalwareScan();
         SucuriScanFirewall::auditlogsAjax();

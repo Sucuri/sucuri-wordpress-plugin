@@ -3,6 +3,17 @@
 /* global jQuery */
 /* jshint camelcase:false */
 jQuery(function ($) {
+    var writeQueueSize = function (queueSize)
+    {
+        if (queueSize === 0) {
+            $('.sucuriscan-auditlogs-sendlogs-panel').addClass('sucuriscan-hidden');
+        } else {
+            var msg = '\x20@@SUCURI.AuditLogsQueue@@\x20&mdash;\x20';
+            $('.sucuriscan-auditlogs-sendlogs-panel').removeClass('sucuriscan-hidden');
+            $('.sucuriscan-auditlogs-sendlogs-response').html((queueSize).toString() + msg);
+        }
+    };
+
     var sucuriscanLoadAuditLogs = function (page, reset) {
         var url = '%%SUCURI.AjaxURL.Dashboard%%';
 
@@ -22,6 +33,8 @@ jQuery(function ($) {
             form_action: 'get_audit_logs',
         }, function (data) {
             $('.sucuriscan-pagination-loading').html('');
+
+            writeQueueSize(data.queueSize);
 
             if (data.content !== undefined) {
                 $('.sucuriscan-auditlog-response').html(data.content);
@@ -54,15 +67,26 @@ jQuery(function ($) {
         sucuriscanLoadAuditLogs($(this).attr('data-page'));
     });
 
-    $('.sucuriscan-auditlog-table').on('click', '.sucuriscan-reset-auditlogs', function (event) {
+    $('.sucuriscan-auditlog-table').on('click', '.sucuriscan-auditlogs-reset', function (event) {
         event.preventDefault();
         $.post('%%SUCURI.AjaxURL.Dashboard%%', {
             action: 'sucuriscan_ajax',
             sucuriscan_page_nonce: '%%SUCURI.PageNonce%%',
             form_action: 'reset_auditlogs_cache',
-        }, function (data) {
-            console.log(data);
+        }, function () {
             sucuriscanLoadAuditLogs(0, true);
+        });
+    });
+
+    $('.sucuriscan-auditlog-table').on('click', '.sucuriscan-auditlogs-sendlogs', function (event) {
+        event.preventDefault();
+        $('.sucuriscan-auditlogs-sendlogs-response').html('@@SUCURI.Loading@@');
+        $.post('%%SUCURI.AjaxURL.Dashboard%%', {
+            action: 'sucuriscan_ajax',
+            sucuriscan_page_nonce: '%%SUCURI.PageNonce%%',
+            form_action: 'auditlogs_send_logs',
+        }, function (data) {
+            writeQueueSize(data.queueSize);
         });
     });
 });
@@ -87,7 +111,14 @@ jQuery(function ($) {
         </div>
     </div>
 
-    <div>
-        <small>@@SUCURI.AuditLogsCache@@ &mdash; <a href="#" class="sucuriscan-reset-auditlogs">@@SUCURI.Refresh@@</a></small>
+    <div class="sucuriscan-auditlog-footer">
+        <div class="sucuriscan-pull-left">
+            <small>@@SUCURI.AuditLogsCache@@ &mdash; <a href="#" class="sucuriscan-auditlogs-reset">@@SUCURI.Refresh@@</a></small>
+        </div>
+
+        <div class="sucuriscan-pull-right sucuriscan-hidden sucuriscan-auditlogs-sendlogs-panel">
+            <small class="sucuriscan-auditlogs-sendlogs-response"></small>
+            <small><a href="#" class="sucuriscan-auditlogs-sendlogs">@@SUCURI.SendLogs@@</a></small>
+        </div>
     </div>
 </div>

@@ -194,6 +194,12 @@ msgstr "This data is cached for %%SUCURI.AuditLogs.Lifetime%% seconds"
 msgid "Refresh"
 msgstr "Refresh"
 
+msgid "AuditLogsQueue"
+msgstr "logs in the queue"
+
+msgid "SendLogs"
+msgstr "Send Logs"
+
 msgid "UnsupportedWordPress"
 msgstr "WordPress version is not supported."
 
