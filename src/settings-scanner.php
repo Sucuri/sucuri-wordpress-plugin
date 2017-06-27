@@ -33,14 +33,14 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
      */
     public static function options()
     {
-        global $sucuriscan_schedule_allowed;
-
         $params = array();
+
+        $schedule_allowed = SucuriScanEvent::availableSchedules();
 
         if (SucuriScanInterface::checkNonce()) {
             // Modify the schedule of the filesystem scanner.
             if ($frequency = SucuriScanRequest::post(':scan_frequency')) {
-                if (array_key_exists($frequency, $sucuriscan_schedule_allowed)) {
+                if (array_key_exists($frequency, $schedule_allowed)) {
                     SucuriScanOption::updateOption(':scan_frequency', $frequency);
 
                     // Remove all the scheduled tasks associated to the plugin.
@@ -51,12 +51,12 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
                         wp_schedule_event(time() + 10, $frequency, 'sucuriscan_scheduled_scan');
                     }
 
-                    $frequency_title = strtolower($sucuriscan_schedule_allowed[ $frequency ]);
-                    $message = 'File system scanning frequency set to <code>' . $frequency_title . '</code>';
+                    $frequency_title = strtolower($schedule_allowed[ $frequency ]);
+                    $message = 'Scanner frequency set to <code>' . $frequency_title . '</code>';
 
                     SucuriScanEvent::reportInfoEvent($message);
                     SucuriScanEvent::notifyEvent('plugin_change', $message);
-                    SucuriScanInterface::info($message);
+                    SucuriScanInterface::info(__('ScannerFreqStatus', SUCURISCAN_TEXTDOMAIN));
                 }
             }
         }
@@ -64,16 +64,16 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
         $scan_freq = SucuriScanOption::getOption(':scan_frequency');
 
         // Generate the HTML code for the option list in the form select fields.
-        $freq_options = SucuriScanTemplate::selectOptions($sucuriscan_schedule_allowed, $scan_freq);
+        $freq_options = SucuriScanTemplate::selectOptions($schedule_allowed, $scan_freq);
 
-        $params['ScanningFrequency'] = 'Undefined';
+        $params['ScanningFrequency'] = __('Undefined', SUCURISCAN_TEXTDOMAIN);
         $params['ScanningFrequencyOptions'] = $freq_options;
 
         $hasSPL = SucuriScanFileInfo::isSplAvailable();
         $params['NoSPL.Visibility'] = SucuriScanTemplate::visibility(!$hasSPL);
 
-        if (array_key_exists($scan_freq, $sucuriscan_schedule_allowed)) {
-            $params['ScanningFrequency'] = $sucuriscan_schedule_allowed[ $scan_freq ];
+        if (array_key_exists($scan_freq, $schedule_allowed)) {
+            $params['ScanningFrequency'] = $schedule_allowed[ $scan_freq ];
         }
 
         return SucuriScanTemplate::getSection('settings-scanner-options', $params);
@@ -98,7 +98,7 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
                     'IgnoreScan.Directory' => '',
                     'IgnoreScan.DirectoryPath' => '',
                     'IgnoreScan.IgnoredAt' => '',
-                    'IgnoreScan.IgnoredAtText' => 'ok',
+                    'IgnoreScan.IgnoredAtText' => __('Okay', SUCURISCAN_TEXTDOMAIN),
                 );
 
                 if ($group == 'is_ignored') {
@@ -106,7 +106,7 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
                     $snippet['IgnoreScan.Directory'] = urlencode($dir_data['directory_path']);
                     $snippet['IgnoreScan.DirectoryPath'] = $dir_data['directory_path'];
                     $snippet['IgnoreScan.IgnoredAt'] = SucuriScan::datetime($dir_data['ignored_at']);
-                    $snippet['IgnoreScan.IgnoredAtText'] = 'ignored';
+                    $snippet['IgnoreScan.IgnoredAtText'] = __('Ignored', SUCURISCAN_TEXTDOMAIN);
                 } elseif ($group == 'is_not_ignored') {
                     $valid_entry = true;
                     $snippet['IgnoreScan.Directory'] = urlencode($dir_data);
@@ -163,7 +163,7 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
                         }
 
                         if (!empty($were_ignored)) {
-                            SucuriScanInterface::info('Items selected will be ignored in future scans.');
+                            SucuriScanInterface::info(__('ItemsProcessed', SUCURISCAN_TEXTDOMAIN));
                             SucuriScanEvent::reportWarningEvent(sprintf(
                                 'Resources will not be scanned: (multiple entries): %s',
                                 @implode(',', $ign_dirs)
@@ -178,7 +178,7 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
                         SucuriScanFSScanner::unignoreDirectory($directory_path);
                     }
 
-                    SucuriScanInterface::info('Items selected will not be ignored anymore.');
+                    SucuriScanInterface::info(__('ItemsProcessed', SUCURISCAN_TEXTDOMAIN));
                     SucuriScanEvent::reportNoticeEvent(sprintf(
                         'Resources will be scanned: (multiple entries): %s',
                         @implode(',', $ign_dirs)

@@ -38,18 +38,15 @@ function sucuriscan_loggedin_users_panel()
             $logged_in_user['last_activity_datetime'] = SucuriScan::datetime($logged_in_user['last_activity']);
             $logged_in_user['user_registered_datetime'] = SucuriScan::datetime(strtotime($logged_in_user['user_registered']));
 
-            $params['LoggedInUsers.List'] .= SucuriScanTemplate::getSnippet(
-                'lastlogins-loggedin',
-                array(
-                    'LoggedInUsers.Id' => $logged_in_user['user_id'],
-                    'LoggedInUsers.UserURL' => SucuriScan::adminURL('user-edit.php?user_id=' . $logged_in_user['user_id']),
-                    'LoggedInUsers.UserLogin' => $logged_in_user['user_login'],
-                    'LoggedInUsers.UserEmail' => $logged_in_user['user_email'],
-                    'LoggedInUsers.LastActivity' => $logged_in_user['last_activity_datetime'],
-                    'LoggedInUsers.Registered' => $logged_in_user['user_registered_datetime'],
-                    'LoggedInUsers.RemoveAddr' => $logged_in_user['remote_addr'],
-                )
-            );
+            $params['LoggedInUsers.List'] .= SucuriScanTemplate::getSnippet('lastlogins-loggedin', array(
+                'LoggedInUsers.Id' => $logged_in_user['user_id'],
+                'LoggedInUsers.UserURL' => SucuriScan::adminURL('user-edit.php?user_id=' . $logged_in_user['user_id']),
+                'LoggedInUsers.UserLogin' => $logged_in_user['user_login'],
+                'LoggedInUsers.UserEmail' => $logged_in_user['user_email'],
+                'LoggedInUsers.LastActivity' => $logged_in_user['last_activity_datetime'],
+                'LoggedInUsers.Registered' => $logged_in_user['user_registered_datetime'],
+                'LoggedInUsers.RemoveAddr' => $logged_in_user['remote_addr'],
+            ));
         }
     }
 
@@ -158,59 +155,66 @@ if (!function_exists('sucuriscan_set_online_user')) {
      */
     function sucuriscan_set_online_user($user_login = '', $user = false)
     {
-        if ($user) {
-            // Get logged in user information.
-            $current_user = ($user instanceof WP_User) ? $user : wp_get_current_user();
-            $current_user_id = $current_user->ID;
-            $remote_addr = SucuriScan::getRemoteAddr();
-            $current_time = current_time('timestamp');
-            $logged_in_users = sucuriscan_get_online_users();
+        if (!$user) {
+            return;
+        }
 
-            // Build the dataset array that will be stored in the transient variable.
-            $current_user_info = array(
-                'user_id' => $current_user_id,
-                'user_login' => $current_user->user_login,
-                'user_email' => $current_user->user_email,
-                'user_registered' => $current_user->user_registered,
-                'last_activity' => $current_time,
-                'remote_addr' => $remote_addr,
-            );
+        /* get logged in user information */
+        $current_user = ($user instanceof WP_User) ? $user : wp_get_current_user();
+        $current_user_id = $current_user->ID;
+        $remote_addr = SucuriScan::getRemoteAddr();
+        $current_time = current_time('timestamp');
+        $logged_in_users = sucuriscan_get_online_users();
 
-            if (!is_array($logged_in_users) || empty($logged_in_users)) {
-                $logged_in_users = array( $current_user_info );
-                sucuriscan_save_online_users($logged_in_users);
-            } else {
-                $do_nothing = false;
-                $update_existing = false;
-                $item_index = 0;
+        /* build the dataset for the transient variable */
+        $current_user_info = array(
+            'user_id' => $current_user_id,
+            'user_login' => $current_user->user_login,
+            'user_email' => $current_user->user_email,
+            'user_registered' => $current_user->user_registered,
+            'last_activity' => $current_time,
+            'remote_addr' => $remote_addr,
+        );
 
-                // Check if the user is already in the logged-in-user list and update it if is necessary.
-                foreach ($logged_in_users as $i => $user) {
-                    if ($user['user_id'] == $current_user_id
-                        && strcmp($user['remote_addr'], $remote_addr) == 0
-                    ) {
-                        if ($user['last_activity'] < ($current_time - (15 * 60))) {
-                            $update_existing = true;
-                            $item_index = $i;
-                            break;
-                        } else {
-                            $do_nothing = true;
-                            break;
-                        }
-                    }
-                }
+        /* no previous data, no need to merge, override */
+        if (!is_array($logged_in_users) || empty($logged_in_users)) {
+            $logged_in_users = array( $current_user_info );
+            sucuriscan_save_online_users($logged_in_users);
+            return;
+        }
 
-                if ($update_existing) {
-                    $logged_in_users[ $item_index ] = $current_user_info;
-                    sucuriscan_save_online_users($logged_in_users);
-                } elseif ($do_nothing) {
-                    // Do nothing.
+        $item_index = 0;
+        $do_nothing = false;
+        $update_existing = false;
+
+        /* update user metadata if the session already exists */
+        foreach ($logged_in_users as $i => $user) {
+            if ($user['user_id'] == $current_user_id
+                && strcmp($user['remote_addr'], $remote_addr) == 0
+            ) {
+                if ($user['last_activity'] < ($current_time - (15 * 60))) {
+                    $update_existing = true;
+                    $item_index = $i;
+                    break;
                 } else {
-                    $logged_in_users[] = $current_user_info;
-                    sucuriscan_save_online_users($logged_in_users);
+                    $do_nothing = true;
+                    break;
                 }
             }
         }
+
+        if ($do_nothing) {
+            return;
+        }
+
+        if ($update_existing) {
+            $logged_in_users[ $item_index ] = $current_user_info;
+            sucuriscan_save_online_users($logged_in_users);
+            return;
+        }
+
+        $logged_in_users[] = $current_user_info;
+        sucuriscan_save_online_users($logged_in_users);
     }
 
     add_action('wp_login', 'sucuriscan_set_online_user', 50, 2);

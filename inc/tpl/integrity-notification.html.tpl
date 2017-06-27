@@ -1,27 +1,18 @@
 
-<p>
-    Changes in the integrity of your core files were detected, you may want to check
-    each file to determine if they were infected with malicious code. The WordPress
-    core directories <code>/&lt;root&gt;</code>, <code>/wp-admin</code> and <code>
-    /wp-includes</code> are the only ones being scanned; the content, uploads, and
-    custom directories are not part of the official archives so you have to check
-    them manually.
-</p>
+<p>@@SUCURI.IntegrityBadDescription@@</p>
 
 <table border="1" cellspacing="1" cellpadding="5">
     <thead>
         <tr>
-            <th colspan="5">
-                Core integrity (%%SUCURI.Integrity.ListCount%% files)
-            </th>
+            <th colspan="5">@@SUCURI.IntegrityTitle@@ (%%SUCURI.Integrity.ListCount%%)</th>
         </tr>
 
         <tr>
             <th>&nbsp;</th>
-            <th width="80">Status</th>
-            <th width="100">File Size</th>
-            <th width="170">Modified At</th>
-            <th>File Path</th>
+            <th width="80">@@SUCURI.Status@@</th>
+            <th width="100">@@SUCURI.FileSize@@</th>
+            <th width="170">@@SUCURI.ModifiedAt@@</th>
+            <th>@@SUCURI.FilePath@@</th>
         </tr>
     </thead>
 
@@ -32,22 +23,7 @@
     <tfoot>
         <tr>
             <td colspan="5">
-                <p>
-                    <b>Note:</b> This is not a malware scanner but an integrity checker, if
-                    you want to check if your site is generating malicious code then use the
-                    <a href="%%SUCURI.URL.Scanner%%">malware scan</a> tool. If you see the
-                    text <em>"must be fixed manually"</em> in any of these files that means
-                    that they do not have write permissions so you can not fix them using
-                    this tool. Access the <a href="%%SUCURI.URL.Dashboard%%">admin area</a> of
-                    your website to fix these files.
-                </p>
-
-                <p>
-                    <b>Note:</b> Disable the <em>"Receive email alerts for core integrity
-                    checks"</em> option from the "Alerts" panel located in the plugin'
-                    settings page to stop receiving these emails, but keep an eye on the
-                    flagged files to keep your website clean.
-                </p>
+                <p>@@SUCURI.MarkFixedDescription@@</p>
             </td>
         </tr>
     </tfoot>

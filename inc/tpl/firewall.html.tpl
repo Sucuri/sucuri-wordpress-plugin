@@ -1,9 +1,9 @@
 
 <div class="sucuriscan-tabs">
     <ul class="sucuriscan-clearfix sucuriscan-tabs-buttons">
-        <li><a href="%%SUCURI.URL.Firewall%%#settings">Settings</a></li>
-        <li><a href="%%SUCURI.URL.Firewall%%#auditlogs">Audit Logs</a></li>
-        <li><a href="%%SUCURI.URL.Firewall%%#clearcache">Clear Cache</a></li>
+        <li><a href="%%SUCURI.URL.Firewall%%#settings">@@SUCURI.Settings@@</a></li>
+        <li><a href="%%SUCURI.URL.Firewall%%#auditlogs">@@SUCURI.AuditLogs@@</a></li>
+        <li><a href="%%SUCURI.URL.Firewall%%#clearcache">@@SUCURI.ClearCache@@</a></li>
     </ul>
 
     <div class="sucuriscan-tabs-containers">

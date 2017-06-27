@@ -92,12 +92,12 @@ class SucuriScanIntegrity
 
         /* skip if the user didn't confirm the operation */
         if (SucuriScanRequest::post(':process_form') != 1) {
-            return SucuriScanInterface::error('You need to confirm that you understand the risk of this operation.');
+            return SucuriScanInterface::error(__('ConfirmOperation', SUCURISCAN_TEXTDOMAIN));
         }
 
         /* skip if the requested action is not currently supported */
         if ($action !== 'fixed' && $action !== 'delete' && $action !== 'restore') {
-            return SucuriScanInterface::error('Requested action is not supported.');
+            return SucuriScanInterface::error(__('NonSupportedAction', SUCURISCAN_TEXTDOMAIN));
         }
 
         /* process the HTTP request */
@@ -114,7 +114,7 @@ class SucuriScanIntegrity
 
         /* skip if no files were selected */
         if (!$core_files) {
-            return SucuriScanInterface::error('No files were selected.');
+            return SucuriScanInterface::error(__('NothingSelected', SUCURISCAN_TEXTDOMAIN));
         }
 
         foreach ((array) $core_files as $file_meta) {
@@ -190,14 +190,14 @@ class SucuriScanIntegrity
 
         if ($files_processed != $files_selected) {
             return SucuriScanInterface::error(sprintf(
-                'Only <b>%d</b> out of <b>%d</b> files were processed.',
+                __('SomeItemsProcessed', SUCURISCAN_TEXTDOMAIN),
                 $files_processed,
                 $files_selected
             ));
         }
 
         return SucuriScanInterface::info(sprintf(
-            '<b>%d</b> out of <b>%d</b> files were successfully processed.',
+            __('AllItemsProcessed', SUCURISCAN_TEXTDOMAIN),
             $files_processed,
             $files_selected
         ));
@@ -281,17 +281,11 @@ class SucuriScanIntegrity
                             $visibility = 'visible';
 
                             if ($list_type === 'added') {
-                                $error = 'The plugin has no permission to delete this file because '
-                                . 'it was created by a different system user who has more privileges '
-                                . 'than your account. Please use FTP to delete it.';
+                                $error = __('ErrorIntegrityAdded', SUCURISCAN_TEXTDOMAIN);
                             } elseif ($list_type === 'modified') {
-                                $error = 'The plugin has no permission to restore this file because '
-                                . 'it was modified by a different system user who has more privileges '
-                                . 'than your account. Please use FTP to restore it.';
+                                $error = __('ErrorIntegrityModified', SUCURISCAN_TEXTDOMAIN);
                             } elseif ($list_type === 'removed') {
-                                $error = 'The plugin has no permission to restore this file because '
-                                . 'its directory is owned by a different system user who has more '
-                                . 'privileges than your account. Please use FTP to restore it.';
+                                $error = __('ErrorIntegrityRemoved', SUCURISCAN_TEXTDOMAIN);
                             }
                         }
 
@@ -365,7 +359,7 @@ class SucuriScanIntegrity
         $params = array();
 
         $params['DiffUtility.Modal'] = SucuriScanTemplate::getModal('none', array(
-            'Title' => 'WordPress Integrity Diff Utility',
+            'Title' => __('DiffUtility', SUCURISCAN_TEXTDOMAIN),
             'Content' => '' /* empty */,
             'Identifier' => 'diff-utility',
             'Visibility' => 'hidden',

@@ -12,5 +12,5 @@
 
     <td>%%SUCURI.Update.TestedWith%%</td>
 
-    <td><a href="%%SUCURI.Update.ArchiveUrl%%" target="_blank">download</a></td>
+    <td><a href="%%SUCURI.Update.ArchiveUrl%%" target="_blank">@@SUCURI.Download@@</a></td>
 </tr>

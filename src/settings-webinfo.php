@@ -34,11 +34,11 @@ function sucuriscan_settings_webinfo_details()
         'Last_filesystem_scan' => SucuriScanFSScanner::getFilesystemRuntime(true),
         'Datetime_and_Timezone' => '',
         'Operating_system' => sprintf('%s (%d Bit)', PHP_OS, PHP_INT_SIZE * 8),
-        'Server' => 'Unknown',
-        'Developer_mode' => 'OFF',
-        'Memory_usage' => 'N/A',
+        'Server' => __('Unknown', SUCURISCAN_TEXTDOMAIN),
+        'Developer_mode' => __('NotActive', SUCURISCAN_TEXTDOMAIN),
+        'Memory_usage' => __('Unknown', SUCURISCAN_TEXTDOMAIN),
         'MySQL_version' => '0.0',
-        'SQL_mode' => 'Not set',
+        'SQL_mode' => __('NotSet', SUCURISCAN_TEXTDOMAIN),
         'PHP_version' => PHP_VERSION,
     );
 
@@ -49,7 +49,7 @@ function sucuriscan_settings_webinfo_details()
     );
 
     if (defined('WP_DEBUG') && WP_DEBUG) {
-        $info_vars['Developer_mode'] = 'ON';
+        $info_vars['Developer_mode'] = __('Active', SUCURISCAN_TEXTDOMAIN);
     }
 
     if (function_exists('memory_get_usage')) {
@@ -214,7 +214,7 @@ function sucuriscan_settings_webinfo_htaccess()
         'HTAccess.StandardVisible' => 'hidden',
         'HTAccess.NotFoundVisible' => 'hidden',
         'HTAccess.FoundVisible' => 'hidden',
-        'HTAccess.Fpath' => 'unknown',
+        'HTAccess.Fpath' => __('Unknown', SUCURISCAN_TEXTDOMAIN),
     );
 
     if ($htaccess) {

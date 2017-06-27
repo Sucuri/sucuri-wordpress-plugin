@@ -1,0 +1,1488 @@
+msgid ""
+msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: https://sucuri.net/\n"
+"Language: es_ES\n"
+"Last-Translator: Sucuri Inc. <info@sucuri.net>\n"
+"MIME-Version: 1.0\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"PO-Revision-Date: \n"
+"POT-Creation-Date: 2017-06-01 09:00-0700\n"
+"Project-Id-Version: Sucuri Scanner\n"
+
+msgid "Review"
+msgstr "Review"
+
+msgid "Dashboard"
+msgstr "Inicio"
+
+msgid "Firewall"
+msgstr "Firewall (WAF)"
+
+msgid "LastLogins"
+msgstr "Autenticaciones"
+
+msgid "Settings"
+msgstr "Ajustes"
+
+msgid "AuditLogs"
+msgstr "Registros"
+
+msgid "Statistics"
+msgstr "Estadísticas"
+
+msgid "ClearCache"
+msgstr "Limpiar Cache"
+
+msgid "GenerateAPIKey"
+msgstr "Generar Llave"
+
+msgid "APIKeyRecovery"
+msgstr "Recuperacion de Llave"
+
+msgid "Copyright"
+msgstr "&copy; %%SUCURI.Year%% Sucuri Inc. Todos los derechos reservados."
+
+msgid "AccessDenied"
+msgstr "Accesso denegado por Sucuri Inc."
+
+msgid "NonceFailure"
+msgstr "Error al verificar el código Nonce del formulario, verifique los datos e intente de nuevo."
+
+msgid "NewsletterInvitation"
+msgstr "¿Desea recibir información sobre vulnerabilidades descubiertas? Subscríbase a nuestro newsletter <a href=\"http://sucuri.hs-sites.com/subscribe-to-security\" target=\"_blank\" rel=\"noopener\">aquí</a>"
+
+msgid "EnableAPIServiceAgain"
+msgstr "La comunicación con la API de Sucuri está deshabilitada, si usted acaba de actualizar el plugin esta podría ser una buena oportunidad para probar esta herramienta una vez más con el nuevo código. Habilite la comunicación con la API desde la página de ajustes."
+
+msgid "Save"
+msgstr "Guardar"
+
+msgid "Delete"
+msgstr "Eliminar"
+
+msgid "InvalidAPIKey"
+msgstr "El formato de la llave es inválido"
+
+msgid "ErrorNoInfo"
+msgstr "Error desconocido, no hay más información."
+
+msgid "ErrorLogFileNotFound"
+msgstr "; esto generalmente sucede cuando una llave inválida es agregada al plugin, la llave será eliminada automáticamente para reducir la cantidad de errores, si usted quiere recuperarla utilice el botón de recuperación en la página de ajustes, recibirá un correo con las instrucciones de activación: %1$s"
+
+msgid "ErrorWrongAPIKey"
+msgstr "; la llave del Firewall es inválida: %1$s"
+
+msgid "ErrorSSLCertificate"
+msgstr ". Su sitio web para estar usando una versión desactualizada de la librería OpenSSL o el módulo de CURL ha sido compilado sin soporte para el algoritmo usado para establecer un enlace de comunicación segura con la API. Contácte a su proveedor de hosting para solucionar el problema."
+
+msgid "ErrorInvalidEmail"
+msgstr "El correo electrónico tiene un formato inválido o el dominio asociado no tiene asociado un servidor MX."
+
+msgid "AlertAPIKeySet"
+msgstr "La llave para la comunicación con la API ha sido generada y registrada."
+
+msgid "Yes"
+msgstr "Sí"
+
+msgid "No"
+msgstr "No"
+
+msgid "Okay"
+msgstr "OK"
+
+msgid "Enable"
+msgstr "Activar"
+
+msgid "Enabled"
+msgstr "Activado"
+
+msgid "Disable"
+msgstr "Desactivar"
+
+msgid "Disabled"
+msgstr "Desactivado"
+
+msgid "Ignore"
+msgstr "Ignorar"
+
+msgid "Unignore"
+msgstr "No Ignorar"
+
+msgid "Ignored"
+msgstr "Ignorado"
+
+msgid "Done"
+msgstr "Hecho"
+
+msgid "Submit"
+msgstr "Proceder"
+
+msgid "Error"
+msgstr "Error"
+
+msgid "Good"
+msgstr "bien"
+
+msgid "Edit"
+msgstr "Editar"
+
+msgid "NotSet"
+msgstr "(no existe)"
+
+msgid "Download"
+msgstr "Descargar"
+
+msgid "NotRandomized"
+msgstr "no es aleatorio"
+
+msgid "NotWritable"
+msgstr "No es Modificable"
+
+msgid "ParentNotWritable"
+msgstr "El directorio donde el archivo está ubicado no tiene permisos de escritura."
+
+msgid "DoesNotExist"
+msgstr "No Existe"
+
+msgid "Email"
+msgstr "Correo Electrónico"
+
+msgid "Website"
+msgstr "Sitio Web"
+
+msgid "Message"
+msgstr "Mensaje"
+
+msgid "Information"
+msgstr "Información"
+
+msgid "Event"
+msgstr "Evento"
+
+msgid "Exists"
+msgstr "Existe"
+
+msgid "Writable"
+msgstr "Modificable"
+
+msgid "Today"
+msgstr "Hoy"
+
+msgid "NoLogs"
+msgstr "No existen registros."
+
+msgid "SelfHosting"
+msgstr "Exportador de Registros"
+
+msgid "SelfHostingEnabled"
+msgstr "La herramienta para exportar los registros de seguridad ha sido activada"
+
+msgid "SelfHostingDisabled"
+msgstr "La herramienta para exportar los registros de seguridad ha sido desactivada"
+
+msgid "SelfHostingInfo"
+msgstr "Esta opción le permite guardar una copia de los registros de seguridad en un archivo ubicado en su servidor que puede ser leido por un SIEM o cualquier otro sistema de análisis <em>(le recomendamos OSSEC)</em>. Esto le dará visibilidad de lo que sucede en su sitio web para complementar su infraestructura de monitoreo."
+
+msgid "SelfHostingFallback"
+msgstr "Usted no tiene una llave para comunicarse con la API. Sin embargo, la herramienta para exportar los registros de seguridad está activada, el plugin leerá el contenido de este archivo y mostrará esa información aquí. Tenga en cuenta que solo los últimos registros serán procesados para mantener un consumo de memoria bajo. Considere generar una llave para obtener una mayor covertura en la actividad de su sitio web."
+
+msgid "AuditLogsCache"
+msgstr "Los registros son guardados por %%SUCURI.AuditLogs.Lifetime%% segundos"
+
+msgid "Refresh"
+msgstr "Actualizar"
+
+msgid "UnsupportedWordPress"
+msgstr "esta versión de WordPress no tiene soporte."
+
+msgid "NoWordPressFile"
+msgstr "El archivo no hace parte de la instalación oficial de WordPress."
+
+msgid "CannotCheckMissingFile"
+msgstr "No se pueden revisar archivos que no existen."
+
+msgid "ScheduledTask"
+msgstr "%1$s (cada %2$d segundos)"
+
+msgid "ScheduledTaskNever"
+msgstr "Nunca (no ejecutar)"
+
+msgid "SucuriAlert"
+msgstr "Alerta de Sucuri"
+
+msgid "UpdatedEmailSubject"
+msgstr "El asunto para las alertas de seguridad ha sido actualizado"
+
+msgid "InvalidEmailSubject"
+msgstr "El asunto para las alertas de seguridad contiene letras inválidas."
+
+msgid "EmailSubject.available_updates"
+msgstr "Actualizaciones Disponibles"
+
+msgid "EmailSubject.bruteforce_attack"
+msgstr "Ataque de Fuerza Bruta"
+
+msgid "EmailSubject.failed_login"
+msgstr "Autenticación Fallida"
+
+msgid "EmailSubject.plugin_activated"
+msgstr "Plugin Activado"
+
+msgid "EmailSubject.plugin_change"
+msgstr "Plugin Modificado"
+
+msgid "EmailSubject.plugin_deactivated"
+msgstr "Plugin Desactivado"
+
+msgid "EmailSubject.plugin_deleted"
+msgstr "Plugin Eliminado"
+
+msgid "EmailSubject.plugin_installed"
+msgstr "Plugin Instalado"
+
+msgid "EmailSubject.plugin_updated"
+msgstr "Plugin Actualizado"
+
+msgid "EmailSubject.post_publication"
+msgstr "Publicación"
+
+msgid "EmailSubject.scan_checksums"
+msgstr "Escaneo de Checksums"
+
+msgid "EmailSubject.settings_updated"
+msgstr "Ajustes Actualizados"
+
+msgid "EmailSubject.success_login"
+msgstr "Autenticación Exitosa"
+
+msgid "EmailSubject.theme_activated"
+msgstr "Plantilla Activada"
+
+msgid "EmailSubject.theme_deleted"
+msgstr "Plantilla Eliminada"
+
+msgid "EmailSubject.theme_editor"
+msgstr "Editor de Plantilla"
+
+msgid "EmailSubject.theme_installed"
+msgstr "Plantilla Instalada"
+
+msgid "EmailSubject.theme_updated"
+msgstr "Plantilla Actualizada"
+
+msgid "EmailSubject.user_registration"
+msgstr "Registro de Usuario"
+
+msgid "EmailSubject.website_updated"
+msgstr "Sitio Web Actualizado"
+
+msgid "EmailSubject.widget_added"
+msgstr "Widget Agregado"
+
+msgid "EmailSubject.widget_deleted"
+msgstr "Widget Eliminado"
+
+msgid "EmailSubject.post_update"
+msgstr "Publicación Actualizada"
+
+msgid "EmailSubject.core_integrity_checks"
+msgstr "Integridad de Archivos de WordPress"
+
+msgid "EmailSubject.password_change"
+msgstr "Cambio de Contraseña"
+
+msgid "FailedLoginFooter"
+msgstr "<br><br><em>Explanación: Alguien intentó ingresar al sistema de administración de su sitio web. Si usted está recibiendo muchas de estas alertas, es posible que alguien esté utilizando un ataque de fuerza bruta para vulnerar su sitio [1]. Puede desactivar estas alertas desde aquí [2]. También puede considerar la instalación de un Firewall para filtrar el tráfico malicioso y ataques como este [3].</em><br><br>[1] <a href='https://kb.sucuri.net/definitions/attacks/brute-force/password-guessing'>https://kb.sucuri.net/definitions/attacks/brute-force/password-guessing</a><br>[2] <a href='%1$s'>%2$s</a> <br>[3] <a href='https://sucuri.net/website-firewall/?wpalert'>https://sucuri.net/website-firewall/</a><br>"
+
+msgid "FirewallAPIKeySet"
+msgstr "La llave del Firewall ha sido guardada"
+
+msgid "FirewallAPIKeyUnset"
+msgstr "La llave del Firewall ha sido eliminada"
+
+msgid "FirewallAPIKeyInvalid"
+msgstr "La llave del Firewall es inválida"
+
+msgid "FirewallAPIKeyMissing"
+msgstr "La llave del Firewall no fué encontrada."
+
+msgid "NoData"
+msgstr "No existen datos"
+
+msgid "FirewallDoCache"
+msgstr "Activada (recomendada)"
+
+msgid "FirewallSiteCache"
+msgstr "Cache usando cabeceras de HTTP"
+
+msgid "FirewallNoCache"
+msgstr "Mínima (solo por algunos minutos)"
+
+msgid "FirewallNoCacheAtAll"
+msgstr "Desactivada (use con precaución)"
+
+msgid "FirewallNotEnabled"
+msgstr "El Firewall no ha sido activado en su sitio o la llave de autenticación es inválida."
+
+msgid "FirewallClearCacheFailure"
+msgstr "No se pudo actualizar la cache de su sitio, intente más tarde."
+
+msgid "Active"
+msgstr "activo"
+
+msgid "NotActive"
+msgstr "inactivo"
+
+msgid "Unknown"
+msgstr "desconocido"
+
+msgid "Undefined"
+msgstr "Indefinido"
+
+msgid "January"
+msgstr "Enero"
+
+msgid "February"
+msgstr "Febrero"
+
+msgid "March"
+msgstr "Marzo"
+
+msgid "April"
+msgstr "Abril"
+
+msgid "May"
+msgstr "Mayo"
+
+msgid "June"
+msgstr "Junio"
+
+msgid "July"
+msgstr "Julio"
+
+msgid "August"
+msgstr "Agosto"
+
+msgid "September"
+msgstr "Septiembre"
+
+msgid "October"
+msgstr "Octubre"
+
+msgid "November"
+msgstr "Noviembre"
+
+msgid "December"
+msgstr "Deciembre"
+
+msgid "Username"
+msgstr "Usuario"
+
+msgid "Password"
+msgstr "Contraseña"
+
+msgid "RemoteAddr"
+msgstr "Dirección IP"
+
+msgid "Hostname"
+msgstr "Servidor"
+
+msgid "Browser"
+msgstr "Navegador Web"
+
+msgid "Datetime"
+msgstr "Fecha/Hora"
+
+msgid "Block"
+msgstr "Bloquear"
+
+msgid "Unblock"
+msgstr "Desbloquear"
+
+msgid "BlockedAt"
+msgstr "Bloqueado en"
+
+msgid "FirstAttempt"
+msgstr "Primer Intento"
+
+msgid "LastAttempt"
+msgstr "Último Intento"
+
+msgid "LastActivity"
+msgstr "Último Ingreso"
+
+msgid "AttemptTimestamp"
+msgstr "Timestamp"
+
+msgid "AttemptDatetime"
+msgstr "Fecha/Hora"
+
+msgid "ConfirmOperation"
+msgstr "Debe confirmar que entiende el riesgo de esta operación."
+
+msgid "UnderstandTheRisk"
+msgstr "Entiendo que esta operación no puede ser revertida."
+
+msgid "NonSupportedAction"
+msgstr "La acción ejecutada no está soportada."
+
+msgid "NonSupportedLanguage"
+msgstr "El idioma seleccionado no está soportado."
+
+msgid "NothingSelected"
+msgstr "Nada ha sido seleccionado de la lista."
+
+msgid "ItemsProcessed"
+msgstr "Los items seleccionados han sido procesados."
+
+msgid "AllItemsProcessed"
+msgstr "<b>%1$d</b> de <b>%2$d</b> archivos fueron procesados."
+
+msgid "SomeItemsProcessed"
+msgstr "Solo <b>%1$d</b> de <b>%2$d</b> archivos fueron procesados."
+
+msgid "ErrorIntegrityAdded"
+msgstr "El plugin no tiene permiso para eliminar este archivo porque fué creado por otro usuario del sistema con más privilegios que su cuenta. Conéctese a su sitio a través de FTP para eliminarlo."
+
+msgid "ErrorIntegrityModified"
+msgstr "El plugin no tiene permiso para restablecer el contenido de este archivo porque fué modificado por otro usuario del sistema con más privilegios que su cuenta. Conéctese a su sitio a través de FTP para restablecerlo."
+
+msgid "ErrorIntegrityRemoved"
+msgstr "El plugin no tiene permiso para restablecer el contenido de este archivo porque el directorio donde está ubicado pertenece a otro usuario del sistema con más privilegios que su cuenta. Conéctese a su sitio a través de FTP para restablecerlo."
+
+msgid "SecurityAlerts"
+msgstr "Alertas de Seguridad"
+
+msgid "AlertSettingsUpdated"
+msgstr "La configuración para las alertas de seguridad ha sido actualizada"
+
+msgid "OptionNotifyPluginChange"
+msgstr "Recibir alertas por cambios en la configuración del plugin de Sucuri"
+
+msgid "OptionPrettifyMails"
+msgstr "Recibir alertas en HTML <em>(puede experimentar problemas con su servicio de correo electrónico)</em>"
+
+msgid "OptionUseWordPressMail"
+msgstr "Usar funciones nativas de WordPress para enviar las alertas <em>(deseleccione para usar funciones nativas de PHP)</em>"
+
+msgid "OptionLastLoginRedirection"
+msgstr "Permitir redirección durante el login para reportar información acerca de la última autenticación exitosa de su cuenta de usuario"
+
+msgid "OptionNotifyScanChecksums"
+msgstr "Recibir alertas por diferencias en los archivos originales de WordPress"
+
+msgid "OptionNotifyAvailableUpdates"
+msgstr "Recibir alertas con actualizaciones disponibles"
+
+msgid "OptionNotifyUserRegistration"
+msgstr "Recibir alertas por registros de nuevas cuentas de usuario"
+
+msgid "OptionNotifySuccessLogin"
+msgstr "Recibir alertas por autenticaciones exitosas de usuario"
+
+msgid "OptionNotifyFailedLogin"
+msgstr "Recibir alertas por autenticaciones de usuario fallidas <em>(si su sitio está siendo atacado usted recibirá multiples alertas por segundo, deseleccione para reducir el Spam)</em>"
+
+msgid "OptionNotifyBruteforceAttack"
+msgstr "Recibir un resumen con todos los intentos de autenticación de usuario fallidos durante la misma hora. El reporte será eliminado del servidor una vez la información sea enviada a su correo"
+
+msgid "OptionNotifyPostPublication"
+msgstr "Recibir alertas por cambios en el estado de las publicaciones y páginas <em>(puede configurar qué alertas serán monitoreadas desde el panel \"Ignorar Cambios en Publicaciones\")</em>"
+
+msgid "OptionNotifyWebsiteUpdated"
+msgstr "Recibir alertas cuando su sitio web sea actualizado"
+
+msgid "OptionNotifySettingsUpdated"
+msgstr "Recibir alertas por cambios en la configuración general de su sitio web"
+
+msgid "OptionNotifyThemeEditor"
+msgstr "Recibir alertas cuando un archivo sea modificado a través del editor de Plugins/Plantillas"
+
+msgid "OptionNotifyPluginInstalled"
+msgstr "Recibir alertas cuando un <b>plugin sea instalado</b>"
+
+msgid "OptionNotifyPluginActivated"
+msgstr "Recibir alertas cuando un <b>plugin sea activado</b>"
+
+msgid "OptionNotifyPluginDeactivated"
+msgstr "Recibir alertas cuando un <b>plugin sea desactivado</b>"
+
+msgid "OptionNotifyPluginUpdated"
+msgstr "Recibir alertas cuando un <b>plugin sea actualizado</b>"
+
+msgid "OptionNotifyPluginDeleted"
+msgstr "Recibir alertas cuando un <b>plugin sea eliminado</b>"
+
+msgid "OptionNotifyWidgetAdded"
+msgstr "Recibir alertas cuando un <b>widget sea agregado</b> a su sitio web"
+
+msgid "OptionNotifyWidgetDeleted"
+msgstr "Recibir alertas cuando un <b>widget sea eliminado</b> de su sitio web"
+
+msgid "OptionNotifyThemeInstalled"
+msgstr "Recibir alertas cuando una <b>plantilla sea instalada</b>"
+
+msgid "OptionNotifyThemeActivated"
+msgstr "Recibir alertas cuando una <b>plantilla sea activada</b>"
+
+msgid "OptionNotifyThemeUpdated"
+msgstr "Recibir alertas cuando una <b>plantilla sea actualizada</b>"
+
+msgid "OptionNotifyThemeDeleted"
+msgstr "Recibir alertas cuando una <b>plantilla sea eliminada</b>"
+
+msgid "MaximumAlertsSuccess"
+msgstr "El número máximo de alertas por hora ha sido actualizado"
+
+msgid "MaximumAlertsFailure"
+msgstr "Error al actualizar el número máximo de alertas por hora"
+
+msgid "OptionPerHour5"
+msgstr "Máximo 5 por hora"
+
+msgid "OptionPerHour10"
+msgstr "Máximo 10 por hora"
+
+msgid "OptionPerHour20"
+msgstr "Máximo 20 por hora"
+
+msgid "OptionPerHour40"
+msgstr "Máximo 40 por hora"
+
+msgid "OptionPerHour80"
+msgstr "Máximo 80 por hora"
+
+msgid "OptionPerHour160"
+msgstr "Máximo 160 por hora"
+
+msgid "BruteForceAlertSuccess"
+msgstr "El plugin asumirá que su sitio web eatá siendo atacado después de %1$s autenticaciones de usuario fallidas durante la misma hora"
+
+msgid "BruteForceAlertFailure"
+msgstr "Ese número no está soportado por el plugin, use uno de la lista"
+
+msgid "OptionPerHourUnlimited"
+msgstr "Alertas ilimitadas por hora"
+
+msgid "OptionFailedLogins30"
+msgstr "30 autenticaciones fallidas por hora"
+
+msgid "OptionFailedLogins60"
+msgstr "60 autenticaciones fallidas por hora"
+
+msgid "OptionFailedLogins120"
+msgstr "120 autenticaciones fallidas por hora"
+
+msgid "OptionFailedLogins240"
+msgstr "240 autenticaciones fallidas por hora"
+
+msgid "OptionFailedLogins480"
+msgstr "480 autenticaciones fallidas por hora"
+
+msgid "HTAccessIsMissing"
+msgstr "Archivo .htaccess no existe"
+
+msgid "HTAccessNotWritable"
+msgstr "Archivo .htaccess no es modificable"
+
+msgid "DiffUtility"
+msgstr "Herramienta de Integridad de Archivos"
+
+msgid "DiffUtilityDescription"
+msgstr "Si su proveedor de hosting permite la ejecución de comandos del sistema a través de PHP, puede configurar el plugin para usar el comando <a href=\"https://en.wikipedia.org/wiki/Diff_utility\" target=\"_blank\" rel=\"noopener\">Diff de UNIX</a> para comparar el contenido actual de sus archivos con los archivos originales de WordPress. Esta herramienta le permitirá ver las diferencias entre ambos repositorios y actuar dependiendo de la información encontrada."
+
+msgid "DiffUtilityInfo"
+msgstr "El comand <b>diff</b> de Unix está activado. Puede hacer clic en los archivos marcados como modificados <em>(señalados con la bandera violeta)</em> para ver las diferencias detectadas por el escaner. Si usted considera que las diferencias no causan daño a su sitio puede marcar el archivo como revisado, de otra forma se le sugiere restaurar el contenido original inmediatamente."
+
+msgid "DiffUtilityInstructions"
+msgstr "Las lineas con un signo <b>negativo</b> como prefijo <em>(marcadas en rojo)</em> muestran el código original. Las lineas con un signo <b>positivo</b> como prefijo <em>(marcadas en verde)</em> muestran el código actual. Puede leer más acerca del formato DIFF en el artículo de WikiPedia <a target=\"_blank\" href=\"https://en.wikipedia.org/wiki/Diff_utility\" rel=\"noopener\">Unix Diff Utility</a>."
+
+msgid "AccountsWereBlocked"
+msgstr "Las cuentas de usuario seleccionadas han sido bloqueadas"
+
+msgid "AccountsWereUnblocked"
+msgstr "Las cuentas de usuario seleccionadas han sido desbloqueadas"
+
+msgid "LastLoginMessage"
+msgstr "El último acceso de su cuenta fué en <b>%1$s</b> desde <b>%2$s</b> <em>(%3$s)</em> <a href='%4$s'>ver todos los registros</a>"
+
+msgid "LastLoginsNotWritable"
+msgstr "El archivo para los registros de autenticaciones de usuario no es modificable: <code>%1$s</code>"
+
+msgid "UserInfo"
+msgstr "Usuario: %1$s (%2$s)"
+
+msgid "ReverseProxy"
+msgstr "Túneles Proxy"
+
+msgid "ReverseProxyStatus"
+msgstr "El soporte para túneles proxy ha sido cambiado a <b>%1$s</b>"
+
+msgid "ReverseProxyInfo"
+msgstr "El plugin utiliza la dirección IP de cada usuario para registrar los eventos ejecutados, el plugin utiliza dos métodos para obtener esta dirección: el método principal usa una variable global del servidor llamada <em>Remote-Addr</em> disponible en la mayoría de servidores web, un método alternativo usa cabeceras de HTTP personalizadas <em>(que son consideradas inseguras por defecto)</em>. No es necesario que usted se preocupe por esta opción a menos que su sitio web esté detrás de un túnel proxy. Servicios como el <a href=\"https://sucuri.net/website-firewall/\" target=\"_blank\">Firewall de Sucuri</a> &mdash; una vez activo &mdash; forzan el paso del tráfico de red a través de ellos para filtrar amenazas de seguridad que podrían afectar el servidor original. Un efecto secundario del uso de estos servicios es que la dirección IP de los usuarios ya no está disponible entre las variables globales del servidor sino que es enviada a través de una cabecera HTTP personalizada."
+
+msgid "IPDiscoverer"
+msgstr "Detección de Direcciones IP"
+
+msgid "IPDiscovererInfo"
+msgstr "La detección de direcciones IP hace uso de DNS para detectar si el sitio web está detrás del <a href=\"https://sucuri.net/website-firewall/\" target=\"_blank\">Firewall de Sucuri</a> en cuyo caso modificará las variables globales del servidor para configurar la dirección IP real de cada visitante del sitio. Este proceso es ejecutado con cada proceso de WordPress y es posible que la velocidad de su sitio sea afectada ya que algunos proveedores de hosting utilizan servidores DNS lentos lo que hace que esta operación tome más tiempo de lo que se espera."
+
+msgid "HTTPHeader"
+msgstr "Cabecera de HTTP"
+
+msgid "HTTPHeaderStatus"
+msgstr "La cabecera de HTTP ha sido cambiada a <code>%1$s</code>"
+
+msgid "DisallowedHTTPHeader"
+msgstr "La cabecera de HTTP no es permitida"
+
+msgid "RequiresModernPHP"
+msgstr "El plugin requiere de PHP 5 >= 5.3.0 - o - PHP 7"
+
+msgid "General"
+msgstr "Generales"
+
+msgid "Scanner"
+msgstr "Escáner"
+
+msgid "Hardening"
+msgstr "Hardening"
+
+msgid "PostHack"
+msgstr "Pos-Ataque"
+
+msgid "Alerts"
+msgstr "Alertas"
+
+msgid "WebsiteInfo"
+msgstr "Información"
+
+msgid "Loading"
+msgstr "Cargando..."
+
+msgid "iFrames"
+msgstr "iFrames"
+
+msgid "Links"
+msgstr "Vínculos"
+
+msgid "Scripts"
+msgstr "Scripts"
+
+msgid "iFramesNum"
+msgstr "iFrames: %1$d"
+
+msgid "LinksNum"
+msgstr "Vínculos: %1$d"
+
+msgid "ScriptsNum"
+msgstr "Scripts: %1$d"
+
+msgid "Type"
+msgstr "Tipo"
+
+msgid "Name"
+msgstr "Nombre"
+
+msgid "Value"
+msgstr "Valor"
+
+msgid "Version"
+msgstr "Versión"
+
+msgid "NextDue"
+msgstr "Próxima Ejecución"
+
+msgid "Schedule"
+msgstr "Frecuencia"
+
+msgid "Arguments"
+msgstr "Argumentos"
+
+msgid "EnvVariables"
+msgstr "Variables del Servidor"
+
+msgid "ConfigVariables"
+msgstr "Variables de Configuración"
+
+msgid "ConfigNotFound"
+msgstr "El archivo de configuración de WordPress no fué encontrado."
+
+msgid "ConfigNotWritable"
+msgstr "El archivo de configuraciòn de WordPress no es modificable."
+
+msgid "LastLoginsResetSuccess"
+msgstr "El archivo para los registros de autenticaciones de usuario ha sido reseteado."
+
+msgid "LastLoginsResetFailure"
+msgstr "No se pudo resetear el archivo para los registros de autenticaciones de usuario."
+
+msgid "WillReceiveAlerts"
+msgstr "Las alertas de seguridad serán enviadas a: <code>%1$s</code>"
+
+msgid "WillNotReceiveAlerts"
+msgstr "Estos correos no recibirán más alertas de seguridad: <code>%1$s</code>"
+
+msgid "TestAlertSent"
+msgstr "Un correo de prueba ha sido enviado a su dirección, revise su bandeja de entrada"
+
+msgid "InvalidEmail"
+msgstr "Formato de correo electrónico inválido."
+
+msgid "TrustedIPDuplicate"
+msgstr "La dirección IP especificada ya ha sido agregada."
+
+msgid "TrustedIPAdded"
+msgstr "Eventos sospechosos generados desde esta dirección IP serán ignorados: <code>%1$s</code>"
+
+msgid "TrustedIPFailure"
+msgstr "La dirección IP no pudo ser agregada a la lista"
+
+msgid "TrustedIPDeleted"
+msgstr "La dirección IP ha sido eliminada de la lista"
+
+msgid "OnlyLowerUppercase"
+msgstr "Solo se permiten letras en minúscula y guiones-bajo"
+
+msgid "PostTypeIgnore"
+msgstr "Recibir Estas Alertas"
+
+msgid "PostTypeUnignore"
+msgstr "No Recibir Estas Alertas"
+
+msgid "PostTypeIgnored"
+msgstr "Este tipo de publicaciones serán ignoradas"
+
+msgid "PostTypeUnignored"
+msgstr "Este tipo de publicaciones no serán ignoradas"
+
+msgid "PostTypeFailure"
+msgstr "Este tipo de publicaciones no es válido o ya han sido ignoradas"
+
+msgid "APIServiceChanged"
+msgstr "El estado de comunicación con la API ha sido cambiado"
+
+msgid "HTTPTimeoutChange"
+msgstr "El tiempo de espera para las conexiones a través de HTTP ha sido cambiado"
+
+msgid "HTTPTimeoutFailure"
+msgstr "El tiempo de espera para las conexiones a través de HTTP es muy alto"
+
+msgid "PluginResetSuccess"
+msgstr "Los registros de seguridad, configuraciones y cambios adicionales hechos por el plugin han sido eliminados"
+
+msgid "StorageNotWritable"
+msgstr "El plugin no tiene acceso a este directorio: <code>%1$s</code>"
+
+msgid "SiteWasRegistered"
+msgstr "Sitio web registrado exitosamente"
+
+msgid "NFilesWereDeleted"
+msgstr "%1$d de %2$d archivos han sido eliminados"
+
+msgid "AvoidDocumentRoot"
+msgstr "El archivo no puede ser accesible públicamente"
+
+msgid "AvoidFileOverride"
+msgstr "El archivo ya existe; no será sobre-escrito"
+
+msgid "Cronjobs"
+msgstr "Acciones Automatizadas"
+
+msgid "CronjobsInfo"
+msgstr "<b>Acciones Automatizadas</b> son reglas registradas en su base de datos por un plugin, plantilla o WordPress; estas reglas son usadas para ejecutar automáticamente acciones definidas en el código con un intervalo de tiempo definido. Un buen uso de estas reglas es la generación de copias de seguridad, la ejecución de escáneres de seguridad o la remoción de elementos innecesarios de la base de datos como borradores de publicaciones."
+
+msgid "CronjobRunNow"
+msgstr "Ejecutar Ahora (en +10 segundos)"
+
+msgid "CronjobsWillRunSoon"
+msgstr "%1$d acciones automatizadas serán ejecutadas en los próximos segundos"
+
+msgid "CronjobsWereDeleted"
+msgstr "%1$d acciones automatizadas han sido eliminadas"
+
+msgid "CronjobsWereReinstalled"
+msgstr "%1$d acciones automatizadas han sido reinstaladas para ser ejecutadas con este intervalo de tiempo: <code>%2$s</code>.'"
+
+msgid "CronjobsWereNotSelected"
+msgstr "Ninguna acción automatizada ha sido seleccionada de la lista"
+
+msgid "DNSLookupStatus"
+msgstr "El estado las conexiones via DNS para detectar el uso de túneles proxy ha sido cambiado"
+
+msgid "IncorrectEncoding"
+msgstr "Los datos han sido codificados incorrectamente"
+
+msgid "ImportCount"
+msgstr "%1$d de %2$d opciones han sido importadas exitosamente"
+
+msgid "APIKey"
+msgstr "Llave de Autenticación"
+
+msgid "APIKeyInfo"
+msgstr "La mayoría de herramientas en este plugin pueden ser usadas sin una configuración específica, pero las herramientas más importantes requieren de una <b>llave de autenticación</b> para establecer un túnel de comunicación segura con los servidores de Sucuri. La llave es generada usando su correo electrónico y el nombre dominio de su sitio web, esto le permitirá tener acceso a la herramienta de monitoreo y opciones extra."
+
+msgid "APIKeyTerms"
+msgstr "Tenga en cuenta que generar una llave implica que usted está de acuerdo con enviar la información recolectada por el plugin a los servidores de Sucuri, esto le permite mantener los registros de seguridad fuera del alcance de usuarios maliciosos que podrían intentar eliminarlos para limpiar sus huellas durante un ataque. Nosotros además usamos esta información de forma anónima para generar <a href=\"https://sucuri.net/security-reports/brute-force/\" target=\"_blank\">estadísticas</a>. Por favor, no genere la llave de autenticación si usted está en desacuerdo con esto, usted puede seguir usando el plugin sin la llave."
+
+msgid "APIKeyInvalidDomain"
+msgstr "Su sitio web <code>%%SUCURI.CleanDomain%%</code> parece no tener un registro de DNS tipo <code>A</code> así que la API lo considerará inválido durante el proceso de generación su la llave. Agregue <code>www</code> al inicio del dominio para intentar solucionar el problema. Envíe un mensaje a nuestro servicio de soporte si no entiende qué significa esto."
+
+msgid "APIKeyRecoverButton"
+msgstr "Recuperar Por Correo Electrónico"
+
+msgid "APIKeyRecoveryCondition"
+msgstr "Si usted no tiene acceso al correo electrónico usado para generar la llave pero tiene una copia de la misma a la mano, haga <a target=\"_self\" href=\"%%SUCURI.URL.Settings%%&recover\">clic aquí</a> para activar el plugin manualmente. Tenga en cuenta que si la llave es inválida el plugin la eliminará inmediatamente."
+
+msgid "ApplyHardening"
+msgstr "Aplicar Hardening"
+
+msgid "RevertHardening"
+msgstr "Revertir Hardening"
+
+msgid "HardeningFirewallTitle"
+msgstr "Firewall Para Aplicaciones Web"
+
+msgid "HardeningFirewallDescription"
+msgstr "Un WAF (Web Application Firewall) es una capa de protección para su sitio web que bloquea todo tipo de ataques (fuerza bruta, denegación de servicios, inyecciones a base de datos, etc) y le ayuda a permanecer limpio de código malicioso y fuera de listas negras. Esta opción verifica si su sitio web está usando el Firewall de Sucuri como su capa de protección primaria."
+
+msgid "HardeningFirewallPurchase"
+msgstr "El Firewall de Sucuri es un servicio premium que puede comprar aquí - <a href='https://goo.gl/qfNkMq' target='_blank'>Sucuri Firewall</a>"
+
+msgid "HardeningVersionTitle"
+msgstr "Verificar la Versión de WordPress"
+
+msgid "HardeningVersionDescription"
+msgstr "¿Por qué mantener su sitio web actualizado? WordPress es un proyecto de código libre lo que significa que todos los cambios hechos al código son hechos de forma pública, si alguno de esos cambios hace parte de una solución para un problema de seguridad, cualquier persona puede utilizar esta información para atacar su sitio web si este aún no ha aplicado el parche de seguridad."
+
+msgid "HardeningPHPVersionTitle"
+msgstr "Verificar la Versión de PHP"
+
+msgid "HardeningPHPVersionDescription"
+msgstr "PHP %1$s está instalado."
+
+msgid "HardeningPHPVersionLifetime"
+msgstr "Comuníquese con su proveedor de hosting para instalar una version actualizada de PHP - <a href='http://php.net/supported-versions.php' target='_blank' rel='noopener'>Lista de Versiones de PHP Soportadas</a>"
+
+msgid "HardeningGeneratorTitle"
+msgstr "Eliminar Versión de WordPress"
+
+msgid "HardeningGeneratorDescription"
+msgstr "Esta opción verifica si la versión de WordPress usada en su sitio web está siendo expuesta de forma pública a través del código HTML. Muchos escáneres de vulnerabilidades web utilizan esta información para determinar si su página web tiene vulnerabilidades para luego ser explotadas. Tenga en cuenta que aún sin esta información un escáner inteligente puede detectar la versión de WordPress en uso comparando los Checksums de algunos archivos estáticos distribuidos con cada instalación."
+
+msgid "HardeningNginxTitle"
+msgstr "Bloquear Algunos Archivos PHP"
+
+msgid "HardeningNginxDescription"
+msgstr "Esta opción bloquea la ejecución de archivos PHP en directorios sensitivos. Sea cuidadoso cuando aplique esta opción ya que algunos plugins y plantillas requieren de acceso público a este directorio para algunas de sus herramientas, por ejemplo, para generar imágenes o guardar información temporalmente. Agrégue los archivos que están siendo bloqueados a la lista blanca de archivos PHP."
+
+msgid "HardeningNginxField"
+msgstr "Verificar Hardening"
+
+msgid "HardeningNginxSuggestion"
+msgstr "Léa las instrucciones oficiales de WordPress para aprender como restringir el acceso a archivos PHP en directorios sensitivos  - <a href='https://codex.wordpress.org/Nginx#Global_restrictions_file' target='_blank' rel='noopener'>Restricciones Globales para Nginx y WordPress</a>"
+
+msgid "HardeningUploadsTitle"
+msgstr "Bloquear Archivos PHP en el Directorio de Subidas"
+
+msgid "HardeningUploadsDescription"
+msgstr "Esta opción bloquea la ejecución de archivos PHP en directorios sensitivos. Sea cuidadoso cuando aplique esta opción ya que algunos plugins y plantillas requieren de acceso público a este directorio para algunas de sus herramientas, por ejemplo, para generar imágenes o guardar información temporalmente. Agrégue los archivos que están siendo bloqueados a la lista blanca de archivos PHP."
+
+msgid "HardeningUploadsApplySuccess"
+msgstr "Hardening aplicado al directorio de subidas"
+
+msgid "HardeningUploadsApplyFailure"
+msgstr "Error aplicando hardening en el directorio seleccionado"
+
+msgid "HardeningUploadsRevertSuccess"
+msgstr "Hardening revertido en el directorio de subidas"
+
+msgid "HardeningUploadsRevertFailure"
+msgstr "El archivo .htaccess no es modificable"
+
+msgid "HardeningContentTitle"
+msgstr "Bloquear Archivos PHP en el Directorio de Contenido"
+
+msgid "HardeningContentDescription"
+msgstr "Esta opción bloquea la ejecución de archivos PHP en directorios sensitivos. Sea cuidadoso cuando aplique esta opción ya que algunos plugins y plantillas requieren de acceso público a este directorio para algunas de sus herramientas, por ejemplo, para generar imágenes o guardar información temporalmente. Agrégue los archivos que están siendo bloqueados a la lista blanca de archivos PHP."
+
+msgid "HardeningContentApplySuccess"
+msgstr "Hardening aplicado al directorio de contenido"
+
+msgid "HardeningContentApplyFailure"
+msgstr "Error aplicando hardening en el directorio seleccionado"
+
+msgid "HardeningContentRevertSuccess"
+msgstr "Hardening revertido en el directorio de contenido"
+
+msgid "HardeningContentRevertFailure"
+msgstr "El archivo .htaccess no es modificable"
+
+msgid "HardeningIncludesTitle"
+msgstr "Bloquear Archivos PHP en el Directorio de Inclusiones"
+
+msgid "HardeningIncludesDescription"
+msgstr "Esta opción bloquea la ejecución de archivos PHP en directorios sensitivos. Sea cuidadoso cuando aplique esta opción ya que algunos plugins y plantillas requieren de acceso público a este directorio para algunas de sus herramientas, por ejemplo, para generar imágenes o guardar información temporalmente. Agrégue los archivos que están siendo bloqueados a la lista blanca de archivos PHP."
+
+msgid "HardeningIncludesApplySuccess"
+msgstr "Hardening aplicado al directory de inclusiones"
+
+msgid "HardeningIncludesApplyFailure"
+msgstr "Error aplicando hardening en el directorio de inclusiones"
+
+msgid "HardeningIncludesRevertSuccess"
+msgstr "Hardening revertido en el directorio de inclusiones"
+
+msgid "HardeningIncludesRevertFailure"
+msgstr "El archivo .htaccess no es modificable"
+
+msgid "HardeningReadmeTitle"
+msgstr "Exposición de Información"
+
+msgid "HardeningReadmeDescription"
+msgstr "Esta opción verifica si el archivo README todavía existe. La información en este archivo puede ser usada por personas maliciosas para encontrar vulnerabilidades asociadas con la versión de WordPress que usted ha instalado. Tenga en cuenta que este archivo is re-creado cada vez que una actualización es ejecutada."
+
+msgid "HardeningReadmeApplySuccess"
+msgstr "Hardening aplicado sobre el archivo README"
+
+msgid "HardeningReadmeApplyFailure"
+msgstr "No se puede eliminar el archivo README"
+
+msgid "HardeningAdminUserTitle"
+msgstr "Cuenta de Administración Primaria"
+
+msgid "HardeningAdminUserDescription"
+msgstr "Esta opción verifica si la cuenta de administración primaria está usando un nombre fácil de adivinar como \"admin\". Esto permite a personas maliciosas identicar fácilmente qué cuenta tiene los privilegios más altos entre todos los usuarios registrados."
+
+msgid "HardeningFileEditorTitle"
+msgstr "Editor de Plugins y Plantillas"
+
+msgid "HardeningFileEditorDescription"
+msgstr "Esta opción desactiva el editor de plugins y plantillas para prevenir modificaciones innecesarias en el código."
+
+msgid "HardeningFileEditorApplySuccess"
+msgstr "Hardening aplicado al editor de plugins y plantillas"
+
+msgid "HardeningFileEditorRevertSuccess"
+msgstr "Hardening revertido en el editor de plugins y plantillas"
+
+msgid "HardeningFileEditorRevertFailure"
+msgstr "El editor de plugins y plantillas no fue desactivado usando el plugin de Sucuri. Usted debe escanear su sitio web por una constante definida como \"DISALLOW_FILE_EDIT\" cuando la encuentre debe eliminarla o cambiar su valor a \"False\". Tenga en cuenta que cualquier otro plugin o plantilla puede desactivar el editor, así que es imposible determinar el origen de la constante."
+
+msgid "PHPWhitelistSuccess"
+msgstr "El archivo ha sido agregado a la lista blanca de archivos PHP"
+
+msgid "PHPWhitelistFailure"
+msgstr "El directorio especificado no fue fortalecido por el plugin de Sucuri"
+
+msgid "PHPDewhitelistSuccess"
+msgstr "Los archivos seleccionados han sido eliminados de la lista blanca de archivos PHP"
+
+msgid "DiffUtilityStatus"
+msgstr "El estado de la herramienta de integridad ha sido cambiado"
+
+msgid "DiffUtilityMissing"
+msgstr "Su proveedor de hosting no permite la ejecución de comandos del sistema a través de archivos PHP."
+
+msgid "IntegrityLanguage"
+msgstr "El idioma para la herramienta de integridad de archivos de WordPress ha sido cambiado"
+
+msgid "NotInstalled"
+msgstr "no instalado"
+
+msgid "PremiumPlugin"
+msgstr "Plugin Premium"
+
+msgid "MissingLibrary"
+msgstr "NO_INSTALLER"
+
+msgid "CannotDownload"
+msgstr "Imposible Descargar"
+
+msgid "CannotBackup"
+msgstr "Imposible Hacer Copia de Seguridad"
+
+msgid "CannotInstall"
+msgstr "Imposible Instalar"
+
+msgid "VersionInstalled"
+msgstr "Instalado v%1$s"
+
+msgid "NewestWordPress"
+msgstr "Última Versión"
+
+msgid "NoUpdates"
+msgstr "No existen actualizaciones."
+
+msgid "ScannerFreqStatus"
+msgstr "La frecuencia para la ejecución del escáner de archivos ha sido cambiada"
+
+msgid "SiteClean"
+msgstr "Sitio Limpio"
+
+msgid "SiteNotClean"
+msgstr "Sitio Infectado"
+
+msgid "Blacklisted"
+msgstr "Lista Negra"
+
+msgid "NotBlacklisted"
+msgstr "Sin Lista Negra"
+
+msgid "APIKeyExplanation"
+msgstr "Una llave de autenticación es necesaria para activar herramientas adicionales disponibles en el plugin. Las llaves son gratuitas y puede generar un número ilimitado de ellas siempre y cuando el nombre del sitio web y el correo electrónico sean únicos. La llave es usada para autenticar las conexiones a través de HTTP hechas a la API administrada por Sucuri Inc. No genere la llave si usted está en desacuerdo con el envío de información a nuestros servidores."
+
+msgid "APIKeyHelp"
+msgstr "Si experimenta problemas con la generación de la llave, puede solicitar una enviando la dirección de su sitio web y el correo electrónico que desea usar para la asociacón a <a href=\"mailto:info@sucuri.net\">info@sucuri.net</a>. Tenga en cuenta que generar una llave para un sitio web que no es público en Internet no es posible ya que la API necesita validar que el nombre del host existe, sin embargo, si usted desea probar el plugin en un ambiente de desarrollo por favor contáctenos para poder generar una llave manualmente."
+
+msgid "APIKeyGenerated"
+msgstr "Felicitaciones! Todas las herramientas disponibles en el plugin han sido habilitadas. Este producto está diseñado para suplementar productos de seguridad existentes en su sitio web. El plugin no provee una solución completa a sus necesidades de seguridad, pero le ofrece más herramientas para controlar el funcionamiento de su sitio y tener una mejor postura con respecto a ataques que pueda sufrir en el futuro, todo esto con la intensión de reducir riesgos."
+
+msgid "APIKeyContinueSetup"
+msgstr "Sucuri Inc. ha generado una llave única para su sitio web, esta llave fué asociada al correo electrónico que seleccionó anteriormente, correo que puede utilizar para recuperar dicha llave si llega a perderla en el futuro. Le invitamos a revisar el resto de opciones disponibles en la página de ajustes paraque configure el plugin a la medida de su sitio."
+
+msgid "APIKeyRecoveryExplanation"
+msgstr "Si esta operación fué exitosa, usted recibirá un mensaje en el correo electrónico que usó durante la generación de la llave <em>(usualmente este correo es el mismo asociado a la cuenta de administración primaria)</em>. Este mensaje contiene una copia de la llave, por favor copie y péguela en el formulario de abajo. El plugin verificará la autenticidad de la misma, si esta verificación falla la llave será eliminada automáticamente y usted deberá iniciar el proceso de recuperación nuevamente."
+
+msgid "APIKeyRecoveryPossibleFailures"
+msgstr "Existen casos en los que esta operación puede fallar, un ejemplo sería cuando el correo electrónico ya no está asociado al sitio web, esto sucede cuando la base de la URL cambia <em>(de www a nada y viceversa)</em>. Si está teniendo problemas con el proceso de recuperación de la llave, por favor envíe un mensaje explicando la situación a <a href=\"mailto:info@sucuri.net\">info@sucuri.net</a>"
+
+msgid "DNSLookups"
+msgstr "Conexiones DNS"
+
+msgid "DNSLookupsLabel"
+msgstr "Activar conexiones DNS al inicio de cada proceso"
+
+msgid "DNSLookupsText"
+msgstr "Active esta opción si su sitio web está destrás de un Firewall, esto garantizará que la dirección IP de sus visitantes será detectada correctamente para los registros de seguridad. Usted puede cambiar esto después desde la página de configuraciones del plugin."
+
+msgid "IntegrityTitle"
+msgstr "Integridad de la Instalación"
+
+msgid "IntegrityDescription"
+msgstr "El plugin inspecciona la instalación de WordPress en busca de modificaciones en los archivos originales disponibles en WordPress.org. Archivos ubicados en la raíz del proyecto, el directorio wp-admin y el directorio wp-includes serán comparados con los archivos distribuidos en la versión v%%SUCURI.WordPressVersion%%; todos los archivos con inconsistencias aparecerán en esta lista. Cualquiera de estos cambios podría indicar un problema de seguridad."
+
+msgid "ReviewFalsePositives"
+msgstr "Revisar Falsos/Positivos"
+
+msgid "IntegrityGoodTitle"
+msgstr "Todos los Archivos Están Intáctos"
+
+msgid "IntegrityGoodDescription"
+msgstr "No hemos detectado archivos adicionales, eliminados or cambios relevantes en los archivos originales de WordPress. Si usted está experimentando otros problemas, por favor use un <a target=\"_blank\" href=\"https://sucuri.net/website-security/malware-removal\">servicio de limpieza de malware</a>."
+
+msgid "IntegrityBadTitle"
+msgstr "Archivos de WordPress Modificados"
+
+msgid "IntegrityBadDescription"
+msgstr "Hemos identificado que algunos de los archivos de WordPress han sido modificados. Esto podría indicar un ataque o la existencia de un archivo corrupto en su instalación. Si usted está experimentando otros problemas, por favor use un <a target=\"_blank\" href=\"https://sucuri.net/website-security/malware-removal\">servicio de limpieza de malware</a>."
+
+msgid "MarkFixedDescription"
+msgstr "Marcar uno o más archivos como revisado forzará al plugin a ignorar dichos archivos durante futuros escaneos, esto es útil cuando un archivo contiene falsos/positivos. Adicionalmente, puede restaurar el contenido original si estos han sido modificados o eliminados, el plugin descargará una copia del código desde el <a href=\"https://core.svn.wordpress.org/tags/\" target=\"_blank\" rel=\"noopener\">repositorio oficial de WordPress</a>. La eliminación de archivos es una operación irreversible, sea cuidadoso."
+
+msgid "Action"
+msgstr "Acción"
+
+msgid "Status"
+msgstr "Estado"
+
+msgid "FileSize"
+msgstr "Tamaño"
+
+msgid "ModifiedAt"
+msgstr "Modificado en"
+
+msgid "Pattern"
+msgstr "Patrón"
+
+msgid "FilePath"
+msgstr "Ubicación del Archivo"
+
+msgid "Directory"
+msgstr "Directorio"
+
+msgid "MarkFixed"
+msgstr "Marcar como Revisado"
+
+msgid "RestoreFile"
+msgstr "Restaurar Archivo"
+
+msgid "DeleteFile"
+msgstr "Eliminar Archivo"
+
+msgid "HoverForPayload"
+msgstr "Ver Código Malicioso"
+
+msgid "LogsPerEvent"
+msgstr "Tipos de Eventos"
+
+msgid "LogsForLogins"
+msgstr "Autenticaciones Exitosas/Fallidas"
+
+msgid "LogsPerUser"
+msgstr "Registros Por Usuario"
+
+msgid "LogsPerIP"
+msgstr "Registros Por Dirección IP"
+
+msgid "Search"
+msgstr "Buscar"
+
+msgid "FirewallSettingsTitle"
+msgstr "Ajustes del Firewall"
+
+msgid "FirewallSettingsInfo"
+msgstr "Un poderoso Firewall para aplicaciones web y <b>Sistema para la Detección de Intrusiones</b> para cualquier usuario de WordPress y cualquier otra plataforma. Esta página le ayudará a configurar y monitorear su sitio web a través del <b>Firewall de Sucuri</b>. Una vez activado, nuestro Firewall actuará como un escudo, protegiendo su sitio de ataques y previniendo infecciones de malware y reinfecciones. El Firewall también bloqueará inyecciones a bases de datos, ataques de fuerza bruta, XSS, RFI, puertas traseras y muchas otras amenazas en contra de su sitio web."
+
+msgid "FirewallKey"
+msgstr "Llave del Firewall"
+
+msgid "FirewallAddKey"
+msgstr "Agregue la <a href=\"https://waf.sucuri.net/?settings&panel=api\" target=\"_blank\">llave del Firewall</a> en el formulario para iniciar una conexión con la API."
+
+msgid "FirewallFootNote"
+msgstr "<em>[1]</em> Más información acerca del <a href=\"https://sucuri.net/website-firewall/\" target=\"_blank\">Firewall de Sucuri</a>, herramientas disponibles y precios.<br><em>[2]</em> Instrucciones y videos en la <a href=\"https://kb.sucuri.net/firewall\" target=\"_blank\">Wiki de Sucuri</a>.<br><em>[3]</em> <a href=\"https://login.sucuri.net/signup2/create?CloudProxy\" target=\"_blank\">Registre</a> una cuenta nueva y empiece a proteger su sitio web."
+
+msgid "FirewallLogsTitle"
+msgstr "Registros de Seguridad del Firewall"
+
+msgid "FirewallLogsInfo"
+msgstr "El Firewall de Sucuri registra todas las conexiones HTTP involucradas en un ataque y las separa de las conexiones legítimas. Puede usar esta herramienta para analizar la información de las últimas conexiones y tomar acción y sea activando las herramientas avanzadas del IDS <em>(Intrusion Detection System)</em> desde el <a  target=\"_blank\" href=\"https://waf.sucuri.net/?settings\">panel de administración del Firewall</a> y/o bloquear las direcciones IP y URL directamente desde la <a href=\"https://waf.sucuri.net/?audit\" target=\"_blank\">página de registros de seguridad del Firewall</a>."
+
+msgid "FirewallLogsNote"
+msgstr "Las conexiones que no fueron bloqueadas son omitidas en la lista, esto es intensional."
+
+msgid "FirewallCacheTitle"
+msgstr "Cache del Firewall"
+
+msgid "FirewallCacheButton"
+msgstr "Limpiar Cache"
+
+msgid "FirewallCacheInfo"
+msgstr "El Firewall ofrece multiples opciones para configurar el nivel de cache aplicado a su sitio web. Puede considerar activar la covertura total de la cache <em>(que es lo recomendado)</em>, o puede configurar la cache a un nivel mínimo, o forzar el uso de las cabeceras HTTP <em>(solo para usuarios avanzados)</em>, o en casos extremos donde usted no necesita la cache puede desactivarla completamente. Puede encontrar más información acerca de estas opciones <a target=\"_blank\" href=\"https://kb.sucuri.net/firewall/Performance/caching-options\">aquí</a>."
+
+msgid "FirewallCacheNote"
+msgstr "Tenga en cuenta que el Firewall tiene unas <a href=\"https://kb.sucuri.net/firewall/Performance/cache-exceptions\" target=\"_blank\">reglas especiales para la cache</a> de imágenes, archivos CSS, archivos PDF, archivos de texto, código JavaScript, archivos audio visuales y algunas otros formatos de archivo que son guardados en nuestros <a href=\"https://en.wikipedia.org/wiki/Edge_device\" target=\"_blank\" rel=\"noopener\">Edge Devices</a>. La única forma de limpiar la cache de estos archivos es haciendo uso de parámetros aleatorios en la URL, puede agregar un parametro como este <code>?ver=1.2.3</code> e incrementar el número con cada actualización."
+
+msgid "FirewallCacheWiki"
+msgstr "La cache web es una tecnología para el almacenamiento temporal (caching) de documentos web, como páginas en HTML e imágenes, para reducir el uso de ancho de banda, la carga del servidor, y retrasos en las descargas. Un sistema de cache web guarda copias de los documentos que pasan a través de él; conexiones subsecuentes pueden devolver el contenido desde la cache si las condiciones lo permiten. &mdash; <a href=\"https://en.wikipedia.org/wiki/Web_cache\" target=\"_blank\" rel=\"noopener\">WikiPedia - Web Cache</a>"
+
+msgid "LoginsAdmins"
+msgstr "Autenticaciones Exitosas (admins)"
+
+msgid "LoginsAdminsInfo"
+msgstr "Aquí puede encontrar una lista con todas las autenticaciones exitosas de cuentas de usuario con privilegios de administración."
+
+msgid "Registration"
+msgstr "Registro"
+
+msgid "NewestLogins"
+msgstr "Ordenados de Nuevos a Viejos"
+
+msgid "Admins"
+msgstr "Administradores"
+
+msgid "AllUsers"
+msgstr "Todos Los Usuarios"
+
+msgid "LoginsAll"
+msgstr "Autenticaciones Exitosas (todos)"
+
+msgid "LoginsAllInfo"
+msgstr "Aquí puede encontrar una lista con todas las autenticaciones exitosas de todas las cuentas de usuario."
+
+msgid "BlockedUsers"
+msgstr "Usuarios Bloqueados"
+
+msgid "BlockedUsersInfo"
+msgstr "Todo intento de autenticación que haga uso de las funciones nativas de WordPress será interceptado y analizado por el plugin, si el nombre de usuario coincide con alguno en esta lista la conexión al servidor será inmediatamente detenida. Estos intentos no serán registrados y ninguna alerta de seguridad será enviada."
+
+msgid "BlockedUsersNote"
+msgstr "Tenga en cuenta que esta herramienta no intenta proveer una protección completa para bloquear autenticaciones indeseadas de usuarios maliciosos. Dependiendo de la configuración de su sitio web, los plugins o plantillas que sean instalados, o inclusive la versión de WordPress que esté usando, habrán huecos en el sistema que usuarios maliciosos pueden utilizar para evadir estos bloqueos e iniciar un ataque por fuerza bruta. <a target=\"_blank\" href=\"https://sucuri.net/website-firewall/?wp=bu\">Instale un Firewall</a> para tener protección completa y mitigar este y otros ataques en contra de su sitio web."
+
+msgid "BlockedUsersByIP"
+msgstr "El bloqueo de usuarios por dirección IP es una opción disponible en el <a href=\"https://sucuri.net/website-firewall/\" target=\"_blank\">Firewall de Sucuri</a>; para evitar la duplicación de código y reducir la cantidad de falsos/positivos esta opción nunca será implementada en este plugin."
+
+msgid "FailedLogins"
+msgstr "Autenticaciones Fallidas"
+
+msgid "FailedLoginsInfo"
+msgstr "Esta información será usada para determinar si su sitio es víctima de un <a href=\"https://kb.sucuri.net/definitions/attacks/brute-force/password-guessing\" target=\"_blank\">Password Guessing Brute Force Attacks</a>. Estos registros serán acumulados, si más de <code>%%SUCURI.FailedLogins.MaxFailedLogins%%</code> autenticaciones fallidas son registradas durante la misma hora, el plugin enviará un correo electrónico con un resumen del ataque <em>(debe activar esta opción desde la página de ajustes, sección alertas)</em>. <b>NOTE:</b> Algunos plugins que ofrecen la opción de <em>\"Autenticación por Dos-Pasos\"</em> no usan las funciones nativas de WordPress, motivo por el cual algunos intentos de autenticación no podrán ser interceptados ni analizados."
+
+msgid "LoggedInUsers"
+msgstr "Usuarios Activos"
+
+msgid "LoggedInUsersInfo"
+msgstr "Aquí puede encontrar una lista de usuarios que han iniciado una sesión en los últimos minutos."
+
+msgid "Recomendations"
+msgstr "Recomendaciones"
+
+msgid "SiteCheckNoResults"
+msgstr "Si nuestro escáner gratuito no ha detectado algún problema, es posible que su sitio tenga un problema más complicado y la infección esté escondida. Puede <a target=\"_blank\" href=\"https://sucuri.net/website-security-platform/signup\">registrar una cuenta con Sucuri</a> para obtener un escaneo más detallado y eventualmente una limpieza absoluta de su sitio web (no incluido con el plan gratuito)."
+
+msgid "PasswordAttack"
+msgstr "Ataque De Fuerza Bruta En Contra De Contraseñas"
+
+msgid "PasswordAttackAfter"
+msgstr "Considerar Ataque Después De"
+
+msgid "PasswordAttackInfo"
+msgstr "Los <a href=\"https://kb.sucuri.net/definitions/attacks/brute-force/password-guessing\" target=\"_blank\">ataques de fuerza bruta en contra de contraseñas</a> son muy comunes en sitios web y páneles de administración. Estos son uno de los vectores más comunes usado para comprometer sitios web. El proceso es muy simple, los atacantes básicamente intentan múltiple combinaciones de usuario y contraseña hasta que encuentran una que funciona. Una vez el acceso al sitio es obtenido, ellos inyectan código malicioso en el código para generar spam, crear páginas fraudulentas, etc."
+
+msgid "PostTypeAlerts"
+msgstr "Alerts Para Diferentes Tipos de Publicaciones"
+
+msgid "IgnoredAt"
+msgstr "Ignorado en"
+
+msgid "PostType"
+msgstr "Tipo de Publicación"
+
+msgid "PostTypeAlertsDisabled"
+msgstr "Usted ha desactivado las alertas de seguridad cuando una publicación es creada o modificada, esta herramienta espera que esa opción esté activa para poder filtrar los tipos de publicaciones que no son relevantes para el administrador del sitio."
+
+msgid "PostTypeAlertsInfo"
+msgstr "Esta es una lista de <a href=\"https://codex.wordpress.org/Post_Types\" target=\"_blank\" rel=\"noopener\">tipos de publicaciones</a> registradas. Usted recibirá alertas de seguridad cuando una página o publicación sea creada o modificada. Algunos de estos tipos son nativos de WordPress pero la mayoria son creados por plugins y plantillas que usted ha instalado. Si usted no quiere recibir alertas por cambios en uno o más de estos tipos puede usar este panel para desactivarlas."
+
+msgid "PostTypeAlertsInvisible"
+msgstr "Si usted está recibiendo alertas por cambios en tipos de publicaciones que no aparecen en la lista, es posible que estas hayan sido creadas dinámicamente por un plugin o plantilla sin usar las funciones nativas de WordPress. Si conoce el identificador único del tipo de publicación puede ingresarlo en el formulario y el plugin de Sucuri hará lo mejor posible para ignorar estas alertas."
+
+msgid "PostTypeAlertsStop"
+msgstr "Ignorar Cambios En Este Tipo De Publicaciones"
+
+msgid "AlertsPerHour"
+msgstr "Alertas Por Hora"
+
+msgid "AlertsPerHourMaximum"
+msgstr "Número Máximo De Alertas Por Hora"
+
+msgid "AlertsPerHourInfo"
+msgstr "Utilice esta opción para configurar el número máximo de alertas de seguridad por hora. Si el número es excedido y el plugin detecta mas eventos durante la misma hora, estos serán agregados al registro de seguridad pero no serán enviados por correo electrónico. Tenga cuidado con esta opción ya que puede perder información importante."
+
+msgid "TestAlerts"
+msgstr "Probar Alertas"
+
+msgid "AlertsRecipient"
+msgstr "Quién Recibirá Alertas"
+
+msgid "AlertsRecipientInfo"
+msgstr "Por defecto, el plugin enviará las alertas de seguridad a la cuenta de administración primaria, la misma cuenta que fué creada durante el proceso de instalación de WordPress en su servidor web. Usted puede agregar más direcciones de correo a la lista, ellos recibirán una copia de las mismas alertas de seguridad."
+
+msgid "CustomFormat"
+msgstr "Formato Personalizado"
+
+msgid "AlertsSubject"
+msgstr "Asunto de la Alerta"
+
+msgid "AlertsSubjectInfo"
+msgstr "El formato para el asunto de las alertas de seguridad, por defecto las alertas incluirán el nombre del sitio web y el identificador del evento, usted puede usar este panel para agregar la dirección IP del usuario o cualquier otra información adicional. También puede crear filtros en su cliente de correo electrónico agregando etiquetas personalizadas en el formulario."
+
+msgid "TrustedIPs"
+msgstr "Direcciones IP Seguras"
+
+msgid "CIDRFormat"
+msgstr "Formato CIDR"
+
+msgid "IPAddedAt"
+msgstr "Dirección Agregada en"
+
+msgid "TrustedIPsInfo"
+msgstr "Si usted está trabajando en una red de área local, puede querer includir las direcciones IP de todos los nodos de la red en esta lista, esto hará que el plugin ignore todos los eventos originados desde estas direcciones para reducir la cantidad de falsos/positivos. Puede usar el formato CIDR <em>(Classless Inter Domain Routing)</em> para especificar un rango de direcciones IP <em>(solo 8, 16, y 24)</em>."
+
+msgid "APIViaProxy"
+msgstr "API a Través de un Proxy"
+
+msgid "APIViaProxyInfo"
+msgstr "Todas las conexiones a través de HTTP usadas para comunicarse con la API utilizan las funciones nativas de WordPress, esto significa que usted puede usar el mismo mecanismo sugerido por WordPress para establecer estas conexiones a través de un proxy. De acuerdo a la <a href=\"https://developer.wordpress.org/reference/classes/wp_http_proxy/\" target=\"_blank\" rel=\"noopener\">documentación oficial</a> usted debe agregar estas constantes en el archivo de configuración: <em>WP_PROXY_HOST, WP_PROXY_PORT, WP_PROXY_USERNAME, WP_PROXY_PASSWORD</em>."
+
+msgid "ProxyHostname"
+msgstr "Dirección del Servidor Proxy"
+
+msgid "ProxyPort"
+msgstr "Número del Puerto del Proxy"
+
+msgid "ProxyUsername"
+msgstr "Nombre de Usuario del Proxy"
+
+msgid "ProxyPassword"
+msgstr "Contraseña del Proxy"
+
+msgid "APICommunication"
+msgstr "Conexión con la API"
+
+msgid "APICommunicationInfo"
+msgstr "Una vez la llave para la API haya sido generada, el plugin establecerá una comunicación con un servicio remoto que actuará como una caja fuerte para almacenar los registros de seguridad generados cuando algo sospechoso sucede en su sitio web. Si el sitio es comprometido, el hacker no podrá eliminar los registros de seguridad para encubrir sus huellas, de esta forma usted podrá investigar el ataque y prevenir futuros problemas."
+
+msgid "APICommunicationDisabled"
+msgstr "Desactivar la comunicación entre el plugin y la API detendrá el monitor de eventos de seguridad. Considere activar el exportador de registros desde la página general de ajustes para mantener el monitor de eventos funcionando sin enviar datos a la API, de lo contrario, un usuario malicioso podrá ejecutar acciones sin que un administrador se de cuenta de lo que está sucediendo."
+
+msgid "APITimeout"
+msgstr "Tiempo de Espera para la API"
+
+msgid "APITimeoutLabel"
+msgstr "Tiempo de Espera (en segundos)"
+
+msgid "APITimeoutValue"
+msgstr "Esperar <b>%%SUCURI.RequestTimeout%%</b> antes de terminar la conexión"
+
+msgid "APITimeoutInfo"
+msgstr "El plugin envía a la API información asociada a los eventos generados por WordPress que sean considerados sospechosos. El envío de estos datos sea hace a través de HTTP usando uno de los protocolos de comunicación disponibles en el sistema y <a target=\"_blank\" href=\"https://developer.wordpress.org/reference/functions/wp_remote_post/\" rel=\"noopener\">funciones nativas de WordPress</a>. Si la conexión o el servicio remoto excede la cantidad de segundos configurados en esta opción, la operación es cancelada. Si usted experimenta problemas de conexión por favor comuníquese con su proveedor de hosting para investigar los bloqueos."
+
+msgid "HTAccessTitle"
+msgstr "Integridad del Archivo .htaccess"
+
+msgid "HTAccessInfo"
+msgstr "El archivo <code>.htaccess</code> es un archivo de configuración usado por el servidor web Apache para aplicar cambios generales por directorio. WordPress utiliza este archivo para manipular las direcciones de las páginas creadas por los usuarios; más notable, WordPress utiliza este archivo para generar URL amigables."
+
+msgid "HTAccessFound"
+msgstr "Archivo encontrado en esta ubicación <code>%%SUCURI.HTAccess.Fpath%%</code>"
+
+msgid "HTAccessNotFound"
+msgstr "El sitio web no tiene un archivo <code>.htaccess</code> o no se encuentra en la ubicación esperada."
+
+msgid "HTAccessStandard"
+msgstr "El archivo <code>.htaccess</code> principal contiene las reglas estándares de WordPress generadas durante la instalación del sitio web. Usted puede modificar estas reglas para aumentar el rendimiento del servidor o para generar redirecciones a otras páginas. Para obtener más información al respecto visite la página oficial con la documentación en <a target=\"_blank\" rel=\"noopener\" href=\"https://codex.wordpress.org/Using_Permalinks#Creating_and_editing_.28.htaccess.29\"> Codex WordPress - Creating and editing (.htaccess)</a>"
+
+msgid "ScannerTitle"
+msgstr "Ajustes para el Escáner"
+
+msgid "ScannerFrequency"
+msgstr "Frecuencia de Ejecución"
+
+msgid "ScannerDescription"
+msgstr "El plugin escanea su sitio web en busca de cambios que son eventualmente reportados a la API y visualizados a través de los registros de seguridad. Este escáner es ejecutado automáticamente cada doce horas pero usted puede cambiar la frecuencia dependiendo de sus necesidades. Tenga en cuenta que si su sitio contiene una gran cantidad de archivos es posible que el escáner sea bloqueado por su proveedor de hosting si este excede el límite de ejecución que ellos hayan impuesto sobre su cuenta."
+
+msgid "ScannerWithoutSPL"
+msgstr "El escáner hace uso de las librerías <a href=\"http://php.net/manual/en/class.splfileobject.php\" target=\"_blank\" rel=\"noopener\">SPL</a> y <a target=\"_blank\" href=\"http://php.net/manual/en/class.filesystemiterator.php\" rel=\"noopener\">Filesystem Iterator</a> de PHP para escanear el árbol de directorios de su sitio web. Esta librería solo está disponible en PHP 5 >= 5.3.0 &mdash; y &mdash; PHP 7; si su servidor hace uso de una versión antigua el plugin no funcionará como se espera. Por favor, contacte a su proveedor de hosting para obtener ayuda al respecto."
+
+msgid "IntegrityLanguageTitle"
+msgstr "Integridad de WordPress (Idioma)"
+
+msgid "IntegrityInfo"
+msgstr "La información necesaria para verificar la integridad de su instalación de WordPress proviene de la <a href=\"http://codex.wordpress.org/WordPress.org_API\" target=\"_blank\" rel=\"noopener\">API Oficial de WordPress</a>. El plugin compara esta información con los archivos instalados en su sitio web. Por defecto, la API provee una copia de los archivos en Inglés, si usted ha instalado un idioma diferente por favor selecciónelo en esta opción para reducir la cantidad de falsos/positivos que el escáner pueda encontrar."
+
+msgid "IntegrityNote"
+msgstr "<b>Nota:</b> No todos los idiomas están soportados por la API de WordPress. Es posible que tenga que usar la versión en Inglés para reducir la cantidad de falsos/positivos arrojados por el escáner durante su ejecución. Como alternativa, puede seleccionar dichos archivos y marcarlos como revisados paraque el escáner los ignore."
+
+msgid "Reason"
+msgstr "Motivo"
+
+msgid "FalsePositives"
+msgstr "Integridad de WordPress (Falsos/Positivos)"
+
+msgid "FalsePositivesUnignore"
+msgstr "No Ignorar Estos Archivos"
+
+msgid "FalsePositivesInfo"
+msgstr "El escáner de archivos no lee el contenido de estos sino que compara el Checksum para saber si han sido modificados. Un falso/positivo ocurre cuando la modificación no hace parte de una inyección de código malicioso, estas modificaciones pueden ser consideradas inofencivas. Los archivos en esta lista han sido marcados como falsos/positivos y serán ignorados durante los próximos escaneos del sistema."
+
+msgid "IgnoreFiles"
+msgstr "Ignorar Archivos Durante Los Escaneos"
+
+msgid "IgnoreFilesSingle"
+msgstr "Ignorar Un Solo Archivo"
+
+msgid "IgnoreFilesInfo"
+msgstr "Utilice esta herramienta para seleccionar directorios que contienen muchos archivos o archivos que son muy pesados para ser procesados por el escáner de seguridad. Esto usualmente incluye directorios con imágenes, archivos multimedia y en general cualquier archivo que no tenga código. Ignorar estos archivos mejorará el rendimiento del plugin y mantendrá el consumo de memoria a niveles mínimos."
+
+msgid "SecretKeys"
+msgstr "Llaves de Seguridad"
+
+msgid "SecretKeysUpdated"
+msgstr "Las llaves de seguridad han sido cambiadas (abajo puede encontrar un resumen de la operación)."
+
+msgid "SecretKeysGenerate"
+msgstr "Generar Nuevas Llaves de Seguridad"
+
+msgid "SecretKeysExpiration"
+msgstr "Su sesión de usuario expirará inmediatamente cuando las nuevas llaves de seguridad sean generadas."
+
+msgid "SecretKeysInfo"
+msgstr "Last llaves secretas o de seguridad son una lista de constantes aleatorias agregadas a su sitio web para mejorar el proceso de encriptación de las cookies para cada usuario. Las llaves hacen que su sitio sea más difícil de vulnerar al agregar elementos aleatorios en las contraseñas. Usted no necesita memorizar estas llaves, ellas serán guardadas en el archivo de configuración de WordPress. Usted puede cambiarlas en cualquier momento para invalidar sesiones de usuario existentes, forzando a todos los usuarios a autenticar sus cuentas nuevamente."
+
+msgid "PluginReinstall"
+msgstr "Re-Instalar Plugins"
+
+msgid "PluginReinstallInfo"
+msgstr "En el caso de que usted sospeche que su sitio web está infectado con código maliciosos o incluso después de limpiar su sitio, es una buena idea reinstalar todos los plugins y plantillas incluso aquellos que no están activados para asegurar que el código es el original. Tenga en cuenta que plugins y plantillas premium no puede ser reinstaladas por motivos de compatibilidad con sus licensias."
+
+msgid "PluginReinstallCache"
+msgstr "La información mostrada aquí es guardada en cache por %%SUCURI.ResetPlugin.CacheLifeTime%% segundos, esto es necesario para reducir el número de conexiones HTTP y subsecuentemente el consumo de ancho de banda de su servidor. Actualmente no existe una opción para limpiar esta cache, usted debe esperar a que el plugin la regenere automáticamente."
+
+msgid "PluginReinstallWarning"
+msgstr "<b>ADVERTENCIA!</b> La reinstalación de uno o más plugin puede ocacionar daños irreversibles a su sitio web, proceda con cuidado y asegúrese de mantener una copia de seguridad actualizada del sitio a la mano. Esta herramienta no tendrá ningún efecto sobre la base de datos."
+
+msgid "Roles"
+msgstr "Privilegios"
+
+msgid "Registered"
+msgstr "Registrado"
+
+msgid "PasswordChange"
+msgstr "Cambiar la Contraseña de Usuario"
+
+msgid "PasswordChangeInfo"
+msgstr "Usted puede generar una nueva contraseña aleatoria para las cuentas de usuario que seleccione de la lista. Un correo será enviado a cada usuario. Si usted decide cambiar su propia contraseña, su sesión de usuario expirará inmediatamente. Necesitará autenticar su cuenta nuevamente con la nueva contraseña que recibirá en su correo electrónico."
+
+msgid "PasswordChangeAlert"
+msgstr "WordPress ha generado una nueva contraseña de forma aleatoria para su cuenta de usuario <b>%%SUCURI.ResetPassword.UserName%%</b> en este sitio web <a target=\"_blank\" href=\"http://%%SUCURI.ResetPassword.Website%%\">%%SUCURI.ResetPassword.Website%%</a>. El cambio ha sido solicitado por uno de los administradores del sitio por motivos de seguridad. Su nueva contraseña es &mdash; <span style=\"font-family:Menlo, Monaco, monospace, serif;font-weight:700\">%%%SUCURI.ResetPassword.Password%%%</span> &mdash; por favor cámbiela lo antes posible."
+
+msgid "Update"
+msgstr "Actualización"
+
+msgid "TestedWith"
+msgstr "Probado Con"
+
+msgid "AvailableUpdates"
+msgstr "Actualizaciones Disponibles"
+
+msgid "AvailableUpdatesInfo"
+msgstr "WordPress tiene una acogida muy grande en Internet, esto atrae la atención de personas maliciosas para encontrar vulnerabilidades en el código al igual que en el código de plugins y plantillas que otras empreas desarrollan. Es recomendable mantener plugins y plantillas actualizadas para prevenir ataques tan pronto como vulnerabilidades sean descubiertas."
+
+msgid "WhitelistScript"
+msgstr "Desbloquear Archivos PHP"
+
+msgid "WhitelistScriptInfo"
+msgstr "Después de aplicar el hardening en los directorios soportados por el plugin, un archivo .htaccess será creado con reglas para bloquear el acceso directo a todos los archivos PHP contenidos en dichos directorios, esta es una buena precaución para evitar la ejecución de código malicioso; con algunas excepciones el archivo <em>\"index.php\"</em> es el único que debería tener acceso público, sin embargo muchos plugins y plantillas requieren de este acceso también, utilice esta herramienta para desbloquearlos."
+
+msgid "Uninstall"
+msgstr "Eliminar Registros de Seguridad, Hardening y Configuraciones"
+
+msgid "UninstallInfo"
+msgstr "Esta acción iniciará el proceso de desactivación / desinstalación del plugin. Todos los registro de seguridad guardados en el disco local, las reglas de hardening y las configuraciones serán eliminadas. Tenga en cuenta que los registros de seguridad guardados en el servidor de Sucuri no serán eliminados, esto es para prevenir que usuarios maliciosos intenten borrar sus huellas después de ejecutar un ataque en contra del sitio web."
+
+msgid "ImportExport"
+msgstr "Importar Y Exportar Ajustes"
+
+msgid "ImportExportInfo"
+msgstr "Copie la información codificada en JSON que aparece en la caja de abajo, pague esta información en la misma caja en el sitio web donde desea importar esta configuración. Tenga en cuenta que algunas opciones serán omitidas ya que estas contienen información irrelevante para otros sitios. Para importar la configuración de otro sitio web a este, reemplace el contenido de la caja con los datos codificados en JSON de otro sitio, luego presione el boton para continuar. Tenga en cuenta que algunas opciones no serán importadas para reducir el riesgo de insertar datos arbitrarios en el disco."
+
+msgid "DataStorage"
+msgstr "Almacenamiento de Datos"
+
+msgid "DataStorageInfo"
+msgstr "Este es el directorio donde el plugin guardará los registros de seguridad, el archivo con las configuraciones, la cache y datos adicionales de otras herramientas. El plugin require de permisos de escritura en este directorio así como en los archivos contenidos allí. Si usted prefiere mantener estos archivos en un directorio diferente al especificado, por favor defina una constante llamada <em>\"SUCURI_DATA_STORAGE\"</em> en el archivo de configuración de WordPress con la ruta absoluta del nuevo directorio."
+
+msgid "CommentMonitor"
+msgstr "Monitor de Comentarios"
+
+msgid "CommentMonitorStatus"
+msgstr "El estado del monitor de comentarios ha sido cambiado"
+
+msgid "CommentMonitorInfo"
+msgstr "Los comentarios de usuario son el origen principal de spam en sitios que usan WordPress, esta opción activa el monitoreo de los datos enviados a través de formularios de comentario disponibles en cada página. Nosotros también usamos esta información de forma anónima para generar <a target=\"_blank\" href=\"https://sucuri.net/security-reports/brute-force/\">estadísticas</a> de uso para ayudarnos a mejorar el servicio."
+
+msgid "LogsReport"
+msgstr "Estadísticas De Seguridad"
+
+msgid "LogsReportLimit"
+msgstr "El número máximo de registros que serán usados para la generación de gráficas con estadísticas de seguridad ha sido cambiado"
+
+msgid "LogsReportInfo"
+msgstr "Los datos usados para generar estas estadísticas son los últimos <b>%%SUCURI.AuditReport.Logs4Report%% eventos</b> en el registro de seguridad, usted puede configurar este número desde la página de ajustes."
+
+msgid "LogsReportDescription"
+msgstr "Activar esta opción le permite visualizar estadísticas de los eventos ejecutados en su sitio web incluyendo la actividad de los usuarios y posibles ataques dirigidos a su sitio web. Por defecto, el plugin utiliza los últimos registros de seguridad para generar las gráficas, el número de registros seleccionados es limitado para reducir el consumo de memoria por parte del analizador de datos. Usted puede incrementar este número bajo su propio riesgo considerando la cantidad de recursos disponibles en su servidor y el tiempo de ejecución máxima de archivos PHP configurado por su proveedor de hosting."

@@ -7,7 +7,7 @@
  * Author URI: https://sucuri.net/
  * Text Domain: sucuri-scanner
  * Author: Sucuri Inc.
- * Version: 1.8.3
+ * Version: 1.8.6
  */
 
 
@@ -83,12 +83,17 @@ define('SUCURISCAN', 'sucuriscan');
 /**
  * Current version of the plugin's code.
  */
-define('SUCURISCAN_VERSION', '1.8.3');
+define('SUCURISCAN_VERSION', '1.8.6');
 
 /**
  * The name of the Sucuri plugin main file.
  */
 define('SUCURISCAN_PLUGIN_FILE', 'sucuri.php');
+
+/**
+ * Unique name of the plugin text domain.
+ */
+define('SUCURISCAN_TEXTDOMAIN', 'sucuri-scanner');
 
 /**
  * The name of the folder where the plugin's files will be located.
@@ -241,25 +246,6 @@ require_once('src/settings-webinfo.php');
 
 /* Load global variables and triggers */
 require_once('src/globals.php');
-
-if (function_exists('load_plugin_textdomain')) {
-    /**
-     * Loads the language files for the entire interface.
-     *
-     * Internationalization is the process of developing your plugin so it can be
-     * translated into other languages. Localization describes the process of trans-
-     * lating an internationalized plugin. Internationalization is often abbreviated
-     * as i18n (because there are 18 letters between the i and the n) and localiza-
-     * tion is abbreviated as l10n (there are 10 letters between the l and the n).
-     *
-     * @see https://codex.wordpress.org/I18n_for_WordPress_Developers
-     */
-    function sucuriscan_load_plugin_textdomain() {
-        load_plugin_textdomain('sucuri-scanner', false, SUCURISCAN_PLUGIN_FOLDER . '/languages/');
-    }
-
-    add_action('init', 'sucuriscan_load_plugin_textdomain');
-}
 
 /**
  * Uninstalls the plugin, its settings and reverts the hardening.

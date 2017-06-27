@@ -1,6 +1,6 @@
 
 <div class="sucuriscan-panel">
-    <h3 class="sucuriscan-title">Available Plugin and Theme Updates</h3>
+    <h3 class="sucuriscan-title">@@SUCURI.AvailableUpdates@@</h3>
 
     <script type="text/javascript">
     /* global jQuery */
@@ -17,21 +17,15 @@
     </script>
 
     <div class="inside">
-        <p>
-            WordPress has a big user base in the public Internet, this brings
-            interest to malicious people to find vulnerabilities in the code,
-            3rd-party extensions, and themes that other companies develop. You
-            should keep every piece of code installed in your website update
-            to prevent attacks as soon as disclosed vulnerabilities are patched.
-        </p>
+        <p>@@SUCURI.AvailableUpdatesInfo@@</p>
 
         <table class="wp-list-table widefat sucuriscan-table sucuriscan-available-updates-table">
             <thead>
                 <tr>
-                    <th class="manage-column">Extension</th>
-                    <th class="manage-column">Installed</th>
-                    <th class="manage-column">Available</th>
-                    <th class="manage-column">Tested With</th>
+                    <th class="manage-column">@@SUCURI.Name@@</th>
+                    <th class="manage-column">@@SUCURI.Version@@</th>
+                    <th class="manage-column">@@SUCURI.Update@@</th>
+                    <th class="manage-column">@@SUCURI.TestedWith@@</th>
                     <th class="manage-column">&nbsp;</th>
                 </tr>
             </thead>
@@ -39,7 +33,7 @@
             <tbody>
                 <tr>
                     <td colspan="5">
-                        <span>Loading <em>(may take several seconds)</em>...</span>
+                        <span>@@SUCURI.Loading@@</span>
                     </td>
                 </tr>
             </tbody>

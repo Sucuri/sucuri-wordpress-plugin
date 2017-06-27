@@ -1,28 +1,12 @@
 
 <div class="sucuriscan-panel">
-    <h3 class="sucuriscan-title">IP Address Discoverer</h3>
+    <h3 class="sucuriscan-title">@@SUCURI.IPDiscoverer@@</h3>
 
     <div class="inside">
-        <p>
-            IP address discoverer will use DNS lookups to automatically detect if
-            the website is behind the <a href="https://sucuri.net/website-firewall/"
-            target="_blank">Sucuri Firewall</a> in which case will modify the global
-            server variable <em>Remote-Addr</em> to set the real IP of the website's
-            visitors. This check runs on every WordPress init action and that is
-            why it may slow down your website as some hosting providers rely on
-            slow DNS servers which makes the operation take more time than it
-            should.
-
-        </p>
-
-        <div class="sucuriscan-inline-alert-error">
-            <p>
-                <b>IMPORTANT:</b> This option <em>(if enabled)</em> may slow down your website.
-            </p>
-        </div>
+        <p>@@SUCURI.IPDiscovererInfo@@</p>
 
         <div class="sucuriscan-hstatus sucuriscan-hstatus-2">
-            <span>IP Address Discoverer is %%SUCURI.DnsLookupsStatus%%</span>
+            <span>@@SUCURI.IPDiscoverer@@ &mdash; %%SUCURI.DnsLookupsStatus%%</span>
 
             <form action="%%SUCURI.URL.Settings%%" method="post">
                 <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
@@ -31,21 +15,11 @@
             </form>
         </div>
 
-        <p>
-            Once the feature is enabled you may choose the HTTP header that will be used by
-            default to retrieve the real IP address of each HTTP request, generally you do
-            not need to set this but in rare cases your hosting provider may have a load
-            balancer that can interfere in the process, in which case you will have to
-            explicitly specify the main HTTP header. Note that if you select a HTTP header
-            that is not being set by the server the plugin will fallback to the default
-            <em>Remote-Addr</em>.
-        </p>
-
         <form action="%%SUCURI.URL.Settings%%" method="post">
             <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
 
             <fieldset class="sucuriscan-clearfix">
-                <label>Main IP HTTP Header:</label>
+                <label>@@SUCURI.HTTPHeader@@:</label>
                 <select name="sucuriscan_addr_header">
                     %%%SUCURI.AddrHeaderOptions%%%
                 </select>
@@ -53,12 +27,12 @@
             </fieldset>
 
             <div class="sucuriscan-hstatus sucuriscan-hstatus-2 sucuriscan-monospace">
-                <div>Sucuri Firewall is %%SUCURI.IsUsingFirewall%%</div>
-                <div>Website URL: %%SUCURI.WebsiteURL%%</div>
+                <div>Sucuri Firewall &mdash; %%SUCURI.IsUsingFirewall%%</div>
+                <div>@@SUCURI.Website@@: %%SUCURI.WebsiteURL%%</div>
                 <div>Top Level Domain: %%SUCURI.TopLevelDomain%%</div>
-                <div>Website Hostname: %%SUCURI.WebsiteHostName%%</div>
-                <div>Website Host Address: %%SUCURI.WebsiteHostAddress%%</div>
-                <div>IP Address: %%SUCURI.RemoteAddress%% (%%SUCURI.RemoteAddressHeader%%)</div>
+                <div>@@SUCURI.Hostname@@: %%SUCURI.WebsiteHostName%%</div>
+                <div>@@SUCURI.RemoteAddr@@ (@@SUCURI.Hostname@@): %%SUCURI.WebsiteHostAddress%%</div>
+                <div>@@SUCURI.RemoteAddr@@ (@@SUCURI.Username@@): %%SUCURI.RemoteAddress%% (%%SUCURI.RemoteAddressHeader%%)</div>
             </div>
         </form>
     </div>

@@ -189,8 +189,11 @@ class SucuriScanInterface
      */
     public static function noticeAfterUpdate()
     {
+        /* get version of the plugin that was previously installed */
+        $version = SucuriScanOption::getOption(':plugin_version');
+
         /* use simple comparison to force type cast. */
-        if (SucuriScanOption::getOption(':plugin_version') == SUCURISCAN_VERSION) {
+        if (headers_sent() || $version == SUCURISCAN_VERSION) {
             return;
         }
 
@@ -204,12 +207,7 @@ class SucuriScanInterface
          * the new code.
          */
         if (SucuriScanOption::isDisabled(':api_service')) {
-            self::info(
-                'API service communication is disabled, if you just updated '
-                . 'the plugin this might be a good opportunity to test this '
-                . 'feature once again with the new code. Enable it again from '
-                . 'the "API Service" panel located in the settings page.'
-            );
+            self::info(__('EnableAPIServiceAgain', SUCURISCAN_TEXTDOMAIN));
         }
 
         /**
@@ -222,9 +220,7 @@ class SucuriScanInterface
          *
          * @date Featured added at - May 01, 2017
          */
-        self::info('Do you want to get vulnerability disclosures? Subscribe to '
-        . 'our newsletter <a href="http://sucuri.hs-sites.com/subscribe-to-secu'
-        . 'rity" target="_blank" rel="noopener">here</a>');
+        self::info(__('NewsletterInvitation', SUCURISCAN_TEXTDOMAIN));
 
         /* update the version number in the plugin settings. */
         SucuriScanOption::updateOption(':plugin_version', SUCURISCAN_VERSION);
@@ -239,7 +235,7 @@ class SucuriScanInterface
     {
         if (!function_exists('current_user_can') || !current_user_can('manage_options')) {
             SucuriScan::throwException('Access denied; cannot manage options');
-            wp_die(__('Access denied by <b>Sucuri Scanner</b>.'));
+            wp_die(__('AccessDenied', SUCURISCAN_TEXTDOMAIN));
         }
     }
 
@@ -260,7 +256,7 @@ class SucuriScanInterface
 
             if (!$nonce_value || !wp_verify_nonce($nonce_value, $nonce_name)) {
                 SucuriScan::throwException('Nonce is invalid');
-                wp_die(__('WordPress Nonce verification failed, try again going back and checking the form.'));
+                wp_die(__('NonceFailure', SUCURISCAN_TEXTDOMAIN));
                 return false;
             }
         }

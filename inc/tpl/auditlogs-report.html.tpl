@@ -74,35 +74,30 @@ jQuery(function ($) {
 
 <div class="sucuriscan-audit-report">
     <div class="sucuriscan-inline-alert-info">
-        <p>
-            The data used to generate these charts comes from the last
-            <strong>%%SUCURI.AuditReport.Logs4Report%% audit logs</strong>, you can
-            configure this number from the plugin settings page, you can also disable
-            and enable this panel from there at any time.
-        </p>
+        <p>@@SUCURI.LogsReportInfo@@</p>
     </div>
 
     <div id="sucuriscan-audit-report-response">
-        <p>Loading...</p>
+        <p>@@SUCURI.Loading@@</p>
     </div>
 
     <div class="sucuriscan-report-chart sucuriscan-hidden">
-        <h4>Audit Logs per Event</h4>
+        <h4>@@SUCURI.LogsPerEvent@@</h4>
         <div id="sucuriscan-report-events-per-type"></div>
     </div>
 
     <div class="sucuriscan-report-chart sucuriscan-hidden">
-        <h4>Successful/Failed Logins</h4>
+        <h4>@@SUCURI.LogsForLogins@@</h4>
         <div id="sucuriscan-report-events-per-login"></div>
     </div>
 
     <div class="sucuriscan-report-chart sucuriscan-hidden">
-        <h4>Audit Logs per User</h4>
+        <h4>@@SUCURI.LogsPerUser@@</h4>
         <div id="sucuriscan-report-events-per-user"></div>
     </div>
 
     <div class="sucuriscan-report-chart sucuriscan-hidden">
-        <h4>Audit Logs per IP Address</h4>
+        <h4>@@SUCURI.LogsPerIP@@</h4>
         <div id="sucuriscan-report-events-per-ipaddress"></div>
     </div>
 </div>

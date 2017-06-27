@@ -1,24 +1,22 @@
 
 <div class="sucuriscan-panel">
-    <h3 class="sucuriscan-title">Logged-in Users</h3>
+    <h3 class="sucuriscan-title">@@SUCURI.LoggedInUsers@@</h3>
 
     <div class="inside">
-        <p>
-            Here you can see a list of the users that are currently logged-in.
-        </p>
+        <p>@@SUCURI.LoggedInUsersInfo@@</p>
 
         <table class="wp-list-table widefat sucuriscan-loggedin-users">
             <thead>
                 <tr>
-                    <th colspan="6">Logged-in Users (%%SUCURI.LoggedInUsers.Total%% users)</th>
+                    <th colspan="6">@@SUCURI.LoggedInUsers@@</th>
                 </tr>
 
                 <tr>
                     <th>ID</th>
-                    <th>Username</th>
-                    <th>Last Activity</th>
-                    <th>Registered</th>
-                    <th>IP Address</th>
+                    <th>@@SUCURI.Username@@</th>
+                    <th>@@SUCURI.LastActivity@@</th>
+                    <th>@@SUCURI.Registered@@</th>
+                    <th>@@SUCURI.RemoteAddr@@</th>
                     <th>&nbsp;</th>
                 </tr>
             </thead>

@@ -47,7 +47,7 @@ class SucuriScanBlockedUsers extends SucuriScanLastLogins
 
             if (is_array($unblockUsers) && !empty($unblockUsers)) {
                 self::unblock($unblockUsers);
-                SucuriScanInterface::info('Selected user accounts were unblocked');
+                SucuriScanInterface::info(__('AccountsWereUnblocked', SUCURISCAN_TEXTDOMAIN));
             }
         }
 

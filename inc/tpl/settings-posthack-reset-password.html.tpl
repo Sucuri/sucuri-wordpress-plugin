@@ -1,6 +1,6 @@
 
 <div class="sucuriscan-panel">
-    <h3 class="sucuriscan-title">Reset User Password</h3>
+    <h3 class="sucuriscan-title">@@SUCURI.PasswordChange@@</h3>
 
     <script type="text/javascript">
     /* global jQuery */
@@ -13,7 +13,7 @@
 
                 $('#sucuriscan-userid-' + user_id)
                 .find('.sucuriscan-response')
-                .html('(Loading...)');
+                .html('(@@SUCURI.Loading@@)');
 
                 $.post('%%SUCURI.AjaxURL.Dashboard%%', {
                     action: 'sucuriscan_ajax',
@@ -31,21 +31,7 @@
     </script>
 
     <div class="inside">
-        <p>
-            You can generate a new random password for the user accounts that
-            you select from the list. An email with the new password will be
-            sent to the email address of each chosen users.
-        </p>
-
-        <div class="sucuriscan-inline-alert-error">
-            <p>
-                If you choose to change the password of your own user, then your
-                current session will expire immediately. You will need to log
-                into the admin panel with the new password that will be sent to
-                your email. If you are unsure of this, do not select your
-                account from the list.
-            </p>
-        </div>
+        <p>@@SUCURI.PasswordChangeInfo@@</p>
 
         <table class="wp-list-table widefat sucuriscan-table sucuriscan-reset-password-table">
             <thead>
@@ -54,10 +40,10 @@
                         <label class="screen-reader-text" for="cb-select-all-1">Select All</label>
                         <input id="cb-select-all-1" type="checkbox">
                     </td>
-                    <th class="manage-column">User</th>
-                    <th class="manage-column">Email address</th>
-                    <th class="manage-column">Registered</th>
-                    <th class="manage-column">Roles</th>
+                    <th class="manage-column">@@SUCURI.Username@@</th>
+                    <th class="manage-column">@@SUCURI.Email@@</th>
+                    <th class="manage-column">@@SUCURI.Registered@@</th>
+                    <th class="manage-column">@@SUCURI.Roles@@</th>
                 </tr>
             </thead>
 
@@ -75,6 +61,6 @@
         </table>
 
         <button type="button" id="sucuriscan-reset-password-button"
-        class="button button-primary">Reset User Password</button>
+        class="button button-primary">@@SUCURI.Submit@@</button>
     </div>
 </div>

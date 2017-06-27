@@ -93,7 +93,7 @@ class SucuriScan
 
         $default = array(
             'error_log' => 'error_log',
-            'safe_mode' => 'Off',
+            'safe_mode' => __('NotActive', SUCURISCAN_TEXTDOMAIN),
             'memory_limit' => '128M',
             'upload_max_filesize' => '2M',
             'post_max_size' => '8M',
@@ -102,12 +102,12 @@ class SucuriScan
         );
 
         if ($ini_value === false) {
-            $ini_value = 'Undefined';
+            $ini_value = __('Unknown', SUCURISCAN_TEXTDOMAIN);
         } elseif (empty($ini_value) || $ini_value === null) {
             if (array_key_exists($property, $default)) {
                 $ini_value = $default[$property];
             } else {
-                $ini_value = 'Off';
+                $ini_value = __('NotActive', SUCURISCAN_TEXTDOMAIN);
             }
         }
 
@@ -423,7 +423,7 @@ class SucuriScan
     public static function getRemoteAddr($with_header = false)
     {
         $remote_addr = false;
-        $header_used = 'unknown';
+        $header_used = __('Unknown', SUCURISCAN_TEXTDOMAIN);
         $headers = self::orderedHttpHeaders();
 
         foreach ($headers as $header) {

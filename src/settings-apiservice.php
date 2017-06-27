@@ -27,8 +27,8 @@ function sucuriscan_settings_apiservice_status($nonce)
     $params = array();
 
     $params['ApiStatus.StatusNum'] = '1';
-    $params['ApiStatus.Status'] = 'Enabled';
-    $params['ApiStatus.SwitchText'] = 'Disable';
+    $params['ApiStatus.Status'] = __('Enabled', SUCURISCAN_TEXTDOMAIN);
+    $params['ApiStatus.SwitchText'] = __('Disable', SUCURISCAN_TEXTDOMAIN);
     $params['ApiStatus.SwitchValue'] = 'disable';
     $params['ApiStatus.WarningVisibility'] = 'visible';
     $params['ApiStatus.ErrorVisibility'] = 'hidden';
@@ -43,7 +43,7 @@ function sucuriscan_settings_apiservice_status($nonce)
             SucuriScanEvent::reportInfoEvent($message);
             SucuriScanEvent::notifyEvent('plugin_change', $message);
             SucuriScanOption::updateOption(':api_service', $action_d);
-            SucuriScanInterface::info($message);
+            SucuriScanInterface::info(__('APIServiceChanged', SUCURISCAN_TEXTDOMAIN));
         }
     }
 
@@ -51,8 +51,8 @@ function sucuriscan_settings_apiservice_status($nonce)
 
     if ($api_service === 'disabled') {
         $params['ApiStatus.StatusNum'] = '0';
-        $params['ApiStatus.Status'] = 'Disabled';
-        $params['ApiStatus.SwitchText'] = 'Enable';
+        $params['ApiStatus.Status'] = __('Disabled', SUCURISCAN_TEXTDOMAIN);
+        $params['ApiStatus.SwitchText'] = __('Enable', SUCURISCAN_TEXTDOMAIN);
         $params['ApiStatus.SwitchValue'] = 'enable';
         $params['ApiStatus.WarningVisibility'] = 'hidden';
         $params['ApiStatus.ErrorVisibility'] = 'visible';
@@ -82,9 +82,9 @@ function sucuriscan_settings_apiservice_timeout($nonce)
                 SucuriScanOption::updateOption(':request_timeout', $timeout);
                 SucuriScanEvent::reportInfoEvent($message);
                 SucuriScanEvent::notifyEvent('plugin_change', $message);
-                SucuriScanInterface::info($message);
+                SucuriScanInterface::info(__('HTTPTimeoutChange', SUCURISCAN_TEXTDOMAIN));
             } else {
-                SucuriScanInterface::error('API request timeout in seconds is too high.');
+                SucuriScanInterface::error(__('HTTPTimeoutFailure', SUCURISCAN_TEXTDOMAIN));
             }
         }
     }

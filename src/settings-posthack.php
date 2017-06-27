@@ -41,15 +41,15 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
         // Update all WordPress secret keys.
         if (SucuriScanInterface::checkNonce() && SucuriScanRequest::post(':update_wpconfig')) {
             if (SucuriScanRequest::post(':process_form') != 1) {
-                SucuriScanInterface::error('You need to confirm that you understand the risk of this operation.');
+                SucuriScanInterface::error(__('ConfirmOperation', SUCURISCAN_TEXTDOMAIN));
             } else {
                 $wpconfig_process = SucuriScanEvent::setNewConfigKeys();
 
                 if (!$wpconfig_process) {
-                    SucuriScanInterface::error('<code>wp-config.php</code> file was not found in the default location.');
+                    SucuriScanInterface::error(__('ConfigNotFound', SUCURISCAN_TEXTDOMAIN));
                 } elseif ($wpconfig_process['updated']) {
                     SucuriScanEvent::reportNoticeEvent('Generate new security keys (success)');
-                    SucuriScanInterface::info('Secret keys updated successfully (summary of the operation bellow).');
+                    SucuriScanInterface::info(__('SecretKeysUpdated', SUCURISCAN_TEXTDOMAIN));
 
                     $params['WPConfigUpdate.Visibility'] = 'visible';
                     $params['WPConfigUpdate.NewConfig'] .= "/* Old Security Keys */\n";
@@ -59,10 +59,7 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
                     $params['WPConfigUpdate.NewConfig'] .= $wpconfig_process['new_keys_string'];
                 } else {
                     SucuriScanEvent::reportNoticeEvent('Generate new security keys (failure)');
-                    SucuriScanInterface::error(
-                        '<code>wp-config.php</code> file is not writable, replace the '
-                        . 'old configuration file with the new values shown bellow.'
-                    );
+                    SucuriScanInterface::error(__('ConfigNotWritable', SUCURISCAN_TEXTDOMAIN));
 
                     $params['WPConfigUpdate.Visibility'] = 'visible';
                     $params['WPConfigUpdate.NewConfig'] = $wpconfig_process['new_wpconfig'];
@@ -77,14 +74,16 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
             foreach ($key_list as $key_name => $key_value) {
                 switch ($key_status) {
                     case 'good':
-                        $key_status_text = 'good';
+                        $key_status_text = __('Good', SUCURISCAN_TEXTDOMAIN);
                         break;
+
                     case 'bad':
-                        $key_status_text = 'not randomized';
+                        $key_status_text = __('NotRandomized', SUCURISCAN_TEXTDOMAIN);
                         break;
+
                     case 'missing':
                         $key_value = '';
-                        $key_status_text = 'not set';
+                        $key_status_text = __('NotSet', SUCURISCAN_TEXTDOMAIN);
                         break;
                 }
 
@@ -174,13 +173,12 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
             return;
         }
 
-        $response = 'error'; /* ajax response */
+        $response = __('Error', SUCURISCAN_TEXTDOMAIN);
         $user_id = intval(SucuriScanRequest::post('user_id'));
 
         if (SucuriScanEvent::setNewPassword($user_id)) {
-            $response = 'done'; /* operation succeeded */
-            $message = 'Password changed for user ID #' . $user_id;
-            SucuriScanEvent::reportNoticeEvent($message);
+            $response = __('Done', SUCURISCAN_TEXTDOMAIN);
+            SucuriScanEvent::reportNoticeEvent('Password changed for user #' . $user_id);
         }
 
         wp_send_json($response, 200);
@@ -193,7 +191,7 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
     {
         $params = array(
             'ResetPlugin.PluginList' => '',
-            'ResetPlugin.CacheLifeTime' => 'unknown',
+            'ResetPlugin.CacheLifeTime' => __('Unknown', SUCURISCAN_TEXTDOMAIN),
         );
 
         if (defined('SUCURISCAN_GET_PLUGINS_LIFETIME')) {
@@ -228,8 +226,10 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
         foreach ($allPlugins as $plugin_path => $plugin_data) {
             $plugin_type_class = ( $plugin_data['PluginType'] == 'free' ) ? 'primary' : 'warning';
             $input_disabled = ( $plugin_data['PluginType'] == 'free' ) ? '' : 'disabled="disabled"';
-            $plugin_status = $plugin_data['IsPluginActive'] ? 'active' : 'not active';
             $plugin_status_class = $plugin_data['IsPluginActive'] ? 'success' : 'default';
+            $plugin_status = $plugin_data['IsPluginActive']
+                ? __('Active', SUCURISCAN_TEXTDOMAIN)
+                : __('NotActive', SUCURISCAN_TEXTDOMAIN);
 
             $response .= SucuriScanTemplate::getSnippet('settings-posthack-reset-plugins', array(
                 'ResetPlugin.Disabled' => $input_disabled,
@@ -263,17 +263,21 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
 
         /* Check if the plugin actually exists */
         if (!array_key_exists($plugin, $allPlugins)) {
-            $response = '<span class="sucuriscan-label-default">not installed</span>';
+            $response = '<span class="sucuriscan-label-default">'
+            . __('NotInstalled', SUCURISCAN_TEXTDOMAIN) . '</span>';
         } elseif ($allPlugins[$plugin]['IsFreePlugin'] !== true) {
             // Ignore plugins not listed in the WordPress repository.
             // This usually applies to premium plugins. They cannot be downloaded from
             // a reliable source because we can't check the checksum of the files nor
             // we can verify if the installation of the new code will work or not.
-            $response = '<span class="sucuriscan-label-danger">plugin is premium</span>';
+            $response = '<span class="sucuriscan-label-danger">'
+            . __('PremiumPlugin', SUCURISCAN_TEXTDOMAIN) . '</span>';
         } elseif (!is_writable($allPlugins[$plugin]['InstallationPath'])) {
-            $response = '<span class="sucuriscan-label-danger">not writable</span>';
+            $response = '<span class="sucuriscan-label-danger">'
+            . __('NotWritable', SUCURISCAN_TEXTDOMAIN) . '</span>';
         } elseif (!class_exists('SucuriScanPluginInstallerSkin')) {
-            $response = '<span class="sucuriscan-label-danger">missing library</span>';
+            $response = '<span class="sucuriscan-label-danger">'
+            . __('MissingLibrary', SUCURISCAN_TEXTDOMAIN) . '</span>';
         } else {
             // Get data associated to the plugin.
             $data = $allPlugins[$plugin];
@@ -282,9 +286,11 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
             $newpath = $data['InstallationPath'] . '_' . $hash;
 
             if (!$info) {
-                $response = '<span class="sucuriscan-label-danger">cannot download</span>';
+                $response = '<span class="sucuriscan-label-danger">'
+                . __('CannotDownload', SUCURISCAN_TEXTDOMAIN) . '</span>';
             } elseif (!rename($data['InstallationPath'], $newpath)) {
-                $response = '<span class="sucuriscan-label-danger">cannot backup</span>';
+                $response = '<span class="sucuriscan-label-danger">'
+                . __('CannotBackup', SUCURISCAN_TEXTDOMAIN) . '</span>';
             } else {
                 ob_start();
                 $upgrader_skin = new SucuriScanPluginInstallerSkin();
@@ -296,7 +302,8 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
                 if (!file_exists($data['InstallationPath'])) {
                     /* Revert backup to its original location */
                     @rename($newpath, $data['InstallationPath']);
-                    $response = '<span class="sucuriscan-label-danger">cannot install</span>';
+                    $response = '<span class="sucuriscan-label-danger">'
+                    . __('CannotInstall', SUCURISCAN_TEXTDOMAIN) . '</span>';
                 } else {
                     /* Destroy the backup of the plugin */
                     $fifo = new SucuriScanFileInfo();
@@ -305,7 +312,10 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
                     $fifo->skip_directories = false;
                     $fifo->removeDirectoryTree($newpath);
 
-                    $installed = SucuriScan::escape('Installed v' . $info['version']);
+                    $installed = SucuriScan::escape(sprintf(
+                        __('VersionInstalled', SUCURISCAN_TEXTDOMAIN),
+                        $info['version'] /* mixed version number */
+                    ));
                     $response = '<span class="sucuriscan-label-success">' . $installed . '</span>';
                 }
             }
@@ -340,10 +350,10 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
                     'Update.IconType' => 'plugins',
                     'Update.Extension' => SucuriScan::excerpt($data->Name, 35),
                     'Update.Version' => $data->Version,
-                    'Update.NewVersion' => 'Unknown',
-                    'Update.TestedWith' => 'Unknown',
-                    'Update.ArchiveUrl' => 'Unknown',
-                    'Update.MarketUrl' => 'Unknown',
+                    'Update.NewVersion' => __('Unknown', SUCURISCAN_TEXTDOMAIN),
+                    'Update.TestedWith' => __('Unknown', SUCURISCAN_TEXTDOMAIN),
+                    'Update.ArchiveUrl' => __('Unknown', SUCURISCAN_TEXTDOMAIN),
+                    'Update.MarketUrl' => __('Unknown', SUCURISCAN_TEXTDOMAIN),
                 );
 
                 if (property_exists($data->update, 'new_version')) {
@@ -377,7 +387,7 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
                     'Update.Extension' => SucuriScan::excerpt($data->Name, 35),
                     'Update.Version' => $data->Version,
                     'Update.NewVersion' => $data->update['new_version'],
-                    'Update.TestedWith' => 'Newest WordPress',
+                    'Update.TestedWith' => __('NewestWordPress', SUCURISCAN_TEXTDOMAIN),
                     'Update.ArchiveUrl' => $data->update['package'],
                     'Update.MarketUrl' => $data->update['url'],
                 ));
@@ -412,7 +422,7 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
         $response = SucuriScanSettingsPosthack::availableUpdatesContent();
 
         if (!$response) {
-            $response = '<tr><td colspan="5">No updates available.</td></tr>';
+            $response = '<tr><td colspan="5">' . __('NoUpdates', SUCURISCAN_TEXTDOMAIN) . '</td></tr>';
         }
 
         wp_send_json($response, 200);

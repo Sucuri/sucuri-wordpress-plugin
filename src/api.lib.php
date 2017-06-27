@@ -173,11 +173,11 @@ class SucuriScanAPI extends SucuriScanOption
     public static function setPluginKey($api_key = '', $validate = false)
     {
         if ($validate && !self::isValidKey($api_key)) {
-            return SucuriScanInterface::error('Invalid API key format');
+            return SucuriScanInterface::error(__('InvalidAPIKey', SUCURISCAN_TEXTDOMAIN));
         }
 
         if (!empty($api_key)) {
-            SucuriScanEvent::notifyEvent('plugin_change', 'API key updated successfully: ' . $api_key);
+            SucuriScanEvent::notifyEvent('plugin_change', 'API key was successfully set: ' . $api_key);
         }
 
         return self::updateOption(':api_key', $api_key);
@@ -192,9 +192,7 @@ class SucuriScanAPI extends SucuriScanOption
     {
         $api_key = self::getOption(':api_key');
 
-        if (is_string($api_key)
-            && self::isValidKey($api_key)
-        ) {
+        if (is_string($api_key) && self::isValidKey($api_key)) {
             return $api_key;
         }
 
@@ -285,7 +283,7 @@ class SucuriScanAPI extends SucuriScanOption
             || !isset($response['messages'])
             || empty($response['messages'])
         ) {
-            return SucuriScanInterface::error('Unknown error, there is no information.');
+            return SucuriScanInterface::error(__('ErrorNoInfo', SUCURISCAN_TEXTDOMAIN));
         }
 
         $msg = implode(".\x20", $response['messages']);
@@ -294,11 +292,8 @@ class SucuriScanAPI extends SucuriScanOption
         // Special response for invalid API keys.
         if (stripos($raw, 'log file not found') !== false) {
             $key = SucuriScanOption::getOption(':api_key');
-            $msg .= '; this generally happens when you add an invalid API '
-            . 'key, the key will be deleted automatically to hide these w'
-            . 'arnings, if you want to recover it go to the settings page'
-            . ' and use the recover button to send the key to your email '
-            . 'address: ' . SucuriScan::escape($key);
+            $key = SucuriScan::escape($key);
+            $msg .= sprintf(__('ErrorLogFileNotFound', SUCURISCAN_TEXTDOMAIN), $key);
 
             SucuriScanOption::deleteOption(':api_key');
         }
@@ -306,7 +301,8 @@ class SucuriScanAPI extends SucuriScanOption
         // Special response for invalid firewall API keys.
         if (stripos($raw, 'wrong api key') !== false) {
             $key = SucuriScanOption::getOption(':cloudproxy_apikey');
-            $msg .= '; invalid firewall API key: ' . SucuriScan::escape($key);
+            $key = SucuriScan::escape($key);
+            $msg .= sprintf(__('ErrorWrongAPIKey', SUCURISCAN_TEXTDOMAIN), $key);
 
             SucuriScanOption::setRevProxy('disable', true);
             SucuriScanOption::setAddrHeader('REMOTE_ADDR', true);
@@ -320,16 +316,12 @@ class SucuriScanAPI extends SucuriScanOption
             || stripos($raw, 'error setting certificate')
             || stripos($raw, 'SSL connect error')
         ) {
-            $msg .= '. Your website seems to use an old version of the Open'
-            . 'SSL library or the CURL extension was compiled without suppo'
-            . 'rt for the algorithm used on the API service. Contact your h'
-            . 'osting provider to fix this issue.';
+            $msg .= __('ErrorSSLCertificate', SUCURISCAN_TEXTDOMAIN);
         }
 
         // Check if the MX records as missing for API registration.
         if (strpos($raw, 'Invalid email') !== false) {
-            $msg = 'Email has an invalid format, or the host '
-            . 'associated to the email has no MX records.';
+            $msg = __('ErrorInvalidEmail', SUCURISCAN_TEXTDOMAIN);
         }
 
         return SucuriScanInterface::error($enqueue ? $msg : '');
@@ -357,8 +349,8 @@ class SucuriScanAPI extends SucuriScanOption
             self::setPluginKey($response['output']['api_key']);
 
             SucuriScanEvent::scheduleTask(); /* install scheduled tasks */
-            SucuriScanEvent::notifyEvent('plugin_change', 'Site registered and API key generated');
-            return SucuriScanInterface::info('The API key for your site was successfully generated and saved.');
+            SucuriScanEvent::notifyEvent('plugin_change', 'API key was generated and set');
+            return SucuriScanInterface::info(__('AlertAPIKeySet', SUCURISCAN_TEXTDOMAIN));
         }
 
         return false;
@@ -371,16 +363,16 @@ class SucuriScanAPI extends SucuriScanOption
      */
     public static function recoverKey()
     {
-        $clean_domain = self::getDomain();
+        $domain = self::getDomain();
 
         $response = self::apiCallWordpress('GET', array(
             'e' => self::getSiteEmail(),
-            's' => $clean_domain,
+            's' => $domain,
             'a' => 'recover_key',
         ), false);
 
         if (self::handleResponse($response)) {
-            SucuriScanEvent::notifyEvent('plugin_change', 'API key recovered for domain: ' . $clean_domain);
+            SucuriScanEvent::notifyEvent('plugin_change', 'API key recovery for domain: ' . $domain);
             return SucuriScanInterface::info($response['output']['message']);
         }
 

@@ -108,15 +108,15 @@ class SucuriScanCommand extends SucuriScan
         $checksums = SucuriScanAPI::getOfficialChecksums($version);
 
         if (!$checksums) {
-            return SucuriScanInterface::error('WordPress version is not supported.');
+            return SucuriScanInterface::error(__('UnsupportedWordPress', SUCURISCAN_TEXTDOMAIN));
         }
 
         if (!array_key_exists($filepath, $checksums)) {
-            return SucuriScanInterface::error('File is not part of the official WordPress installation.');
+            return SucuriScanInterface::error(__('NoWordPressFile', SUCURISCAN_TEXTDOMAIN));
         }
 
         if (!file_exists(ABSPATH . '/' . $filepath)) {
-            return SucuriScanInterface::error('Cannot check the integrity of a non-existing file.');
+            return SucuriScanInterface::error(__('CannotCheckMissingFile', SUCURISCAN_TEXTDOMAIN));
         }
 
         $output = ''; /* initialize empty with no differences */

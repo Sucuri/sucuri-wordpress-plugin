@@ -226,11 +226,11 @@ class SucuriScanHardening extends SucuriScan
         $htaccess = self::htaccess($folder);
 
         if (!file_exists($htaccess)) {
-            throw new Exception('Access control file does not exists');
+            throw new Exception(__('HTAccessIsMissing', SUCURISCAN_TEXTDOMAIN));
         }
 
         if (!is_writable($htaccess)) {
-            throw new Exception('Access control file is not writable');
+            throw new Exception(__('HTAccessNotWritable', SUCURISCAN_TEXTDOMAIN));
         }
 
         return (bool) @file_put_contents(

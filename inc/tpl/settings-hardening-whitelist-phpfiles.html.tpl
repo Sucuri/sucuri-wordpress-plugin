@@ -1,50 +1,21 @@
 
 <div class="sucuriscan-panel">
-    <h3 class="sucuriscan-title">Whitelist Blocked PHP Files</h3>
+    <h3 class="sucuriscan-title">@@SUCURI.WhitelistScript@@</h3>
 
     <div class="inside">
-        <p>
-            After you apply the hardening in either the includes, content, and/or upload
-            directories the plugin will add a rule in the access control file to deny access
-            to any PHP file located in these folders, this is a good precaution in case that
-            an attacker is able to upload a shell script; with a few exceptions the
-            <em>"index.php"</em> is the only one that should be publicly accessible, however
-            many theme/plugin developers decide to use these folders to process some
-            operations, in this case applying the hardening <strong>may break</strong> their
-            functionality.
-        </p>
-
-        <div class="sucuriscan-inline-alert-info">
-            <p>
-                Note that whitelisted files are global inside the selected directory, this means
-                that if you whitelist a file named <em>"thumbnail.php"</em> it will match every
-                file with the same name in all the sub-folders. If you want something more
-                specific read the <a href="https://httpd.apache.org/docs/2.4/mod/core.html"
-                target="_blank" rel="noopener">official documentation</a>.
-            </p>
-        </div>
-
-        <div class="sucuriscan-inline-alert-error">
-            <p>
-                Be warned that whitelisting a PHP file with vulnerabilities will open security
-                holes in your website that can be exploited by malicious users. If you do not
-                fully understand the purpose of this form and/or do not know what whitelisting
-                a PHP file means then ask for support in the <a target="_blank"
-                href="https://wordpress.org/support/plugin/sucuri-scanner" rel="noopener">forums</a>.
-            </p>
-        </div>
+        <p>@@SUCURI.WhitelistScriptInfo@@</p>
 
         <form action="%%SUCURI.URL.Settings%%#hardening" method="post">
             <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
             <fieldset class="sucuriscan-clearfix">
-                <label>Whitelist PHP Filename:</label>
+                <label>@@SUCURI.FilePath@@:</label>
                 <input type="text" name="sucuriscan_hardening_whitelist" placeholder="e.g. wp-tinymce.php" />
                 <select name="sucuriscan_hardening_folder">
                     <option value="wp-includes">wp-includes</option>
                     <option value="wp-content">wp-content</option>
                     <option value="wp-content/uploads">wp-content/uploads</option>
                 </select>
-                <button type="submit" class="button button-primary">Proceed</button>
+                <button type="submit" class="button button-primary">@@SUCURI.Submit@@</button>
             </fieldset>
         </form>
 
@@ -59,9 +30,9 @@
                         <label class="screen-reader-text" for="cb-select-all-1">Select All</label>
                         <input id="cb-select-all-1" type="checkbox">
                     </td>
-                    <th class="manage-column">Filename</th>
-                    <th class="manage-column">Base Directory</th>
-                    <th class="manage-column">Regular Expression</th>
+                    <th class="manage-column">@@SUCURI.FilePath@@</th>
+                    <th class="manage-column">@@SUCURI.Directory@@</th>
+                    <th class="manage-column">@@SUCURI.Pattern@@</th>
                 </thead>
 
                 <tbody>
@@ -69,13 +40,13 @@
 
                     <tr class="sucuriscan-%%SUCURI.HardeningWhitelist.NoItemsVisibility%%">
                         <td colspan="4">
-                            <em>List is empty.</em>
+                            <em>@@SUCURI.NoData@@</em>
                         </td>
                     </tr>
                 </tbody>
             </table>
 
-            <button type="submit" class="button button-primary">Delete</button>
+            <button type="submit" class="button button-primary">@@SUCURI.Delete@@</button>
         </form>
     </div>
 </div>

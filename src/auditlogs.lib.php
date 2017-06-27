@@ -142,7 +142,7 @@ class SucuriScanAuditLogs
                     $snippet_data['AuditLog.Date'] = '';
                 } elseif ($snippet_data['AuditLog.Date'] === $todaysDate) {
                     $previousDate = $snippet_data['AuditLog.Date'];
-                    $snippet_data['AuditLog.Date'] = 'Today';
+                    $snippet_data['AuditLog.Date'] = __('Today', SUCURISCAN_TEXTDOMAIN);
                 } else {
                     $previousDate = $snippet_data['AuditLog.Date'];
                 }
@@ -194,7 +194,7 @@ class SucuriScanAuditLogs
                 }
             }
         } else {
-            $response['content'] = 'There are no logs.';
+            $response['content'] = __('NoLogs', SUCURISCAN_TEXTDOMAIN);
         }
 
         wp_send_json($response, 200);

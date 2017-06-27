@@ -150,18 +150,18 @@ class SucuriScanFirewall extends SucuriScanAPI
 
                 if (self::isValidKey($api_key)) {
                     SucuriScanOption::updateOption($option_name, $api_key);
-                    SucuriScanInterface::info('Firewall API key saved successfully');
+                    SucuriScanInterface::info(__('FirewallAPIKeySet', SUCURISCAN_TEXTDOMAIN));
                     SucuriScanOption::setRevProxy('enable');
                     SucuriScanOption::setAddrHeader('HTTP_X_SUCURI_CLIENTIP');
                 } else {
-                    SucuriScanInterface::error('Invalid firewall API key.');
+                    SucuriScanInterface::error(__('FirewallAPIKeyInvalid', SUCURISCAN_TEXTDOMAIN));
                 }
             }
 
             // Delete the firewall API key from the plugin.
             if (SucuriScanRequest::post(':delete_wafkey') !== false) {
                 SucuriScanOption::deleteOption($option_name);
-                SucuriScanInterface::info('Firewall API key removed successfully');
+                SucuriScanInterface::info(__('FirewallAPIKeyUnset', SUCURISCAN_TEXTDOMAIN));
                 SucuriScanOption::setRevProxy('disable');
                 SucuriScanOption::setAddrHeader('REMOTE_ADDR');
             }
@@ -194,7 +194,7 @@ class SucuriScanFirewall extends SucuriScanAPI
                                 $html_list .= '<li>' . SucuriScan::escape($single_value) . '</li>';
                             }
                         } else {
-                            $html_list .= '<li>(no data available)</li>';
+                            $html_list .= '<li>(' . __('NoData', SUCURISCAN_TEXTDOMAIN) . ')</li>';
                         }
 
                         $html_list .= '</ul>';
@@ -227,10 +227,10 @@ class SucuriScanFirewall extends SucuriScanAPI
     public static function settingsExplanation($settings = array())
     {
         $cache_modes = array(
-            'docache' => 'enabled (recommended)',
-            'sitecache' => 'site caching (using your site headers)',
-            'nocache' => 'minimal (only for a few minutes)',
-            'nocacheatall' => 'caching disabled (use with caution)',
+            'docache' => __('FirewallDoCache', SUCURISCAN_TEXTDOMAIN),
+            'sitecache' => __('FirewallSiteCache', SUCURISCAN_TEXTDOMAIN),
+            'nocache' => __('FirewallNoCache', SUCURISCAN_TEXTDOMAIN),
+            'nocacheatall' => __('FirewallNoCacheAtAll', SUCURISCAN_TEXTDOMAIN),
         );
 
         // TODO: Prefer Array over stdClass, modify the API library.
@@ -238,12 +238,14 @@ class SucuriScanFirewall extends SucuriScanAPI
 
         foreach ($settings as $keyname => $value) {
             if ($keyname == 'proxy_active') {
-                $settings[$keyname] = ($value === 1) ? 'active' : 'not active';
+                $settings[$keyname] = ($value === 1)
+                ? __('Active', SUCURISCAN_TEXTDOMAIN)
+                : __('NotActive', SUCURISCAN_TEXTDOMAIN);
             } elseif ($keyname == 'cache_mode') {
                 if (array_key_exists($value, $cache_modes)) {
                     $settings[$keyname] = $cache_modes[$value];
                 } else {
-                    $settings[$keyname] = 'unknown';
+                    $settings[$keyname] = __('Unknown', SUCURISCAN_TEXTDOMAIN);
                 }
             }
         }
@@ -349,12 +351,12 @@ class SucuriScanFirewall extends SucuriScanAPI
                 $response = self::auditlogsEntries($auditlogs['access_logs']);
 
                 if (empty($response)) {
-                    $response = '<tr><td>No data available for this filter.</td></tr>';
+                    $response = '<tr><td>' . __('NoData', SUCURISCAN_TEXTDOMAIN) . '.</td></tr>';
                 }
             }
         } else {
             ob_start();
-            SucuriScanInterface::error('Firewall API key was not found.');
+            SucuriScanInterface::error(__('FirewallAPIKeyMissing', SUCURISCAN_TEXTDOMAIN));
             $response = ob_get_clean();
         }
 
@@ -456,18 +458,18 @@ class SucuriScanFirewall extends SucuriScanAPI
             case 'months':
                 $selected = $s_month;
                 $options = array(
-                    '01' => 'January',
-                    '02' => 'February',
-                    '03' => 'March',
-                    '04' => 'April',
-                    '05' => 'May',
-                    '06' => 'June',
-                    '07' => 'July',
-                    '08' => 'August',
-                    '09' => 'September',
-                    '10' => 'October',
-                    '11' => 'November',
-                    '12' => 'December',
+                    '01' => __('January', SUCURISCAN_TEXTDOMAIN),
+                    '02' => __('February', SUCURISCAN_TEXTDOMAIN),
+                    '03' => __('March', SUCURISCAN_TEXTDOMAIN),
+                    '04' => __('April', SUCURISCAN_TEXTDOMAIN),
+                    '05' => __('May', SUCURISCAN_TEXTDOMAIN),
+                    '06' => __('June', SUCURISCAN_TEXTDOMAIN),
+                    '07' => __('July', SUCURISCAN_TEXTDOMAIN),
+                    '08' => __('August', SUCURISCAN_TEXTDOMAIN),
+                    '09' => __('September', SUCURISCAN_TEXTDOMAIN),
+                    '10' => __('October', SUCURISCAN_TEXTDOMAIN),
+                    '11' => __('November', SUCURISCAN_TEXTDOMAIN),
+                    '12' => __('December', SUCURISCAN_TEXTDOMAIN),
                 );
                 break;
             case 'days':
@@ -533,9 +535,9 @@ class SucuriScanFirewall extends SucuriScanAPI
             $response = self::clearCache();
 
             if (!$response) {
-                SucuriScanInterface::error('Firewall is not enabled on your site, or your API key is invalid.');
+                SucuriScanInterface::error(__('FirewallNotEnabled', SUCURISCAN_TEXTDOMAIN));
             } elseif (!isset($response['messages'][0])) {
-                SucuriScanInterface::error('Could not clear the cache of your site, try later again.');
+                SucuriScanInterface::error(__('FirewallClearCacheFailure', SUCURISCAN_TEXTDOMAIN));
             } else {
                 // Clear W3 Total Cache if it is installed.
                 if (function_exists('w3tc_flush_all')) {

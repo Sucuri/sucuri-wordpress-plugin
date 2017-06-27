@@ -117,8 +117,8 @@ class SucuriScanMail extends SucuriScanOption
             || strpos($subject, ':email') !== false
         ) {
             $user = wp_get_current_user();
-            $username = 'unknown';
-            $eaddress = 'unknown';
+            $username = __('Unknown', SUCURISCAN_TEXTDOMAIN);
+            $eaddress = __('Unknown', SUCURISCAN_TEXTDOMAIN);
 
             if ($user instanceof WP_User
                 && isset($user->user_login)
@@ -159,7 +159,11 @@ class SucuriScanMail extends SucuriScanOption
             && isset($user->user_login)
             && !empty($user->user_login)
         ) {
-            $display_name = sprintf('User: %s (%s)', $user->display_name, $user->user_login);
+            $display_name = sprintf(
+                __('UserInfo', SUCURISCAN_TEXTDOMAIN),
+                $user->display_name,
+                $user->user_login
+            );
         }
 
         // Format list of items when the event has multiple entries.
@@ -182,7 +186,7 @@ class SucuriScanMail extends SucuriScanOption
             }
         }
 
-        $params['TemplateTitle'] = 'Sucuri Alert';
+        $params['TemplateTitle'] = __('SucuriAlert', SUCURISCAN_TEXTDOMAIN);
         $params['Subject'] = $subject;
         $params['Website'] = $website;
         $params['RemoteAddress'] = self::getRemoteAddr();

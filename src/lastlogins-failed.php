@@ -38,7 +38,7 @@ function sucuriscan_failed_logins_panel()
 
         if (is_array($blockUsers) && !empty($blockUsers)) {
             SucuriScanBlockedUsers::block($blockUsers);
-            SucuriScanInterface::info('Selected user accounts were blocked');
+            SucuriScanInterface::info(__('AccountsWereBlocked', SUCURISCAN_TEXTDOMAIN));
         }
     }
 
@@ -348,11 +348,11 @@ function sucuriscan_report_failed_logins($failed_logins = array())
             // Add the table headers.
             $table_html .= '<thead>';
             $table_html .= '<tr>';
-            $table_html .= '<th>Username</th>';
-            $table_html .= '<th>Password</th>';
-            $table_html .= '<th>IP Address</th>';
-            $table_html .= '<th>Attempt Timestamp</th>';
-            $table_html .= '<th>Attempt Date/Time</th>';
+            $table_html .= '<th>' . __('Username', SUCURISCAN_TEXTDOMAIN) . '</th>';
+            $table_html .= '<th>' . __('Password', SUCURISCAN_TEXTDOMAIN) . '</th>';
+            $table_html .= '<th>' . __('RemoteAddr', SUCURISCAN_TEXTDOMAIN) . '</th>';
+            $table_html .= '<th>' . __('AttemptTimestamp', SUCURISCAN_TEXTDOMAIN) . '</th>';
+            $table_html .= '<th>' . __('AttemptDatetime', SUCURISCAN_TEXTDOMAIN) . '</th>';
             $table_html .= '</tr>';
             $table_html .= '</thead>';
 
@@ -365,16 +365,16 @@ function sucuriscan_report_failed_logins($failed_logins = array())
                 $table_html .= '<td>' . esc_attr($login_data['user_login']) . '</td>';
                 $table_html .= '<td>' . esc_attr($login_data['user_password']) . '</td>';
                 $table_html .= '<td>' . esc_attr($login_data['remote_addr']) . '</td>';
-                $table_html .= '<td>' . $login_data['attempt_time'] . '</td>';
-                $table_html .= '<td>' . $login_data['attempt_date'] . '</td>';
+                $table_html .= '<td>' . esc_attr($login_data['attempt_time']) . '</td>';
+                $table_html .= '<td>' . esc_attr($login_data['attempt_date']) . '</td>';
                 $table_html .= '</tr>';
             } else {
                 $mail_content .= "\n";
-                $mail_content .= 'Username: ' . $login_data['user_login'] . "\n";
-                $mail_content .= 'Password: ' . $login_data['user_password'] . "\n";
-                $mail_content .= 'IP Address: ' . $login_data['remote_addr'] . "\n";
-                $mail_content .= 'Attempt Timestamp: ' . $login_data['attempt_time'] . "\n";
-                $mail_content .= 'Attempt Date/Time: ' . $login_data['attempt_date'] . "\n";
+                $mail_content .= __('Username', SUCURISCAN_TEXTDOMAIN) . ":\x20" . $login_data['user_login'] . "\n";
+                $mail_content .= __('Password', SUCURISCAN_TEXTDOMAIN) . ":\x20" . $login_data['user_password'] . "\n";
+                $mail_content .= __('RemoteAddr', SUCURISCAN_TEXTDOMAIN) . ":\x20" . $login_data['remote_addr'] . "\n";
+                $mail_content .= __('AttemptTimestamp', SUCURISCAN_TEXTDOMAIN) . ":\x20" . $login_data['attempt_time'] . "\n";
+                $mail_content .= __('AttemptDatetime', SUCURISCAN_TEXTDOMAIN) . ":\x20" . $login_data['attempt_date'] . "\n";
             }
         }
 
