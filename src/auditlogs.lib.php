@@ -65,6 +65,7 @@ class SucuriScanAuditLogs
         $response = array();
         $response['count'] = 0;
         $response['content'] = '';
+        $response['queueSize'] = 0;
         $response['selfhosting'] = false;
 
         /* Initialize the values for the pagination. */
@@ -99,10 +100,19 @@ class SucuriScanAuditLogs
             $cache->add('response', $auditlogs);
         }
 
-        /* Fallback; get the logs from the local server */
-        if (!$auditlogs && !SucuriScanOption::getOption(':api_key')) {
-            $auditlogs = SucuriScanAPI::getSelfHostingLogs(SUCURISCAN_AUDITLOGS_PER_PAGE);
-            $response['selfhosting'] = (bool) ($auditlogs !== false);
+        if ($queuelogs = SucuriScanAPI::getAuditLogsFromQueue()) {
+            if (!$auditlogs) {
+                $auditlogs = $queuelogs;
+            } else {
+                $auditlogs['output'] = array_merge(
+                    $auditlogs['output'],
+                    $queuelogs['output']
+                );
+                $auditlogs['output_data'] = array_merge(
+                    $auditlogs['output_data'],
+                    $queuelogs['output_data']
+                );
+            }
         }
 
         if ($auditlogs) {
@@ -197,6 +207,11 @@ class SucuriScanAuditLogs
             $response['content'] = __('NoLogs', SUCURISCAN_TEXTDOMAIN);
         }
 
+        $cache = new SucuriScanCache('auditqueue');
+        $finfo = $cache->getDatastoreInfo();
+        $events = $cache->getAll();
+        $response['queueSize'] = count($events);
+
         wp_send_json($response, 200);
     }
 
@@ -285,6 +300,36 @@ class SucuriScanAuditLogs
             $response['eventsPerIPAddressSeries'] = array_merge(array('data'), $ips);
             $response['eventsPerIPAddressCategories'] = array_keys($report['events_per_ipaddress']);
         }
+
+        wp_send_json($response, 200);
+    }
+
+    /**
+     * Send the logs from the queue to the API.
+     *
+     * @codeCoverageIgnore - Notice that there is a test case that covers this
+     * code, but since the WP-Send-JSON method uses die() to stop any further
+     * output it means that XDebug cannot cover the next line, leaving a report
+     * with a missing line in the coverage. Since the test case takes care of
+     * the functionality of this code we will assume that it is fully covered.
+     */
+    public static function ajaxAuditLogsSendLogs()
+    {
+        if (SucuriScanRequest::post('form_action') !== 'auditlogs_send_logs') {
+            return;
+        }
+
+        $response = array();
+
+        /* blocking; might take a while */
+        SucuriScanEvent::sendLogsFromQueue();
+
+        $cache = new SucuriScanCache('auditqueue');
+        $finfo = $cache->getDatastoreInfo();
+        $events = $cache->getAll();
+
+        $response['ok'] = true;
+        $response['queueSize'] = count($events);
 
         wp_send_json($response, 200);
     }

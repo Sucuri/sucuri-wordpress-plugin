@@ -95,7 +95,12 @@ class SucuriScanFileInfo extends SucuriScan
      */
     public static function isSplAvailable()
     {
-        return (bool) (class_exists('SplFileObject') && class_exists('FilesystemIterator'));
+        return (bool) (
+            class_exists('SplFileObject')
+            && class_exists('FilesystemIterator')
+            && class_exists('RecursiveIteratorIterator')
+            && class_exists('RecursiveDirectoryIterator')
+        );
     }
 
     /**
@@ -180,7 +185,7 @@ class SucuriScanFileInfo extends SucuriScan
     {
         $files = array();
 
-        if (is_dir($directory)) {
+        if (is_dir($directory) && self::isSplAvailable()) {
             $objects = array();
 
             $this->ignored_directories = SucuriScanFSScanner::getIgnoredDirectories();

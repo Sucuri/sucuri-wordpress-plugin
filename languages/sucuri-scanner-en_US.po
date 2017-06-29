@@ -194,6 +194,12 @@ msgstr "This data is cached for %%SUCURI.AuditLogs.Lifetime%% seconds"
 msgid "Refresh"
 msgstr "Refresh"
 
+msgid "AuditLogsQueue"
+msgstr "logs in the queue"
+
+msgid "SendLogs"
+msgstr "Send Logs"
+
 msgid "UnsupportedWordPress"
 msgstr "WordPress version is not supported."
 
@@ -792,7 +798,7 @@ msgid "Cronjobs"
 msgstr "Scheduled Tasks"
 
 msgid "CronjobsInfo"
-msgstr "<b>Scheduled Tasks</b> are rules registered in your database by a plugin, theme, or the base system itself; they are used to automatically execute actions defined in the code every certain amount of time. A good use of these rules is to generate backup files of your site, execute a security scanner, or remove unused elements like drafts."
+msgstr "Scheduled tasks are rules registered in your database by a plugin, theme, or the base system itself; they are used to automatically execute actions defined in the code every certain amount of time. A good use of these rules is to generate backup files of your site, execute a security scanner, or remove unused elements like drafts. <b>Note:</b> Scheduled tasks can be re-installed by any plugin/theme automatically, consider to deactivate the plugin entirely if you want to get rid of the scheduled tasks."
 
 msgid "CronjobRunNow"
 msgstr "Execute Now (in +10 seconds)"
@@ -1015,9 +1021,6 @@ msgstr "Newest WordPress"
 
 msgid "NoUpdates"
 msgstr "There are no updates available."
-
-msgid "ScannerFreqStatus"
-msgstr "The file system scanner frequency has been changed"
 
 msgid "SiteClean"
 msgstr "Site is Clean"
@@ -1346,14 +1349,8 @@ msgstr "Your website has no <code>.htaccess</code> file or it was not found in t
 msgid "HTAccessStandard"
 msgstr "The main <code>.htaccess</code> file in your site has the standard rules for a WordPress installation. You can customize it to improve the performance and change the behaviour of the redirections for pages and posts in your site. To get more information visit the official documentation at <a target=\"_blank\" rel=\"noopener\" href=\"https://codex.wordpress.org/Using_Permalinks#Creating_and_editing_.28.htaccess.29\"> Codex WordPress - Creating and editing (.htaccess)</a>"
 
-msgid "ScannerTitle"
-msgstr "Scanner Settings"
-
-msgid "ScannerFrequency"
-msgstr "Scanning Frequency"
-
 msgid "ScannerDescription"
-msgstr "The plugin scans your entire website looking for changes which are later reported via the API in the audit logs page. This scanner runs twice-daily by default but you can change the frequency to meet your own requirements. Notice that scanning your project files too frequently will affect the performance of your website. Be sure to have enough server resources before changing this option. The memory limit and maximum execution time are two of the PHP options that your server will set to stop your website from consuming too much resources."
+msgstr "The plugin scans your entire website looking for changes which are later reported via the API in the audit logs page. This scanner runs daily but you can change the frequency to meet your own requirements. Notice that scanning your project files too frequently will affect the performance of your website. Be sure to have enough server resources before changing this option. The memory limit and maximum execution time are two of the PHP options that your server will set to stop your website from consuming too much resources."
 
 msgid "ScannerWithoutSPL"
 msgstr "The scanner uses the <a href=\"http://php.net/manual/en/class.splfileobject.php\" target=\"_blank\" rel=\"noopener\">PHP SPL library</a> and the <a target=\"_blank\" href=\"http://php.net/manual/en/class.filesystemiterator.php\" rel=\"noopener\">Filesystem Iterator</a> class to scan the directory tree where your website is located in the server. This library is only available on PHP 5 >= 5.3.0 &mdash; OR &mdash; PHP 7; if you have an older version of PHP the plugin will not work as expected. Please ask your hosting provider to advice you on this matter."
@@ -1465,15 +1462,6 @@ msgstr "Data Storage"
 
 msgid "DataStorageInfo"
 msgstr "This is the directory where the plugin will store the security logs, the list of files marked as fixed in the core integrity tool, the cache for the malware scanner and 3rd-party plugin metadata. The plugin requires write permissions in this directory as well as the files contained in it. If you prefer to keep these files in a non-public directory <em>(one level up the document root) </em> please define a constant in the <em>\"wp-config.php\"</em> file named <em>\"SUCURI_DATA_STORAGE\"</em> with the absolute path to the new directory."
-
-msgid "CommentMonitor"
-msgstr "Comment Monitor"
-
-msgid "CommentMonitorStatus"
-msgstr "The status of the comment monitor has been changed"
-
-msgid "CommentMonitorInfo"
-msgstr "User comments are the main source of spam in WordPress websites, this option enables the monitoring of data sent via the comment forms loaded in every page and post. We also use this information in an anonymous way to generate <a target=\"_blank\" href=\"https://sucuri.net/security-reports/brute-force/\">statistics</a> of usage that help us improve our service."
 
 msgid "LogsReport"
 msgstr "Audit Log Statistics"

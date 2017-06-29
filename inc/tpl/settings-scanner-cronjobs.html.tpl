@@ -3,9 +3,15 @@
     <h3 class="sucuriscan-title">@@SUCURI.Cronjobs@@</h3>
 
     <div class="inside">
+        <p>@@SUCURI.ScannerDescription@@</p>
+
+        <div class="sucuriscan-inline-alert-error sucuriscan-%%SUCURI.NoSPL.Visibility%%">
+            <p>@@SUCURI.ScannerWithoutSPL@@</p>
+        </div>
+
         <p>@@SUCURI.CronjobsInfo@@</p>
 
-        <form action="%%SUCURI.URL.Settings%%#general" method="post">
+        <form action="%%SUCURI.URL.Settings%%#scanner" method="post">
             <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
 
             <table class="wp-list-table widefat sucuriscan-table sucuriscan-wpcron-list">

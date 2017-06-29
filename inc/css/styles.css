@@ -816,6 +816,9 @@ body.sucuri-security_page_sucuriscan_hardening {
     line-height: 32px;
     margin-left: 10px;
 }
+.sucuriscan-auditlog-footer {
+    margin-top: 20px;
+}
 .sucuriscan-hardening-option {
     margin-bottom: 0;
 }

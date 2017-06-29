@@ -8,7 +8,7 @@
 
     <td>%%SUCURI.Cronjob.Schedule%%</td>
 
-    <td>%%SUCURI.Cronjob.NextTime%%</td>
+    <td>%%SUCURI.Cronjob.NextTime%% <em>(%%SUCURI.Cronjob.NextTimeHuman%%)</em></td>
 
     <td>%%SUCURI.Cronjob.Arguments%%</td>
 </tr>

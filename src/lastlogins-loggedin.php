@@ -45,7 +45,7 @@ function sucuriscan_loggedin_users_panel()
                 'LoggedInUsers.UserEmail' => $logged_in_user['user_email'],
                 'LoggedInUsers.LastActivity' => $logged_in_user['last_activity_datetime'],
                 'LoggedInUsers.Registered' => $logged_in_user['user_registered_datetime'],
-                'LoggedInUsers.RemoveAddr' => $logged_in_user['remote_addr'],
+                'LoggedInUsers.RemoteAddr' => $logged_in_user['remote_addr'],
             ));
         }
     }

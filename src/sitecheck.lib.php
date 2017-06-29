@@ -32,8 +32,6 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  */
 class SucuriScanSiteCheck extends SucuriScanAPI
 {
-    private static $scanRequests;
-
     /**
      * Executes a malware scan against the specified website.
      *
@@ -92,32 +90,25 @@ class SucuriScanSiteCheck extends SucuriScanAPI
         $cache = new SucuriScanCache('sitecheck');
         $results = $cache->get('scan_results', SUCURISCAN_SITECHECK_LIFETIME, 'array');
 
+        /**
+         * Allow the user to scan foreign domains.
+         *
+         * This condition allows for the execution of the malware scanner on a
+         * website different than the one where the plugin is installed. This is
+         * basically the same as scanning any domain on the SiteCheck website.
+         * In this case, this is mostly used to allow the development execute
+         * tests and to troubleshoot issues reported by other users.
+         *
+         * @var boolean
+         */
+        if ($custom = SucuriScanRequest::get('s')) {
+            $tld = SucuriScan::escape($custom);
+            $results = false /* invalid cache */;
+        }
+
         /* return cached malware scan results. */
         if ($results && !empty($results)) {
             return $results;
-        }
-
-        /**
-         * Do not overflow the API service.
-         *
-         * If we are scanning the website for the first time or after the cache
-         * has expired, it makes no sense to let the script connect to the API
-         * more than once. If there is a failure with the first request we can
-         * assume that the same error will appear in the subsequent request, so
-         * we will return false every time a secondary scan is requested.
-         *
-         * The first scan is requested and executed normally.
-         *
-         * The second and subsequent scan requests (from the other methods) are
-         * expected to return the data from the cache, hence the position of the
-         * conditional in this specific line, right after the cache lifetime is
-         * checked. If the cache is invalid (because the first scan failed) or
-         * if the cache has expired (and the new request fails) we will assume
-         * that the other requests (around ten or so) will fail too.
-         */
-        self::$scanRequests++;
-        if (self::$scanRequests > 1) {
-            return false;
         }
 
         /* send HTTP request to SiteCheck's API service. */
@@ -551,13 +542,11 @@ class SucuriScanSiteCheck extends SucuriScanAPI
             return;
         }
 
+        ob_start();
+
         $response = array();
 
-        ob_start();
-        $result = SucuriScanSiteCheck::malware();
-        $errors = ob_get_clean(); /* capture possible errors */
-        $response['malware'] = empty($errors) ? $result : '';
-
+        $response['malware'] = SucuriScanSiteCheck::malware();
         $response['blacklist'] = SucuriScanSiteCheck::blacklist();
         $response['recommendations'] = SucuriScanSiteCheck::recommendations();
 
@@ -573,6 +562,14 @@ class SucuriScanSiteCheck extends SucuriScanAPI
             'title' => SucuriScanSiteCheck::scriptsTitle(),
             'content' => SucuriScanSiteCheck::scriptsContent(),
         );
+
+        $errors = ob_get_clean(); /* capture possible errors */
+
+        if (!empty($errors)) {
+            $response['malware'] = '';
+            $response['blacklist'] = '';
+            $response['recommendations'] = '';
+        }
 
         wp_send_json($response, 200);
     }

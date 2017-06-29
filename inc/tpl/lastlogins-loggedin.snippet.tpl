@@ -8,7 +8,7 @@
 
     <td class="sucuriscan-monospace">%%SUCURI.LoggedInUsers.Registered%%</td>
 
-    <td class="sucuriscan-monospace">%%SUCURI.LoggedInUsers.RemoveAddr%%</td>
+    <td class="sucuriscan-monospace">%%SUCURI.LoggedInUsers.RemoteAddr%%</td>
 
     <td><a href="%%SUCURI.LoggedInUsers.UserURL%%" target="_blank">@@SUCURI.Edit@@</a></td>
 </tr>

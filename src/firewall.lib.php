@@ -297,8 +297,10 @@ class SucuriScanFirewall extends SucuriScanAPI
      */
     public static function auditlogsPage()
     {
-        $date = date('Y-m-d');
         $params = array();
+
+        /* logs are available after 24 hours */
+        $date = date('Y-m-d', strtotime('-1 day'));
 
         $params['AuditLogs.DateYears'] = self::dates('years', $date);
         $params['AuditLogs.DateMonths'] = self::dates('months', $date);

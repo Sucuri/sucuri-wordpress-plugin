@@ -83,7 +83,7 @@ function sucuriscan_settings_general_apikey($nonce)
         // Save API key after it was recovered by the administrator.
         if ($api_key = SucuriScanRequest::post(':manual_api_key')) {
             SucuriScanAPI::setPluginKey($api_key, true);
-            SucuriScanEvent::scheduleTask();
+            SucuriScanEvent::installScheduledTask();
             SucuriScanEvent::reportInfoEvent('Sucuri API key was added manually.');
         }
 
@@ -339,124 +339,6 @@ function sucuriscan_settings_general_selfhosting($nonce)
 }
 
 /**
- * Renders a page with information about the cronjobs feature.
- *
- * @param bool $nonce True if the CSRF protection worked.
- * @return string Page with information about the cronjobs.
- */
-function sucuriscan_settings_general_cronjobs()
-{
-    $params = array(
-        'Cronjobs.List' => '',
-        'Cronjobs.Total' => 0,
-        'Cronjob.Schedules' => '',
-    );
-
-    $schedule_allowed = SucuriScanEvent::availableSchedules();
-
-    if (SucuriScanInterface::checkNonce()) {
-        // Modify the scheduled tasks (run now, remove, re-schedule).
-        $available = ($schedule_allowed === null)
-            ? SucuriScanEvent::availableSchedules()
-            : $schedule_allowed;
-        $allowed_actions = array_keys($available);
-        $allowed_actions[] = 'runnow';
-        $allowed_actions[] = 'remove';
-        $allowed_actions = sprintf('(%s)', implode('|', $allowed_actions));
-
-        if ($cronjob_action = SucuriScanRequest::post(':cronjob_action', $allowed_actions)) {
-            $cronjobs = SucuriScanRequest::post(':cronjobs', '_array');
-
-            if (!empty($cronjobs)) {
-                $total_tasks = count($cronjobs);
-
-                if ($cronjob_action == 'runnow') {
-                    /* Force execution of the selected scheduled tasks. */
-                    SucuriScanInterface::info(sprintf(
-                        __('CronjobsWillRunSoon', SUCURISCAN_TEXTDOMAIN),
-                        $total_tasks /* some cronjobs will be ignored */
-                    ));
-                    SucuriScanEvent::reportNoticeEvent(sprintf(
-                        'Force execution of scheduled tasks: (multiple entries): %s',
-                        @implode(',', $cronjobs)
-                    ));
-
-                    foreach ($cronjobs as $task_name) {
-                        wp_schedule_single_event(time() + 10, $task_name);
-                    }
-                } elseif ($cronjob_action == 'remove' || $cronjob_action == '_oneoff') {
-                    /* Force deletion of the selected scheduled tasks. */
-                    SucuriScanInterface::info(sprintf(
-                        __('CronjobsWereDeleted', SUCURISCAN_TEXTDOMAIN),
-                        $total_tasks /* some cronjobs will be ignored */
-                    ));
-                    SucuriScanEvent::reportNoticeEvent(sprintf(
-                        'Delete scheduled tasks: (multiple entries): %s',
-                        @implode(',', $cronjobs)
-                    ));
-
-                    foreach ($cronjobs as $task_name) {
-                        wp_clear_scheduled_hook($task_name);
-                    }
-                } else {
-                    SucuriScanInterface::info(sprintf(
-                        __('CronjobsWereReinstalled', SUCURISCAN_TEXTDOMAIN),
-                        $total_tasks, /* some cronjobs will be ignored */
-                        $cronjob_action /* frequency to run cronjob */
-                    ));
-                    SucuriScanEvent::reportNoticeEvent(sprintf(
-                        'Re-configure scheduled tasks %s: (multiple entries): %s',
-                        $cronjob_action,
-                        @implode(',', $cronjobs)
-                    ));
-
-                    foreach ($cronjobs as $task_name) {
-                        $next_due = wp_next_scheduled($task_name);
-                        wp_schedule_event($next_due, $cronjob_action, $task_name);
-                    }
-                }
-            } else {
-                SucuriScanInterface::error(__('CronjobsWereNotSelected', SUCURISCAN_TEXTDOMAIN));
-            }
-        }
-    }
-
-    $cronjobs = _get_cron_array();
-    $available = ($schedule_allowed === null)
-        ? SucuriScanEvent::availableSchedules()
-        : $schedule_allowed;
-
-    /* Hardcode the first one to allow the immediate execution of the cronjob(s) */
-    $params['Cronjob.Schedules'] .= '<option value="runnow">'
-    . __('CronjobRunNow', SUCURISCAN_TEXTDOMAIN) . '</option>';
-
-    foreach ($available as $freq => $name) {
-        $params['Cronjob.Schedules'] .= sprintf('<option value="%s">%s</option>', $freq, $name);
-    }
-
-    foreach ($cronjobs as $timestamp => $cronhooks) {
-        foreach ((array) $cronhooks as $hook => $events) {
-            foreach ((array) $events as $key => $event) {
-                if (empty($event['args'])) {
-                    $event['args'] = array('[]');
-                }
-
-                $params['Cronjobs.Total'] += 1;
-                $params['Cronjobs.List'] .=
-                SucuriScanTemplate::getSnippet('settings-general-cronjobs', array(
-                    'Cronjob.Hook' => $hook,
-                    'Cronjob.Schedule' => $event['schedule'],
-                    'Cronjob.NextTime' => SucuriScan::datetime($timestamp),
-                    'Cronjob.Arguments' => SucuriScan::implode(', ', $event['args']),
-                ));
-            }
-        }
-    }
-
-    return SucuriScanTemplate::getSection('settings-general-cronjobs', $params);
-}
-
-/**
  * Renders a page with information about the reverse proxy feature.
  *
  * @param bool $nonce True if the CSRF protection worked.
@@ -577,44 +459,6 @@ function sucuriscan_settings_general_ipdiscoverer($nonce)
 }
 
 /**
- * Renders a page with information about the comment monitor feature.
- *
- * @param bool $nonce True if the CSRF protection worked.
- * @return string Page with information about the comment monitor.
- */
-function sucuriscan_settings_general_commentmonitor($nonce)
-{
-    $params = array(
-        'CommentMonitorStatus' => __('Enabled', SUCURISCAN_TEXTDOMAIN),
-        'CommentMonitorSwitchText' => __('Disable', SUCURISCAN_TEXTDOMAIN),
-        'CommentMonitorSwitchValue' => 'disable',
-    );
-
-    // Configure the comment monitor option.
-    if ($nonce) {
-        $monitor = SucuriScanRequest::post(':comment_monitor', '(en|dis)able');
-
-        if ($monitor) {
-            $action_d = $monitor . 'd';
-            $message = 'Comment monitor was <code>' . $action_d . '</code>';
-
-            SucuriScanOption::updateOption(':comment_monitor', $action_d);
-            SucuriScanEvent::reportInfoEvent($message);
-            SucuriScanEvent::notifyEvent('plugin_change', $message);
-            SucuriScanInterface::info(__('CommentMonitorStatus', SUCURISCAN_TEXTDOMAIN));
-        }
-    }
-
-    if (SucuriScanOption::isDisabled(':comment_monitor')) {
-        $params['CommentMonitorStatus'] = __('Disabled', SUCURISCAN_TEXTDOMAIN);
-        $params['CommentMonitorSwitchText'] = __('Enable', SUCURISCAN_TEXTDOMAIN);
-        $params['CommentMonitorSwitchValue'] = 'enable';
-    }
-
-    return SucuriScanTemplate::getSection('settings-general-commentmonitor', $params);
-}
-
-/**
  * Renders a page with information about the auditlog stats feature.
  *
  * @param bool $nonce True if the CSRF protection worked.
@@ -658,7 +502,6 @@ function sucuriscan_settings_general_importexport($nonce)
         ':api_protocol',
         ':api_service',
         ':cloudproxy_apikey',
-        ':comment_monitor',
         ':diff_utility',
         ':dns_lookups',
         ':email_subject',
@@ -694,7 +537,6 @@ function sucuriscan_settings_general_importexport($nonce)
         ':prettify_mails',
         ':request_timeout',
         ':revproxy',
-        ':scan_frequency',
         ':selfhosting_fpath',
         ':selfhosting_monitor',
         ':use_wpmail',

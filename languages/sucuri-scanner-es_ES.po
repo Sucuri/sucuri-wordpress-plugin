@@ -194,6 +194,12 @@ msgstr "Los registros son guardados por %%SUCURI.AuditLogs.Lifetime%% segundos"
 msgid "Refresh"
 msgstr "Actualizar"
 
+msgid "AuditLogsQueue"
+msgstr "registros en cola"
+
+msgid "SendLogs"
+msgstr "Enviar"
+
 msgid "UnsupportedWordPress"
 msgstr "esta versión de WordPress no tiene soporte."
 
@@ -792,7 +798,7 @@ msgid "Cronjobs"
 msgstr "Acciones Automatizadas"
 
 msgid "CronjobsInfo"
-msgstr "<b>Acciones Automatizadas</b> son reglas registradas en su base de datos por un plugin, plantilla o WordPress; estas reglas son usadas para ejecutar automáticamente acciones definidas en el código con un intervalo de tiempo definido. Un buen uso de estas reglas es la generación de copias de seguridad, la ejecución de escáneres de seguridad o la remoción de elementos innecesarios de la base de datos como borradores de publicaciones."
+msgstr "Acciones automatizadas son reglas registradas en su base de datos por un plugin, plantilla o WordPress; estas reglas son usadas para ejecutar automáticamente acciones definidas en el código con un intervalo de tiempo definido. Un buen uso de estas reglas es la generación de copias de seguridad, la ejecución de escáneres de seguridad o la remoción de elementos innecesarios de la base de datos como borradores de publicaciones. <b>Nota:</b> Las acciones automatizadas pueden ser re-instaladas por cualquier plugin/plantilla automáticamente, considere desactivar el plugin completamente si quiere eliminar una de estas acciones."
 
 msgid "CronjobRunNow"
 msgstr "Ejecutar Ahora (en +10 segundos)"
@@ -1015,9 +1021,6 @@ msgstr "Última Versión"
 
 msgid "NoUpdates"
 msgstr "No existen actualizaciones."
-
-msgid "ScannerFreqStatus"
-msgstr "La frecuencia para la ejecución del escáner de archivos ha sido cambiada"
 
 msgid "SiteClean"
 msgstr "Sitio Limpio"
@@ -1346,14 +1349,8 @@ msgstr "El sitio web no tiene un archivo <code>.htaccess</code> o no se encuentr
 msgid "HTAccessStandard"
 msgstr "El archivo <code>.htaccess</code> principal contiene las reglas estándares de WordPress generadas durante la instalación del sitio web. Usted puede modificar estas reglas para aumentar el rendimiento del servidor o para generar redirecciones a otras páginas. Para obtener más información al respecto visite la página oficial con la documentación en <a target=\"_blank\" rel=\"noopener\" href=\"https://codex.wordpress.org/Using_Permalinks#Creating_and_editing_.28.htaccess.29\"> Codex WordPress - Creating and editing (.htaccess)</a>"
 
-msgid "ScannerTitle"
-msgstr "Ajustes para el Escáner"
-
-msgid "ScannerFrequency"
-msgstr "Frecuencia de Ejecución"
-
 msgid "ScannerDescription"
-msgstr "El plugin escanea su sitio web en busca de cambios que son eventualmente reportados a la API y visualizados a través de los registros de seguridad. Este escáner es ejecutado automáticamente cada doce horas pero usted puede cambiar la frecuencia dependiendo de sus necesidades. Tenga en cuenta que si su sitio contiene una gran cantidad de archivos es posible que el escáner sea bloqueado por su proveedor de hosting si este excede el límite de ejecución que ellos hayan impuesto sobre su cuenta."
+msgstr "El plugin escanea su sitio web en busca de cambios que son eventualmente reportados a la API y visualizados a través de los registros de seguridad. Este escáner es ejecutado automáticamente cada día pero usted puede cambiar la frecuencia dependiendo de sus necesidades. Tenga en cuenta que si su sitio contiene una gran cantidad de archivos es posible que el escáner sea bloqueado por su proveedor de hosting si este excede el límite de ejecución que ellos hayan impuesto sobre su cuenta."
 
 msgid "ScannerWithoutSPL"
 msgstr "El escáner hace uso de las librerías <a href=\"http://php.net/manual/en/class.splfileobject.php\" target=\"_blank\" rel=\"noopener\">SPL</a> y <a target=\"_blank\" href=\"http://php.net/manual/en/class.filesystemiterator.php\" rel=\"noopener\">Filesystem Iterator</a> de PHP para escanear el árbol de directorios de su sitio web. Esta librería solo está disponible en PHP 5 >= 5.3.0 &mdash; y &mdash; PHP 7; si su servidor hace uso de una versión antigua el plugin no funcionará como se espera. Por favor, contacte a su proveedor de hosting para obtener ayuda al respecto."
@@ -1465,15 +1462,6 @@ msgstr "Almacenamiento de Datos"
 
 msgid "DataStorageInfo"
 msgstr "Este es el directorio donde el plugin guardará los registros de seguridad, el archivo con las configuraciones, la cache y datos adicionales de otras herramientas. El plugin require de permisos de escritura en este directorio así como en los archivos contenidos allí. Si usted prefiere mantener estos archivos en un directorio diferente al especificado, por favor defina una constante llamada <em>\"SUCURI_DATA_STORAGE\"</em> en el archivo de configuración de WordPress con la ruta absoluta del nuevo directorio."
-
-msgid "CommentMonitor"
-msgstr "Monitor de Comentarios"
-
-msgid "CommentMonitorStatus"
-msgstr "El estado del monitor de comentarios ha sido cambiado"
-
-msgid "CommentMonitorInfo"
-msgstr "Los comentarios de usuario son el origen principal de spam en sitios que usan WordPress, esta opción activa el monitoreo de los datos enviados a través de formularios de comentario disponibles en cada página. Nosotros también usamos esta información de forma anónima para generar <a target=\"_blank\" href=\"https://sucuri.net/security-reports/brute-force/\">estadísticas</a> de uso para ayudarnos a mejorar el servicio."
 
 msgid "LogsReport"
 msgstr "Estadísticas De Seguridad"

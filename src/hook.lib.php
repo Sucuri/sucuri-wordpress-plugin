@@ -67,51 +67,6 @@ class SucuriScanHook extends SucuriScanEvent
         self::notifyEvent('post_publication', $message);
     }
 
-    /**
-     * Fires immediately after a comment is inserted into the database.
-     *
-     * The action comment-post can also be used to track the insertion of data in
-     * the comments table, but this only returns the identifier of the new entry in
-     * the database and the status (approved, not approved, spam). The WP-Insert-
-     * Comment action returns the same identifier and additionally the full data set
-     * with the comment information.
-     *
-     * @see https://codex.wordpress.org/Plugin_API/Action_Reference/wp_insert_comment
-     * @see https://codex.wordpress.org/Plugin_API/Action_Reference/comment_post
-     *
-     * @param int $id The comment identifier.
-     * @param object $comment The comment object.
-     */
-    public static function hookCommentInsert($id = 0, $comment = null)
-    {
-        if (is_object($comment)
-            && property_exists($comment, 'comment_ID')
-            && property_exists($comment, 'comment_agent')
-            && property_exists($comment, 'comment_author_IP')
-            && SucuriScanOption::isEnabled(':comment_monitor')
-        ) {
-            $data_set = array(
-                'id' => $comment->comment_ID,
-                'post_id' => $comment->comment_post_ID,
-                'user_id' => $comment->user_id,
-                'parent' => $comment->comment_parent,
-                'approved' => $comment->comment_approved,
-                'remote_addr' => $comment->comment_author_IP,
-                'author_email' => $comment->comment_author_email,
-                'date' => $comment->comment_date,
-                'content' => $comment->comment_content,
-                'user_agent' => $comment->comment_agent,
-            );
-            $message = base64_encode(json_encode($data_set));
-            self::reportNoticeEvent('Base64:' . $message, true);
-        }
-    }
-
-    // TODO: Log when the comment status is modified: wp_set_comment_status
-    // TODO: Log when the comment data is modified: edit_comment
-    // TODO: Log when the comment is going to be deleted: delete_comment, trash_comment
-    // TODO: Log when the comment is finally deleted: deleted_comment, trashed_comment
-    // TODO: Log when the comment is closed: comment_closed
     // TODO: Detect auto updates in core, themes, and plugin files.
 
     /**

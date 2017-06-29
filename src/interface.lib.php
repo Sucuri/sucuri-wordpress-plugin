@@ -37,14 +37,12 @@ class SucuriScanInterface
      */
     public static function initialize()
     {
-        if (SucuriScan::supportReverseProxy()
-            || SucuriScan::isBehindFirewall()
-        ) {
+        SucuriScanEvent::installScheduledTask();
+
+        if (SucuriScan::supportReverseProxy() || SucuriScan::isBehindFirewall()) {
             $_SERVER['SUCURIREAL_REMOTE_ADDR'] = $_SERVER['REMOTE_ADDR'];
             $_SERVER['REMOTE_ADDR'] = SucuriScan::getRemoteAddr();
         }
-
-        SucuriScanEvent::scheduleTask(false);
     }
 
     /**

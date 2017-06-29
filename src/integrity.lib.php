@@ -119,45 +119,54 @@ class SucuriScanIntegrity
 
         foreach ((array) $core_files as $file_meta) {
             if (strpos($file_meta, '@')) {
-                @list($status_type, $file_path) =
-                explode('@', $file_meta, 2);
+                @list($status_type, $file_path) = explode('@', $file_meta, 2);
 
-                if ($file_path && $status_type) {
-                    $full_path = ABSPATH . '/' . $file_path;
+                if (!$file_path || !$status_type) {
+                    continue;
+                }
 
-                    switch ($action) {
-                        case 'restore':
-                            if ($content = SucuriScanAPI::getOriginalCoreFile($file_path)) {
-                                $basedir = dirname($full_path);
-                                @mkdir($basedir, 0755, true);
+                $full_path = ABSPATH . '/' . $file_path;
 
-                                if (file_exists($basedir)) {
-                                    $restored = @file_put_contents($full_path, $content);
-                                    $files_processed += ($restored ? 1 : 0);
-                                    $files_affected[] = $full_path;
-                                }
-                            }
-                            break;
+                if ($action === 'fixed' && (
+                    $status_type === 'added'
+                    || $status_type === 'removed'
+                    || $status_type === 'modified'
+                )) {
+                    $cache_key = md5($file_path);
+                    $cache_value = array(
+                        'file_path' => $file_path,
+                        'file_status' => $status_type,
+                        'ignored_at' => time(),
+                    );
+                    $cached = $cache->add($cache_key, $cache_value);
+                    $files_processed += ($cached ? 1 : 0);
+                    $files_affected[] = $full_path;
+                    continue;
+                }
 
-                        case 'fixed':
-                            $cache_key = md5($file_path);
-                            $cache_value = array(
-                                'file_path' => $file_path,
-                                'file_status' => $status_type,
-                                'ignored_at' => time(),
-                            );
-                            $cached = $cache->add($cache_key, $cache_value);
-                            $files_processed += ($cached ? 1 : 0);
+                if ($action === 'restore' && (
+                    $status_type === 'removed'
+                    || $status_type === 'modified'
+                )) {
+                    if ($content = SucuriScanAPI::getOriginalCoreFile($file_path)) {
+                        $basedir = dirname($full_path);
+                        @mkdir($basedir, 0755, true);
+
+                        if (file_exists($basedir)) {
+                            $restored = @file_put_contents($full_path, $content);
+                            $files_processed += ($restored ? 1 : 0);
                             $files_affected[] = $full_path;
-                            break;
-
-                        case 'delete':
-                            if (@unlink($full_path)) {
-                                $files_processed += 1;
-                                $files_affected[] = $full_path;
-                            }
-                            break;
+                        }
                     }
+                    continue;
+                }
+
+                if ($action === 'delete' && $status_type === 'added') {
+                    if (@unlink($full_path)) {
+                        $files_processed += 1;
+                        $files_affected[] = $full_path;
+                    }
+                    continue;
                 }
             }
         }

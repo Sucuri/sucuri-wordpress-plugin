@@ -1,7 +1,7 @@
 
 @@SUCURI.Event@@: %%SUCURI.Subject%%
 @@SUCURI.Website@@: http://%%SUCURI.Website%%
-@@SUCURI.RemoveAddr@@: %%SUCURI.RemoteAddress%%
+@@SUCURI.RemoteAddr@@: %%SUCURI.RemoteAddress%%
 @@SUCURI.Datetime@@: %%SUCURI.Time%%
 %%SUCURI.User%%
 

@@ -3,6 +3,17 @@
 /* global jQuery */
 /* jshint camelcase:false */
 jQuery(function ($) {
+    var writeQueueSize = function (queueSize)
+    {
+        if (queueSize === 0) {
+            $('.sucuriscan-auditlogs-sendlogs-panel').addClass('sucuriscan-hidden');
+        } else {
+            var msg = '\x20@@SUCURI.AuditLogsQueue@@\x20&mdash;\x20';
+            $('.sucuriscan-auditlogs-sendlogs-panel').removeClass('sucuriscan-hidden');
+            $('.sucuriscan-auditlogs-sendlogs-response').html((queueSize).toString() + msg);
+        }
+    };
+
     var sucuriscanLoadAuditLogs = function (page, reset) {
         var url = '%%SUCURI.AjaxURL.Dashboard%%';
 
@@ -23,12 +34,10 @@ jQuery(function ($) {
         }, function (data) {
             $('.sucuriscan-pagination-loading').html('');
 
+            writeQueueSize(data.queueSize);
+
             if (data.content !== undefined) {
                 $('.sucuriscan-auditlog-response').html(data.content);
-
-                if (data.selfhosting) {
-                    $('#sucuriscan-auditlog-selfhosting').removeClass('sucuriscan-hidden');
-                }
 
                 if (data.pagination !== '') {
                     $('.sucuriscan-auditlog-table .sucuriscan-pagination').html(data.pagination);
@@ -54,31 +63,34 @@ jQuery(function ($) {
         sucuriscanLoadAuditLogs($(this).attr('data-page'));
     });
 
-    $('.sucuriscan-auditlog-table').on('click', '.sucuriscan-reset-auditlogs', function (event) {
+    $('.sucuriscan-auditlog-table').on('click', '.sucuriscan-auditlogs-reset', function (event) {
         event.preventDefault();
         $.post('%%SUCURI.AjaxURL.Dashboard%%', {
             action: 'sucuriscan_ajax',
             sucuriscan_page_nonce: '%%SUCURI.PageNonce%%',
             form_action: 'reset_auditlogs_cache',
-        }, function (data) {
-            console.log(data);
+        }, function () {
             sucuriscanLoadAuditLogs(0, true);
+        });
+    });
+
+    $('.sucuriscan-auditlog-table').on('click', '.sucuriscan-auditlogs-sendlogs', function (event) {
+        event.preventDefault();
+        $('.sucuriscan-auditlogs-sendlogs-response').html('@@SUCURI.Loading@@');
+        $.post('%%SUCURI.AjaxURL.Dashboard%%', {
+            action: 'sucuriscan_ajax',
+            sucuriscan_page_nonce: '%%SUCURI.PageNonce%%',
+            form_action: 'auditlogs_send_logs',
+        }, function (data) {
+            writeQueueSize(data.queueSize);
         });
     });
 });
 </script>
 
 <div class="sucuriscan-auditlog-table">
-    <div id="sucuriscan-auditlog-selfhosting" class="sucuriscan-inline-alert-info sucuriscan-hidden">
-        <p>@@SUCURI.SelfHostingFallback@@</p>
-    </div>
-
     <div class="sucuriscan-auditlog-response">
         <em>@@SUCURI.Loading@@</em>
-    </div>
-
-    <div>
-        <small>@@SUCURI.AuditLogsCache@@ &mdash; <a href="#" class="sucuriscan-reset-auditlogs">@@SUCURI.Refresh@@</a></small>
     </div>
 
     <div class="sucuriscan-clearfix">
@@ -88,6 +100,17 @@ jQuery(function ($) {
 
         <div class="sucuriscan-pull-right sucuriscan-pagination-loading">
             <!-- Populated via JavaScript -->
+        </div>
+    </div>
+
+    <div class="sucuriscan-auditlog-footer">
+        <div class="sucuriscan-pull-left">
+            <small>@@SUCURI.AuditLogsCache@@ &mdash; <a href="#" class="sucuriscan-auditlogs-reset">@@SUCURI.Refresh@@</a></small>
+        </div>
+
+        <div class="sucuriscan-pull-right sucuriscan-hidden sucuriscan-auditlogs-sendlogs-panel">
+            <small class="sucuriscan-auditlogs-sendlogs-response"></small>
+            <small><a href="#" class="sucuriscan-auditlogs-sendlogs">@@SUCURI.SendLogs@@</a></small>
         </div>
     </div>
 </div>

@@ -81,7 +81,7 @@ class SucuriScanCache extends SucuriScan
      *
      * @return array Default attributes for every datastore file.
      */
-    private function datastoreDefaultInfo()
+    public function datastoreDefaultInfo()
     {
         $attrs = array(
             'datastore' => $this->datastore,
@@ -135,32 +135,53 @@ class SucuriScanCache extends SucuriScan
             return false;
         }
 
-        $filename = 'sucuri-' . $this->datastore . '.php';
-        $file_path = $this->dataStorePath($filename);
-        $folder_path = dirname($file_path);
+        $filename = $this->dataStorePath('sucuri-' . $this->datastore . '.php');
+        $directory = dirname($filename); /* create directory if necessary */
 
-        /* create the datastore parent directory. */
-        if (!file_exists($folder_path)) {
-            @mkdir($folder_path, 0755, true);
+        if (!file_exists($directory)) {
+            @mkdir($directory, 0755, true);
         }
 
-        /* create the cache file if necessary and the folder is writable. */
-        if (!file_exists($file_path) && is_writable($folder_path) && $auto_create) {
-            @file_put_contents($file_path, $this->datastoreInfo());
+        if (!file_exists($filename) && is_writable($directory) && $auto_create) {
+            @file_put_contents($filename, $this->datastoreInfo());
         }
 
-        return $file_path;
+        return $filename;
     }
 
     /**
      * Check whether a key has a valid name or not.
      *
+     * WARNING: Instead of using a regular expression to match the format of the
+     * key we will use a primitive string transformation technique to reduce the
+     * execution time, regular expressions are significantly slow.
+     *
      * @param string $key Unique name for the data.
-     * @return bool TRUE if the format of the key name is valid, FALSE otherwise.
+     * @return bool True if the key is valid, false otherwise.
      */
     private function validKeyName($key = '')
     {
-        return (bool) @preg_match('/^([0-9a-zA-Z_]+)$/', $key);
+        $result = true;
+        $length = strlen($key);
+        $allowed = array(
+            /* preg_match('/^([0-9a-zA-Z_]+)$/', $key) */
+            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+            'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+            'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D',
+            'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
+            'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
+            'Y', 'Z', '_',
+        );
+
+        for ($i = 0; $i < $length; $i++) {
+            if (!in_array($key[$i], $allowed)) {
+                $result = false;
+                break;
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -171,18 +192,20 @@ class SucuriScanCache extends SucuriScan
      */
     private function saveNewEntries($finfo = array())
     {
-        $data_string = $this->datastoreInfo($finfo);
+        if (!$finfo) {
+            return false;
+        }
 
-        if (!empty($finfo)) {
+        $metadata = $this->datastoreInfo($finfo);
+
+        if (@file_put_contents($this->datastore_path, $metadata)) {
             foreach ($finfo['entries'] as $key => $data) {
-                if ($this->validKeyName($key)) {
-                    $data = json_encode($data);
-                    $data_string .= sprintf("%s:%s\n", $key, $data);
-                }
+                $line = sprintf("%s:%s\n", $key, json_encode($data));
+                @file_put_contents($this->datastore_path, $line, FILE_APPEND);
             }
         }
 
-        return (bool) @file_put_contents($this->datastore_path, $data_string);
+        return true;
     }
 
     /**
@@ -191,28 +214,35 @@ class SucuriScanCache extends SucuriScan
      * be merged automatically.
      *
      * @param bool $assoc Force object to array conversion.
+     * @param bool $onlyInfo Returns the cache headers and no content.
      * @return array Rainbow table with the key names and decoded values.
      */
-    private function getDatastoreContent($assoc = false)
+    private function getDatastoreContent($assoc = false, $onlyInfo = false)
     {
         $object = array();
         $object['info'] = array();
         $object['entries'] = array();
-        $header = '/^\/\/ ([a-z_]+)=(.*);$/';
-        $content = '/^([0-9a-zA-Z_]+):(.+)/';
 
         if ($lines = SucuriScanFileInfo::fileLines($this->datastore_path)) {
             foreach ($lines as $line) {
-                if (preg_match($header, $line, $match)) {
-                    $object['info'][ $match[1] ] = $match[2];
+                if (strpos($line, "//\x20") === 0
+                    && strpos($line, '=') !== false
+                    && $line[strlen($line)-1] === ';'
+                ) {
+                    $section = substr($line, 3, strlen($line)-4);
+                    list($header, $value) = explode('=', $section, 2);
+                    $object['info'][$header] = $value;
                     continue;
                 }
 
-                if (preg_match($content, $line, $match)) {
-                    if ($this->validKeyName($match[1])) {
-                        $object['entries'][$match[1]] =
-                        @json_decode($match[2], $assoc);
-                    }
+                /* skip content */
+                if ($onlyInfo) {
+                    continue;
+                }
+
+                if (strpos($line, ':') !== false) {
+                    list($keyname, $value) = explode(':', $line, 2);
+                    $object['entries'][$keyname] = @json_decode($value, $assoc);
                 }
             }
         }
@@ -234,7 +264,7 @@ class SucuriScanCache extends SucuriScan
      */
     public function getDatastoreInfo()
     {
-        $finfo = $this->getDatastoreContent();
+        $finfo = $this->getDatastoreContent(false, true);
 
         if (empty($finfo['info'])) {
             return false;
@@ -273,7 +303,8 @@ class SucuriScanCache extends SucuriScan
     public function dataHasExpired($lifetime = 0, $finfo = null)
     {
         if (is_null($finfo)) {
-            $finfo = $this->getDatastoreContent();
+            $meta = $this->getDatastoreInfo();
+            $finfo = array('info' => $meta);
         }
 
         if ($lifetime > 0 && !empty($finfo['info'])) {
@@ -315,11 +346,10 @@ class SucuriScanCache extends SucuriScan
             return self::throwException('Invalid cache key name');
         }
 
-        $finfo = $this->getDatastoreContent(true);
+        $finfo = $this->getDatastoreInfo();
+        $line = sprintf("%s:%s\n", $key, json_encode($data));
 
-        $finfo['entries'][$key] = $data;
-
-        return $this->saveNewEntries($finfo);
+        return (bool) @file_put_contents($finfo['fpath'], $line, FILE_APPEND);
     }
 
     /**
@@ -404,18 +434,28 @@ class SucuriScanCache extends SucuriScan
     }
 
     /**
+     * Replaces the entire content of the cache file.
+     *
+     * @param array $entries New data for the cache.
+     * @return bool True if the cache was replaced.
+     */
+    public function override($entries = array())
+    {
+        return $this->saveNewEntries(array(
+            'info' => $this->getDatastoreInfo(),
+            'entries' => $entries,
+        ));
+    }
+
+    /**
      * Remove all the entries from the datastore file.
      *
      * @return bool True, unless the cache file is not writable.
      */
     public function flush()
     {
-        $finfo = $this->getDatastoreContent();
+        $filename = 'sucuri-' . $this->datastore . '.php';
 
-        if (array_key_exists('entries', $finfo)) {
-            $finfo['entries'] = array();
-        }
-
-        return $this->saveNewEntries($finfo);
+        return @unlink($this->dataStorePath($filename));
     }
 }

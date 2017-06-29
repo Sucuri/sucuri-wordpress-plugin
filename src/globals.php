@@ -227,7 +227,6 @@ if (defined('SUCURISCAN')) {
         add_action('switch_theme', 'SucuriScanHook::hookThemeSwitch', 50, 5);
         add_action('transition_post_status', 'SucuriScanHook::hookPostStatus', 50, 3);
         add_action('user_register', 'SucuriScanHook::hookUserRegister', 50, 5);
-        add_action('wp_insert_comment', 'SucuriScanHook::hookCommentInsert', 50, 5);
         add_action('wp_login', 'SucuriScanHook::hookLoginSuccess', 50, 5);
         add_action('wp_login_failed', 'SucuriScanHook::hookLoginFailure', 50, 5);
         add_action('wp_trash_post', 'SucuriScanHook::hookPostTrash', 50, 5);

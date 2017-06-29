@@ -166,7 +166,7 @@ define('SUCURISCAN_AUDITLOGS_PER_PAGE', 50);
 /**
  * The maximum quantity of buttons in the paginations.
  */
-define('SUCURISCAN_MAX_PAGINATION_BUTTONS', 20);
+define('SUCURISCAN_MAX_PAGINATION_BUTTONS', 16);
 
 /**
  * Frequency of the file system scans in seconds.

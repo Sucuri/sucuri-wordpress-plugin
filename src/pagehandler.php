@@ -117,15 +117,13 @@ function sucuriscan_settings_page()
     $params['Settings.General.ApiKey'] = sucuriscan_settings_general_apikey($nonce);
     $params['Settings.General.DataStorage'] = sucuriscan_settings_general_datastorage();
     $params['Settings.General.SelfHosting'] = sucuriscan_settings_general_selfhosting($nonce);
-    $params['Settings.General.Cronjobs'] = sucuriscan_settings_general_cronjobs();
     $params['Settings.General.ReverseProxy'] = sucuriscan_settings_general_reverseproxy($nonce);
     $params['Settings.General.IPDiscoverer'] = sucuriscan_settings_general_ipdiscoverer($nonce);
-    $params['Settings.General.CommentMonitor'] = sucuriscan_settings_general_commentmonitor($nonce);
     $params['Settings.General.AuditLogStats'] = sucuriscan_settings_general_auditlogstats($nonce);
     $params['Settings.General.ImportExport'] = sucuriscan_settings_general_importexport($nonce);
 
     /* settings - scanner */
-    $params['Settings.Scanner.Options'] = SucuriScanSettingsScanner::options();
+    $params['Settings.Scanner.Cronjobs'] = SucuriScanSettingsScanner::cronjobs();
     $params['Settings.Scanner.IntegrityDiffUtility'] = SucuriScanSettingsIntegrity::diffUtility($nonce);
     $params['Settings.Scanner.IntegrityLanguage'] = SucuriScanSettingsIntegrity::language($nonce);
     $params['Settings.Scanner.IntegrityCache'] = SucuriScanSettingsIntegrity::cache($nonce);
@@ -183,6 +181,7 @@ function sucuriscan_ajax()
     if (SucuriScanInterface::checkNonce()) {
         SucuriScanAuditLogs::ajaxAuditLogs();
         SucuriScanAuditLogs::ajaxAuditLogsReport();
+        SucuriScanAuditLogs::ajaxAuditLogsSendLogs();
         SucuriScanAuditLogs::ajaxAuditLogsResetCache();
         SucuriScanSiteCheck::ajaxMalwareScan();
         SucuriScanFirewall::auditlogsAjax();
