@@ -292,10 +292,9 @@ class SucuriScanEvent extends SucuriScan
      *
      * @param int $severity Importance of the event that will be reported, values from one to five.
      * @param string $message The explanation of the event.
-     * @param bool $internal Whether the event will be publicly visible or not.
      * @return bool True if the event was logged in the monitoring service, false otherwise.
      */
-    private static function reportEvent($severity = 0, $message = '', $internal = false)
+    private static function reportEvent($severity = 0, $message = '')
     {
         $user = wp_get_current_user();
         $remote_ip = self::getRemoteAddr();
@@ -324,11 +323,6 @@ class SucuriScanEvent extends SucuriScan
             $severity_name = $severities[$severity];
         }
 
-        if ($internal === true) {
-            /* mark the event as internal if necessary. */
-            $severity_name = '@' . $severity_name;
-        }
-
         /* remove unnecessary characters */
         $message = strip_tags($message);
         $message = str_replace("\r", '', $message);
@@ -348,72 +342,66 @@ class SucuriScanEvent extends SucuriScan
      * Reports a debug event on the website.
      *
      * @param string $message Text witht the explanation of the event or action performed.
-     * @param bool $internal Whether the event will be publicly visible or not.
      * @return bool Either true or false depending on the success of the operation.
      */
-    public static function reportDebugEvent($message = '', $internal = false)
+    public static function reportDebugEvent($message = '')
     {
-        return self::reportEvent(0, $message, $internal);
+        return self::reportEvent(0, $message);
     }
 
     /**
      * Reports a notice event on the website.
      *
      * @param string $message Text witht the explanation of the event or action performed.
-     * @param bool $internal Whether the event will be publicly visible or not.
      * @return bool Either true or false depending on the success of the operation.
      */
-    public static function reportNoticeEvent($message = '', $internal = false)
+    public static function reportNoticeEvent($message = '')
     {
-        return self::reportEvent(1, $message, $internal);
+        return self::reportEvent(1, $message);
     }
 
     /**
      * Reports a info event on the website.
      *
      * @param string $message Text witht the explanation of the event or action performed.
-     * @param bool $internal Whether the event will be publicly visible or not.
      * @return bool Either true or false depending on the success of the operation.
      */
-    public static function reportInfoEvent($message = '', $internal = false)
+    public static function reportInfoEvent($message = '')
     {
-        return self::reportEvent(2, $message, $internal);
+        return self::reportEvent(2, $message);
     }
 
     /**
      * Reports a warning event on the website.
      *
      * @param string $message Text witht the explanation of the event or action performed.
-     * @param bool $internal Whether the event will be publicly visible or not.
      * @return bool Either true or false depending on the success of the operation.
      */
-    public static function reportWarningEvent($message = '', $internal = false)
+    public static function reportWarningEvent($message = '')
     {
-        return self::reportEvent(3, $message, $internal);
+        return self::reportEvent(3, $message);
     }
 
     /**
      * Reports a error event on the website.
      *
      * @param string $message Text witht the explanation of the event or action performed.
-     * @param bool $internal Whether the event will be publicly visible or not.
      * @return bool Either true or false depending on the success of the operation.
      */
-    public static function reportErrorEvent($message = '', $internal = false)
+    public static function reportErrorEvent($message = '')
     {
-        return self::reportEvent(4, $message, $internal);
+        return self::reportEvent(4, $message);
     }
 
     /**
      * Reports a critical event on the website.
      *
      * @param string $message Text witht the explanation of the event or action performed.
-     * @param bool $internal Whether the event will be publicly visible or not.
      * @return bool Either true or false depending on the success of the operation.
      */
-    public static function reportCriticalEvent($message = '', $internal = false)
+    public static function reportCriticalEvent($message = '')
     {
-        return self::reportEvent(5, $message, $internal);
+        return self::reportEvent(5, $message);
     }
 
     /**
@@ -421,10 +409,9 @@ class SucuriScanEvent extends SucuriScan
      *
      * @param string $message Text witht the explanation of the event or action performed.
      * @param string $action An optional text, hopefully either enabled or disabled.
-     * @param bool $internal Whether the event will be publicly visible or not.
      * @return bool Either true or false depending on the success of the operation.
      */
-    public static function reportAutoEvent($message = '', $action = '', $internal = false)
+    public static function reportAutoEvent($message = '', $action = '')
     {
         $message = strip_tags($message);
 
@@ -434,14 +421,14 @@ class SucuriScanEvent extends SucuriScan
         }
 
         if ($action === 'enabled') {
-            return self::reportNoticeEvent($message, $internal);
+            return self::reportNoticeEvent($message);
         }
 
         if ($action === 'disabled') {
-            return self::reportErrorEvent($message, $internal);
+            return self::reportErrorEvent($message);
         }
 
-        return self::reportInfoEvent($message, $internal);
+        return self::reportInfoEvent($message);
     }
 
     /**

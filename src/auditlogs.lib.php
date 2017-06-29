@@ -100,10 +100,19 @@ class SucuriScanAuditLogs
             $cache->add('response', $auditlogs);
         }
 
-        /* Fallback; get the logs from the local server */
-        if (!$auditlogs && !SucuriScanOption::getOption(':api_key')) {
-            $auditlogs = SucuriScanAPI::getSelfHostingLogs(SUCURISCAN_AUDITLOGS_PER_PAGE);
-            $response['selfhosting'] = (bool) ($auditlogs !== false);
+        if ($queuelogs = SucuriScanAPI::getAuditLogsFromQueue()) {
+            if (!$auditlogs) {
+                $auditlogs = $queuelogs;
+            } else {
+                $auditlogs['output'] = array_merge(
+                    $auditlogs['output'],
+                    $queuelogs['output']
+                );
+                $auditlogs['output_data'] = array_merge(
+                    $auditlogs['output_data'],
+                    $queuelogs['output_data']
+                );
+            }
         }
 
         if ($auditlogs) {

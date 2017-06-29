@@ -39,10 +39,6 @@ jQuery(function ($) {
             if (data.content !== undefined) {
                 $('.sucuriscan-auditlog-response').html(data.content);
 
-                if (data.selfhosting) {
-                    $('#sucuriscan-auditlog-selfhosting').removeClass('sucuriscan-hidden');
-                }
-
                 if (data.pagination !== '') {
                     $('.sucuriscan-auditlog-table .sucuriscan-pagination').html(data.pagination);
                 }
@@ -93,10 +89,6 @@ jQuery(function ($) {
 </script>
 
 <div class="sucuriscan-auditlog-table">
-    <div id="sucuriscan-auditlog-selfhosting" class="sucuriscan-inline-alert-info sucuriscan-hidden">
-        <p>@@SUCURI.SelfHostingFallback@@</p>
-    </div>
-
     <div class="sucuriscan-auditlog-response">
         <em>@@SUCURI.Loading@@</em>
     </div>
