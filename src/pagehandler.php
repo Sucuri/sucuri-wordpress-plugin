@@ -161,7 +161,6 @@ function sucuriscan_settings_page()
     /* settings - api service */
     $params['Settings.APIService.Status'] = sucuriscan_settings_apiservice_status($nonce);
     $params['Settings.APIService.Proxy'] = sucuriscan_settings_apiservice_proxy();
-    $params['Settings.APIService.Timeout'] = sucuriscan_settings_apiservice_timeout($nonce);
 
     /* settings - website info */
     $params['Settings.Webinfo.Details'] = sucuriscan_settings_webinfo_details();
@@ -182,7 +181,6 @@ function sucuriscan_ajax()
         SucuriScanAuditLogs::ajaxAuditLogs();
         SucuriScanAuditLogs::ajaxAuditLogsReport();
         SucuriScanAuditLogs::ajaxAuditLogsSendLogs();
-        SucuriScanAuditLogs::ajaxAuditLogsResetCache();
         SucuriScanSiteCheck::ajaxMalwareScan();
         SucuriScanFirewall::auditlogsAjax();
         SucuriScanIntegrity::ajaxIntegrity();

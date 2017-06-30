@@ -64,11 +64,13 @@ class SucuriScanAuditLogs
 
         $response = array();
         $response['count'] = 0;
+        $response['status'] = '';
         $response['content'] = '';
         $response['queueSize'] = 0;
+        $response['pagination'] = '';
         $response['selfhosting'] = false;
 
-        /* Initialize the values for the pagination. */
+        /* initialize the values for the pagination */
         $maxPerPage = SUCURISCAN_AUDITLOGS_PER_PAGE;
         $pageNumber = SucuriScanTemplate::pageNumber();
         $logsLimit = ($pageNumber * $maxPerPage);
@@ -82,17 +84,22 @@ class SucuriScanAuditLogs
         /* API call if cache is invalid. */
         if (!$auditlogs || $pageNumber !== 1) {
             ob_start();
+            $start = microtime(true);
             $cacheTheResponse = true;
             $auditlogs = SucuriScanAPI::getAuditLogs($logsLimit);
-            $errors = ob_get_contents();
+            $errors = ob_get_contents(); /* capture errors */
+            $duration = microtime(true) - $start;
             ob_end_clean();
+
+            /* report latency in the API calls */
+            $response['status'] = !is_array($auditlogs)
+            ? __('AuditLogsNoAPI', SUCURISCAN_TEXTDOMAIN)
+            : sprintf('API %s secs', round($duration, 4));
         }
 
-        /* Stop everything and report errors. */
+        /* stop everything and report errors */
         if (!empty($errors)) {
-            header('Content-Type: text/html; charset=UTF-8');
-            print($errors);
-            exit(0);
+            $response['content'] .= $errors;
         }
 
         /* Cache the data for sometime. */
@@ -100,17 +107,19 @@ class SucuriScanAuditLogs
             $cache->add('response', $auditlogs);
         }
 
+        /* merge the logs from the queue system */
         if ($queuelogs = SucuriScanAPI::getAuditLogsFromQueue()) {
             if (!$auditlogs) {
                 $auditlogs = $queuelogs;
             } else {
+                $auditlogs['total_entries'] += $queuelogs['total_entries'];
                 $auditlogs['output'] = array_merge(
-                    $auditlogs['output'],
-                    $queuelogs['output']
+                    $queuelogs['output'],
+                    $auditlogs['output']
                 );
                 $auditlogs['output_data'] = array_merge(
-                    $auditlogs['output_data'],
-                    $queuelogs['output_data']
+                    $queuelogs['output_data'],
+                    $auditlogs['output_data']
                 );
             }
         }
@@ -319,51 +328,9 @@ class SucuriScanAuditLogs
             return;
         }
 
-        $response = array();
-
         /* blocking; might take a while */
         SucuriScanEvent::sendLogsFromQueue();
 
-        $cache = new SucuriScanCache('auditqueue');
-        $finfo = $cache->getDatastoreInfo();
-        $events = $cache->getAll();
-
-        $response['ok'] = true;
-        $response['queueSize'] = count($events);
-
-        wp_send_json($response, 200);
-    }
-
-    /**
-     * Deletes the cache file with the auditlogs data.
-     *
-     * @codeCoverageIgnore - Notice that there is a test case that covers this
-     * code, but since the WP-Send-JSON method uses die() to stop any further
-     * output it means that XDebug cannot cover the next line, leaving a report
-     * with a missing line in the coverage. Since the test case takes care of
-     * the functionality of this code we will assume that it is fully covered.
-     */
-    public static function ajaxAuditLogsResetCache()
-    {
-        if (SucuriScanRequest::post('form_action') !== 'reset_auditlogs_cache') {
-            return;
-        }
-
-        $response = array();
-        $cache = new SucuriScanCache('auditlogs');
-        $cacheInfo = $cache->getDatastoreInfo();
-        $filename = $cacheInfo['fpath'];
-        $response['path'] = basename($filename);
-        $response['ok'] = false;
-
-        if (!file_exists($filename)) {
-            $response['error'] = 'cache does not exists';
-        } elseif (!is_writable($filename)) {
-            $response['error'] = 'cache is not resetable';
-        } else {
-            $response['ok'] = (bool) @unlink($filename);
-        }
-
-        wp_send_json($response, 200);
+        wp_send_json(array('ok' => true), 200);
     }
 }

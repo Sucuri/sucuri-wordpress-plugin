@@ -575,6 +575,11 @@ class SucuriScanHook extends SucuriScanEvent
             return self::throwException('Ignore corrupted post data');
         }
 
+        /* ignore; the same */
+        if ($old === $new) {
+            return;
+        }
+
         $post_type = 'post'; /* either post or page */
 
         if (property_exists($post, 'post_type')) {

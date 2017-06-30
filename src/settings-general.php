@@ -535,7 +535,6 @@ function sucuriscan_settings_general_importexport($nonce)
         ':notify_widget_added',
         ':notify_widget_deleted',
         ':prettify_mails',
-        ':request_timeout',
         ':revproxy',
         ':selfhosting_fpath',
         ':selfhosting_monitor',

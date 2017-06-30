@@ -232,9 +232,7 @@ if (!function_exists('sucuri_set_lastlogin')) {
      */
     function sucuriscan_set_lastlogin($user_login = '')
     {
-        $datastore_filepath = sucuriscan_lastlogins_datastore_is_writable();
-
-        if ($datastore_filepath) {
+        if ($filename = sucuriscan_lastlogins_datastore_is_writable()) {
             $current_user = get_user_by('login', $user_login);
             $remote_addr = SucuriScan::getRemoteAddr();
 
@@ -247,7 +245,7 @@ if (!function_exists('sucuri_set_lastlogin')) {
             );
 
             @file_put_contents(
-                $datastore_filepath,
+                $filename,
                 json_encode($login_info) . "\n",
                 FILE_APPEND
             );

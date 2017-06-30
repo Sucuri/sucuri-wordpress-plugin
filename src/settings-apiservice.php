@@ -62,40 +62,6 @@ function sucuriscan_settings_apiservice_status($nonce)
 }
 
 /**
- * Returns the HTML to configure the API service timeout.
- *
- * @param bool $nonce True if the CSRF protection worked, false otherwise.
- * @return string HTML for the API service timeout option.
- */
-function sucuriscan_settings_apiservice_timeout($nonce)
-{
-    $params = array();
-
-    // Update the API request timeout.
-    if ($nonce) {
-        $timeout = (int) SucuriScanRequest::post(':request_timeout', '[0-9]+');
-
-        if ($timeout > 0) {
-            if ($timeout <= SUCURISCAN_MAX_REQUEST_TIMEOUT) {
-                $message = 'API request timeout set to <code>' . $timeout . '</code> seconds.';
-
-                SucuriScanOption::updateOption(':request_timeout', $timeout);
-                SucuriScanEvent::reportInfoEvent($message);
-                SucuriScanEvent::notifyEvent('plugin_change', $message);
-                SucuriScanInterface::info(__('HTTPTimeoutChange', SUCURISCAN_TEXTDOMAIN));
-            } else {
-                SucuriScanInterface::error(__('HTTPTimeoutFailure', SUCURISCAN_TEXTDOMAIN));
-            }
-        }
-    }
-
-    $params['MaxRequestTimeout'] = SUCURISCAN_MAX_REQUEST_TIMEOUT;
-    $params['RequestTimeout'] = SucuriScanOption::getOption(':request_timeout') . ' seconds';
-
-    return SucuriScanTemplate::getSection('settings-apiservice-timeout', $params);
-}
-
-/**
  * Returns the HTML to configure the API service proxy.
  *
  * @return string HTML for the API service proxy option.

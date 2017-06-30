@@ -195,6 +195,22 @@ class SucuriScanInterface
             return;
         }
 
+        if (!is_writable(SucuriScanOption::optionsFilePath())) {
+            /**
+             * Stop if the settings file is not writable.
+             *
+             * In some cases where the settings file is not writable, or for
+             * some reason the option cannot be updated, the alerts below will
+             * be rendered all the time, to avoid unnecessary complains from
+             * the website owners we will not display the alerts if the option
+             * cannot be updated.
+             */
+            return;
+        }
+
+        /* update the version number in the plugin settings. */
+        SucuriScanOption::updateOption(':plugin_version', SUCURISCAN_VERSION);
+
         /**
          * Suggest re-activation of the API communication.
          *
@@ -219,9 +235,6 @@ class SucuriScanInterface
          * @date Featured added at - May 01, 2017
          */
         self::info(__('NewsletterInvitation', SUCURISCAN_TEXTDOMAIN));
-
-        /* update the version number in the plugin settings. */
-        SucuriScanOption::updateOption(':plugin_version', SUCURISCAN_VERSION);
     }
 
     /**

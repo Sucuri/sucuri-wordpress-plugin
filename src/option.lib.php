@@ -92,7 +92,6 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_notify_widget_deleted' => 'disabled',
             'sucuriscan_plugin_version' => '0.0',
             'sucuriscan_prettify_mails' => 'disabled',
-            'sucuriscan_request_timeout' => 15,
             'sucuriscan_revproxy' => 'disabled',
             'sucuriscan_runtime' => 0,
             'sucuriscan_selfhosting_fpath' => '',

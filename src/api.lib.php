@@ -38,31 +38,6 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
 class SucuriScanAPI extends SucuriScanOption
 {
     /**
-     * Seconds before consider a HTTP request as timeout.
-     *
-     * As for the 01/Jan/2016 if the number of seconds before a timeout is greater
-     * than sixty (which is one minute) the method will reset the option to its
-     * default value to keep the latency of the HTTP requests in a minimum to
-     * minimize the interruptions in the admins workflow. The normal connection
-     * timeout should be in the range of ten seconds, or fifteen if the DNS lookups
-     * are slow.
-     *
-     * @return int Seconds to consider a HTTP request timeout.
-     */
-    public static function requestTimeout()
-    {
-        $timeout = (int) self::getOption(':request_timeout');
-
-        if ($timeout > SUCURISCAN_MAX_REQUEST_TIMEOUT) {
-            self::deleteOption(':request_timeout');
-
-            return self::requestTimeout();
-        }
-
-        return $timeout;
-    }
-
-    /**
      * Alternative to the built-in PHP method http_build_query.
      *
      * Some PHP installations with different encoding or with different language
@@ -108,7 +83,7 @@ class SucuriScanAPI extends SucuriScanOption
         }
 
         $response = null;
-        $timeout = self::requestTimeout();
+        $timeout = SUCURISCAN_MAX_REQUEST_TIMEOUT;
         $args = is_array($args) ? $args : array();
 
         if (isset($args['timeout'])) {
@@ -416,7 +391,7 @@ class SucuriScanAPI extends SucuriScanOption
                 $time = substr($micro, 0, $offset);
                 $auditlogs[] = sprintf(
                     '%s %s : %s',
-                    date('Y-m-d H:i:s', $time),
+                    date('Y-m-d H:i:s', intval($time)),
                     SucuriScan::getSiteEmail(),
                     $message
                 );

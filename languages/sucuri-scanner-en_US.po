@@ -194,6 +194,9 @@ msgstr "This data is cached for %%SUCURI.AuditLogs.Lifetime%% seconds"
 msgid "Refresh"
 msgstr "Refresh"
 
+msgid "AuditLogsNoAPI"
+msgstr "The API service is not available; logs are coming from the local server"
+
 msgid "AuditLogsQueue"
 msgstr "logs in the queue"
 
@@ -769,12 +772,6 @@ msgstr "The post-type is invalid or it may be already ignored."
 
 msgid "APIServiceChanged"
 msgstr "The status of the API service has been changed"
-
-msgid "HTTPTimeoutChange"
-msgstr "The timeout for the HTTP requests has been changed"
-
-msgid "HTTPTimeoutFailure"
-msgstr "API request timeout in seconds is too high."
 
 msgid "PluginResetSuccess"
 msgstr "Local security logs, hardening and settings were deleted"

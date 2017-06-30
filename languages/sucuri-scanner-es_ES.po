@@ -194,6 +194,9 @@ msgstr "Los registros son guardados por %%SUCURI.AuditLogs.Lifetime%% segundos"
 msgid "Refresh"
 msgstr "Actualizar"
 
+msgid "AuditLogsNoAPI"
+msgstr "La API no está disponible; la información viene del servidor local"
+
 msgid "AuditLogsQueue"
 msgstr "registros en cola"
 
@@ -769,12 +772,6 @@ msgstr "Este tipo de publicaciones no es válido o ya han sido ignoradas"
 
 msgid "APIServiceChanged"
 msgstr "El estado de comunicación con la API ha sido cambiado"
-
-msgid "HTTPTimeoutChange"
-msgstr "El tiempo de espera para las conexiones a través de HTTP ha sido cambiado"
-
-msgid "HTTPTimeoutFailure"
-msgstr "El tiempo de espera para las conexiones a través de HTTP es muy alto"
 
 msgid "PluginResetSuccess"
 msgstr "Los registros de seguridad, configuraciones y cambios adicionales hechos por el plugin han sido eliminados"

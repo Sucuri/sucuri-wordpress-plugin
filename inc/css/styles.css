@@ -753,9 +753,6 @@ body.sucuri-security_page_sucuriscan_hardening {
 .sucuriscan-tag-blue {
     background-color: #3922f2;
 }
-.sucuriscan-auditlog-response {
-    margin-bottom: 30px;
-}
 .sucuriscan-auditlog-date {
     color: #808080;
     padding: 30px 0;
@@ -816,8 +813,9 @@ body.sucuri-security_page_sucuriscan_hardening {
     line-height: 32px;
     margin-left: 10px;
 }
+.sucuriscan-pagination-panel,
 .sucuriscan-auditlog-footer {
-    margin-top: 20px;
+    margin-top: 30px;
 }
 .sucuriscan-hardening-option {
     margin-bottom: 0;

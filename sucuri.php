@@ -186,7 +186,7 @@ define('SUCURISCAN_GET_PLUGINS_LIFETIME', 1800);
 /**
  * The maximum execution time of a HTTP request before timeout.
  */
-define('SUCURISCAN_MAX_REQUEST_TIMEOUT', 60);
+define('SUCURISCAN_MAX_REQUEST_TIMEOUT', 5);
 
 /**
  * Sets the text that will preceed the admin notices.

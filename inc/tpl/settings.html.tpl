@@ -102,8 +102,6 @@
         <div id="sucuriscan-tabs-apiservice">
             %%%SUCURI.Settings.APIService.Status%%%
 
-            %%%SUCURI.Settings.APIService.Timeout%%%
-
             %%%SUCURI.Settings.APIService.Proxy%%%
         </div>
 
