@@ -208,6 +208,11 @@ class SucuriScanInterface
             return;
         }
 
+        /* reduce noise in the dashboard; display alerts only in the plugin pages */
+        if (strpos((string) SucuriScanRequest::get('page'), 'sucuriscan') === false) {
+            return;
+        }
+
         /* update the version number in the plugin settings. */
         SucuriScanOption::updateOption(':plugin_version', SUCURISCAN_VERSION);
 
