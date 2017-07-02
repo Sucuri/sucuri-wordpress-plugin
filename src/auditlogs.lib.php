@@ -97,6 +97,11 @@ class SucuriScanAuditLogs
             : sprintf('API %s secs', round($duration, 4));
         }
 
+        /* explain missing API key */
+        if (!SucuriScanAPI::getPluginKey()) {
+            $response['status'] = __('APIKeyMissing', SUCURISCAN_TEXTDOMAIN);
+        }
+
         /* stop everything and report errors */
         if (!empty($errors)) {
             $response['content'] .= $errors;

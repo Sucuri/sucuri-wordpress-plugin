@@ -830,6 +830,9 @@ msgstr "La mayoría de herramientas en este plugin pueden ser usadas sin una con
 msgid "APIKeyTerms"
 msgstr "Tenga en cuenta que generar una llave implica que usted está de acuerdo con enviar la información recolectada por el plugin a los servidores de Sucuri, esto le permite mantener los registros de seguridad fuera del alcance de usuarios maliciosos que podrían intentar eliminarlos para limpiar sus huellas durante un ataque. Nosotros además usamos esta información de forma anónima para generar <a href=\"https://sucuri.net/security-reports/brute-force/\" target=\"_blank\">estadísticas</a>. Por favor, no genere la llave de autenticación si usted está en desacuerdo con esto, usted puede seguir usando el plugin sin la llave."
 
+msgid "APIKeyMissing"
+msgstr "La llave no existe"
+
 msgid "APIKeyInvalidDomain"
 msgstr "Su sitio web <code>%%SUCURI.CleanDomain%%</code> parece no tener un registro de DNS tipo <code>A</code> así que la API lo considerará inválido durante el proceso de generación su la llave. Agregue <code>www</code> al inicio del dominio para intentar solucionar el problema. Envíe un mensaje a nuestro servicio de soporte si no entiende qué significa esto."
 
