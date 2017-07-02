@@ -314,6 +314,20 @@ class SucuriScanFileInfo extends SucuriScan
      */
     public function removeDirectoryTree($directory = '')
     {
+        $directory = realpath($directory);
+
+        if (!is_dir($directory)) {
+            return self::throwException('Directory does not exists');
+        }
+
+        if ($directory === ABSPATH . 'wp-content') {
+            return self::throwException('Cannot delete content directory');
+        }
+
+        if ($directory === ABSPATH . 'wp-content/uploads') {
+            return self::throwException('Cannot delete uploads directory');
+        }
+
         /* force complete scan */
         $this->ignore_files = false;
         $this->skip_directories = false;
