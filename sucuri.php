@@ -119,7 +119,7 @@ define('SUCURISCAN_PLUGIN_FILEPATH', SUCURISCAN_PLUGIN_PATH . '/' . SUCURISCAN_P
 /**
  * The local URL where the plugin's files and assets are served.
  */
-define('SUCURISCAN_URL', site_url(dirname(str_replace(ABSPATH, '', SUCURISCAN_PLUGIN_FILEPATH))));
+define('SUCURISCAN_URL', plugin_dir_url(__FILE__));
 
 /**
  * Remote URL where the public Sucuri API service is running.
