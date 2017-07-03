@@ -453,6 +453,57 @@ class SucuriScanOption extends SucuriScanRequest
     }
 
     /**
+     * Returns a list of post-types.
+     *
+     * The list of post-types includes objects such as Post and Page but also
+     * the transitions between each post type, for example, if there are posts
+     * of type Draft and they change to Trash, this function will include a new
+     * post type called "from_draft_to_trash" and so on.
+     *
+     * @return array List of post-types with transitions.
+     */
+    public static function getPostTypes()
+    {
+        $postTypes = get_post_types();
+        $transitions = array(
+            'new',
+            'publish',
+            'pending',
+            'draft',
+            'auto-draft',
+            'future',
+            'private',
+            'inherit',
+            'trash',
+        );
+
+        /* include post-type transitions */
+        foreach ($transitions as $from) {
+            foreach ($transitions as $to) {
+                if ($from === $to) {
+                    continue;
+                }
+
+                $event = sprintf('from_%s_to_%s', $from, $to);
+
+                if (!array_key_exists($event, $postTypes)) {
+                    $postTypes[$event] = $event;
+                }
+            }
+        }
+
+        /* include custom non-registered post-types */
+        $ignoredEvents = SucuriScanOption::getIgnoredEvents();
+        foreach ($ignoredEvents as $event => $time) {
+            if (!array_key_exists($event, $postTypes)) {
+                $postTypes[$event] = $event;
+            }
+        }
+
+        return $postTypes;
+    }
+
+    /**
      * Check whether an event is being ignored to send alerts or not.
      *
      * @param string $event Unique post-type name.

@@ -577,7 +577,7 @@ class SucuriScanHook extends SucuriScanEvent
 
         /* ignore; the same */
         if ($old === $new) {
-            return;
+            return self::throwException('Skip events for equal transitions');
         }
 
         $post_type = 'post'; /* either post or page */
@@ -589,6 +589,12 @@ class SucuriScanHook extends SucuriScanEvent
         /* check if email alerts are disabled for this type */
         if (SucuriScanOption::isIgnoredEvent($post_type)) {
             return self::throwException('Skip events for ignored post-types');
+        }
+
+        /* check if email alerts are disabled for this transition */
+        $custom_type = sprintf('from_%s_to_%s', $old, $new);
+        if (SucuriScanOption::isIgnoredEvent($custom_type)) {
+            return self::throwException('Skip events for ignored post transitions');
         }
 
         $pieces = array();

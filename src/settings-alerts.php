@@ -481,11 +481,9 @@ function sucuriscan_settings_alerts_events($nonce)
  */
 function sucuriscan_settings_alerts_ignore_posts()
 {
-    $notify_new_site_content = SucuriScanOption::getOption(':notify_post_publication');
-
     $params = array(
-        'IgnoreRules.MessageVisibility' => 'visible',
         'IgnoreRules.PostTypes' => '',
+        'IgnoreRules.ErrorVisibility' => 'hidden',
     );
 
     if (SucuriScanInterface::checkNonce()) {
@@ -510,48 +508,55 @@ function sucuriscan_settings_alerts_ignore_posts()
         }
     }
 
-    if ($notify_new_site_content == 'enabled') {
-        $post_types = get_post_types();
-        $ignored_events = SucuriScanOption::getIgnoredEvents();
+    /* notifications are post updates are disabled; print error */
+    if (SucuriScanOption::isDisabled(':notify_post_publication')) {
+        $params['IgnoreRules.ErrorVisibility'] = 'visible';
+        $params['IgnoreRules.PostTypes'] = sprintf(
+            '<tr><td colspan="4">%s</td></tr>',
+            __('NoData', SUCURISCAN_TEXTDOMAIN)
+        );
 
-        $params['IgnoreRules.MessageVisibility'] = 'hidden';
+        return SucuriScanTemplate::getSection('settings-alerts-ignore-posts', $params);
+    }
 
-        /* Include custom non-registered post-types */
-        foreach ($ignored_events as $event => $time) {
-            if (!array_key_exists($event, $post_types)) {
-                $post_types[$event] = $event;
-            }
+    $post_types = SucuriScanOption::getPostTypes();
+    $ignored_events = SucuriScanOption::getIgnoredEvents();
+
+    /* include custom non-registered post-types */
+    foreach ($ignored_events as $event => $time) {
+        if (!array_key_exists($event, $post_types)) {
+            $post_types[$event] = $event;
+        }
+    }
+
+    /* Check which post-types are being ignored */
+    foreach ($post_types as $post_type) {
+        $post_type_title = ucwords(str_replace('_', chr(32), $post_type));
+
+        if (array_key_exists($post_type, $ignored_events)) {
+            $is_ignored_text = __('Yes', SUCURISCAN_TEXTDOMAIN);
+            $was_ignored_at = SucuriScan::datetime($ignored_events[ $post_type ]);
+            $is_ignored_class = 'danger';
+            $button_action = 'remove';
+            $button_text = __('PostTypeIgnore', SUCURISCAN_TEXTDOMAIN);
+        } else {
+            $is_ignored_text = __('No', SUCURISCAN_TEXTDOMAIN);
+            $was_ignored_at = '--';
+            $is_ignored_class = 'success';
+            $button_action = 'add';
+            $button_text = __('PostTypeUnignore', SUCURISCAN_TEXTDOMAIN);
         }
 
-        /* Check which post-types are being ignored */
-        foreach ($post_types as $post_type) {
-            $post_type_title = ucwords(str_replace('_', chr(32), $post_type));
-
-            if (array_key_exists($post_type, $ignored_events)) {
-                $is_ignored_text = __('Yes', SUCURISCAN_TEXTDOMAIN);
-                $was_ignored_at = SucuriScan::datetime($ignored_events[ $post_type ]);
-                $is_ignored_class = 'danger';
-                $button_action = 'remove';
-                $button_text = __('PostTypeIgnore', SUCURISCAN_TEXTDOMAIN);
-            } else {
-                $is_ignored_text = __('No', SUCURISCAN_TEXTDOMAIN);
-                $was_ignored_at = '--';
-                $is_ignored_class = 'success';
-                $button_action = 'add';
-                $button_text = __('PostTypeUnignore', SUCURISCAN_TEXTDOMAIN);
-            }
-
-            $params['IgnoreRules.PostTypes'] .=
-            SucuriScanTemplate::getSnippet('settings-alerts-ignore-posts', array(
-                'IgnoreRules.PostTypeTitle' => $post_type_title,
-                'IgnoreRules.IsIgnored' => $is_ignored_text,
-                'IgnoreRules.WasIgnoredAt' => $was_ignored_at,
-                'IgnoreRules.IsIgnoredClass' => $is_ignored_class,
-                'IgnoreRules.PostType' => $post_type,
-                'IgnoreRules.Action' => $button_action,
-                'IgnoreRules.ButtonText' => $button_text,
-            ));
-        }
+        $params['IgnoreRules.PostTypes'] .=
+        SucuriScanTemplate::getSnippet('settings-alerts-ignore-posts', array(
+            'IgnoreRules.PostTypeTitle' => $post_type_title,
+            'IgnoreRules.IsIgnored' => $is_ignored_text,
+            'IgnoreRules.WasIgnoredAt' => $was_ignored_at,
+            'IgnoreRules.IsIgnoredClass' => $is_ignored_class,
+            'IgnoreRules.PostType' => $post_type,
+            'IgnoreRules.Action' => $button_action,
+            'IgnoreRules.ButtonText' => $button_text,
+        ));
     }
 
     return SucuriScanTemplate::getSection('settings-alerts-ignore-posts', $params);
