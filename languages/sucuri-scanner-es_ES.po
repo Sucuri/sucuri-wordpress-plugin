@@ -301,7 +301,7 @@ msgid "EmailSubject.password_change"
 msgstr "Cambio de Contraseña"
 
 msgid "FailedLoginFooter"
-msgstr "<br><br><em>Explicación: Alguien intentó ingresar al sistema de administración de tu sitio web. Si estás recibiendo muchas de estas alertas, es posible que alguien esté utilizando un ataque de fuerza bruta para vulnerar tu sitio [1]. Puedes desactivar estas alertas desde aquí [2]. También puedes considerar la instalación de un Firewall para filtrar el tráfico malicioso y ataques como este [3].</em><br><br>[1] <a href='https://kb.sucuri.net/definitions/attacks/brute-force/password-guessing'>https://kb.sucuri.net/definitions/attacks/brute-force/password-guessing</a><br>[2] <a href='%1$s'>%2$s</a> <br>[3] <a href='https://sucuri.net/website-firewall/?wpalert'>https://sucuri.net/website-firewall/</a><br>"
+msgstr "<br><br><em>Explicación: Alguien intentó ingresar al sistema de administración de tu sitio web. Si estás recibiendo muchas de estas alertas, es posible que alguien esté utilizando un ataque de fuerza bruta para vulnerar tu sitio [1]. Puedes desactivar estas alertas desde aquí [2]. También puedes considerar la instalación de un Firewall para filtrar el tráfico malicioso y ataques como este [3].</em><br><br>[1] <a href='https://kb.sucuri.net/definitions/attacks/brute-force/password-guessing'>https://kb.sucuri.net/definitions/attacks/brute-force/password-guessing</a><br>[2] <a href='%1$s'>%2$s</a> <br>[3] <a href='https://sucuri.net/es/firewall-de-sitios-web/?wpalert'>https://sucuri.net/es/firewall-de-sitios-web/</a><br>"
 
 msgid "FirewallAPIKeySet"
 msgstr "La llave del Firewall ha sido guardada"
@@ -628,13 +628,13 @@ msgid "ReverseProxyStatus"
 msgstr "El soporte para túneles proxy ha sido cambiado a <b>%1$s</b>"
 
 msgid "ReverseProxyInfo"
-msgstr "El plugin utiliza la dirección IP de cada usuario para registrar los eventos ejecutados, el plugin utiliza dos métodos para obtener esta dirección: el método principal usa una variable global del servidor llamada <em>Remote-Addr</em> disponible en la mayoría de servidores web, un método alternativo usa cabeceras de HTTP personalizadas <em>(que son consideradas inseguras por defecto)</em>. No es necesario que te preocupes por esta opción a menos que tu sitio web esté detrás de un túnel proxy. Servicios como el <a href=\"https://sucuri.net/website-firewall/\" target=\"_blank\">Firewall de Sucuri</a> &mdash; una vez activo &mdash; fuerzan el paso del tráfico de red a través de ellos para filtrar amenazas de seguridad que podrían afectar el servidor original. Un efecto secundario del uso de estos servicios es que la dirección IP de los usuarios ya no está disponible entre las variables globales del servidor sino que es enviada a través de una cabecera HTTP personalizada."
+msgstr "El plugin utiliza la dirección IP de cada usuario para registrar los eventos ejecutados, el plugin utiliza dos métodos para obtener esta dirección: el método principal usa una variable global del servidor llamada <em>Remote-Addr</em> disponible en la mayoría de servidores web, un método alternativo usa cabeceras de HTTP personalizadas <em>(que son consideradas inseguras por defecto)</em>. No es necesario que te preocupes por esta opción a menos que tu sitio web esté detrás de un túnel proxy. Servicios como el <a href=\"https://sucuri.net/es/firewall-de-sitios-web/\" target=\"_blank\">Firewall de Sucuri</a> &mdash; una vez activo &mdash; fuerzan el paso del tráfico de red a través de ellos para filtrar amenazas de seguridad que podrían afectar el servidor original. Un efecto secundario del uso de estos servicios es que la dirección IP de los usuarios ya no está disponible entre las variables globales del servidor sino que es enviada a través de una cabecera HTTP personalizada."
 
 msgid "IPDiscoverer"
 msgstr "Detección de Direcciones IP"
 
 msgid "IPDiscovererInfo"
-msgstr "La detección de direcciones IP hace uso de DNS para detectar si el sitio web está detrás del <a href=\"https://sucuri.net/website-firewall/\" target=\"_blank\">Firewall de Sucuri</a> en cuyo caso modificará las variables globales del servidor para configurar la dirección IP real de cada visitante del sitio. Este proceso es ejecutado con cada proceso de WordPress, y es posible que la velocidad de tu sitio sea afectada ya que algunos proveedores de hosting utilizan servidores DNS lentos, lo que hace que esta operación tome más tiempo de lo que se espera."
+msgstr "La detección de direcciones IP hace uso de DNS para detectar si el sitio web está detrás del <a href=\"https://sucuri.net/es/firewall-de-sitios-web/\" target=\"_blank\">Firewall de Sucuri</a> en cuyo caso modificará las variables globales del servidor para configurar la dirección IP real de cada visitante del sitio. Este proceso es ejecutado con cada proceso de WordPress, y es posible que la velocidad de tu sitio sea afectada ya que algunos proveedores de hosting utilizan servidores DNS lentos, lo que hace que esta operación tome más tiempo de lo que se espera."
 
 msgid "HTTPHeader"
 msgstr "Cabecera de HTTP"
@@ -1075,13 +1075,13 @@ msgid "IntegrityGoodTitle"
 msgstr "Todos los Archivos Están Intáctos"
 
 msgid "IntegrityGoodDescription"
-msgstr "No hemos detectado archivos adicionales, eliminados o cambios relevantes en los archivos originales de WordPress. Si estás experimentando otros problemas, por favor usa un <a target=\"_blank\" href=\"https://sucuri.net/website-security/malware-removal\">servicio de limpieza de malware</a>."
+msgstr "No hemos detectado archivos adicionales, eliminados o cambios relevantes en los archivos originales de WordPress. Si estás experimentando otros problemas, por favor usa un <a target=\"_blank\" href=\"https://sucuri.net/es/seguridad-de-sitios-web/remocion-de-malware\">servicio de limpieza de malware</a>."
 
 msgid "IntegrityBadTitle"
 msgstr "Archivos de WordPress Modificados"
 
 msgid "IntegrityBadDescription"
-msgstr "Hemos identificado que algunos de los archivos de WordPress han sido modificados. Esto podría indicar un ataque o la existencia de un archivo corrupto en tu instalación. Si estás experimentando otros problemas, por favor usa un <a target=\"_blank\" href=\"https://sucuri.net/website-security/malware-removal\">servicio de limpieza de malware</a>."
+msgstr "Hemos identificado que algunos de los archivos de WordPress han sido modificados. Esto podría indicar un ataque o la existencia de un archivo corrupto en tu instalación. Si estás experimentando otros problemas, por favor usa un <a target=\"_blank\" href=\"https://sucuri.net/es/seguridad-de-sitios-web/remocion-de-malware\">servicio de limpieza de malware</a>."
 
 msgid "MarkFixedDescription"
 msgstr "Marcar uno o más archivos como revisado forzará al plugin a ignorar dichos archivos durante futuros escaneos, esto es útil cuando un archivo contiene falsos/positivos. Adicionalmente, puedes restaurar el contenido original si estos han sido modificados o eliminados, el plugin descargará una copia del código desde el <a href=\"https://core.svn.wordpress.org/tags/\" target=\"_blank\" rel=\"noopener\">repositorio oficial de WordPress</a>. La eliminación de archivos es una operación irreversible, ten cuidado."
@@ -1147,7 +1147,7 @@ msgid "FirewallAddKey"
 msgstr "Agrega la <a href=\"https://waf.sucuri.net/?settings&panel=api\" target=\"_blank\">llave del Firewall</a> en el formulario para iniciar una conexión con la API."
 
 msgid "FirewallFootNote"
-msgstr "<em>[1]</em> Más información acerca del <a href=\"https://sucuri.net/website-firewall/\" target=\"_blank\">Firewall de Sucuri</a>, herramientas disponibles y precios.<br><em>[2]</em> Instrucciones y videos en la <a href=\"https://kb.sucuri.net/firewall\" target=\"_blank\">Wiki de Sucuri</a>.<br><em>[3]</em> <a href=\"https://login.sucuri.net/signup2/create?CloudProxy\" target=\"_blank\">Registra</a> una cuenta nueva y empieza a proteger tu sitio web."
+msgstr "<em>[1]</em> Más información acerca del <a href=\"https://sucuri.net/es/firewall-de-sitios-web/\" target=\"_blank\">Firewall de Sucuri</a>, herramientas disponibles y precios.<br><em>[2]</em> Instrucciones y videos en la <a href=\"https://kb.sucuri.net/firewall\" target=\"_blank\">Wiki de Sucuri</a>.<br><em>[3]</em> <a href=\"https://login.sucuri.net/signup2/create?CloudProxy\" target=\"_blank\">Registra</a> una cuenta nueva y empieza a proteger tu sitio web."
 
 msgid "FirewallLogsTitle"
 msgstr "Registros de Seguridad del Firewall"
@@ -1204,10 +1204,10 @@ msgid "BlockedUsersInfo"
 msgstr "Todo intento de autenticación que haga uso de las funciones nativas de WordPress será interceptado y analizado por el plugin, si el nombre de usuario coincide con alguno en esta lista la conexión al servidor será inmediatamente detenida. Estos intentos no serán registrados y ninguna alerta de seguridad será enviada."
 
 msgid "BlockedUsersNote"
-msgstr "Ten en cuenta que esta herramienta no intenta proveer una protección completa para bloquear autenticaciones indeseadas de usuarios maliciosos. Dependiendo de la configuración de tu sitio web, los plugins o plantillas que sean instalados, o inclusive la versión de WordPress que estés usando, habrán huecos en el sistema que usuarios maliciosos pueden utilizar para evadir estos bloqueos e iniciar un ataque por fuerza bruta. <a target=\"_blank\" href=\"https://sucuri.net/website-firewall/?wp=bu\">Instala un Firewall</a> para obtener protección completa y mitigar este y otros ataques en contra tu sitio web."
+msgstr "Ten en cuenta que esta herramienta no intenta proveer una protección completa para bloquear autenticaciones indeseadas de usuarios maliciosos. Dependiendo de la configuración de tu sitio web, los plugins o plantillas que sean instalados, o inclusive la versión de WordPress que estés usando, habrán huecos en el sistema que usuarios maliciosos pueden utilizar para evadir estos bloqueos e iniciar un ataque por fuerza bruta. <a target=\"_blank\" href=\"https://sucuri.net/es/firewall-de-sitios-web/?wp=bu\">Instala un Firewall</a> para obtener protección completa y mitigar este y otros ataques en contra tu sitio web."
 
 msgid "BlockedUsersByIP"
-msgstr "El bloqueo de usuarios por dirección IP es una opción disponible en el <a href=\"https://sucuri.net/website-firewall/\" target=\"_blank\">Firewall de Sucuri</a>; para evitar la duplicación de código y reducir la cantidad de falsos/positivos esta opción nunca será implementada en este plugin."
+msgstr "El bloqueo de usuarios por dirección IP es una opción disponible en el <a href=\"https://sucuri.net/es/firewall-de-sitios-web/\" target=\"_blank\">Firewall de Sucuri</a>; para evitar la duplicación de código y reducir la cantidad de falsos/positivos esta opción nunca será implementada en este plugin."
 
 msgid "FailedLogins"
 msgstr "Autenticaciones Fallidas"
@@ -1225,7 +1225,7 @@ msgid "Recomendations"
 msgstr "Recomendaciones"
 
 msgid "SiteCheckNoResults"
-msgstr "Si nuestro escáner gratuito no ha detectado ningún problema, es posible que tu sitio tenga un problema más complicado y la infección esté escondida. Puede <a target=\"_blank\" href=\"https://sucuri.net/website-security-platform/signup\">registrar una cuenta con Sucuri</a> para obtener un escaneo más detallado y eventualmente una limpieza absoluta de tu sitio web (no incluido con el plan gratuito)."
+msgstr "Si nuestro escáner gratuito no ha detectado ningún problema, es posible que tu sitio tenga un problema más complicado y la infección esté escondida. Puede <a target=\"_blank\" href=\"https://sucuri.net/es/plataforma-de-seguridad-de-sitios-web/signup\">registrar una cuenta con Sucuri</a> para obtener un escaneo más detallado y eventualmente una limpieza absoluta de tu sitio web (no incluido con el plan gratuito)."
 
 msgid "PasswordAttack"
 msgstr "Ataque De Fuerza Bruta En Contra De Contraseñas"
