@@ -189,27 +189,10 @@ class SucuriScanInterface
     {
         /* get version of the plugin that was previously installed */
         $version = SucuriScanOption::getOption(':plugin_version');
+        $settings = SucuriScanOption::optionsFilePath();
 
         /* use simple comparison to force type cast. */
-        if (headers_sent() || $version == SUCURISCAN_VERSION) {
-            return;
-        }
-
-        if (!is_writable(SucuriScanOption::optionsFilePath())) {
-            /**
-             * Stop if the settings file is not writable.
-             *
-             * In some cases where the settings file is not writable, or for
-             * some reason the option cannot be updated, the alerts below will
-             * be rendered all the time, to avoid unnecessary complains from
-             * the website owners we will not display the alerts if the option
-             * cannot be updated.
-             */
-            return;
-        }
-
-        /* reduce noise in the dashboard; display alerts only in the plugin pages */
-        if (strpos((string) SucuriScanRequest::get('page'), 'sucuriscan') === false) {
+        if ($version == SUCURISCAN_VERSION) {
             return;
         }
 

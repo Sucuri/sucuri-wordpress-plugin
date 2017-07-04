@@ -25,6 +25,8 @@ function sucuriscan_page()
 
     SucuriScanInterface::checkPageVisibility();
 
+    SucuriScanInterface::noticeAfterUpdate();
+
     if (!SucuriScanFileInfo::isSplAvailable()) {
         /* display a warning when system dependencies are not met */
         SucuriScanInterface::error(__('RequiresModernPHP', SUCURISCAN_TEXTDOMAIN));
