@@ -464,6 +464,9 @@ msgstr "El plugin no tiene permiso para restablecer el contenido de este archivo
 msgid "SecurityAlerts"
 msgstr "Alertas de Seguridad"
 
+msgid "NoAlertsError"
+msgstr "Usted ha instalado un plugin o plantilla que no es completamente compatible con nuestro plugin, algunas de las alertas de seguridad (como las autenticaciones exitosas y fallidas de usuario) no serán enviadas. Para prevenir un ciclo infinito mientras el plugin detecta cambios en el sitio y envía las alertas de seguridad a través de un plugin de SMTP personalizado, hemos decidido detener cualquier intento de enviar los correos para prevenir errores fatales."
+
 msgid "AlertSettingsUpdated"
 msgstr "La configuración para las alertas de seguridad ha sido actualizada"
 

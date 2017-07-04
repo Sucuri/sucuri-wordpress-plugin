@@ -506,7 +506,11 @@ class SucuriScanEvent extends SucuriScan
 
             case 'failed_login':
                 $settings_url = SucuriScanTemplate::getUrl('settings');
-                $content .= sprintf(__('FailedLoginFooter'), $settings_url, $settings_url);
+                $content .= "\n" . sprintf(
+                    __('FailedLoginFooter', SUCURISCAN_TEXTDOMAIN),
+                    $settings_url,
+                    $settings_url
+                );
                 break;
 
             case 'bruteforce_attack':

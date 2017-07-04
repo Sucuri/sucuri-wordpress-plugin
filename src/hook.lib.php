@@ -586,6 +586,24 @@ class SucuriScanHook extends SucuriScanEvent
             $post_type = $post->post_type;
         }
 
+        if ($post_type === 'postman_sent_mail') {
+            /**
+             * Stop infinite loop sending the email alerts.
+             *
+             * The plugin detects changes in the posts, there are some other
+             * plugins that intercept PHPMailer and create a post object that is
+             * later used to send the real message to the users. This object is
+             * also detected by our plugin and is considered an additional event
+             * that must be reported, so after the first execution the operation
+             * falls into an infinite loop.
+             *
+             * @date 30 June, 2017
+             * @see https://wordpress.org/plugins/postman-smtp/
+             * @see https://wordpress.org/support/topic/unable-to-access-wordpress-dashboard-after-update-to-1-8-7/
+             */
+            return self::throwException('Skip events for postman-smtp alerts');
+        }
+
         /* check if email alerts are disabled for this type */
         if (SucuriScanOption::isIgnoredEvent($post_type)) {
             return self::throwException('Skip events for ignored post-types');

@@ -464,6 +464,9 @@ msgstr "The plugin has no permission to restore this file because its directory 
 msgid "SecurityAlerts"
 msgstr "Security Alerts"
 
+msgid "NoAlertsError"
+msgstr "You have installed a plugin or theme that is not fully compatible with our plugin, some of the security alerts (like the successful and failed logins) will not be sent to you. To prevent an infinite loop while detecting these changes in the website and sending the email alerts via a custom SMTP plugin, we have decided to stop any attempt to send the emails to prevent fatal errors."
+
 msgid "AlertSettingsUpdated"
 msgstr "The alert settings have been updated"
 

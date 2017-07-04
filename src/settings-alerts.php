@@ -373,6 +373,7 @@ function sucuriscan_settings_alerts_events($nonce)
 {
     $params = array();
     $params['Alerts.Events'] = '';
+    $params['Alerts.NoAlertsVisibility'] = 'hidden';
 
     $notify_options = array(
         'sucuriscan_notify_plugin_change' => __('OptionNotifyPluginChange', SUCURISCAN_TEXTDOMAIN),
@@ -401,6 +402,25 @@ function sucuriscan_settings_alerts_events($nonce)
         'sucuriscan_notify_theme_updated' => 'theme:' . __('OptionNotifyThemeUpdated', SUCURISCAN_TEXTDOMAIN),
         'sucuriscan_notify_theme_deleted' => 'theme:' . __('OptionNotifyThemeDeleted', SUCURISCAN_TEXTDOMAIN),
     );
+
+    /**
+     * Hide successful and failed logins option.
+     *
+     * Due to an incompatibility with the Postman-SMTP plugin we cannot sent
+     * email alerts when a successful or failed user authentication happens, the
+     * result is an infinite loop while our plugin tries to notify about changes
+     * in the posts and the other plugin creates temporary post objects to track
+     * the emails.
+     *
+     * @date 30 June, 2017
+     * @see https://wordpress.org/plugins/postman-smtp/
+     * @see https://wordpress.org/support/topic/unable-to-access-wordpress-dashboard-after-update-to-1-8-7/
+     */
+    if (is_plugin_active('postman-smtp/postman-smtp.php')) {
+        $params['Alerts.NoAlertsVisibility'] = 'visible';
+        unset($notify_options['sucuriscan_notify_success_login']);
+        unset($notify_options['sucuriscan_notify_failed_login']);
+    }
 
     // Process form submission to change the alert settings.
     if ($nonce) {
