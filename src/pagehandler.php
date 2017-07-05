@@ -185,6 +185,7 @@ function sucuriscan_ajax()
         SucuriScanAuditLogs::ajaxAuditLogsSendLogs();
         SucuriScanSiteCheck::ajaxMalwareScan();
         SucuriScanFirewall::auditlogsAjax();
+        SucuriScanFirewall::clearCacheAjax();
         SucuriScanIntegrity::ajaxIntegrity();
         SucuriScanIntegrity::ajaxIntegrityDiffUtility();
         SucuriScanSettingsPosthack::availableUpdatesAjax();

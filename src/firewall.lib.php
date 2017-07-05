@@ -571,4 +571,34 @@ class SucuriScanFirewall extends SucuriScanAPI
             self::clearCache(); /* ignore HTTP request errors */
         }
     }
+
+    /**
+     * Requests a cache flush to the firewall service.
+     *
+     * @codeCoverageIgnore
+     */
+    public static function clearCacheAjax()
+    {
+        if (SucuriScanRequest::post('form_action') !== 'firewall_clear_cache') {
+            return;
+        }
+
+        ob_start();
+        SucuriScanInterface::error(__('FirewallAPIKeyMissing', SUCURISCAN_TEXTDOMAIN));
+        $response = ob_get_clean();
+
+        if ($api_key = self::getKey()) {
+            $res = self::clearCache($api_key);
+
+            if (is_array($res) && isset($res['messages'])) {
+                $response = sprintf(
+                    '<div class="sucuriscan-inline-alert-%s"><p>%s</p></div>',
+                    ($res['status'] == 1) ? 'success' : 'error',
+                    implode('<br>', $res['messages'])
+                );
+            }
+        }
+
+        wp_send_json($response, 200);
+    }
 }
