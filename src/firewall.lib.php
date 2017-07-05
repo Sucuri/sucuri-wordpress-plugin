@@ -136,8 +136,6 @@ class SucuriScanFirewall extends SucuriScanAPI
             'Firewall.APIKey' => '',
             'Firewall.APIKeyVisibility' => 'hidden',
             'Firewall.APIKeyFormVisibility' => 'visible',
-            'Firewall.SettingsVisibility' => 'hidden',
-            'Firewall.SettingOptions' => '',
         );
 
         if (SucuriScanInterface::checkNonce()) {
@@ -167,50 +165,12 @@ class SucuriScanFirewall extends SucuriScanAPI
             }
         }
 
-        $api_key = self::getKey(); /* extract API key information */
+        $api_key = self::getKey();
 
         if ($api_key && array_key_exists('string', $api_key)) {
-            $settings = self::settings($api_key);
-
             $params['Firewall.APIKeyVisibility'] = 'visible';
             $params['Firewall.APIKeyFormVisibility'] = 'hidden';
             $params['Firewall.APIKey'] = $api_key['string'];
-
-            if ($settings) {
-                $params['Firewall.SettingsVisibility'] = 'visible';
-                $settings = self::settingsExplanation($settings);
-
-                foreach ($settings as $option_name => $option_value) {
-                    $option_title = ucwords(str_replace('_', "\x20", $option_name));
-
-                    // Generate a HTML list when the option's value is an array.
-                    if (is_array($option_value)) {
-                        $css_scrollable = count($option_value) > 10 ? 'sucuriscan-list-as-table-scrollable' : '';
-                        $html_list  = '<ul class="sucuriscan-list-as-table ' . $css_scrollable . '">';
-
-                        if (!empty($option_value)) {
-                            foreach ($option_value as $single_value) {
-                                $single_value = SucuriScan::escape($single_value);
-                                $html_list .= '<li>' . SucuriScan::escape($single_value) . '</li>';
-                            }
-                        } else {
-                            $html_list .= '<li>(' . __('NoData', SUCURISCAN_TEXTDOMAIN) . ')</li>';
-                        }
-
-                        $html_list .= '</ul>';
-                        $option_value = $html_list;
-                    } else {
-                        $option_value = SucuriScan::escape($option_value);
-                    }
-
-                    // Parse the snippet template and replace the pseudo-variables.
-                    $params['Firewall.SettingOptions']
-                    .= SucuriScanTemplate::getSnippet('firewall-settings', array(
-                        'Firewall.OptionName' => $option_title,
-                        'Firewall.OptionValue' => $option_value,
-                    ));
-                }
-            }
         }
 
         return SucuriScanTemplate::getSection('firewall-settings', $params);
@@ -251,6 +211,62 @@ class SucuriScanFirewall extends SucuriScanAPI
         }
 
         return $settings;
+    }
+
+    /**
+     * Returns the public firewall settings.
+     *
+     * @codeCoverageIgnore
+     */
+    public static function getSettingsAjax()
+    {
+        if (SucuriScanRequest::post('form_action') !== 'firewall_settings') {
+            return;
+        }
+
+        $api_key = self::getKey();
+        $settings = self::settings($api_key);
+
+        if (!$settings) {
+            ob_start();
+            SucuriScanInterface::error(__('FirewallAPIKeyMissing', SUCURISCAN_TEXTDOMAIN));
+            $response = ob_get_clean();
+            wp_send_json($response, 200);
+        }
+
+        $response = ''; /* HTML code response */
+        $settings = self::settingsExplanation($settings);
+
+        foreach ($settings as $name => $value) {
+            $title = ucwords(str_replace('_', "\x20", $name));
+            $title = str_replace('Ip', 'IP', $title);
+
+            if (is_array($value)) {
+                $css_scrollable = count($value) > 10 ? 'sucuriscan-list-as-table-scrollable' : '';
+                $html_list  = '<ul class="sucuriscan-list-as-table ' . $css_scrollable . '">';
+
+                if (!empty($value)) {
+                    foreach ($value as $single_value) {
+                        $single_value = SucuriScan::escape($single_value);
+                        $html_list .= '<li>' . SucuriScan::escape($single_value) . '</li>';
+                    }
+                } else {
+                    $html_list .= '<li>(' . __('NoData', SUCURISCAN_TEXTDOMAIN) . ')</li>';
+                }
+
+                $html_list .= '</ul>';
+                $value = $html_list;
+            } else {
+                $value = SucuriScan::escape($value);
+            }
+
+            $response .= SucuriScanTemplate::getSnippet('firewall-settings', array(
+                'Firewall.OptionName' => $title,
+                'Firewall.OptionValue' => $value,
+            ));
+        }
+
+        wp_send_json($response, 200);
     }
 
     /**

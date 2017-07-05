@@ -1,4 +1,21 @@
 
+<script type="text/javascript">
+/* global jQuery */
+/* jshint camelcase: false */
+jQuery(document).ready(function ($) {
+    $('#firewall-settings-table tbody')
+    .html('<tr><td colspan="2">@@SUCURI.Loading@@</td></tr>');
+
+    $.post('%%SUCURI.AjaxURL.Firewall%%', {
+        action: 'sucuriscan_ajax',
+        sucuriscan_page_nonce: '%%SUCURI.PageNonce%%',
+        form_action: 'firewall_settings',
+    }, function (data) {
+        $('#firewall-settings-table tbody').html(data);
+    });
+});
+</script>
+
 <div class="sucuriscan-panel">
     <h3 class="sucuriscan-title">@@SUCURI.FirewallSettingsTitle@@</h3>
 
@@ -27,7 +44,7 @@
             <br>
         </form>
 
-        <table class="wp-list-table widefat sucuriscan-table sucuriscan-firewall-settings sucuriscan-%%SUCURI.Firewall.SettingsVisibility%%">
+        <table class="wp-list-table widefat sucuriscan-table" id="firewall-settings-table">
             <thead>
                 <tr>
                     <th>@@SUCURI.Name@@</th>
@@ -36,7 +53,7 @@
             </thead>
 
             <tbody>
-                %%%SUCURI.Firewall.SettingOptions%%%
+                <!-- Populated via JavaScript -->
             </tbody>
         </table>
 
