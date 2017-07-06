@@ -368,7 +368,9 @@ class SucuriScanCache extends SucuriScan
 
         $finfo = $this->getDatastoreContent($assoc === 'array');
 
-        if ($this->dataHasExpired($lifetime, $finfo)) {
+        if ($this->dataHasExpired($lifetime, $finfo)
+            || !array_key_exists($key, $finfo['entries'])
+        ) {
             return false;
         }
 

@@ -155,6 +155,8 @@ class SucuriScanHook extends SucuriScanEvent
 
         self::reportErrorEvent($message);
 
+        SucuriScanFirewall::maybeBlacklistIP();
+
         self::notifyEvent('failed_login', $message);
 
         /* log the failed login in the internal storage */
