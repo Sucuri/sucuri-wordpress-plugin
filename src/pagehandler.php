@@ -63,6 +63,7 @@ function sucuriscan_firewall_page()
     $params = array(
         'Firewall.Settings' => SucuriScanFirewall::settingsPage(),
         'Firewall.AuditLogs' => SucuriScanFirewall::auditlogsPage(),
+        'Firewall.IPAccess' => SucuriScanFirewall::ipAccessPage(),
         'Firewall.ClearCache' => SucuriScanFirewall::clearCachePage(),
     );
 
@@ -185,6 +186,9 @@ function sucuriscan_ajax()
         SucuriScanAuditLogs::ajaxAuditLogsSendLogs();
         SucuriScanSiteCheck::ajaxMalwareScan();
         SucuriScanFirewall::auditlogsAjax();
+        SucuriScanFirewall::ipAccessAjax();
+        SucuriScanFirewall::blacklistAjax();
+        SucuriScanFirewall::deblacklistAjax();
         SucuriScanFirewall::clearCacheAjax();
         SucuriScanFirewall::getSettingsAjax();
         SucuriScanIntegrity::ajaxIntegrity();

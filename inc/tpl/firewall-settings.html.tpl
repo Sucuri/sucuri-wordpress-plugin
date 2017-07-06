@@ -3,15 +3,29 @@
 /* global jQuery */
 /* jshint camelcase: false */
 jQuery(document).ready(function ($) {
-    $('#firewall-settings-table tbody')
-    .html('<tr><td colspan="2">@@SUCURI.Loading@@</td></tr>');
-
     $.post('%%SUCURI.AjaxURL.Firewall%%', {
         action: 'sucuriscan_ajax',
         sucuriscan_page_nonce: '%%SUCURI.PageNonce%%',
         form_action: 'firewall_settings',
     }, function (data) {
-        $('#firewall-settings-table tbody').html(data);
+        if (data.ok) {
+            var value;
+            $('#firewall-settings-table tbody').html('');
+            for (var name in data.settings) {
+                if (data.settings.hasOwnProperty(name) &&
+                    typeof data.settings[name] === 'string'
+                ) {
+                    value = data.settings[name];
+                    $('#firewall-settings-table tbody').append('<tr>' +
+                    '<td><label>' + name + '</label></td>' +
+                    '<td><span class="sucuriscan-monospace">' +
+                    value + '</span></td></tr>');
+                }
+            }
+        } else {
+            $('#firewall-settings-table tbody')
+            .html('<tr><td colspan="2">' + data.error + '</td></tr>');
+        }
     });
 });
 </script>
@@ -27,6 +41,7 @@ jQuery(document).ready(function ($) {
         </div>
 
         <div class="sucuriscan-hstatus sucuriscan-hstatus-2 sucuriscan-firewall-apikey sucuriscan-%%SUCURI.Firewall.APIKeyVisibility%%">
+            <strong>@@SUCURI.FirewallKey@@:</strong>
             <span class="sucuriscan-monospace">%%SUCURI.Firewall.APIKey%%</span>
             <form action="%%SUCURI.URL.Firewall%%" method="post">
                 <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
@@ -53,7 +68,7 @@ jQuery(document).ready(function ($) {
             </thead>
 
             <tbody>
-                <!-- Populated via JavaScript -->
+                <tr><td colspan="2">@@SUCURI.Loading@@</td></tr>
             </tbody>
         </table>
 

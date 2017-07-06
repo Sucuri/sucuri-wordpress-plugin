@@ -35,6 +35,9 @@ msgstr "Statistics"
 msgid "ClearCache"
 msgstr "Clear Cache"
 
+msgid "IPAccess"
+msgstr "IP Access"
+
 msgid "GenerateAPIKey"
 msgstr "Generate API Key"
 
@@ -1159,6 +1162,18 @@ msgstr "The firewall logs every request involved in an attack and separates them
 
 msgid "FirewallLogsNote"
 msgstr "Note that non-blocked requests are hidden from the logs, this is intentional."
+
+msgid "FirewallIPAccessTitle"
+msgstr "IP Address Access"
+
+msgid "FirewallIPAccessInfo"
+msgstr "This tool allows you to whitleist and blacklist one or more IP addresses from accessing your website. You can also configure the plugin to automatically blacklist any IP address involved in a password guessing brute-force attack. If a legitimate user fails to submit the correct credentials of their account they will have to log into the Firewall dashboard in order to delete their IP address from the blacklist, or try to login once again through a VPN."
+
+msgid "WhitelistIP"
+msgstr "Whitelist IP"
+
+msgid "BlacklistIP"
+msgstr "Blacklist IP"
 
 msgid "FirewallCacheTitle"
 msgstr "Clear Cache"

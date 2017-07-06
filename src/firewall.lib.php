@@ -224,47 +224,22 @@ class SucuriScanFirewall extends SucuriScanAPI
             return;
         }
 
+        $response = array();
         $api_key = self::getKey();
         $settings = self::settings($api_key);
 
         if (!$settings) {
             ob_start();
+            $response['ok'] = false;
             SucuriScanInterface::error(__('FirewallAPIKeyMissing', SUCURISCAN_TEXTDOMAIN));
-            $response = ob_get_clean();
+            $response['error'] = ob_get_clean();
             wp_send_json($response, 200);
         }
 
-        $response = ''; /* HTML code response */
-        $settings = self::settingsExplanation($settings);
-
-        foreach ($settings as $name => $value) {
-            $title = ucwords(str_replace('_', "\x20", $name));
-            $title = str_replace('Ip', 'IP', $title);
-
-            if (is_array($value)) {
-                $css_scrollable = count($value) > 10 ? 'sucuriscan-list-as-table-scrollable' : '';
-                $html_list  = '<ul class="sucuriscan-list-as-table ' . $css_scrollable . '">';
-
-                if (!empty($value)) {
-                    foreach ($value as $single_value) {
-                        $single_value = SucuriScan::escape($single_value);
-                        $html_list .= '<li>' . SucuriScan::escape($single_value) . '</li>';
-                    }
-                } else {
-                    $html_list .= '<li>(' . __('NoData', SUCURISCAN_TEXTDOMAIN) . ')</li>';
-                }
-
-                $html_list .= '</ul>';
-                $value = $html_list;
-            } else {
-                $value = SucuriScan::escape($value);
-            }
-
-            $response .= SucuriScanTemplate::getSnippet('firewall-settings', array(
-                'Firewall.OptionName' => $title,
-                'Firewall.OptionValue' => $value,
-            ));
-        }
+        $response['ok'] = true;
+        $response['settings'] = self::settingsExplanation($settings);
+        unset($response['settings']['whitelist_list']);
+        unset($response['settings']['blacklist_list']);
 
         wp_send_json($response, 200);
     }
@@ -516,6 +491,115 @@ class SucuriScanFirewall extends SucuriScanAPI
         }
 
         return $options;
+    }
+
+    /**
+     * Generate the HTML code for the firewall IP access panel.
+     *
+     * @return string The parsed-content of the firewall IP access panel.
+     */
+    public static function ipAccessPage()
+    {
+        $params = array();
+
+        return SucuriScanTemplate::getSection('firewall-ipaccess', $params);
+    }
+
+    /**
+     * Returns the whitelisted and blacklisted IP addresses.
+     *
+     * @codeCoverageIgnore
+     */
+    public static function ipAccessAjax()
+    {
+        if (SucuriScanRequest::post('form_action') !== 'firewall_ipaccess') {
+            return;
+        }
+
+        $response = array();
+        $api_key = self::getKey();
+        $settings = self::settings($api_key);
+
+        if (!$settings) {
+            ob_start();
+            $response['ok'] = false;
+            SucuriScanInterface::error(__('FirewallAPIKeyMissing', SUCURISCAN_TEXTDOMAIN));
+            $response['error'] = ob_get_clean();
+            wp_send_json($response, 200);
+        }
+
+        $response['ok'] = true;
+        $response['whitelist'] = $settings['whitelist_list'];
+        $response['blacklist'] = $settings['blacklist_list'];
+
+        wp_send_json($response, 200);
+    }
+
+    /**
+     * Blacklists an IP address.
+     *
+     * @codeCoverageIgnore
+     */
+    public static function blacklistAjax()
+    {
+        if (SucuriScanRequest::post('form_action') !== 'firewall_blacklist') {
+            return;
+        }
+
+        $response = array();
+        $response['ok'] = false;
+        $params = self::getKey();
+
+        if (!$params) {
+            ob_start();
+            SucuriScanInterface::error(__('FirewallAPIKeyMissing', SUCURISCAN_TEXTDOMAIN));
+            $response['msg'] = ob_get_clean();
+            wp_send_json($response, 200);
+        }
+
+        $params['a'] = 'blacklist_ip';
+        $params['ip'] = SucuriScanRequest::post('ip');
+        $out = self::apiCallFirewall('POST', $params);
+        $response['msg'] = 'Failure connecting to the API service; try again.';
+
+        if ($out && !empty($out['messages'])) {
+            $response['ok'] = (bool) ($out['status'] == 1);
+            $response['msg'] = implode(";\x20", $out['messages']);
+        }
+
+        wp_send_json($response, 200);
+    }
+
+    /**
+     * Deletes an IP address from the blacklist.
+     *
+     * @codeCoverageIgnore
+     */
+    public static function deblacklistAjax()
+    {
+        if (SucuriScanRequest::post('form_action') !== 'firewall_deblacklist') {
+            return;
+        }
+
+        $response = array();
+        $params = self::getKey();
+
+        if (!$params) {
+            ob_start();
+            $response['ok'] = false;
+            SucuriScanInterface::error(__('FirewallAPIKeyMissing', SUCURISCAN_TEXTDOMAIN));
+            $response['error'] = ob_get_clean();
+            wp_send_json($response, 200);
+        }
+
+        $params['a'] = 'delete_blacklist_ip';
+        $params['ip'] = SucuriScanRequest::post('ip');
+        $out = self::apiCallFirewall('POST', $params);
+
+        $response['ok'] = (bool) ($out['status'] == 1);
+        $response['msg'] = implode(";\x20", $out['messages']);
+
+        wp_send_json($response, 200);
     }
 
     /**

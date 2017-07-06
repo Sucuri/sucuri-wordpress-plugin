@@ -3,6 +3,7 @@
     <ul class="sucuriscan-clearfix sucuriscan-tabs-buttons">
         <li><a href="%%SUCURI.URL.Firewall%%#settings">@@SUCURI.Settings@@</a></li>
         <li><a href="%%SUCURI.URL.Firewall%%#auditlogs">@@SUCURI.AuditLogs@@</a></li>
+        <li><a href="%%SUCURI.URL.Firewall%%#ipaccess">@@SUCURI.IPAccess@@</a></li>
         <li><a href="%%SUCURI.URL.Firewall%%#clearcache">@@SUCURI.ClearCache@@</a></li>
     </ul>
 
@@ -13,6 +14,10 @@
 
         <div id="sucuriscan-tabs-auditlogs" class="sucuriscan-hidden">
             %%%SUCURI.Firewall.AuditLogs%%%
+        </div>
+
+        <div id="sucuriscan-tabs-ipaccess" class="sucuriscan-hidden">
+            %%%SUCURI.Firewall.IPAccess%%%
         </div>
 
         <div id="sucuriscan-tabs-clearcache" class="sucuriscan-hidden">

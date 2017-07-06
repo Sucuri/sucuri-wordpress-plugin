@@ -35,6 +35,9 @@ msgstr "Estadísticas"
 msgid "ClearCache"
 msgstr "Limpiar Cache"
 
+msgid "IPAccess"
+msgstr "Acceso Por IP"
+
 msgid "GenerateAPIKey"
 msgstr "Generar Llave"
 
@@ -1159,6 +1162,18 @@ msgstr "El Firewall de Sucuri registra todas las conexiones HTTP involucradas en
 
 msgid "FirewallLogsNote"
 msgstr "Las conexiones que no fueron bloqueadas son omitidas en la lista, esto es intensional."
+
+msgid "FirewallIPAccessTitle"
+msgstr "Dirección IP (Acceso)"
+
+msgid "FirewallIPAccessInfo"
+msgstr "Esta herramienta le permite bloquear y desbloquear el acceso a su sitio web de una o mas direcciones IP. Además, puede bloquear direcciones IP automáticamente cuando estas están involucradas en un ataque de fuerza bruta para adivinar la contraseña de uno o más usuarios registrados. Si un usuario legítimo es bloqueado después de enviar las credenciales incorrectas de su cuenta más de tres veces, ellos deberán ingresar al panel de control del Firewall para eliminar su dirección IP de la lista negra, o intentar acceder al sitio a través de una VPN."
+
+msgid "WhitelistIP"
+msgstr "Desbloquear Dirección IP"
+
+msgid "BlacklistIP"
+msgstr "Bloquear Dirección IP"
 
 msgid "FirewallCacheTitle"
 msgstr "Cache del Firewall"
