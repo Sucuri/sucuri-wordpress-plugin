@@ -142,6 +142,8 @@ class SucuriScanAuditLogs
             $iterator_start = ($pageNumber - 1) * $maxPerPage;
             $total_items = count($auditlogs['output_data']);
 
+            usort($auditlogs['output_data'], array('SucuriScanAuditLogs', 'sortByDate'));
+
             for ($i = $iterator_start; $i < $total_items; $i++) {
                 if ($counter_i > $maxPerPage) {
                     break;
@@ -339,5 +341,26 @@ class SucuriScanAuditLogs
         SucuriScanEvent::sendLogsFromQueue();
 
         wp_send_json(array('ok' => true), 200);
+    }
+
+    /**
+     * Sort the audit logs by date.
+     *
+     * Considering that the logs from the API service will be merged with the
+     * logs from the local queue system to complement the information until the
+     * queue is emptied, we will have to sort the entries in the list to keep
+     * the dates in sync.
+     *
+     * @param array $a Data associated to a single log.
+     * @param array $b Data associated to another log.
+     * @return int Comparison between the dates of both logs.
+     */
+    private static function sortByDate($a, $b)
+    {
+        if ($a['timestamp'] === $b['timestamp']) {
+            return 0;
+        }
+
+        return ($a['timestamp'] > $b['timestamp']) ? -1 : 1;
     }
 }
