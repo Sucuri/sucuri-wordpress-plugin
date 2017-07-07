@@ -117,28 +117,30 @@ class SucuriScanAuditLogs
             if (!$auditlogs) {
                 $auditlogs = $queuelogs;
             } else {
-                $auditlogs['total_entries'] += $queuelogs['total_entries'];
+                $auditlogs['total_entries'] = isset($auditlogs['total_entries'])
+                    ? ($auditlogs['total_entries'] + $queuelogs['total_entries'])
+                    : $queuelogs['total_entries'];
                 $auditlogs['output'] = array_merge(
                     $queuelogs['output'],
-                    $auditlogs['output']
+                    @$auditlogs['output']
                 );
                 $auditlogs['output_data'] = array_merge(
                     $queuelogs['output_data'],
-                    $auditlogs['output_data']
+                    @$auditlogs['output_data']
                 );
             }
         }
 
-        if ($auditlogs) {
+        if (is_array($auditlogs)
+            && isset($auditlogs['output_data'])
+            && isset($auditlogs['total_entries'])
+        ) {
             $counter_i = 0;
             $total_items = 0;
             $previousDate = '';
             $todaysDate = date('M d, Y');
             $iterator_start = ($pageNumber - 1) * $maxPerPage;
-
-            if (array_key_exists('output_data', $auditlogs)) {
-                $total_items = count($auditlogs['output_data']);
-            }
+            $total_items = count($auditlogs['output_data']);
 
             for ($i = $iterator_start; $i < $total_items; $i++) {
                 if ($counter_i > $maxPerPage) {
