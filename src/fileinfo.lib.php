@@ -136,7 +136,10 @@ class SucuriScanFileInfo extends SucuriScan
     private function ignoreFolder($path)
     {
         return (bool) ($this->ignore_directories && (
-            strpos($path, 'wp-content/backup') !== false
+            strpos($path, '/.hg') !== false
+            || strpos($path, '/.git') !== false
+            || strpos($path, '/.svn') !== false
+            || strpos($path, 'wp-content/backup') !== false
             || strpos($path, 'wp-content/cache') !== false
             || strpos($path, 'wp-content/uploads') !== false
             || strpos($path, 'wp-content/w3tc') !== false

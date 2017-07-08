@@ -186,7 +186,7 @@ msgid "SelfHostingDisabled"
 msgstr "The log exporter feature has been disabled"
 
 msgid "SelfHostingInfo"
-msgstr "This option allows you to export the WordPress audit logs to a local log file that can be read by a SIEM or any log analysis software <em>(we recommend OSSEC)</em>. That will give visibility from within WordPress to complement your log monitoring infrastructure."
+msgstr "This option allows you to export the WordPress audit logs to a local log file that can be read by a SIEM or any log analysis software <em>(we recommend OSSEC)</em>. That will give visibility from within WordPress to complement your log monitoring infrastructure. <b>NOTE:</b> Do not use a publicly accessible file, you must use a file at least one level up the document root to prevent leaks of information."
 
 msgid "SelfHostingFallback"
 msgstr "You don't have a valid API key to communicate with the remote API service. However, the self-hosting monitor is enabled, the plugin will read the logs from that file and display the data here. Notice that only the latest logs will be processed to keep a low memory footprint. Consider to generate a free API key to get a better coverage of the activity in your website."

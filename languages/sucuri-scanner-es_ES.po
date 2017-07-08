@@ -186,7 +186,7 @@ msgid "SelfHostingDisabled"
 msgstr "La herramienta para exportar los registros de seguridad ha sido desactivada"
 
 msgid "SelfHostingInfo"
-msgstr "Esta opción le permite guardar una copia de los registros de seguridad en un archivo ubicado en su servidor que puede ser leido por un SIEM o cualquier otro sistema de análisis <em>(le recomendamos OSSEC)</em>. Esto le dará visibilidad de lo que sucede en su sitio web para complementar su infraestructura de monitoreo."
+msgstr "Esta opción le permite guardar una copia de los registros de seguridad en un archivo ubicado en su servidor que puede ser leido por un SIEM o cualquier otro sistema de análisis <em>(le recomendamos OSSEC)</em>. Esto le dará visibilidad de lo que sucede en su sitio web para complementar su infraestructura de monitoreo. <b>NOTA:</b> No use archivos que sean accesibles de forma pública, use un archivo que esté por lo menos un nivel arriva de la raíz del sitio web para evitar fugas de información."
 
 msgid "SelfHostingFallback"
 msgstr "Usted no tiene una llave para comunicarse con la API. Sin embargo, la herramienta para exportar los registros de seguridad está activada, el plugin leerá el contenido de este archivo y mostrará esa información aquí. Tenga en cuenta que solo los últimos registros serán procesados para mantener un consumo de memoria bajo. Considere generar una llave para obtener una mayor covertura en la actividad de su sitio web."
