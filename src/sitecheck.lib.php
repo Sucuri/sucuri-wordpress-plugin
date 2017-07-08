@@ -52,9 +52,14 @@ class SucuriScanSiteCheck extends SucuriScanAPI
         $params['fromwp'] = 2;
         $params['json'] = 1;
 
-        // Request a fresh scan or not.
+        /* force clear scan */
         if ($clear === true) {
             $params['clear'] = 1;
+        }
+
+        /* allow to set a custom URL for the scans */
+        if (defined('SUCURISCAN_SITECHECK_TARGET')) {
+            $params['scan'] = SUCURISCAN_SITECHECK_TARGET;
         }
 
         $args = array('assoc' => true, 'timeout' => 60);
