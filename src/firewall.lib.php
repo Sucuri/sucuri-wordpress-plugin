@@ -506,69 +506,6 @@ class SucuriScanFirewall extends SucuriScanAPI
     }
 
     /**
-     * Blacklist IP address if necessary.
-     *
-     * This tool allows you to whitleist and blacklist one or more IP addresses
-     * from accessing your website. You can also configure the plugin to
-     * automatically blacklist any IP address involved in a password guessing
-     * brute-force attack. If a legitimate user fails to submit the correct
-     * credentials of their account they will have to log into the Firewall
-     * dashboard in order to delete their IP address from the blacklist, or try
-     * to login once again through a VPN.
-     */
-    public static function maybeBlacklistIP()
-    {
-        $params = self::getKey();
-
-        if (!$params) {
-            return self::throwException('Firewall API key is missing');
-        }
-
-        $ip = self::getRemoteAddr();
-        $cache = new SucuriScanCache('blockedips');
-        $unique = md5($ip); /* cache unique identifier */
-        $data = $cache->get($unique, 0, 'array');
-
-        /**
-         * Insert new counter if this is a new IP address.
-         * Restart counter if more than a day has passed.
-         * Restart counter if the data is corrupt.
-         */
-        if (!is_array($data)
-            || !array_key_exists('ip', $data)
-            || !array_key_exists('time', $data)
-            || !array_key_exists('count', $data)
-            || (time() - $data['time']) > 86400
-        ) {
-            $cache->delete($unique);
-            $cache->add($unique, array(
-                'time' => time(),
-                'count' => 1,
-                'ip' => $ip,
-            ));
-            return;
-        }
-
-        /* add up to five failures */
-        if ($data['count'] < 4) {
-            $data['count']++;
-            $cache->set($unique, $data);
-            return;
-        }
-
-        /* blacklist IP */
-        $params['ip'] = $ip;
-        $params['a'] = 'blacklist_ip';
-        $resp = self::apiCallFirewall('POST', $params);
-
-        if (is_array($resp) && isset($resp['status']) && $resp['status']) {
-            /* delete from the cache if it was successfully blacklisted */
-            SucuriScanEvent::reportInfoEvent('IP has been blacklisted: ' . $ip);
-            $cache->delete($unique);
-        }
-    }
-
-    /**
      * Returns the whitelisted and blacklisted IP addresses.
      *
      * @codeCoverageIgnore

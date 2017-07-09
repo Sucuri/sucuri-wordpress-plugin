@@ -154,7 +154,6 @@ function sucuriscan_settings_general_datastorage()
         '', /* <root> */
         'auditlogs',
         'auditqueue',
-        'blockedips',
         'blockedusers',
         'failedlogins',
         'hookdata',
