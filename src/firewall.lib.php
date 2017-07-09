@@ -225,14 +225,22 @@ class SucuriScanFirewall extends SucuriScanAPI
         }
 
         $response = array();
+        $response['ok'] = false;
         $api_key = self::getKey();
+
+        ob_start();
         $settings = self::settings($api_key);
+        $error = ob_get_clean();
 
         if (!$settings) {
-            ob_start();
-            $response['ok'] = false;
-            SucuriScanInterface::error(__('FirewallAPIKeyMissing', SUCURISCAN_TEXTDOMAIN));
-            $response['error'] = ob_get_clean();
+            if (empty($error)) {
+                ob_start();
+                SucuriScanInterface::error(__('FirewallAPIKeyMissing', SUCURISCAN_TEXTDOMAIN));
+                $response['error'] = ob_get_clean();
+            } else {
+                $response['error'] = $error;
+            }
+
             wp_send_json($response, 200);
         }
 
@@ -316,41 +324,49 @@ class SucuriScanFirewall extends SucuriScanAPI
             return;
         }
 
-        $response = ''; /* HTML code response */
+        $response = '';
+        $api_key = self::getKey();
 
-        if ($api_key = self::getKey()) {
-            $query = SucuriScanRequest::post(':query');
-            $month = SucuriScanRequest::post(':month');
-            $year = SucuriScanRequest::post(':year');
-            $day = SucuriScanRequest::post(':day');
-            $limit = 50;
-            $offset = 1;
-
-            if ($year && $month && $day) {
-                $date = sprintf('%s-%s-%s', $year, $month, $day);
-            } else {
-                $date = date('Y-m-d');
-            }
-
-            $auditlogs = self::auditlogs(
-                $api_key,
-                $date, /* Retrieve the data from this date. */
-                $query, /* Filter the data to match this query. */
-                $limit, /* Retrieve this maximum of data. */
-                $offset /* Retrieve the data from this point. */
-            );
-
-            if ($auditlogs && array_key_exists('total_lines', $auditlogs)) {
-                $response = self::auditlogsEntries($auditlogs['access_logs']);
-
-                if (empty($response)) {
-                    $response = '<tr><td>' . __('NoData', SUCURISCAN_TEXTDOMAIN) . '.</td></tr>';
-                }
-            }
-        } else {
+        if (!$api_key) {
             ob_start();
             SucuriScanInterface::error(__('FirewallAPIKeyMissing', SUCURISCAN_TEXTDOMAIN));
             $response = ob_get_clean();
+            wp_send_json($response, 200);
+        }
+
+        $query = SucuriScanRequest::post(':query');
+        $month = SucuriScanRequest::post(':month');
+        $year = SucuriScanRequest::post(':year');
+        $day = SucuriScanRequest::post(':day');
+        $limit = 50;
+        $offset = 1;
+
+        if ($year && $month && $day) {
+            $date = sprintf('%s-%s-%s', $year, $month, $day);
+        } else {
+            $date = date('Y-m-d');
+        }
+
+        ob_start();
+        $auditlogs = self::auditlogs(
+            $api_key,
+            $date, /* Retrieve the data from this date. */
+            $query, /* Filter the data to match this query. */
+            $limit, /* Retrieve this maximum of data. */
+            $offset /* Retrieve the data from this point. */
+        );
+        $error = ob_get_clean();
+
+        if (!$auditlogs && !empty($error)) {
+            wp_send_json($error, 200);
+        }
+
+        if ($auditlogs && array_key_exists('total_lines', $auditlogs)) {
+            $response = self::auditlogsEntries($auditlogs['access_logs']);
+
+            if (empty($response)) {
+                $response = '<tr><td>' . __('NoData', SUCURISCAN_TEXTDOMAIN) . '.</td></tr>';
+            }
         }
 
         wp_send_json($response, 200);
@@ -517,14 +533,22 @@ class SucuriScanFirewall extends SucuriScanAPI
         }
 
         $response = array();
+        $response['ok'] = false;
         $api_key = self::getKey();
+
+        ob_start();
         $settings = self::settings($api_key);
+        $error = ob_get_clean();
 
         if (!$settings) {
-            ob_start();
-            $response['ok'] = false;
-            SucuriScanInterface::error(__('FirewallAPIKeyMissing', SUCURISCAN_TEXTDOMAIN));
-            $response['error'] = ob_get_clean();
+            if (empty($error)) {
+                ob_start();
+                SucuriScanInterface::error(__('FirewallAPIKeyMissing', SUCURISCAN_TEXTDOMAIN));
+                $response['error'] = ob_get_clean();
+            } else {
+                $response['error'] = $error;
+            }
+
             wp_send_json($response, 200);
         }
 
@@ -678,7 +702,9 @@ class SucuriScanFirewall extends SucuriScanAPI
     {
         /* prevent double execution of the save_post action */
         if (!wp_is_post_revision($post_id) && !wp_is_post_autosave($post_id)) {
-            self::clearCache(); /* ignore HTTP request errors */
+            ob_start();
+            self::clearCache();
+            $error = ob_get_clean();
         }
     }
 
