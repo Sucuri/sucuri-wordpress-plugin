@@ -110,6 +110,7 @@ if (defined('SUCURISCAN')) {
         {
             global $locale;
 
+            $default_locale = 'en_US';
             $pofile = sprintf(
                 '%s/languages/%s-%s.po',
                 SUCURISCAN_PLUGIN_PATH,
@@ -125,15 +126,37 @@ if (defined('SUCURISCAN')) {
 
             /* attempt to import the English POT file into LOCALE */
             if (!file_exists($pofile) || !file_exists($mofile)) {
+                $fallback = array(
+                    'en_NZ' => 'en_US', /* English (New Zealand) */
+                    'en_CA' => 'en_US', /* English (Canada) */
+                    'en_ZA' => 'en_US', /* English (South Africa) */
+                    'en_GB' => 'en_US', /* English (UK) */
+                    'en_AU' => 'en_US', /* English (Australia) */
+                    'es_AR' => 'es_ES', /* Español de Argentina */
+                    'es_MX' => 'es_ES', /* Español de México */
+                    'es_CO' => 'es_ES', /* Español de Colombia */
+                    'es_GT' => 'es_ES', /* Español de Guatemala */
+                    'es_VE' => 'es_ES', /* Español de Venezuela */
+                    'es_CL' => 'es_ES', /* Español de Chile */
+                    'es_PE' => 'es_ES', /* Español de Perú */
+                );
+
+                /* try to find a similar translation */
+                if (array_key_exists($locale, $fallback)) {
+                    $default_locale = $fallback[$locale];
+                }
+
                 $en_pofile = sprintf(
-                    '%s/languages/%s-en_US.po',
+                    '%s/languages/%s-%s.po',
                     SUCURISCAN_PLUGIN_PATH,
-                    SUCURISCAN_TEXTDOMAIN
+                    SUCURISCAN_TEXTDOMAIN,
+                    $default_locale
                 );
                 $en_mofile = sprintf(
-                    '%s/languages/%s-en_US.mo',
+                    '%s/languages/%s-%s.mo',
                     SUCURISCAN_PLUGIN_PATH,
-                    SUCURISCAN_TEXTDOMAIN
+                    SUCURISCAN_TEXTDOMAIN,
+                    $default_locale
                 );
 
                 @copy($en_pofile, $pofile);
@@ -142,8 +165,8 @@ if (defined('SUCURISCAN')) {
 
             /* fallback to English on language import failure */
             if (!file_exists($pofile) || !file_exists($mofile)) {
-                $locale = 'en_US';
-                setlocale(LC_ALL, 'en_US');
+                $locale = $default_locale;
+                setlocale(LC_ALL, $default_locale);
             }
 
             load_plugin_textdomain(
