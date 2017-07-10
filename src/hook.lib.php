@@ -151,7 +151,12 @@ class SucuriScanHook extends SucuriScanEvent
     {
         $password = SucuriScanRequest::post('pwd');
         $title = empty($title) ? 'Unknown' : sanitize_user($title, true);
-        $message = 'User authentication failed: ' . $title . '; password: ' . $password;
+        $message = 'User authentication failed: ' . $title;
+
+        /* do not send the failed password with the alerts */
+        if (!defined('SUCURISCAN_NO_FAILED_PASSWORD')) {
+            $message .= '; password: ' . $password;
+        }
 
         self::reportErrorEvent($message);
 
