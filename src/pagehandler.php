@@ -23,23 +23,7 @@ function sucuriscan_page()
 {
     $params = array();
 
-    SucuriScanInterface::checkPageVisibility();
-
-    SucuriScanInterface::noticeAfterUpdate();
-
-    if (!SucuriScanFileInfo::isSplAvailable()) {
-        /* display a warning when system dependencies are not met */
-        SucuriScanInterface::error(__('RequiresModernPHP', SUCURISCAN_TEXTDOMAIN));
-    }
-
-    if ($filename = SucuriScanOption::optionsFilePath()) {
-        if (!is_writable($filename)) {
-            SucuriScanInterface::error(sprintf(
-                __('StorageNotWritable', SUCURISCAN_TEXTDOMAIN),
-                $filename /* absolute path of the settings file */
-            ));
-        }
-    }
+    SucuriScanInterface::startupChecks();
 
     /* load data for the Integrity section */
     $params['Integrity'] = SucuriScanIntegrity::pageIntegrity();
@@ -67,7 +51,7 @@ function sucuriscan_page()
  */
 function sucuriscan_firewall_page()
 {
-    SucuriScanInterface::checkPageVisibility();
+    SucuriScanInterface::startupChecks();
 
     $params = array(
         'Firewall.Settings' => SucuriScanFirewall::settingsPage(),
@@ -84,7 +68,7 @@ function sucuriscan_firewall_page()
  */
 function sucuriscan_lastlogins_page()
 {
-    SucuriScanInterface::checkPageVisibility();
+    SucuriScanInterface::startupChecks();
 
     // Reset the file with the last-logins logs.
     if (SucuriScanInterface::checkNonce()
@@ -117,7 +101,7 @@ function sucuriscan_lastlogins_page()
  */
 function sucuriscan_settings_page()
 {
-    SucuriScanInterface::checkPageVisibility();
+    SucuriScanInterface::startupChecks();
 
     $params = array();
     $nonce = SucuriScanInterface::checkNonce();

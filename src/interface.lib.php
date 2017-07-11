@@ -176,6 +176,35 @@ class SucuriScanInterface
     }
 
     /**
+     * Display alerts and execute pre-checks before every page.
+     *
+     * This method verifies if the visibility of the requested page is allowed
+     * for the current user in session which usually needs to be granted admin
+     * privileges to access the plugin's tools. It also checks if the required
+     * SPL library is available and if the settings file is writable.
+     */
+    public static function startupChecks()
+    {
+        self::checkPageVisibility();
+
+        self::noticeAfterUpdate();
+
+        if (!SucuriScanFileInfo::isSplAvailable()) {
+            /* display a warning when system dependencies are not met */
+            self::error(__('RequiresModernPHP', SUCURISCAN_TEXTDOMAIN));
+        }
+
+        if ($filename = SucuriScanOption::optionsFilePath()) {
+            if (!is_writable($filename)) {
+                self::error(sprintf(
+                    __('StorageNotWritable', SUCURISCAN_TEXTDOMAIN),
+                    $filename /* absolute path of the settings file */
+                ));
+            }
+        }
+    }
+
+    /**
      * Do something if the plugin was updated.
      *
      * Check if an option exists with the version number of the plugin, if the

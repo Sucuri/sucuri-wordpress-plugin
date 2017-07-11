@@ -116,6 +116,9 @@ class SucuriScanSiteCheck extends SucuriScanAPI
             return $results;
         }
 
+        /* delete expired cache */
+        $cache->delete('scan_results');
+
         /* send HTTP request to SiteCheck's API service. */
         $results = self::runMalwareScan($tld);
 
@@ -129,7 +132,6 @@ class SucuriScanSiteCheck extends SucuriScanAPI
         }
 
         /* cache the results for some time. */
-        $cache = new SucuriScanCache('sitecheck');
         $cache->add('scan_results', $results);
 
         return $results;
