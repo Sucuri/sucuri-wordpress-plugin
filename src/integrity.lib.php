@@ -242,9 +242,6 @@ class SucuriScanIntegrity
         $params['Integrity.FailureVisibility'] = 'visible';
         $params['Integrity.FalsePositivesVisibility'] = 'hidden';
 
-        /* Check if we have already ignored irrelevant files */
-        self::ignoreIrrelevantFiles();
-
         if ($siteVersion) {
             // Check if there are added, removed, or modified files.
             $latest_hashes = self::checkIntegrityIntegrity($siteVersion);
@@ -550,8 +547,66 @@ class SucuriScanIntegrity
      */
     private static function ignoreIntegrityFilepath($path = '')
     {
-        // List of files that will be ignored from the integrity checking.
-        $ignore_files = array(
+        global $wp_local_package;
+
+        $irrelevant = array(
+            'php.ini',
+            '.htaccess',
+            '.htpasswd',
+            '.ftpquota',
+            'wp-includes/.htaccess',
+            'wp-admin/setup-config.php',
+            'wp-tests-config.php',
+            'wp-config.php',
+            'sitemap.xml',
+            'sitemap.xml.gz',
+            'readme.html',
+            'error_log',
+            'wp-pass.php',
+            'wp-rss.php',
+            'wp-feed.php',
+            'wp-register.php',
+            'wp-atom.php',
+            'wp-commentsrss2.php',
+            'wp-rss2.php',
+            'wp-rdf.php',
+            '404.php',
+            '503.php',
+            '500.php',
+            '500.shtml',
+            '400.shtml',
+            '401.shtml',
+            '402.shtml',
+            '403.shtml',
+            '404.shtml',
+            '405.shtml',
+            '406.shtml',
+            '407.shtml',
+            '408.shtml',
+            '409.shtml',
+            'healthcheck.html',
+        );
+
+        /**
+         * Ignore i18n files.
+         *
+         * Sites with i18n have differences compared with the official English
+         * version of the project, basically they have files with new variables
+         * specifying the language that will be used in the admin panel, site
+         * options, and emails.
+         */
+        if (isset($wp_local_package) && $wp_local_package != 'en_US') {
+            $irrelevant[] = 'wp-includes/version.php';
+            $irrelevant[] = 'wp-config-sample.php';
+        }
+
+        if (in_array($path, $irrelevant)) {
+            return true;
+        }
+
+        /* use regular expressions */
+        $ignore = false;
+        $irrelevant = array(
             '^sucuri-[0-9a-z\-]+\.php$',
             '^\S+-sucuri-db-dump-gzip-[0-9]{10}-[0-9a-z]{32}\.gz$',
             '^([^\/]*)\.(pdf|css|txt|jpg|gif|png|jpeg)$',
@@ -561,76 +616,14 @@ class SucuriScanIntegrity
             '\.ico$',
         );
 
-        // Determine whether a file must be ignored from the integrity checks or not.
-        foreach ($ignore_files as $ignore_pattern) {
-            if (@preg_match('/'.$ignore_pattern.'/', $path)) {
-                return true;
+        foreach ($irrelevant as $pattern) {
+            if (@preg_match('/'.$pattern.'/', $path)) {
+                $ignore = true;
+                break;
             }
         }
 
-        return false;
-    }
-
-    /**
-     * Includes some irrelevant files into the integrity cache.
-     */
-    private static function ignoreIrrelevantFiles()
-    {
-        global $wp_local_package;
-
-        if (SucuriScanOption::getOption(':integrity_startup') !== 'done') {
-            /* ignore files no matter if they do not exist */
-            self::ignoreIrrelevantFile('php.ini', false);
-            self::ignoreIrrelevantFile('.htaccess', false);
-            self::ignoreIrrelevantFile('.htpasswd', false);
-            self::ignoreIrrelevantFile('.ftpquota', false);
-            self::ignoreIrrelevantFile('wp-includes/.htaccess', false);
-            self::ignoreIrrelevantFile('wp-admin/setup-config.php', false);
-            self::ignoreIrrelevantFile('wp-config.php', false);
-            self::ignoreIrrelevantFile('sitemap.xml', false);
-            self::ignoreIrrelevantFile('sitemap.xml.gz', false);
-            self::ignoreIrrelevantFile('readme.html', false);
-            self::ignoreIrrelevantFile('error_log', false);
-
-            /* ignore irrelevant files only if they exist */
-            self::ignoreIrrelevantFile('wp-pass.php');
-            self::ignoreIrrelevantFile('wp-rss.php');
-            self::ignoreIrrelevantFile('wp-feed.php');
-            self::ignoreIrrelevantFile('wp-register.php');
-            self::ignoreIrrelevantFile('wp-atom.php');
-            self::ignoreIrrelevantFile('wp-commentsrss2.php');
-            self::ignoreIrrelevantFile('wp-rss2.php');
-            self::ignoreIrrelevantFile('wp-rdf.php');
-            self::ignoreIrrelevantFile('404.php');
-            self::ignoreIrrelevantFile('503.php');
-            self::ignoreIrrelevantFile('500.php');
-            self::ignoreIrrelevantFile('500.shtml');
-            self::ignoreIrrelevantFile('400.shtml');
-            self::ignoreIrrelevantFile('401.shtml');
-            self::ignoreIrrelevantFile('402.shtml');
-            self::ignoreIrrelevantFile('403.shtml');
-            self::ignoreIrrelevantFile('404.shtml');
-            self::ignoreIrrelevantFile('405.shtml');
-            self::ignoreIrrelevantFile('406.shtml');
-            self::ignoreIrrelevantFile('407.shtml');
-            self::ignoreIrrelevantFile('408.shtml');
-            self::ignoreIrrelevantFile('409.shtml');
-            self::ignoreIrrelevantFile('healthcheck.html');
-
-            /**
-             * Ignore i18n files.
-             *
-             * Sites with i18n have differences compared with the official English version
-             * of the project, basically they have files with new variables specifying the
-             * language that will be used in the admin panel, site options, and emails.
-             */
-            if (isset($wp_local_package) && $wp_local_package != 'en_US') {
-                self::ignoreIrrelevantFile('wp-includes/version.php');
-                self::ignoreIrrelevantFile('wp-config-sample.php');
-            }
-
-            SucuriScanOption::updateOption(':integrity_startup', 'done');
-        }
+        return $ignore;
     }
 
     /**

@@ -32,6 +32,15 @@ function sucuriscan_page()
         SucuriScanInterface::error(__('RequiresModernPHP', SUCURISCAN_TEXTDOMAIN));
     }
 
+    if ($filename = SucuriScanOption::optionsFilePath()) {
+        if (!is_writable($filename)) {
+            SucuriScanInterface::error(sprintf(
+                __('StorageNotWritable', SUCURISCAN_TEXTDOMAIN),
+                $filename /* absolute path of the settings file */
+            ));
+        }
+    }
+
     /* load data for the Integrity section */
     $params['Integrity'] = SucuriScanIntegrity::pageIntegrity();
 

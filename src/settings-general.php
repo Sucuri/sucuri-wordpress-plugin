@@ -61,17 +61,6 @@ function sucuriscan_settings_general_apikey($nonce)
     $display_manual_key_form = (bool) (SucuriScanRequest::post(':recover_key') !== false);
 
     if ($nonce) {
-        if (!empty($_POST)) {
-            $fpath = SucuriScanOption::optionsFilePath();
-
-            if (!is_writable($fpath)) {
-                SucuriScanInterface::error(sprintf(
-                    __('StorageNotWritable', SUCURISCAN_TEXTDOMAIN),
-                    $fpath /* absolute path of the data storage folder */
-                ));
-            }
-        }
-
         // Remove API key from the local storage.
         if (SucuriScanRequest::post(':remove_api_key') !== false) {
             SucuriScanAPI::setPluginKey('');
