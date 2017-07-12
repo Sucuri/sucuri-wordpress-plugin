@@ -500,6 +500,9 @@ msgstr "Recibir alertas por autenticaciones exitosas de usuario"
 msgid "OptionNotifyFailedLogin"
 msgstr "Recibir alertas por autenticaciones de usuario fallidas <em>(si su sitio está siendo atacado usted recibirá multiples alertas por segundo, deseleccione para reducir el Spam)</em>"
 
+msgid "OptionNotifyFailedPassword"
+msgstr "Recibir alertas por autenticaciones de usuario fallidas incluyendo la contraseña enviada"
+
 msgid "OptionNotifyBruteforceAttack"
 msgstr "Recibir un resumen con todos los intentos de autenticación de usuario fallidos durante la misma hora. El reporte será eliminado del servidor una vez la información sea enviada a su correo"
 

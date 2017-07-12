@@ -385,6 +385,7 @@ function sucuriscan_settings_alerts_events($nonce)
         'sucuriscan_notify_user_registration' => 'user:' . __('OptionNotifyUserRegistration', SUCURISCAN_TEXTDOMAIN),
         'sucuriscan_notify_success_login' => 'user:' . __('OptionNotifySuccessLogin', SUCURISCAN_TEXTDOMAIN),
         'sucuriscan_notify_failed_login' => 'user:' . __('OptionNotifyFailedLogin', SUCURISCAN_TEXTDOMAIN),
+        'sucuriscan_notify_failed_password' => 'user:' . __('OptionNotifyFailedPassword', SUCURISCAN_TEXTDOMAIN),
         'sucuriscan_notify_bruteforce_attack' => 'user:' . __('OptionNotifyBruteforceAttack', SUCURISCAN_TEXTDOMAIN),
         'sucuriscan_notify_post_publication' => __('OptionNotifyPostPublication', SUCURISCAN_TEXTDOMAIN),
         'sucuriscan_notify_website_updated' => __('OptionNotifyWebsiteUpdated', SUCURISCAN_TEXTDOMAIN),

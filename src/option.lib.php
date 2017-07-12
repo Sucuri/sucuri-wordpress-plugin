@@ -70,6 +70,7 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_notify_available_updates' => 'disabled',
             'sucuriscan_notify_bruteforce_attack' => 'disabled',
             'sucuriscan_notify_failed_login' => 'enabled',
+            'sucuriscan_notify_failed_password' => 'enabled',
             'sucuriscan_notify_plugin_activated' => 'disabled',
             'sucuriscan_notify_plugin_change' => 'disabled',
             'sucuriscan_notify_plugin_deactivated' => 'disabled',

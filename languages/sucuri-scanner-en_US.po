@@ -500,6 +500,9 @@ msgstr "Receive email alerts for successful login attempts"
 msgid "OptionNotifyFailedLogin"
 msgstr "Receive email alerts for failed login attempts <em>(you may receive tons of emails)</em>"
 
+msgid "OptionNotifyFailedPassword"
+msgstr "Receive email alerts for failed login attempts including the submitted password"
+
 msgid "OptionNotifyBruteforceAttack"
 msgstr "Receive email alerts for password guessing attacks <em>(summary of failed logins per hour)</em>"
 
