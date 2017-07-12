@@ -70,18 +70,18 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_notify_available_updates' => 'disabled',
             'sucuriscan_notify_bruteforce_attack' => 'disabled',
             'sucuriscan_notify_failed_login' => 'enabled',
-            'sucuriscan_notify_failed_password' => 'enabled',
-            'sucuriscan_notify_plugin_activated' => 'disabled',
-            'sucuriscan_notify_plugin_change' => 'disabled',
+            'sucuriscan_notify_failed_password' => 'disabled',
+            'sucuriscan_notify_plugin_activated' => 'enabled',
+            'sucuriscan_notify_plugin_change' => 'enabled',
             'sucuriscan_notify_plugin_deactivated' => 'disabled',
             'sucuriscan_notify_plugin_deleted' => 'disabled',
             'sucuriscan_notify_plugin_installed' => 'disabled',
             'sucuriscan_notify_plugin_updated' => 'disabled',
             'sucuriscan_notify_post_publication' => 'enabled',
             'sucuriscan_notify_scan_checksums' => 'disabled',
-            'sucuriscan_notify_settings_updated' => 'disabled',
+            'sucuriscan_notify_settings_updated' => 'enabled',
             'sucuriscan_notify_success_login' => 'enabled',
-            'sucuriscan_notify_theme_activated' => 'disabled',
+            'sucuriscan_notify_theme_activated' => 'enabled',
             'sucuriscan_notify_theme_deleted' => 'disabled',
             'sucuriscan_notify_theme_editor' => 'enabled',
             'sucuriscan_notify_theme_installed' => 'disabled',
@@ -135,7 +135,7 @@ class SucuriScanOption extends SucuriScanRequest
 
             $default['sucuriscan_email_subject'] =
             __('SucuriAlert', SUCURISCAN_TEXTDOMAIN)
-            . ', :domain, :event';
+            . ', :domain, :event, :remoteaddr';
         }
 
         return @$default[$option];
