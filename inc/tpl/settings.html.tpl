@@ -110,8 +110,6 @@
         <div id="sucuriscan-tabs-webinfo">
             %%%SUCURI.Settings.Webinfo.Details%%%
 
-            %%%SUCURI.Settings.Webinfo.WPConfig%%%
-
             %%%SUCURI.Settings.Webinfo.HTAccess%%%
         </div>
     </div>

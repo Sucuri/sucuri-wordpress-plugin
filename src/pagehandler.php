@@ -161,7 +161,6 @@ function sucuriscan_settings_page()
 
     /* settings - website info */
     $params['Settings.Webinfo.Details'] = sucuriscan_settings_webinfo_details();
-    $params['Settings.Webinfo.WPConfig'] = sucuriscan_settings_webinfo_wpconfig();
     $params['Settings.Webinfo.HTAccess'] = sucuriscan_settings_webinfo_htaccess();
 
     echo SucuriScanTemplate::getTemplate('settings', $params);

@@ -376,21 +376,21 @@ function sucuriscan_settings_alerts_events($nonce)
     $params['Alerts.NoAlertsVisibility'] = 'hidden';
 
     $notify_options = array(
-        'sucuriscan_notify_plugin_change' => __('OptionNotifyPluginChange', SUCURISCAN_TEXTDOMAIN),
-        'sucuriscan_prettify_mails' => __('OptionPrettifyMails', SUCURISCAN_TEXTDOMAIN),
-        'sucuriscan_use_wpmail' => __('OptionUseWordPressMail', SUCURISCAN_TEXTDOMAIN),
-        'sucuriscan_lastlogin_redirection' => __('OptionLastLoginRedirection', SUCURISCAN_TEXTDOMAIN),
-        'sucuriscan_notify_scan_checksums' => __('OptionNotifyScanChecksums', SUCURISCAN_TEXTDOMAIN),
-        'sucuriscan_notify_available_updates' => __('OptionNotifyAvailableUpdates', SUCURISCAN_TEXTDOMAIN),
+        'sucuriscan_notify_plugin_change' => 'setting:' . __('OptionNotifyPluginChange', SUCURISCAN_TEXTDOMAIN),
+        'sucuriscan_prettify_mails' => 'setting:' . __('OptionPrettifyMails', SUCURISCAN_TEXTDOMAIN),
+        'sucuriscan_use_wpmail' => 'setting:' . __('OptionUseWordPressMail', SUCURISCAN_TEXTDOMAIN),
+        'sucuriscan_lastlogin_redirection' => 'setting:' . __('OptionLastLoginRedirection', SUCURISCAN_TEXTDOMAIN),
+        'sucuriscan_notify_scan_checksums' => 'setting:' . __('OptionNotifyScanChecksums', SUCURISCAN_TEXTDOMAIN),
+        'sucuriscan_notify_available_updates' => 'setting:' . __('OptionNotifyAvailableUpdates', SUCURISCAN_TEXTDOMAIN),
         'sucuriscan_notify_user_registration' => 'user:' . __('OptionNotifyUserRegistration', SUCURISCAN_TEXTDOMAIN),
         'sucuriscan_notify_success_login' => 'user:' . __('OptionNotifySuccessLogin', SUCURISCAN_TEXTDOMAIN),
         'sucuriscan_notify_failed_login' => 'user:' . __('OptionNotifyFailedLogin', SUCURISCAN_TEXTDOMAIN),
         'sucuriscan_notify_failed_password' => 'user:' . __('OptionNotifyFailedPassword', SUCURISCAN_TEXTDOMAIN),
         'sucuriscan_notify_bruteforce_attack' => 'user:' . __('OptionNotifyBruteforceAttack', SUCURISCAN_TEXTDOMAIN),
-        'sucuriscan_notify_post_publication' => __('OptionNotifyPostPublication', SUCURISCAN_TEXTDOMAIN),
-        'sucuriscan_notify_website_updated' => __('OptionNotifyWebsiteUpdated', SUCURISCAN_TEXTDOMAIN),
-        'sucuriscan_notify_settings_updated' => __('OptionNotifySettingsUpdated', SUCURISCAN_TEXTDOMAIN),
-        'sucuriscan_notify_theme_editor' => __('OptionNotifyThemeEditor', SUCURISCAN_TEXTDOMAIN),
+        'sucuriscan_notify_post_publication' => 'setting:' . __('OptionNotifyPostPublication', SUCURISCAN_TEXTDOMAIN),
+        'sucuriscan_notify_website_updated' => 'setting:' . __('OptionNotifyWebsiteUpdated', SUCURISCAN_TEXTDOMAIN),
+        'sucuriscan_notify_settings_updated' => 'setting:' . __('OptionNotifySettingsUpdated', SUCURISCAN_TEXTDOMAIN),
+        'sucuriscan_notify_theme_editor' => 'setting:' . __('OptionNotifyThemeEditor', SUCURISCAN_TEXTDOMAIN),
         'sucuriscan_notify_plugin_installed' => 'plugin:' . __('OptionNotifyPluginInstalled', SUCURISCAN_TEXTDOMAIN),
         'sucuriscan_notify_plugin_activated' => 'plugin:' . __('OptionNotifyPluginActivated', SUCURISCAN_TEXTDOMAIN),
         'sucuriscan_notify_plugin_deactivated' => 'plugin:' . __('OptionNotifyPluginDeactivated', SUCURISCAN_TEXTDOMAIN),
@@ -454,42 +454,46 @@ function sucuriscan_settings_alerts_events($nonce)
         }
     }
 
-    // Build the HTML code for the interface.
-    if (is_array($notify_options)) {
-        $pattern = '/^([a-z]+:)?(.+)/';
+    /* build the HTML code for the checkbox input fields */
+    foreach ($notify_options as $alert_type => $alert_label) {
+        $alert_value = SucuriScanOption::getOption($alert_type);
+        $checked = ($alert_value == 'enabled') ? 'checked="checked"' : '';
+        $alert_icon = '';
 
-        foreach ($notify_options as $alert_type => $alert_label) {
-            $alert_value = SucuriScanOption::getOption($alert_type);
-            $checked = ($alert_value == 'enabled') ? 'checked="checked"' : '';
-            $alert_icon = '';
+        /* identify the optional icon */
+        $offset = strpos($alert_label, ':');
+        $alert_group = substr($alert_label, 0, $offset);
+        $alert_label = substr($alert_label, $offset+1);
 
-            if (@preg_match($pattern, $alert_label, $match)) {
-                $alert_group = str_replace(':', '', $match[1]);
-                $alert_label = $match[2];
+        switch ($alert_group) {
+            case 'user':
+                $alert_icon = 'dashicons-before dashicons-admin-users';
+                break;
 
-                switch ($alert_group) {
-                    case 'user':
-                        $alert_icon = 'dashicons-before dashicons-admin-users';
-                        break;
+            case 'plugin':
+                $alert_icon = 'dashicons-before dashicons-admin-plugins';
+                break;
 
-                    case 'plugin':
-                        $alert_icon = 'dashicons-before dashicons-admin-plugins';
-                        break;
+            case 'theme':
+                $alert_icon = 'dashicons-before dashicons-admin-appearance';
+                break;
 
-                    case 'theme':
-                        $alert_icon = 'dashicons-before dashicons-admin-appearance';
-                        break;
-                }
-            }
+            case 'setting':
+                $alert_icon = 'dashicons-before dashicons-admin-tools';
+                break;
 
-            $params['Alerts.Events'] .=
-            SucuriScanTemplate::getSnippet('settings-alerts-events', array(
-                'Event.Name' => $alert_type,
-                'Event.Checked' => $checked,
-                'Event.Label' => $alert_label,
-                'Event.LabelIcon' => $alert_icon,
-            ));
+            case 'widget':
+                $alert_icon = 'dashicons-before dashicons-admin-post';
+                break;
         }
+
+        $params['Alerts.Events'] .=
+        SucuriScanTemplate::getSnippet('settings-alerts-events', array(
+            'Event.Name' => $alert_type,
+            'Event.Checked' => $checked,
+            'Event.Label' => $alert_label,
+            'Event.LabelIcon' => $alert_icon,
+        ));
     }
 
     return SucuriScanTemplate::getSection('settings-alerts-events', $params);

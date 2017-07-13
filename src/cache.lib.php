@@ -427,7 +427,7 @@ class SucuriScanCache extends SucuriScan
         $finfo = $this->getDatastoreContent(true);
 
         if (!array_key_exists($key, $finfo['entries'])) {
-            return self::throwException('Cache key does not exists');
+            return true;
         }
 
         unset($finfo['entries'][$key]);

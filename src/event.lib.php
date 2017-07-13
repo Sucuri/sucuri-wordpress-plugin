@@ -415,16 +415,13 @@ class SucuriScanEvent extends SucuriScan
     {
         $message = strip_tags($message);
 
-        /* auto-detect the action performed, either enabled or disabled. */
-        if (preg_match('/( was )?(enabled|disabled)$/', $message, $match)) {
-            $action = $match[2];
-        }
-
-        if ($action === 'enabled') {
+        /* auto-detect the action performed: enabled */
+        if (strpos($message, 'enabled') !== false) {
             return self::reportNoticeEvent($message);
         }
 
-        if ($action === 'disabled') {
+        /* auto-detect the action performed: disabled */
+        if (strpos($message, 'disabled') !== false) {
             return self::reportErrorEvent($message);
         }
 
@@ -648,13 +645,15 @@ class SucuriScanEvent extends SucuriScan
     }
 
     /**
-     * Modify the WordPress configuration file and change the keys that were defined
-     * by a new random-generated list of keys retrieved from the official WordPress
-     * API. The result of the operation will be either FALSE in case of error, or an
-     * array containing multiple indexes explaining the modification, among them you
-     * will find the old and new keys.
+     * Changes the WordPress secret keys.
      *
-     * @return array|bool Either FALSE in case of error, or an array with the old and new keys.
+     * Modify the WordPress configuration file to define new secret keys from a
+     * new randomly generated list of strings from the official WordPress API.
+     * The result of the operation will be either False in case of error, or an
+     * array containing multiple indexes explaining the modification, among them
+     * you will find the old and new keys.
+     *
+     * @return array|bool Array with the old and new keys, false otherwise.
      */
     public static function setNewConfigKeys()
     {

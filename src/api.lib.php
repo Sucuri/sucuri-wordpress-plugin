@@ -595,11 +595,10 @@ class SucuriScanAPI extends SucuriScanOption
      */
     public static function parseMultipleEntries($event_log = '')
     {
-        if (@preg_match('/^(.*:\s)\(multiple entries\):\s(.+)/', $event_log, $match)) {
-            $event_log = array();
-            $event_log[] = trim($match[1]);
-            $grouped_items = @explode(',', $match[2]);
-            $event_log = array_merge($event_log, $grouped_items);
+        $pattern = "\x20(multiple entries):\x20";
+
+        if (strpos($event_log, $pattern)) {
+            return explode(',', str_replace($pattern, ',', $event_log));
         }
 
         return $event_log;

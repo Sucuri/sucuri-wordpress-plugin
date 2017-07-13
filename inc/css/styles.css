@@ -855,3 +855,6 @@ body.sucuri-security_page_sucuriscan_hardening {
 .sucuriscan-ipaccess-table .sucuriscan-monospace {
     line-height: 30px;
 }
+.sucuriscan-settings-alerts .dashicons-before::before {
+    padding-right: 10px;
+}

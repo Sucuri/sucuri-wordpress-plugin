@@ -156,14 +156,14 @@ class SucuriScanHook extends SucuriScanEvent
         /* send the submitted password along with the alert */
         if (SucuriScanOption::isEnabled(':notify_failed_password')) {
             $message .= '; password: ' . $password;
+            sucuriscan_log_failed_login($title, $password);
+        } else {
+            sucuriscan_log_failed_login($title, '[hidden]');
         }
 
         self::reportErrorEvent($message);
 
         self::notifyEvent('failed_login', $message);
-
-        /* log the failed login in the internal storage */
-        sucuriscan_log_failed_login($title, $password);
 
         /* report brute-force attack if necessary */
         if ($logins = sucuriscan_get_failed_logins()) {

@@ -128,7 +128,7 @@ function sucuriscan_lastlogins_all()
                 'UserList.RemoteAddr' => $user->user_remoteaddr,
                 'UserList.Hostname' => $user->user_hostname,
                 'UserList.Datetime' => $user->user_lastlogin,
-                'UserList.TimeAgo' => SucuriScan::timeAgo($user->user_lastlogin),
+                'UserList.TimeAgo' => SucuriScan::humanTime($user->user_lastlogin_timestamp),
                 'UserList.UserURL' => SucuriScan::adminURL('user-edit.php?user_id=' . $user->user_id),
             );
 

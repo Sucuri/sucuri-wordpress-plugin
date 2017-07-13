@@ -514,9 +514,11 @@ class SucuriScanSiteCheck extends SucuriScanAPI
         $malware_parts = explode("\n", $malware[1]);
 
         if (isset($malware_parts[1])) {
-            if (@preg_match('/(.+)\. Details: (.+)/', $malware_parts[0], $match)) {
-                $data['malware_type'] = $match[1];
-                $data['malware_docs'] = $match[2];
+            $pattern = ".\x20Details:\x20";
+            if (strpos($malware_parts[0], $pattern) !== false) {
+                $offset = strpos($malware_parts[0], $pattern);
+                $data['malware_type'] = substr($malware_parts[0], 0, $offset);
+                $data['malware_docs'] = substr($malware_parts[0], $offset+11);
             }
 
             $data['malware_payload'] = trim($malware_parts[1]);
