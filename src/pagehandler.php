@@ -157,6 +157,7 @@ function sucuriscan_settings_page()
     /* settings - api service */
     $params['Settings.APIService.Status'] = sucuriscan_settings_apiservice_status($nonce);
     $params['Settings.APIService.Proxy'] = sucuriscan_settings_apiservice_proxy();
+    $params['Settings.SiteCheck.Target'] = SucuriScanSiteCheck::targetURLOption();
 
     /* settings - website info */
     $params['Settings.Webinfo.Details'] = sucuriscan_settings_webinfo_details();

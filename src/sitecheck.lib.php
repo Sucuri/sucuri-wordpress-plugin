@@ -33,6 +33,23 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
 class SucuriScanSiteCheck extends SucuriScanAPI
 {
     /**
+     * Returns the URL that will be scanned by SiteCheck.
+     *
+     * @return string URL to be scanned.
+     */
+    private static function targetURL()
+    {
+        $url = SucuriScan::getDomain();
+
+        /* allow to set a custom URL for the scans */
+        if ($custom = SucuriScanOption::getOption(':sitecheck_target')) {
+            return $custom;
+        }
+
+        return $url;
+    }
+
+    /**
      * Executes a malware scan against the specified website.
      *
      * @see https://sitecheck.sucuri.net/
@@ -41,25 +58,16 @@ class SucuriScanSiteCheck extends SucuriScanAPI
      * @param bool $clear Request the results from a fresh scan or not.
      * @return array|bool JSON encoded website scan results.
      */
-    public static function runMalwareScan($domain = '', $clear = true)
+    public static function runMalwareScan($clear = false)
     {
-        if (empty($domain)) {
-            return false;
-        }
-
         $params = array();
-        $params['scan'] = $domain;
-        $params['fromwp'] = 2;
         $params['json'] = 1;
+        $params['fromwp'] = 2;
+        $params['scan'] = self::targetURL();
 
         /* force clear scan */
         if ($clear === true) {
             $params['clear'] = 1;
-        }
-
-        /* allow to set a custom URL for the scans */
-        if (defined('SUCURISCAN_SITECHECK_TARGET')) {
-            $params['scan'] = SUCURISCAN_SITECHECK_TARGET;
         }
 
         $args = array('assoc' => true, 'timeout' => 60);
@@ -91,25 +99,8 @@ class SucuriScanSiteCheck extends SucuriScanAPI
      */
     public static function scanAndCollectData()
     {
-        $tld = SucuriScan::getDomain();
         $cache = new SucuriScanCache('sitecheck');
         $results = $cache->get('scan_results', SUCURISCAN_SITECHECK_LIFETIME, 'array');
-
-        /**
-         * Allow the user to scan foreign domains.
-         *
-         * This condition allows for the execution of the malware scanner on a
-         * website different than the one where the plugin is installed. This is
-         * basically the same as scanning any domain on the SiteCheck website.
-         * In this case, this is mostly used to allow the development execute
-         * tests and to troubleshoot issues reported by other users.
-         *
-         * @var boolean
-         */
-        if ($custom = SucuriScanRequest::get('s')) {
-            $tld = SucuriScan::escape($custom);
-            $results = false /* invalid cache */;
-        }
 
         /* return cached malware scan results. */
         if ($results && !empty($results)) {
@@ -120,7 +111,7 @@ class SucuriScanSiteCheck extends SucuriScanAPI
         $cache->delete('scan_results');
 
         /* send HTTP request to SiteCheck's API service. */
-        $results = self::runMalwareScan($tld);
+        $results = self::runMalwareScan();
 
         /* check for error in the request's response. */
         if (is_string($results) || isset($results['SYSTEM']['ERROR'])) {
@@ -579,5 +570,26 @@ class SucuriScanSiteCheck extends SucuriScanAPI
         }
 
         wp_send_json($response, 200);
+    }
+
+    /**
+     * Returns the HTML to configure the API SiteCheck service.
+     *
+     * @return string HTML for the API SiteCheck service option.
+     */
+    public static function targetURLOption()
+    {
+        $params = array();
+
+        if (SucuriScanInterface::checkNonce()) {
+            $custom = SucuriScanRequest::post(':sitecheck_target');
+            if ($custom !== false) {
+                SucuriScanOption::updateOption(':sitecheck_target', $custom);
+            }
+        }
+
+        $params['SiteCheck.Target'] = self::targetURL();
+
+        return SucuriScanTemplate::getSection('sitecheck-target', $params);
     }
 }

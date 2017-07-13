@@ -1247,6 +1247,12 @@ msgstr "Recomendations"
 msgid "SiteCheckNoResults"
 msgstr "If our free scanner did not detect any issue, you may have a more complicated and hidden problem. You can <a target=\"_blank\" href=\"https://sucuri.net/website-security-platform/signup\">sign up with Sucuri</a> for a complete and in-depth scan + cleanup (not included in the free checks)."
 
+msgid "SiteCheckTarget"
+msgstr "Malware Scan Target"
+
+msgid "SiteCheckTargetInfo"
+msgstr "The remote malware scanner provided by the plugin is powered by <a href=\"https://sitecheck.sucuri.net/\" target=\"_blank\">Sucuri SiteCheck</a>, a service that takes a publicly accessible URL and scans it for malicious code. If your website is not visible to the Internet, for example, if it is hosted in a local development environment or a restricted network, the scanner will not be able to work on it. Additionally, if the website was installed in a non-standard directory the scanner will report a \"404 Not Found\" error. You can use this option to change the URL that will be scanned."
+
 msgid "PasswordAttack"
 msgstr "Password Guessing Brute Force Attacks"
 

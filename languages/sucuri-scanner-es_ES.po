@@ -1247,6 +1247,12 @@ msgstr "Recomendaciones"
 msgid "SiteCheckNoResults"
 msgstr "Si nuestro escáner gratuito no ha detectado algún problema, es posible que su sitio tenga un problema más complicado y la infección esté escondida. Puede <a target=\"_blank\" href=\"https://sucuri.net/website-security-platform/signup\">registrar una cuenta con Sucuri</a> para obtener un escaneo más detallado y eventualmente una limpieza absoluta de su sitio web (no incluido con el plan gratuito)."
 
+msgid "SiteCheckTarget"
+msgstr "URL Para el Escáner de Malware"
+
+msgid "SiteCheckTargetInfo"
+msgstr "El escáner remoto de malware funciona gracias a <a href=\"https://sitecheck.sucuri.net/\" target=\"_blank\">Sucuri SiteCheck</a>, un servicio que toma la dirección de un sitio web con acceso público y la escanea en busca de código malicioso. Si su sitio web no es visible a través de Internet, por ejemplo, si el sitio está en un ambiente de desarrollo local or una red restringida, el escáner no podrá trabajar en él. Adicionalmente, si el sitio web fué instalado en un directorio diferente al sugerido el escáner reportará un error \"404 Not Found\". Puedes usar esta opción para cambiar la dirección del sitio web que será escaneado."
+
 msgid "PasswordAttack"
 msgstr "Ataque De Fuerza Bruta En Contra De Contraseñas"
 

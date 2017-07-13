@@ -98,6 +98,7 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_selfhosting_fpath' => '',
             'sucuriscan_selfhosting_monitor' => 'disabled',
             'sucuriscan_site_version' => '0.0',
+            'sucuriscan_sitecheck_target' => '',
             'sucuriscan_use_wpmail' => 'enabled',
         );
 

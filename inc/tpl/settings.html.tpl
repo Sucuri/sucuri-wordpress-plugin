@@ -103,6 +103,8 @@
             %%%SUCURI.Settings.APIService.Status%%%
 
             %%%SUCURI.Settings.APIService.Proxy%%%
+
+            %%%SUCURI.Settings.SiteCheck.Target%%%
         </div>
 
         <div id="sucuriscan-tabs-webinfo">
