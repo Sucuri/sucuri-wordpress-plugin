@@ -1193,6 +1193,9 @@ msgstr "Tenga en cuenta que el Firewall tiene unas <a href=\"https://kb.sucuri.n
 msgid "FirewallCacheWiki"
 msgstr "La cache web es una tecnología para el almacenamiento temporal (caching) de documentos web, como páginas en HTML e imágenes, para reducir el uso de ancho de banda, la carga del servidor, y retrasos en las descargas. Un sistema de cache web guarda copias de los documentos que pasan a través de él; conexiones subsecuentes pueden devolver el contenido desde la cache si las condiciones lo permiten. &mdash; <a href=\"https://en.wikipedia.org/wiki/Web_cache\" target=\"_blank\" rel=\"noopener\">WikiPedia - Web Cache</a>"
 
+msgid "FirewallAutoClearCache"
+msgstr "Limpiar cache automáticamente cuando una publicación o página sea modificada"
+
 msgid "LoginsAdmins"
 msgstr "Autenticaciones Exitosas (admins)"
 

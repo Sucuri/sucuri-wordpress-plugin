@@ -3,11 +3,12 @@
 /* global jQuery */
 /* jshint camelcase: false */
 jQuery(function ($) {
-    $('#firewall-clear-cache-form > button').on('click', function (event) {
+    $('#firewall-clear-cache-button').on('click', function (event) {
         event.preventDefault();
 
-        $('#firewall-clear-cache-form .button').attr('disabled', true);
-        $('#firewall-clear-cache-form .button').html('@@SUCURI.Loading@@');
+        var button = $(this);
+        button.attr('disabled', true);
+        button.html('@@SUCURI.Loading@@');
         $('#firewall-clear-cache-response').html('');
 
         $.post('%%SUCURI.AjaxURL.Firewall%%', {
@@ -15,8 +16,25 @@ jQuery(function ($) {
             sucuriscan_page_nonce: '%%SUCURI.PageNonce%%',
             form_action: 'firewall_clear_cache',
         }, function (data) {
+            button.addClass('sucuriscan-hidden');
             $('#firewall-clear-cache-response').html(data);
-            $('#firewall-clear-cache-form').addClass('sucuriscan-hidden');
+        });
+    });
+
+    $('#firewall-clear-cache-auto').on('change', 'input:checkbox', function () {
+        var checked = $(this).is(':checked');
+
+        $('#firewall-clear-cache-auto span').html(
+        '@@SUCURI.FirewallAutoClearCache@@ (@@SUCURI.Loading@@)');
+
+        $.post('%%SUCURI.AjaxURL.Firewall%%', {
+            action: 'sucuriscan_ajax',
+            sucuriscan_page_nonce: '%%SUCURI.PageNonce%%',
+            form_action: 'firewall_auto_clear_cache',
+            auto_clear_cache: (checked?'enable':'disable'),
+        }, function () {
+            $('#firewall-clear-cache-auto span')
+            .html('@@SUCURI.FirewallAutoClearCache@@');
         });
     });
 });
@@ -34,12 +52,14 @@ jQuery(function ($) {
 
         <p>@@SUCURI.FirewallCacheWiki@@</p>
 
-        <div id="firewall-clear-cache-response"></div>
+        <div id="firewall-clear-cache-auto">
+            <label>
+                <input type="checkbox" name="sucuriscan_auto_clear_cache" value="true" %%SUCURI.FirewallAutoClearCache%% />
+                <span>@@SUCURI.FirewallAutoClearCache@@</span>
+            </label>
+        </div>
 
-        <form action="%%SUCURI.URL.Firewall%%#clearcache" method="post" id="firewall-clear-cache-form">
-            <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
-            <input type="hidden" name="sucuriscan_clear_cache" value="1" />
-            <button class="button button-primary">@@SUCURI.FirewallCacheButton@@</button>
-        </form>
+        <div id="firewall-clear-cache-response"></div>
+        <button id="firewall-clear-cache-button" class="button button-primary">@@SUCURI.FirewallCacheButton@@</button>
     </div>
 </div>

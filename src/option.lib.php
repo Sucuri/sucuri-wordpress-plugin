@@ -54,6 +54,7 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_api_key' => false,
             'sucuriscan_api_protocol' => 'https',
             'sucuriscan_api_service' => 'enabled',
+            'sucuriscan_auto_clear_cache' => 'disabled',
             'sucuriscan_cloudproxy_apikey' => '',
             'sucuriscan_diff_utility' => 'disabled',
             'sucuriscan_dns_lookups' => 'enabled',

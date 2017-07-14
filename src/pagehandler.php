@@ -182,8 +182,9 @@ function sucuriscan_ajax()
         SucuriScanFirewall::ipAccessAjax();
         SucuriScanFirewall::blacklistAjax();
         SucuriScanFirewall::deblacklistAjax();
-        SucuriScanFirewall::clearCacheAjax();
         SucuriScanFirewall::getSettingsAjax();
+        SucuriScanFirewall::clearCacheAjax();
+        SucuriScanFirewall::clearAutoCacheAjax();
         SucuriScanIntegrity::ajaxIntegrity();
         SucuriScanIntegrity::ajaxIntegrityDiffUtility();
         SucuriScanSettingsPosthack::availableUpdatesAjax();

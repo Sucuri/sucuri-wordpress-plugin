@@ -666,23 +666,9 @@ class SucuriScanFirewall extends SucuriScanAPI
     {
         $params = array();
 
-        /* flush the cache of the site(s) associated with the API key. */
-        if (SucuriScanInterface::checkNonce() && SucuriScanRequest::post(':clear_cache')) {
-            $response = self::clearCache();
-
-            if (!$response) {
-                SucuriScanInterface::error(__('FirewallNotEnabled', SUCURISCAN_TEXTDOMAIN));
-            } elseif (!isset($response['messages'][0])) {
-                SucuriScanInterface::error(__('FirewallClearCacheFailure', SUCURISCAN_TEXTDOMAIN));
-            } else {
-                // Clear W3 Total Cache if it is installed.
-                if (function_exists('w3tc_flush_all')) {
-                    w3tc_flush_all();
-                }
-
-                SucuriScanInterface::info($response['messages'][0]);
-            }
-        }
+        $params['FirewallAutoClearCache'] =
+        SucuriScanOption::isEnabled(':auto_clear_cache')
+        ? 'checked="checked"' : 'data-status="disabled"';
 
         return SucuriScanTemplate::getSection('firewall-clearcache', $params);
     }
@@ -696,12 +682,11 @@ class SucuriScanFirewall extends SucuriScanAPI
      * of certain files is going to stay as it is due to the configuration on the
      * edge of the servers.
      *
-     * @param int $post_id The post ID.
+     * @param array $data The post metadata.
      */
-    public static function clearCacheHook($post_id = 0)
+    public static function clearCacheHook($data)
     {
-        /* prevent double execution of the save_post action */
-        if (!wp_is_post_revision($post_id) && !wp_is_post_autosave($post_id)) {
+        if (SucuriScanOption::isEnabled(':auto_clear_cache')) {
             ob_start();
             self::clearCache();
             $error = ob_get_clean();
@@ -733,6 +718,30 @@ class SucuriScanFirewall extends SucuriScanAPI
                     implode('<br>', $res['messages'])
                 );
             }
+        }
+
+        wp_send_json($response, 200);
+    }
+
+    /**
+     * Configures the status of the automatic cache flush.
+     *
+     * @codeCoverageIgnore
+     */
+    public static function clearAutoCacheAjax()
+    {
+        if (SucuriScanRequest::post('form_action') !== 'firewall_auto_clear_cache') {
+            return;
+        }
+
+        $response = array();
+
+        if (SucuriScanRequest::post('auto_clear_cache') === 'enable') {
+            $response['ok'] = SucuriScanOption::updateOption(':auto_clear_cache', 'enabled');
+            $response['status'] = 'enabled';
+        } else {
+            $response['ok'] = SucuriScanOption::deleteOption(':auto_clear_cache');
+            $response['status'] = 'disabled';
         }
 
         wp_send_json($response, 200);

@@ -858,3 +858,6 @@ body.sucuri-security_page_sucuriscan_hardening {
 .sucuriscan-settings-alerts .dashicons-before::before {
     padding-right: 10px;
 }
+#firewall-clear-cache-auto {
+    margin-bottom: 15px;
+}

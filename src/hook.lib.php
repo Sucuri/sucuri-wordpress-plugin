@@ -683,6 +683,8 @@ class SucuriScanHook extends SucuriScanEvent
             if ($data->post_date === $data->post_modified) {
                 $action = 'created';
             }
+
+            SucuriScanFirewall::clearCacheHook($data);
         }
 
         $message = sprintf(
