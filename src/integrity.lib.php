@@ -609,6 +609,7 @@ class SucuriScanIntegrity
         $irrelevant = array(
             '^sucuri-[0-9a-z\-]+\.php$',
             '^\S+-sucuri-db-dump-gzip-[0-9]{10}-[0-9a-z]{32}\.gz$',
+            '^\.sucuri-sss-resume-[0-9a-z]{32}\.php$',
             '^([^\/]*)\.(pdf|css|txt|jpg|gif|png|jpeg)$',
             '^wp-content\/(themes|plugins)\/.+',
             '^google[0-9a-z]{16}\.html$',

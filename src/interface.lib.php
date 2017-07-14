@@ -218,7 +218,6 @@ class SucuriScanInterface
     {
         /* get version of the plugin that was previously installed */
         $version = SucuriScanOption::getOption(':plugin_version');
-        $settings = SucuriScanOption::optionsFilePath();
 
         /* use simple comparison to force type cast. */
         if ($version == SUCURISCAN_VERSION) {
