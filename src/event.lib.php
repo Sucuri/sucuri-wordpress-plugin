@@ -244,47 +244,77 @@ class SucuriScanEvent extends SucuriScan
 
     /**
      * Sends all the events from the queue to the API.
+     *
+     * @return array|bool Information about the dequeue process.
      */
     public static function sendLogsFromQueue()
     {
         if (SucuriScanOption::isDisabled(':api_service')) {
-            return;
+            return false;
         }
 
         $cache = new SucuriScanCache('auditqueue');
         $finfo = $cache->getDatastoreInfo();
         $events = $cache->getAll();
-        $counter = 0;
 
         if (!$events) {
-            return;
+            return false;
         }
 
-        /* Send around 15,000 logs for maximum 30 seconds */
+        $result = array(
+            'maxtime' => -1,
+            'ttllogs' => 0,
+            'success' => 0,
+            'failure' => 0,
+            'elapsed' => 0,
+        );
+
+        /**
+         * Send logs to the API with a limit.
+         *
+         * We will use the maximum execution time setting to limit the number of
+         * logs that the plugin will try to send to the API service before the
+         * server times out. In a regular installation, the limit is set to 30
+         * seconds, since the timeout for the HTTP request is 5 seconds we will
+         * instruct the plugin to wait (30 secs - 5 secs) and an additional one
+         * second to spare processing, so in a regular installation the plugin
+         * will try to send as much logs as possible to the API service in less
+         * than 25 seconds.
+         */
         $maxtime = (int) SucuriScan::iniGet('max_execution_time');
-        $maxreqs = ($maxtime > 1) ? (500 * $maxtime) : 5000;
+        $timeout = ($maxtime > 1) ? ($maxtime - 6) : 30;
+
+        /* record some statistics */
+        $startTime = microtime(true);
+        $result['maxtime'] = $maxtime;
+        $result['ttllogs'] = count($events);
 
         foreach ($events as $keyname => $message) {
             $offset = strpos($keyname, '_');
             $timestamp = substr($keyname, 0, $offset);
             $status = self::sendLogToAPI($message, $timestamp);
 
+            /* skip; API is busy */
             if ($status !== true) {
-                /* API is down */
-                break;
+                $result['failure']++;
+                continue;
             }
 
             /* dequeue event message */
             unset($events[$keyname]);
-            $counter++;
+            $result['success']++;
 
-            /* avoid memory limit */
-            if ($counter >= $maxreqs) {
+            /* avoid gateway timeout; max execution time */
+            $elapsedTime = (microtime(true) - $startTime);
+            if ($elapsedTime >= $timeout) {
                 break;
             }
         }
 
+        $result['elapsed'] = round(microtime(true) - $startTime, 4);
         $cache->override($events);
+
+        return $result;
     }
 
     /**

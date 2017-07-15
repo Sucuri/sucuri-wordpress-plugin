@@ -70,13 +70,33 @@ jQuery(function ($) {
 
     $('.sucuriscan-auditlog-table').on('click', '.sucuriscan-auditlogs-sendlogs', function (event) {
         event.preventDefault();
+
+        $('.sucuriscan-sendlogs-panel').attr('content', '');
         $('.sucuriscan-auditlogs-sendlogs-response').html('@@SUCURI.Loading@@');
+
         $.post('%%SUCURI.AjaxURL.Dashboard%%', {
             action: 'sucuriscan_ajax',
             sucuriscan_page_nonce: '%%SUCURI.PageNonce%%',
             form_action: 'auditlogs_send_logs',
-        }, function () {
+        }, function (data) {
             sucuriscanLoadAuditLogs(0);
+
+            setTimeout(function (){
+                var tooltipContent =
+                    'Total logs in the queue: {TTLLOGS}<br>' +
+                    'Maximum execution time: {MAXTIME}<br>' +
+                    'Successfully sent to the API: {SUCCESS}<br>' +
+                    'Total request timeouts (failures): {FAILURE}<br>' +
+                    'Total execution time: {ELAPSED} secs';
+                $('.sucuriscan-sendlogs-panel')
+                    .attr('content', tooltipContent
+                    .replace('{MAXTIME}', data.maxtime)
+                    .replace('{TTLLOGS}', data.ttllogs)
+                    .replace('{SUCCESS}', data.success)
+                    .replace('{FAILURE}', data.failure)
+                    .replace('{ELAPSED}', data.elapsed)
+                );
+            }, 200);
         });
     });
 });
@@ -98,7 +118,8 @@ jQuery(function ($) {
     </div>
 
     <div class="sucuriscan-clearfix sucuriscan-auditlog-footer">
-        <div class="sucuriscan-pull-left sucuriscan-hidden sucuriscan-sendlogs-panel">
+        <div class="sucuriscan-pull-left sucuriscan-hidden sucuriscan-tooltip
+            sucuriscan-sendlogs-panel" tooltip-width="250" tooltip-html="true">
             <small class="sucuriscan-auditlogs-sendlogs-response"></small>
             <small><a href="#" class="sucuriscan-auditlogs-sendlogs">@@SUCURI.SendLogs@@</a></small>
         </div>

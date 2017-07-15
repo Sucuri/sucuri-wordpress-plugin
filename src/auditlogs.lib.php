@@ -338,9 +338,7 @@ class SucuriScanAuditLogs
         }
 
         /* blocking; might take a while */
-        SucuriScanEvent::sendLogsFromQueue();
-
-        wp_send_json(array('ok' => true), 200);
+        wp_send_json(SucuriScanEvent::sendLogsFromQueue(), 200);
     }
 
     /**
