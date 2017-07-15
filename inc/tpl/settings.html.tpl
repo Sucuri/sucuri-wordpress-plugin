@@ -22,8 +22,6 @@
 
             %%%SUCURI.Settings.General.IPDiscoverer%%%
 
-            %%%SUCURI.Settings.General.AuditLogStats%%%
-
             %%%SUCURI.Settings.General.ImportExport%%%
 
             %%%SUCURI.Settings.General.ResetOptions%%%

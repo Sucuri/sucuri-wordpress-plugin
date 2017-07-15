@@ -448,34 +448,6 @@ function sucuriscan_settings_general_ipdiscoverer($nonce)
 }
 
 /**
- * Renders a page with information about the auditlog stats feature.
- *
- * @param bool $nonce True if the CSRF protection worked.
- * @return string Page with information about the auditlog stats.
- */
-function sucuriscan_settings_general_auditlogstats($nonce)
-{
-    $params = array();
-
-    if ($nonce) {
-        // Update the limit for audit logs report.
-        if ($logs4report = SucuriScanRequest::post(':logs4report', '[0-9]{1,4}')) {
-            $message = 'Audit log statistics limit set to <code>' . $logs4report . '</code>';
-
-            SucuriScanOption::updateOption(':logs4report', $logs4report);
-            SucuriScanEvent::reportInfoEvent($message);
-            SucuriScanEvent::notifyEvent('plugin_change', $message);
-            SucuriScanInterface::info(__('LogsReportLimit', SUCURISCAN_TEXTDOMAIN));
-        }
-    }
-
-    $logs4report = SucuriScanOption::getOption(':logs4report');
-    $params['AuditLogStats.Limit'] = SucuriScan::escape($logs4report);
-
-    return SucuriScanTemplate::getSection('settings-general-auditlogstats', $params);
-}
-
-/**
  * Renders a page with information about the import export feature.
  *
  * @param bool $nonce True if the CSRF protection worked.
@@ -498,7 +470,6 @@ function sucuriscan_settings_general_importexport($nonce)
         ':ignored_events',
         ':language',
         ':lastlogin_redirection',
-        ':logs4report',
         ':maximum_failed_logins',
         ':notify_available_updates',
         ':notify_bruteforce_attack',

@@ -29,9 +29,6 @@ msgstr "Ajustes"
 msgid "AuditLogs"
 msgstr "Registros"
 
-msgid "Statistics"
-msgstr "Estadísticas"
-
 msgid "ClearCache"
 msgstr "Limpiar Cache"
 
@@ -1492,15 +1489,3 @@ msgstr "Almacenamiento de Datos"
 
 msgid "DataStorageInfo"
 msgstr "Este es el directorio donde el plugin guardará los registros de seguridad, el archivo con las configuraciones, la cache y datos adicionales de otras herramientas. El plugin require de permisos de escritura en este directorio así como en los archivos contenidos allí. Si usted prefiere mantener estos archivos en un directorio diferente al especificado, por favor defina una constante llamada <em>\"SUCURI_DATA_STORAGE\"</em> en el archivo de configuración de WordPress con la ruta absoluta del nuevo directorio."
-
-msgid "LogsReport"
-msgstr "Estadísticas De Seguridad"
-
-msgid "LogsReportLimit"
-msgstr "El número máximo de registros que serán usados para la generación de gráficas con estadísticas de seguridad ha sido cambiado"
-
-msgid "LogsReportInfo"
-msgstr "Los datos usados para generar estas estadísticas son los últimos <b>%%SUCURI.AuditReport.Logs4Report%% eventos</b> en el registro de seguridad, usted puede configurar este número desde la página de ajustes."
-
-msgid "LogsReportDescription"
-msgstr "Activar esta opción le permite visualizar estadísticas de los eventos ejecutados en su sitio web incluyendo la actividad de los usuarios y posibles ataques dirigidos a su sitio web. Por defecto, el plugin utiliza los últimos registros de seguridad para generar las gráficas, el número de registros seleccionados es limitado para reducir el consumo de memoria por parte del analizador de datos. Usted puede incrementar este número bajo su propio riesgo considerando la cantidad de recursos disponibles en su servidor y el tiempo de ejecución máxima de archivos PHP configurado por su proveedor de hosting."

@@ -66,7 +66,6 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_language' => 'en_US',
             'sucuriscan_last_email_at' => time(),
             'sucuriscan_lastlogin_redirection' => 'enabled',
-            'sucuriscan_logs4report' => 500,
             'sucuriscan_maximum_failed_logins' => 30,
             'sucuriscan_notify_available_updates' => 'disabled',
             'sucuriscan_notify_bruteforce_attack' => 'disabled',

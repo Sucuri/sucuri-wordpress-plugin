@@ -29,9 +29,6 @@ msgstr "Settings"
 msgid "AuditLogs"
 msgstr "Audit Logs"
 
-msgid "Statistics"
-msgstr "Statistics"
-
 msgid "ClearCache"
 msgstr "Clear Cache"
 
@@ -1492,15 +1489,3 @@ msgstr "Data Storage"
 
 msgid "DataStorageInfo"
 msgstr "This is the directory where the plugin will store the security logs, the list of files marked as fixed in the core integrity tool, the cache for the malware scanner and 3rd-party plugin metadata. The plugin requires write permissions in this directory as well as the files contained in it. If you prefer to keep these files in a non-public directory <em>(one level up the document root) </em> please define a constant in the <em>\"wp-config.php\"</em> file named <em>\"SUCURI_DATA_STORAGE\"</em> with the absolute path to the new directory."
-
-msgid "LogsReport"
-msgstr "Audit Log Statistics"
-
-msgid "LogsReportLimit"
-msgstr "The number of logs that will be used to generate the audit report has been changed"
-
-msgid "LogsReportInfo"
-msgstr "The data used to generate these charts comes from the last <b>%%SUCURI.AuditReport.Logs4Report%% audit logs</b>, you can configure this number from the plugin settings page."
-
-msgid "LogsReportDescription"
-msgstr "Enabling this option allows you to have a quick view of the range of the activity of your users and/or the attacks directed against your website. By default, the plugin uses the latest entries in the audit logs and uses that information to draw bar and pie charts in the dashboard. The statistic are generated with a limited number of logs to reduce the memory consumption of the parser. You can increase the limit at your own discretion considering the amount of memory and maximum execution time that your PHP installation is allowed to use."

@@ -30,7 +30,6 @@ function sucuriscan_page()
 
     /* load data for the AuditLogs section */
     $params['AuditLogs'] = SucuriScanAuditLogs::pageAuditLogs();
-    $params['AuditLogsReport'] = SucuriScanAuditLogs::pageAuditLogsReport();
 
     /* load data for the SiteCheck section */
     $params['SiteCheck.iFramesTitle'] = __('iFrames', SUCURISCAN_TEXTDOMAIN);
@@ -115,7 +114,6 @@ function sucuriscan_settings_page()
     $params['Settings.General.SelfHosting'] = sucuriscan_settings_general_selfhosting($nonce);
     $params['Settings.General.ReverseProxy'] = sucuriscan_settings_general_reverseproxy($nonce);
     $params['Settings.General.IPDiscoverer'] = sucuriscan_settings_general_ipdiscoverer($nonce);
-    $params['Settings.General.AuditLogStats'] = sucuriscan_settings_general_auditlogstats($nonce);
     $params['Settings.General.ImportExport'] = sucuriscan_settings_general_importexport($nonce);
 
     /* settings - scanner */
@@ -175,7 +173,6 @@ function sucuriscan_ajax()
 
     if (SucuriScanInterface::checkNonce()) {
         SucuriScanAuditLogs::ajaxAuditLogs();
-        SucuriScanAuditLogs::ajaxAuditLogsReport();
         SucuriScanAuditLogs::ajaxAuditLogsSendLogs();
         SucuriScanSiteCheck::ajaxMalwareScan();
         SucuriScanFirewall::auditlogsAjax();
