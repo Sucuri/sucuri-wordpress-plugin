@@ -111,6 +111,11 @@ class SucuriScanAPI extends SucuriScanOption
 
         /* support HTTP POST requests */
         if ($method === 'POST') {
+            if (array_key_exists('a', $params)) {
+                /* include action to increase visibility */
+                $url .= '?a=' . $params['a'];
+            }
+
             $args['body'] = $params;
             $res = wp_remote_post($url, $args);
         }
