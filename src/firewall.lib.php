@@ -80,22 +80,16 @@ class SucuriScanFirewall extends SucuriScanAPI
 
         if (isset($params['k']) && isset($params['s'])) {
             $send_request = true;
-        } else {
-            $api_key = self::getKey();
-
-            if ($api_key) {
-                $send_request = true;
-                $params['k'] = $api_key['k'];
-                $params['s'] = $api_key['s'];
-            }
+        } elseif ($api_key = self::getKey()) {
+            $send_request = true;
+            $params['k'] = $api_key['k'];
+            $params['s'] = $api_key['s'];
         }
 
         if ($send_request) {
-            $url = SUCURISCAN_CLOUDPROXY_API;
-            $params[ SUCURISCAN_CLOUDPROXY_API_VERSION ] = 1;
             unset($params['string']);
-
-            return self::apiCall($url, $method, $params);
+            $params[SUCURISCAN_CLOUDPROXY_API_VERSION] = 1;
+            return self::apiCall(SUCURISCAN_CLOUDPROXY_API, $method, $params);
         }
 
         return false;
