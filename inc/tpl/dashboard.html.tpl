@@ -5,6 +5,26 @@
 /* global jQuery */
 /* jshint camelcase: false */
 jQuery(function ($) {
+    var sucuriscanSiteCheckLinks = function (target, links) {
+        if (links.length === 0) {
+            $(target).html('<div><em>@@SUCURI.NoData@@</em></div>');
+            return;
+        }
+
+        var tbody = $('<tbody>');
+        var options = {class: 'wp-list-table widefat sucuriscan-table'};
+
+        for (var key in links) {
+            if (links.hasOwnProperty(key)) {
+                tbody.append('<tr><td><a href="' + links[key] + '" target="_b' +
+                'lank" class="sucuriscan-monospace">' + links[key] + '</a></t' +
+                'd></tr>');
+            }
+        }
+
+        $(target).html($('<table>', options).html(tbody));
+    };
+
     $.post('%%SUCURI.AjaxURL.Dashboard%%', {
         action: 'sucuriscan_ajax',
         sucuriscan_page_nonce: '%%SUCURI.PageNonce%%',
@@ -14,9 +34,9 @@ jQuery(function ($) {
         $('#sucuriscan-title-links').html(data.links.title);
         $('#sucuriscan-title-scripts').html(data.scripts.title);
 
-        $('#sucuriscan-tabs-iframes').html(data.iframes.content);
-        $('#sucuriscan-tabs-links').html(data.links.content);
-        $('#sucuriscan-tabs-scripts').html(data.scripts.content);
+        sucuriscanSiteCheckLinks('#sucuriscan-tabs-iframes', data.iframes.content);
+        sucuriscanSiteCheckLinks('#sucuriscan-tabs-links', data.links.content);
+        sucuriscanSiteCheckLinks('#sucuriscan-tabs-scripts', data.scripts.content);
 
         $('#sucuriscan-malware').html(data.malware);
         $('#sucuriscan-blacklist').html(data.blacklist);

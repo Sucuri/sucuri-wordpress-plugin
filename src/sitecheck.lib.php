@@ -396,23 +396,8 @@ class SucuriScanSiteCheck extends SucuriScanAPI
      */
     public static function iFramesContent()
     {
-        $params = array();
         $data = self::scanAndCollectData();
-
-        if (!isset($data['LINKS']['IFRAME'])) {
-            return ''; /* empty content */
-        }
-
-        $params['SiteCheck.Resources'] = '';
-
-        foreach ($data['LINKS']['IFRAME'] as $url) {
-            $params['SiteCheck.Resources'] .=
-            SucuriScanTemplate::getSnippet('sitecheck-links', array(
-                'SiteCheck.URL' => $url,
-            ));
-        }
-
-        return SucuriScanTemplate::getSection('sitecheck-links', $params);
+        return isset($data['LINKS']['IFRAME']) ? $data['LINKS']['IFRAME'] : array();
     }
 
     /**
@@ -422,23 +407,8 @@ class SucuriScanSiteCheck extends SucuriScanAPI
      */
     public static function linksContent()
     {
-        $params = array();
         $data = self::scanAndCollectData();
-
-        if (!isset($data['LINKS']['URL'])) {
-            return ''; /* empty content */
-        }
-
-        $params['SiteCheck.Resources'] = '';
-
-        foreach ($data['LINKS']['URL'] as $url) {
-            $params['SiteCheck.Resources'] .=
-            SucuriScanTemplate::getSnippet('sitecheck-links', array(
-                'SiteCheck.URL' => $url,
-            ));
-        }
-
-        return SucuriScanTemplate::getSection('sitecheck-links', $params);
+        return isset($data['LINKS']['URL']) ? $data['LINKS']['URL'] : array();
     }
 
     /**
@@ -448,38 +418,18 @@ class SucuriScanSiteCheck extends SucuriScanAPI
      */
     public static function scriptsContent()
     {
-        $total = 0;
-        $params = array();
+        $links = array();
         $data = self::scanAndCollectData();
 
-        $params['SiteCheck.Resources'] = '';
-
         if (isset($data['LINKS']['JSLOCAL'])) {
-            foreach ($data['LINKS']['JSLOCAL'] as $url) {
-                $total++;
-
-                $params['SiteCheck.Resources'] .=
-                SucuriScanTemplate::getSnippet('sitecheck-links', array(
-                    'SiteCheck.URL' => $url,
-                ));
-            }
+            $links = array_merge($links, $data['LINKS']['JSLOCAL']);
         }
 
         if (isset($data['LINKS']['JSEXTERNAL'])) {
-            foreach ($data['LINKS']['JSEXTERNAL'] as $url) {
-                $total++;
-                $params['SiteCheck.Resources'] .=
-                SucuriScanTemplate::getSnippet('sitecheck-links', array(
-                    'SiteCheck.URL' => $url,
-                ));
-            }
+            $links = array_merge($links, $data['LINKS']['JSEXTERNAL']);
         }
 
-        if ($total === 0) {
-            return ''; /* empty content */
-        }
-
-        return SucuriScanTemplate::getSection('sitecheck-links', $params);
+        return $links;
     }
 
     /**
