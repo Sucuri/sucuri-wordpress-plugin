@@ -171,9 +171,10 @@ class SucuriScanEvent extends SucuriScan
      *
      * @param string $message Information about the event.
      * @param string $timestamp Time when the event was triggered.
+     * @param int $timeout Maximum time in seconds to connect to the API.
      * @return bool True if the event was logged, false otherwise.
      */
-    private static function sendLogToAPI($message = '', $timestamp = '')
+    private static function sendLogToAPI($message = '', $timestamp = '', $timeout = 1)
     {
         if (empty($message)) {
             return self::throwException('Event identifier cannot be empty');
@@ -183,7 +184,7 @@ class SucuriScanEvent extends SucuriScan
         $params['a'] = 'send_log';
         $params['m'] = $message;
         $params['time'] = $timestamp;
-        $args = array('timeout' => 5 /* seconds */);
+        $args = array('timeout' => $timeout);
 
         $resp = SucuriScanAPI::apiCallWordpress('POST', $params, true, $args);
 
@@ -200,7 +201,7 @@ class SucuriScanEvent extends SucuriScan
      * @param string $message Information about the security event.
      * @return bool True if the operation succeeded, false otherwise.
      */
-    public static function sendLogToQueue($message = '')
+    private static function sendLogToQueue($message = '')
     {
         /* create storage directory if necessary */
         SucuriScanInterface::createStorageFolder();
@@ -232,11 +233,25 @@ class SucuriScanEvent extends SucuriScan
             }
         }
 
-        /* enqueue the event if the API is enabled */
+        /**
+         * Send event to the API if possible.
+         *
+         * If the user have not disabled the communication with the API service,
+         * the plugin will send a message with information about every triggered
+         * event in the website in realtime with a maximum connection time of
+         * two seconds. If the API service does not responds on time the plugin
+         * will insert the event into the local queue system and it will try to
+         * send the message again with a scheduled task every 24 hours, once the
+         * operation succeeds the event will be deleted from the queue.
+         */
         if (SucuriScanOption::isEnabled(':api_service')) {
-            $cache = new SucuriScanCache('auditqueue');
-            $key = str_replace('.', '_', microtime(true));
-            $written = $cache->add($key, $message);
+            $status = self::sendLogToAPI($message, time(), 2);
+
+            if (!$status) {
+                $cache = new SucuriScanCache('auditqueue');
+                $key = str_replace('.', '_', microtime(true));
+                $written = $cache->add($key, $message);
+            }
         }
 
         return true;
@@ -456,42 +471,6 @@ class SucuriScanEvent extends SucuriScan
         }
 
         return self::reportInfoEvent($message);
-    }
-
-    /**
-     * Reports an esception on the code.
-     *
-     * @param Exception $exception A valid exception object of any type.
-     * @return bool Whether the report was filled correctly or not.
-     */
-    public static function reportException($exception)
-    {
-        $e_trace = $exception->getTrace();
-        $multiple_entries = array();
-
-        foreach ($e_trace as $e_child) {
-            $e_file = array_key_exists('file', $e_child)
-                ? basename($e_child['file'])
-                : '[internal function]';
-            $e_line = array_key_exists('line', $e_child)
-                ? basename($e_child['line'])
-                : '0';
-            $e_method = array_key_exists('class', $e_child)
-                ? $e_child['class'] . $e_child['type'] . $e_child['function']
-                : $e_child['function'];
-            $multiple_entries[] = sprintf(
-                '%s(%s): %s',
-                $e_file,
-                $e_line,
-                $e_method
-            );
-        }
-
-        return self::reportDebugEvent(sprintf(
-            '%s: (multiple entries): %s',
-            $exception->getMessage(),
-            @implode(',', $multiple_entries)
-        ));
     }
 
     /**

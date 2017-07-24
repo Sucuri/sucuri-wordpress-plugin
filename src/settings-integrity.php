@@ -87,7 +87,7 @@ class SucuriScanSettingsIntegrity extends SucuriScanSettings
                     $message = 'Core integrity language set to <code>' . $language . '</code>';
 
                     SucuriScanOption::updateOption(':language', $language);
-                    SucuriScanEvent::reportAutoEvent($message);
+                    SucuriScanEvent::reportInfoEvent($message);
                     SucuriScanEvent::notifyEvent('plugin_change', $message);
                     SucuriScanInterface::info(__('IntegrityLanguage', SUCURISCAN_TEXTDOMAIN));
                 } else {

@@ -286,7 +286,7 @@ class SucuriScanHook extends SucuriScanEvent
 
             if ($options_changed_count) {
                 $message = $page_referer . ' settings changed';
-                SucuriScanEvent::reportErrorEvent(sprintf(
+                self::reportErrorEvent(sprintf(
                     '%s: (multiple entries): %s',
                     $message,
                     rtrim($options_changed_simple, ',')
@@ -448,7 +448,7 @@ class SucuriScanHook extends SucuriScanEvent
 
             $plugin = $plugin ? $plugin : 'Unknown';
             $message = 'Plugin installed: ' . self::escape($plugin);
-            SucuriScanEvent::reportWarningEvent($message);
+            self::reportWarningEvent($message);
             self::notifyEvent('plugin_installed', $message);
         }
     }
@@ -765,7 +765,7 @@ class SucuriScanHook extends SucuriScanEvent
             $theme = $theme ? $theme : 'Unknown';
 
             $message = 'Theme deleted: ' . self::escape($theme);
-            SucuriScanEvent::reportWarningEvent($message);
+            self::reportWarningEvent($message);
             self::notifyEvent('theme_deleted', $message);
         }
     }
@@ -803,7 +803,7 @@ class SucuriScanHook extends SucuriScanEvent
             $theme = $theme ? $theme : 'Unknown';
 
             $message = 'Theme installed: ' . self::escape($theme);
-            SucuriScanEvent::reportWarningEvent($message);
+            self::reportWarningEvent($message);
             self::notifyEvent('theme_installed', $message);
         }
     }

@@ -50,7 +50,7 @@ function sucuriscan_settings_alerts_recipients($nonce)
                 $message = sprintf(__('WillReceiveAlerts', SUCURISCAN_TEXTDOMAIN), $new_email);
 
                 SucuriScanOption::updateOption(':notify_to', implode(',', $emails));
-                SucuriScanEvent::reportInfoEvent($message);
+                SucuriScanEvent::reportInfoEvent('The email alerts will be sent to: ' . $new_email);
                 SucuriScanEvent::notifyEvent('plugin_change', $message);
                 SucuriScanInterface::info($message);
             } else {
@@ -76,7 +76,7 @@ function sucuriscan_settings_alerts_recipients($nonce)
                 $message = sprintf(__('WillNotReceiveAlerts', SUCURISCAN_TEXTDOMAIN), $deleted_emails_str);
 
                 SucuriScanOption::updateOption(':notify_to', implode(',', $emails));
-                SucuriScanEvent::reportInfoEvent($message);
+                SucuriScanEvent::reportInfoEvent('These emails will stop receiving alerts: ' . $deleted_emails_str);
                 SucuriScanEvent::notifyEvent('plugin_change', $message);
                 SucuriScanInterface::info($message);
             }

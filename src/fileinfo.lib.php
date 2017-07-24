@@ -209,7 +209,7 @@ class SucuriScanFileInfo extends SucuriScan
                     $objects = new DirectoryIterator($directory);
                 }
             } catch (RuntimeException $exception) {
-                SucuriScanEvent::reportException($exception);
+                /* ignore failure */
             }
             // @codeCoverageIgnoreEnd
 
