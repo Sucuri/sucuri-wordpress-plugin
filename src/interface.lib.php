@@ -69,32 +69,6 @@ class SucuriScanInterface
         );
         wp_enqueue_script('sucuriscan1');
 
-        if (SucuriScanRequest::get('page', 'sucuriscan') !== false) {
-            wp_register_style(
-                'sucuriscan2',
-                SUCURISCAN_URL . '/inc/css/c3.min.css',
-                array(/* empty */),
-                $asset
-            );
-            wp_enqueue_style('sucuriscan2');
-
-            wp_register_script(
-                'sucuriscan2',
-                SUCURISCAN_URL . '/inc/js/d3.min.js',
-                array(/* empty */),
-                $asset
-            );
-            wp_enqueue_script('sucuriscan2');
-
-            wp_register_script(
-                'sucuriscan3',
-                SUCURISCAN_URL . '/inc/js/c3.min.js',
-                array(/* empty */),
-                $asset
-            );
-            wp_enqueue_script('sucuriscan3');
-        }
-
         if (SucuriScanRequest::get('page', 'sucuriscan_firewall') !== false) {
             wp_register_style(
                 'sucuriscan3',

@@ -776,13 +776,11 @@ body.sucuri-security_page_sucuriscan_hardening {
     text-overflow: ellipsis;
 }
 .sucuriscan-auditlog-entry-time {
-    width: 6.5111%;
+    width: 45px;
     color: #808080;
-    margin-right: 20px;
 }
 .sucuriscan-auditlog-entry-event {
-    width: 3.2811%;
-    margin-right: 20px;
+    width: 28px;
 }
 .sucuriscan-auditlog-entry-message {
     width: 64.3111%;
@@ -861,4 +859,7 @@ body.sucuri-security_page_sucuriscan_hardening {
 }
 #firewall-clear-cache-auto {
     margin-bottom: 15px;
+}
+.sucuriscan-firewall-accesslog {
+    word-break: break-all;
 }
