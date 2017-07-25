@@ -60,7 +60,7 @@ class SucuriScanFSScanner extends SucuriScan
         $resource_type = SucuriScanFileInfo::getResourceType($path);
         $cache_value = array(
             'directory_path' => $path,
-            'ignored_at' => self::localTime(),
+            'ignored_at' => time(),
             'resource_type' => $resource_type,
         );
 

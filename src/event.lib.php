@@ -220,7 +220,7 @@ class SucuriScanEvent extends SucuriScan
             if ($monitor_fpath !== false) {
                 $local_event = sprintf(
                     "%s WordPressAudit %s %s : %s\n",
-                    date('Y-m-d H:i:s'),
+                    SucuriScan::datetime(null, 'Y-m-d H:i:s'),
                     SucuriScan::getTopLevelDomain(),
                     SucuriScanOption::getOption(':account'),
                     $message

@@ -555,3 +555,52 @@ function sucuriscan_settings_general_importexport($nonce)
 
     return SucuriScanTemplate::getSection('settings-general-importexport', $params);
 }
+
+/**
+ * Renders a page with the option to configure the timezone.
+ *
+ * @param bool $nonce True if the CSRF protection worked.
+ * @return string Page to configure the timezone.
+ */
+function sucuriscan_settings_general_timezone($nonce)
+{
+    $params = array();
+    $current = time();
+    $options = array();
+    $offsets = array(
+        -12.0, -11.5, -11.0, -10.5, -10.0, -9.50, -9.00, -8.50, -8.00, -7.50,
+        -7.00, -6.50, -6.00, -5.50, -5.00, -4.50, -4.00, -3.50, -3.00, -2.50,
+        -2.00, -1.50, -1.00, -0.50, +0.00, +0.50, +1.00, +1.50, +2.00, +2.50,
+        +3.00, +3.50, +4.00, +4.50, +5.00, +5.50, +5.75, +6.00, +6.50, +7.00,
+        +7.50, +8.00, +8.50, +8.75, +9.00, +9.50, 10.00, 10.50, 11.00, 11.50,
+        12.00, 12.75, 13.00, 13.75, 14.00
+    );
+
+    foreach ($offsets as $hour) {
+        $sign = ($hour < 0) ? '-' : '+';
+        $fill = (abs($hour) < 10) ? '0' : '';
+        $keyname = sprintf('UTC%s%s%.2f', $sign, $fill, abs($hour));
+        $label = SucuriScan::datetime($current + ($hour * 3600));
+        $options[$keyname] = $label;
+    }
+
+    if ($nonce) {
+        $pattern = 'UTC[\-\+][0-9]{2}\.[0-9]{2}';
+        $timezone = SucuriScanRequest::post(':timezone', $pattern);
+
+        if ($timezone) {
+            $message = 'Timezone override will use ' . $timezone;
+
+            SucuriScanOption::updateOption(':timezone', $timezone);
+            SucuriScanEvent::reportInfoEvent($message);
+            SucuriScanEvent::notifyEvent('plugin_change', $message);
+            SucuriScanInterface::info(__('TimezoneStatus', SUCURISCAN_TEXTDOMAIN));
+        }
+    }
+
+    $val = SucuriScanOption::getOption(':timezone');
+    $params['Timezone.Dropdown'] = SucuriScanTemplate::selectOptions($options, $val);
+    $params['Timezone.Example'] = SucuriScan::datetime();
+
+    return SucuriScanTemplate::getSection('settings-general-timezone', $params);
+}

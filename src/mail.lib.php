@@ -192,7 +192,7 @@ class SucuriScanMail extends SucuriScanOption
         $params['RemoteAddress'] = self::getRemoteAddr();
         $params['Message'] = $message;
         $params['User'] = $display_name;
-        $params['Time'] = SucuriScan::currentDateTime();
+        $params['Time'] = SucuriScan::datetime();
 
         foreach ($data_set as $var_key => $var_value) {
             $params[ $var_key ] = $var_value;

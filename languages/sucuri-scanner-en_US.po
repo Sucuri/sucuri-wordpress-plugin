@@ -1489,3 +1489,12 @@ msgstr "Data Storage"
 
 msgid "DataStorageInfo"
 msgstr "This is the directory where the plugin will store the security logs, the list of files marked as fixed in the core integrity tool, the cache for the malware scanner and 3rd-party plugin metadata. The plugin requires write permissions in this directory as well as the files contained in it. If you prefer to keep these files in a non-public directory <em>(one level up the document root) </em> please define a constant in the <em>\"wp-config.php\"</em> file named <em>\"SUCURI_DATA_STORAGE\"</em> with the absolute path to the new directory."
+
+msgid "TimezoneTitle"
+msgstr "Timezone"
+
+msgid "TimezoneInfo"
+msgstr "This option defines the timezone that will be used through out the entire plugin to print the dates and times whenever is necessary. This option also affects the date and time of the logs visible in the audit logs panel which is data that comes from a remote server configured to use Eastern Daylight Time (EDT). WordPress offers an option in the general settings page to allow you to configure the timezone for the entire website, however, if you are experiencing problems with the time in the audit logs, this option will help you fix them."
+
+msgid "TimezoneStatus"
+msgstr "The timezone for the date and time in the audit logs has been changed"

@@ -1489,3 +1489,12 @@ msgstr "Almacenamiento de Datos"
 
 msgid "DataStorageInfo"
 msgstr "Este es el directorio donde el plugin guardará los registros de seguridad, el archivo con las configuraciones, la cache y datos adicionales de otras herramientas. El plugin require de permisos de escritura en este directorio así como en los archivos contenidos allí. Si usted prefiere mantener estos archivos en un directorio diferente al especificado, por favor defina una constante llamada <em>\"SUCURI_DATA_STORAGE\"</em> en el archivo de configuración de WordPress con la ruta absoluta del nuevo directorio."
+
+msgid "TimezoneTitle"
+msgstr "Zona Horaria"
+
+msgid "TimezoneInfo"
+msgstr "Esta opción define la zona horaria que será usada a través de todo el plugin para mostrar las fechas y horas cuando sea necesario. Esta opción también afecta la fecha y hora de la información visible en el panel de registros de seguridad que viene de un servidor remoto configurado para usar Horario del este de Norteamérica (EDT por sus siglas en Inglés). WordPress ofrece una opción en la página de ajustes generales que te permite configurar la zona horaria para todo el sitio web, sin embargo, si estás experimentando problemas con la hora en los registros de seguridad, esta opción te ayudará a solucionarlos."
+
+msgid "TimezoneStatus"
+msgstr "La zona horaria para la fecha y hora en los registros de seguridad ha sido cambiada"

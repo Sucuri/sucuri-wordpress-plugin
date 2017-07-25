@@ -395,7 +395,7 @@ class SucuriScanAPI extends SucuriScanOption
                 $time = substr($micro, 0, $offset);
                 $auditlogs[] = sprintf(
                     '%s %s : %s',
-                    date('Y-m-d H:i:s', intval($time)),
+                    SucuriScan::datetime($time, 'Y-m-d H:i:s'),
                     SucuriScan::getSiteEmail(),
                     $message
                 );
@@ -456,9 +456,9 @@ class SucuriScanAPI extends SucuriScanOption
             /* extract and fix the date and time using the Eastern time zone */
             $datetime = sprintf('%s %s EDT', $dateAndEmail[0], $dateAndEmail[1]);
             $log_data['timestamp'] = strtotime($datetime);
-            $log_data['datetime'] = date('Y-m-d H:i:s', $log_data['timestamp']);
-            $log_data['date'] = date('Y-m-d', $log_data['timestamp']);
-            $log_data['time'] = date('H:i:s', $log_data['timestamp']);
+            $log_data['datetime'] = SucuriScan::datetime($log_data['timestamp'], 'Y-m-d H:i:s');
+            $log_data['date'] = SucuriScan::datetime($log_data['timestamp'], 'Y-m-d');
+            $log_data['time'] = SucuriScan::datetime($log_data['timestamp'], 'H:i:s');
 
             /* extract more information from the generic audit logs */
             $log_data['message'] = str_replace('<br>', ";\x20", $log_data['message']);

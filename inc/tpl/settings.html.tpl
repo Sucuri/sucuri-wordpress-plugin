@@ -22,6 +22,8 @@
 
             %%%SUCURI.Settings.General.IPDiscoverer%%%
 
+            %%%SUCURI.Settings.General.Timezone%%%
+
             %%%SUCURI.Settings.General.ImportExport%%%
 
             %%%SUCURI.Settings.General.ResetOptions%%%

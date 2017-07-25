@@ -704,17 +704,6 @@ class SucuriScan
     }
 
     /**
-     * Returns the current time measured in the number of seconds since the Unix Epoch.
-     *
-     * @see https://developer.wordpress.org/reference/functions/current_time/
-     * @return int Return current Unix timestamp.
-     */
-    public static function localTime()
-    {
-        return current_time('timestamp', false);
-    }
-
-    /**
      * Retrieve the date in localized format, based on timestamp.
      *
      * If the locale specifies the locale month and weekday, then the locale will
@@ -722,29 +711,41 @@ class SucuriScan
      * will be used instead.
      *
      * @param int $timestamp Unix timestamp.
+     * @param string $format Optional format for the date and time.
      * @return string The date, translated if locale specifies it.
      */
-    public static function datetime($timestamp = null)
+    public static function datetime($timestamp = null, $format = null)
     {
-        global $sucuriscan_date_format, $sucuriscan_time_format;
+        $diff = 0; /* use server time */
+        $tz = SucuriScanOption::getOption(':timezone');
+        $length = strlen($tz); /* example: UTC+12.75 */
 
-        $tz_format = $sucuriscan_date_format . "\x20" . $sucuriscan_time_format;
-
-        if (is_numeric($timestamp) && $timestamp > 0) {
-            return date_i18n($tz_format, $timestamp);
+        if ($timestamp === null) {
+            $timestamp = time();
         }
 
-        return date_i18n($tz_format);
-    }
+        if ($length === 9
+            && substr($tz, 0, 3) === 'UTC'
+            && ($tz[3] === '-' || $tz[3] === '+')
+            && $tz[6] === '.'
+        ) {
+            $hour = (float) substr($tz, 4);
+            $sign = ($tz[3] === '-') ? -1 : +1;
+            $diff = ($hour * $sign);
+        } else {
+            /* reset; value seems to be corrupt */
+            SucuriScanOption::deleteOption(':timezone');
+        }
 
-    /**
-     * Retrieve the date in localized format based on the current time.
-     *
-     * @return string The date, translated if locale specifies it.
-     */
-    public static function currentDateTime()
-    {
-        return self::datetime();
+        if ($format === null) {
+            $format = sprintf(
+                "%s\x20%s",
+                SucuriScanOption::getOption('date_format'),
+                SucuriScanOption::getOption('time_format')
+            );
+        }
+
+        return date($format, (intval($timestamp) + ($diff * 3600)));
     }
 
     /**

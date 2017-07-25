@@ -293,7 +293,7 @@ class SucuriScanFirewall extends SucuriScanAPI
         $params = array();
 
         /* logs are available after 24 hours */
-        $date = date('Y-m-d', strtotime('-1 day'));
+        $date = SucuriScan::datetime(strtotime('-1 day'), 'Y-m-d');
 
         $params['AuditLogs.DateYears'] = self::dates('years', $date);
         $params['AuditLogs.DateMonths'] = self::dates('months', $date);
@@ -338,7 +338,7 @@ class SucuriScanFirewall extends SucuriScanAPI
         if ($year && $month && $day) {
             $date = sprintf('%s-%s-%s', $year, $month, $day);
         } else {
-            $date = date('Y-m-d');
+            $date = SucuriScan::datetime(null, 'Y-m-d');
         }
 
         ob_start();
@@ -454,10 +454,11 @@ class SucuriScanFirewall extends SucuriScanAPI
         switch ($type) {
             case 'years':
                 $selected = $s_year;
-                $current_year = (int) date('Y');
+                $current_year = (int) SucuriScan::datetime(null, 'Y');
                 $max_years = 5; /* Maximum number of years to keep the logs. */
                 $options = range(($current_year - $max_years), $current_year);
                 break;
+
             case 'months':
                 $selected = $s_month;
                 $options = array(
@@ -475,6 +476,7 @@ class SucuriScanFirewall extends SucuriScanAPI
                     '12' => __('December', SUCURISCAN_TEXTDOMAIN),
                 );
                 break;
+
             case 'days':
                 $options = range(1, 31);
                 $selected = $s_day;

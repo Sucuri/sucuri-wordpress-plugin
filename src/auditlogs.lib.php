@@ -138,7 +138,7 @@ class SucuriScanAuditLogs
             $counter_i = 0;
             $total_items = 0;
             $previousDate = '';
-            $todaysDate = date('M d, Y');
+            $todaysDate = SucuriScan::datetime(null, 'M d, Y');
             $iterator_start = ($pageNumber - 1) * $maxPerPage;
             $total_items = count($auditlogs['output_data']);
 
@@ -157,15 +157,15 @@ class SucuriScanAuditLogs
 
                 $snippet_data = array(
                     'AuditLog.Event' => $audit_log['event'],
-                    'AuditLog.Time' => date('H:i', $audit_log['timestamp']),
-                    'AuditLog.Date' => date('M d, Y', $audit_log['timestamp']),
+                    'AuditLog.Time' => SucuriScan::datetime($audit_log['timestamp'], 'H:i'),
+                    'AuditLog.Date' => SucuriScan::datetime($audit_log['timestamp'], 'M d, Y'),
                     'AuditLog.Username' => $audit_log['username'],
                     'AuditLog.Address' => $audit_log['remote_addr'],
                     'AuditLog.Message' => $audit_log['message'],
                     'AuditLog.Extra' => '',
                 );
 
-                // Determine if we need to print the date.
+                /* determine if we need to print the date */
                 if ($snippet_data['AuditLog.Date'] === $previousDate) {
                     $snippet_data['AuditLog.Date'] = '';
                 } elseif ($snippet_data['AuditLog.Date'] === $todaysDate) {
@@ -175,7 +175,7 @@ class SucuriScanAuditLogs
                     $previousDate = $snippet_data['AuditLog.Date'];
                 }
 
-                // Decorate date if necessary.
+                /* decorate date if necessary */
                 if (!empty($snippet_data['AuditLog.Date'])) {
                     $snippet_data['AuditLog.Date'] =
                     '<div class="sucuriscan-auditlog-date">'
@@ -183,7 +183,7 @@ class SucuriScanAuditLogs
                     . '</div>';
                 }
 
-                // Print every file_list information item in a separate table.
+                /* print every file_list information item in a separate table */
                 if ($audit_log['file_list']) {
                     $css_scrollable = $audit_log['file_list_count'] > 10 ? 'sucuriscan-list-as-table-scrollable' : '';
                     $snippet_data['AuditLog.Extra'] .= '<ul class="sucuriscan-list-as-table ' . $css_scrollable . '">';

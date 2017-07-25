@@ -37,20 +37,6 @@ if (defined('SUCURISCAN')) {
     $sucuriscan_action_prefix = SucuriScan::isMultiSite() ? 'network_' : '';
 
     /**
-     * Settings options.
-     *
-     * The following global variables are mostly associative arrays where the
-     * key is linked to an option that will be stored in the database, and their
-     * correspondent values are the description of the option. These variables
-     * will be used in the settings page to offer the user a way to configure
-     * the behaviour of the plugin.
-     *
-     * @var string
-     */
-    $sucuriscan_date_format = get_option('date_format');
-    $sucuriscan_time_format = get_option('time_format');
-
-    /**
      * Remove the WordPress generator meta-tag from the source code.
      */
     remove_action('wp_head', 'wp_generator');

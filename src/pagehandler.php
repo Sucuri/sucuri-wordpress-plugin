@@ -115,6 +115,7 @@ function sucuriscan_settings_page()
     $params['Settings.General.ReverseProxy'] = sucuriscan_settings_general_reverseproxy($nonce);
     $params['Settings.General.IPDiscoverer'] = sucuriscan_settings_general_ipdiscoverer($nonce);
     $params['Settings.General.ImportExport'] = sucuriscan_settings_general_importexport($nonce);
+    $params['Settings.General.Timezone'] = sucuriscan_settings_general_timezone($nonce);
 
     /* settings - scanner */
     $params['Settings.Scanner.Cronjobs'] = SucuriScanSettingsScanner::cronjobs();

@@ -99,6 +99,7 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_selfhosting_monitor' => 'disabled',
             'sucuriscan_site_version' => '0.0',
             'sucuriscan_sitecheck_target' => '',
+            'sucuriscan_timezone' => 'UTC+00.00',
             'sucuriscan_use_wpmail' => 'enabled',
         );
 

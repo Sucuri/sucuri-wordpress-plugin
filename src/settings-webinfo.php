@@ -43,9 +43,9 @@ function sucuriscan_settings_webinfo_details()
     );
 
     $info_vars['Datetime_and_Timezone'] = sprintf(
-        '%s (GMT %s)',
-        SucuriScan::currentDateTime(),
-        SucuriScanOption::getOption('gmt_offset')
+        '%s (%s)',
+        SucuriScan::datetime(),
+        SucuriScanOption::getOption(':timezone')
     );
 
     if (defined('WP_DEBUG') && WP_DEBUG) {
