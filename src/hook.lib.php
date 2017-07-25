@@ -151,14 +151,19 @@ class SucuriScanHook extends SucuriScanEvent
     {
         $password = SucuriScanRequest::post('pwd');
         $title = empty($title) ? 'Unknown' : sanitize_user($title, true);
-        $message = 'User authentication failed: ' . $title . '; password: ' . $password;
+        $message = 'User authentication failed: ' . $title;
+
+        /* send the submitted password along with the alert */
+        if (SucuriScanOption::isEnabled(':notify_failed_password')) {
+            $message .= '; password: ' . $password;
+            sucuriscan_log_failed_login($title, $password);
+        } else {
+            sucuriscan_log_failed_login($title, '[hidden]');
+        }
 
         self::reportErrorEvent($message);
 
         self::notifyEvent('failed_login', $message);
-
-        /* log the failed login in the internal storage */
-        sucuriscan_log_failed_login($title, $password);
 
         /* report brute-force attack if necessary */
         if ($logins = sucuriscan_get_failed_logins()) {
@@ -281,7 +286,7 @@ class SucuriScanHook extends SucuriScanEvent
 
             if ($options_changed_count) {
                 $message = $page_referer . ' settings changed';
-                SucuriScanEvent::reportErrorEvent(sprintf(
+                self::reportErrorEvent(sprintf(
                     '%s: (multiple entries): %s',
                     $message,
                     rtrim($options_changed_simple, ',')
@@ -443,7 +448,7 @@ class SucuriScanHook extends SucuriScanEvent
 
             $plugin = $plugin ? $plugin : 'Unknown';
             $message = 'Plugin installed: ' . self::escape($plugin);
-            SucuriScanEvent::reportWarningEvent($message);
+            self::reportWarningEvent($message);
             self::notifyEvent('plugin_installed', $message);
         }
     }
@@ -575,15 +580,44 @@ class SucuriScanHook extends SucuriScanEvent
             return self::throwException('Ignore corrupted post data');
         }
 
+        /* ignore; the same */
+        if ($old === $new) {
+            return self::throwException('Skip events for equal transitions');
+        }
+
         $post_type = 'post'; /* either post or page */
 
         if (property_exists($post, 'post_type')) {
             $post_type = $post->post_type;
         }
 
+        if ($post_type === 'postman_sent_mail') {
+            /**
+             * Stop infinite loop sending the email alerts.
+             *
+             * The plugin detects changes in the posts, there are some other
+             * plugins that intercept PHPMailer and create a post object that is
+             * later used to send the real message to the users. This object is
+             * also detected by our plugin and is considered an additional event
+             * that must be reported, so after the first execution the operation
+             * falls into an infinite loop.
+             *
+             * @date 30 June, 2017
+             * @see https://wordpress.org/plugins/postman-smtp/
+             * @see https://wordpress.org/support/topic/unable-to-access-wordpress-dashboard-after-update-to-1-8-7/
+             */
+            return self::throwException('Skip events for postman-smtp alerts');
+        }
+
         /* check if email alerts are disabled for this type */
         if (SucuriScanOption::isIgnoredEvent($post_type)) {
             return self::throwException('Skip events for ignored post-types');
+        }
+
+        /* check if email alerts are disabled for this transition */
+        $custom_type = sprintf('from_%s_to_%s', $old, $new);
+        if (SucuriScanOption::isIgnoredEvent($custom_type)) {
+            return self::throwException('Skip events for ignored post transitions');
         }
 
         $pieces = array();
@@ -649,6 +683,8 @@ class SucuriScanHook extends SucuriScanEvent
             if ($data->post_date === $data->post_modified) {
                 $action = 'created';
             }
+
+            SucuriScanFirewall::clearCacheHook($data);
         }
 
         $message = sprintf(
@@ -729,7 +765,7 @@ class SucuriScanHook extends SucuriScanEvent
             $theme = $theme ? $theme : 'Unknown';
 
             $message = 'Theme deleted: ' . self::escape($theme);
-            SucuriScanEvent::reportWarningEvent($message);
+            self::reportWarningEvent($message);
             self::notifyEvent('theme_deleted', $message);
         }
     }
@@ -767,7 +803,7 @@ class SucuriScanHook extends SucuriScanEvent
             $theme = $theme ? $theme : 'Unknown';
 
             $message = 'Theme installed: ' . self::escape($theme);
-            SucuriScanEvent::reportWarningEvent($message);
+            self::reportWarningEvent($message);
             self::notifyEvent('theme_installed', $message);
         }
     }

@@ -224,6 +224,7 @@ body.sucuri-security_page_sucuriscan_hardening {
     padding: 20px;
     font-size: 12px;
     color: #fff;
+    z-index: 10;
 }
 .sucuriscan-tooltip-object::before {
     left: 50%;
@@ -753,9 +754,6 @@ body.sucuri-security_page_sucuriscan_hardening {
 .sucuriscan-tag-blue {
     background-color: #3922f2;
 }
-.sucuriscan-auditlog-response {
-    margin-bottom: 30px;
-}
 .sucuriscan-auditlog-date {
     color: #808080;
     padding: 30px 0;
@@ -778,13 +776,11 @@ body.sucuri-security_page_sucuriscan_hardening {
     text-overflow: ellipsis;
 }
 .sucuriscan-auditlog-entry-time {
-    width: 6.5111%;
+    width: 45px;
     color: #808080;
-    margin-right: 20px;
 }
 .sucuriscan-auditlog-entry-event {
-    width: 3.2811%;
-    margin-right: 20px;
+    width: 28px;
 }
 .sucuriscan-auditlog-entry-message {
     width: 64.3111%;
@@ -816,8 +812,9 @@ body.sucuri-security_page_sucuriscan_hardening {
     line-height: 32px;
     margin-left: 10px;
 }
+.sucuriscan-pagination-panel,
 .sucuriscan-auditlog-footer {
-    margin-top: 20px;
+    margin-top: 30px;
 }
 .sucuriscan-hardening-option {
     margin-bottom: 0;
@@ -846,4 +843,23 @@ body.sucuri-security_page_sucuriscan_hardening {
 }
 .sucuriscan-accesslog-label {
     font-weight: 700;
+}
+.sucuriscan-ipaccess-form,
+.sucuriscan-ipaccess-table {
+    margin-top: 20px;
+}
+.sucuriscan-ipaccess-table tbody td + td {
+    text-align: right;
+}
+.sucuriscan-ipaccess-table .sucuriscan-monospace {
+    line-height: 30px;
+}
+.sucuriscan-settings-alerts .dashicons-before::before {
+    padding-right: 10px;
+}
+#firewall-clear-cache-auto {
+    margin-bottom: 15px;
+}
+.sucuriscan-firewall-accesslog {
+    word-break: break-all;
 }

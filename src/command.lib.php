@@ -100,12 +100,11 @@ class SucuriScanCommand extends SucuriScan
      * the elements in the code to facilitate the styling of the diff report.
      *
      * @param string $filepath Relative path to the core WordPress file.
-     * @param string $version Version number of the WordPress installation.
      * @return string|bool HTML code with the diff report, false on failure.
      */
-    public static function diffHTML($filepath, $version)
+    public static function diffHTML($filepath)
     {
-        $checksums = SucuriScanAPI::getOfficialChecksums($version);
+        $checksums = SucuriScanAPI::getOfficialChecksums();
 
         if (!$checksums) {
             return SucuriScanInterface::error(__('UnsupportedWordPress', SUCURISCAN_TEXTDOMAIN));
@@ -115,25 +114,22 @@ class SucuriScanCommand extends SucuriScan
             return SucuriScanInterface::error(__('NoWordPressFile', SUCURISCAN_TEXTDOMAIN));
         }
 
-        if (!file_exists(ABSPATH . '/' . $filepath)) {
-            return SucuriScanInterface::error(__('CannotCheckMissingFile', SUCURISCAN_TEXTDOMAIN));
-        }
-
         $output = ''; /* initialize empty with no differences */
-        $tempfile = tempnam(sys_get_temp_dir(), SUCURISCAN . '-integrity-');
+        $a = tempnam(sys_get_temp_dir(), SUCURISCAN . '-integrity-');
+        $b = tempnam(sys_get_temp_dir(), SUCURISCAN . '-integrity-');
 
-        if ($handle = @fopen($tempfile, 'w')) {
-            $a = $tempfile; /* original file to compare */
-            $b = ABSPATH . '/' . $filepath; /* modified */
-            $content = SucuriScanAPI::getOriginalCoreFile($filepath, $version);
-            @fwrite($handle, $content); /* create a copy of the original file */
+        if ($handle = @fopen($a, 'w')) {
+            @fwrite($handle, SucuriScanAPI::getOriginalCoreFile($filepath));
+            @copy(ABSPATH . '/' . $filepath, $b);
             $output = self::diff($a, $b);
-            @fclose($tempfile);
-            @unlink($tempfile);
+            @fclose($handle);
         }
+
+        @unlink($a); /* delete original file */
+        @unlink($b); /* delete modified file */
 
         if (!is_array($output) || empty($output)) {
-            return ''; /* no differences found */
+            return SucuriScanInterface::error(__('ThereAreNoDifferences', SUCURISCAN_TEXTDOMAIN));
         }
 
         $response = "<ul class='" . SUCURISCAN . "-diff-content'>\n";
@@ -144,13 +140,11 @@ class SucuriScanCommand extends SucuriScan
             $cssclass .= "\x20" . SUCURISCAN . '-diff-line' . $number;
 
             if ($number === 1) {
-                $line = str_replace($a, $b . ' (ORIGINAL)', $line);
+                $line = sprintf('--- %s (ORIGINAL)', $filepath);
                 $cssclass .= "\x20" . SUCURISCAN . '-diff-header';
-                $line = substr($line, 0, 4 + strlen($b) + 11);
             } elseif ($number === 2) {
-                $line = str_replace($b, $b . ' (MODIFIED)', $line);
+                $line = sprintf('+++ %s (MODIFIED)', $filepath);
                 $cssclass .= "\x20" . SUCURISCAN . '-diff-header';
-                $line = substr($line, 0, 4 + strlen($b) + 11);
             } elseif ($number === 3) {
                 $cssclass .= "\x20" . SUCURISCAN . '-diff-header';
             } elseif ($line === '') {

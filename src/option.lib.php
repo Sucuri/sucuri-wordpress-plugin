@@ -54,6 +54,8 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_api_key' => false,
             'sucuriscan_api_protocol' => 'https',
             'sucuriscan_api_service' => 'enabled',
+            'sucuriscan_auto_clear_cache' => 'disabled',
+            'sucuriscan_checksum_api' => '',
             'sucuriscan_cloudproxy_apikey' => '',
             'sucuriscan_diff_utility' => 'disabled',
             'sucuriscan_dns_lookups' => 'enabled',
@@ -65,22 +67,22 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_language' => 'en_US',
             'sucuriscan_last_email_at' => time(),
             'sucuriscan_lastlogin_redirection' => 'enabled',
-            'sucuriscan_logs4report' => 500,
             'sucuriscan_maximum_failed_logins' => 30,
             'sucuriscan_notify_available_updates' => 'disabled',
             'sucuriscan_notify_bruteforce_attack' => 'disabled',
             'sucuriscan_notify_failed_login' => 'enabled',
-            'sucuriscan_notify_plugin_activated' => 'disabled',
-            'sucuriscan_notify_plugin_change' => 'disabled',
+            'sucuriscan_notify_failed_password' => 'disabled',
+            'sucuriscan_notify_plugin_activated' => 'enabled',
+            'sucuriscan_notify_plugin_change' => 'enabled',
             'sucuriscan_notify_plugin_deactivated' => 'disabled',
             'sucuriscan_notify_plugin_deleted' => 'disabled',
             'sucuriscan_notify_plugin_installed' => 'disabled',
             'sucuriscan_notify_plugin_updated' => 'disabled',
             'sucuriscan_notify_post_publication' => 'enabled',
             'sucuriscan_notify_scan_checksums' => 'disabled',
-            'sucuriscan_notify_settings_updated' => 'disabled',
+            'sucuriscan_notify_settings_updated' => 'enabled',
             'sucuriscan_notify_success_login' => 'enabled',
-            'sucuriscan_notify_theme_activated' => 'disabled',
+            'sucuriscan_notify_theme_activated' => 'enabled',
             'sucuriscan_notify_theme_deleted' => 'disabled',
             'sucuriscan_notify_theme_editor' => 'enabled',
             'sucuriscan_notify_theme_installed' => 'disabled',
@@ -92,12 +94,13 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_notify_widget_deleted' => 'disabled',
             'sucuriscan_plugin_version' => '0.0',
             'sucuriscan_prettify_mails' => 'disabled',
-            'sucuriscan_request_timeout' => 15,
             'sucuriscan_revproxy' => 'disabled',
             'sucuriscan_runtime' => 0,
             'sucuriscan_selfhosting_fpath' => '',
             'sucuriscan_selfhosting_monitor' => 'disabled',
             'sucuriscan_site_version' => '0.0',
+            'sucuriscan_sitecheck_target' => '',
+            'sucuriscan_timezone' => 'UTC+00.00',
             'sucuriscan_use_wpmail' => 'enabled',
         );
 
@@ -135,7 +138,7 @@ class SucuriScanOption extends SucuriScanRequest
 
             $default['sucuriscan_email_subject'] =
             __('SucuriAlert', SUCURISCAN_TEXTDOMAIN)
-            . ', :domain, :event';
+            . ', :domain, :event, :remoteaddr';
         }
 
         return @$default[$option];
@@ -451,6 +454,57 @@ class SucuriScanOption extends SucuriScanRequest
             && isset($_REQUEST[$nonce])
             && wp_verify_nonce($_REQUEST[$nonce], $action)
         );
+    }
+
+    /**
+     * Returns a list of post-types.
+     *
+     * The list of post-types includes objects such as Post and Page but also
+     * the transitions between each post type, for example, if there are posts
+     * of type Draft and they change to Trash, this function will include a new
+     * post type called "from_draft_to_trash" and so on.
+     *
+     * @return array List of post-types with transitions.
+     */
+    public static function getPostTypes()
+    {
+        $postTypes = get_post_types();
+        $transitions = array(
+            'new',
+            'publish',
+            'pending',
+            'draft',
+            'auto-draft',
+            'future',
+            'private',
+            'inherit',
+            'trash',
+        );
+
+        /* include post-type transitions */
+        foreach ($transitions as $from) {
+            foreach ($transitions as $to) {
+                if ($from === $to) {
+                    continue;
+                }
+
+                $event = sprintf('from_%s_to_%s', $from, $to);
+
+                if (!array_key_exists($event, $postTypes)) {
+                    $postTypes[$event] = $event;
+                }
+            }
+        }
+
+        /* include custom non-registered post-types */
+        $ignoredEvents = SucuriScanOption::getIgnoredEvents();
+        foreach ($ignoredEvents as $event => $time) {
+            if (!array_key_exists($event, $postTypes)) {
+                $postTypes[$event] = $event;
+            }
+        }
+
+        return $postTypes;
     }
 
     /**

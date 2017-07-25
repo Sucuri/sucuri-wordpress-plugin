@@ -22,7 +22,7 @@
 
             %%%SUCURI.Settings.General.IPDiscoverer%%%
 
-            %%%SUCURI.Settings.General.AuditLogStats%%%
+            %%%SUCURI.Settings.General.Timezone%%%
 
             %%%SUCURI.Settings.General.ImportExport%%%
 
@@ -102,15 +102,15 @@
         <div id="sucuriscan-tabs-apiservice">
             %%%SUCURI.Settings.APIService.Status%%%
 
-            %%%SUCURI.Settings.APIService.Timeout%%%
-
             %%%SUCURI.Settings.APIService.Proxy%%%
+
+            %%%SUCURI.Settings.SiteCheck.Target%%%
+
+            %%%SUCURI.Settings.APIService.Checksums%%%
         </div>
 
         <div id="sucuriscan-tabs-webinfo">
             %%%SUCURI.Settings.Webinfo.Details%%%
-
-            %%%SUCURI.Settings.Webinfo.WPConfig%%%
 
             %%%SUCURI.Settings.Webinfo.HTAccess%%%
         </div>

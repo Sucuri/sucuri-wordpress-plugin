@@ -69,32 +69,6 @@ class SucuriScanInterface
         );
         wp_enqueue_script('sucuriscan1');
 
-        if (SucuriScanRequest::get('page', 'sucuriscan') !== false) {
-            wp_register_style(
-                'sucuriscan2',
-                SUCURISCAN_URL . '/inc/css/c3.min.css',
-                array(/* empty */),
-                $asset
-            );
-            wp_enqueue_style('sucuriscan2');
-
-            wp_register_script(
-                'sucuriscan2',
-                SUCURISCAN_URL . '/inc/js/d3.min.js',
-                array(/* empty */),
-                $asset
-            );
-            wp_enqueue_script('sucuriscan2');
-
-            wp_register_script(
-                'sucuriscan3',
-                SUCURISCAN_URL . '/inc/js/c3.min.js',
-                array(/* empty */),
-                $asset
-            );
-            wp_enqueue_script('sucuriscan3');
-        }
-
         if (SucuriScanRequest::get('page', 'sucuriscan_firewall') !== false) {
             wp_register_style(
                 'sucuriscan3',
@@ -176,6 +150,35 @@ class SucuriScanInterface
     }
 
     /**
+     * Display alerts and execute pre-checks before every page.
+     *
+     * This method verifies if the visibility of the requested page is allowed
+     * for the current user in session which usually needs to be granted admin
+     * privileges to access the plugin's tools. It also checks if the required
+     * SPL library is available and if the settings file is writable.
+     */
+    public static function startupChecks()
+    {
+        self::checkPageVisibility();
+
+        self::noticeAfterUpdate();
+
+        if (!SucuriScanFileInfo::isSplAvailable()) {
+            /* display a warning when system dependencies are not met */
+            self::error(__('RequiresModernPHP', SUCURISCAN_TEXTDOMAIN));
+        }
+
+        if ($filename = SucuriScanOption::optionsFilePath()) {
+            if (!is_writable($filename)) {
+                self::error(sprintf(
+                    __('StorageNotWritable', SUCURISCAN_TEXTDOMAIN),
+                    $filename /* absolute path of the settings file */
+                ));
+            }
+        }
+    }
+
+    /**
      * Do something if the plugin was updated.
      *
      * Check if an option exists with the version number of the plugin, if the
@@ -191,9 +194,12 @@ class SucuriScanInterface
         $version = SucuriScanOption::getOption(':plugin_version');
 
         /* use simple comparison to force type cast. */
-        if (headers_sent() || $version == SUCURISCAN_VERSION) {
+        if ($version == SUCURISCAN_VERSION) {
             return;
         }
+
+        /* update the version number in the plugin settings. */
+        SucuriScanOption::updateOption(':plugin_version', SUCURISCAN_VERSION);
 
         /**
          * Suggest re-activation of the API communication.
@@ -219,9 +225,6 @@ class SucuriScanInterface
          * @date Featured added at - May 01, 2017
          */
         self::info(__('NewsletterInvitation', SUCURISCAN_TEXTDOMAIN));
-
-        /* update the version number in the plugin settings. */
-        SucuriScanOption::updateOption(':plugin_version', SUCURISCAN_VERSION);
     }
 
     /**

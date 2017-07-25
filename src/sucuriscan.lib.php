@@ -593,25 +593,31 @@ class SucuriScan
      */
     public static function isBehindFirewall($verbose = false)
     {
+        $status = false;
+        $host_by_addr = '::1';
+        $host_by_name = 'localhost';
         $http_host = self::getTopLevelDomain();
 
-        if (self::executeDNSLookups()) {
+        /**
+         * Consider firewall protected if the API key is set.
+         *
+         * Assume that the Sucuri Firewall is protecting this website if there
+         * is a valid API key set in the Firewall page, otherwise execute the
+         * DNS lookup to try to find the name of the server which will help us
+         * determine if the website is behind the Sucuri Firewall or not.
+         *
+         * Notice that this DNS lookup may slow down a website that is hosted in
+         * a hosting pointing to a slow DNS server, the latency in the queries
+         * will be noticeable. Webmasters can disable this behavior by setting
+         * the ":dns_lookups" option as "disabled" or adding this constant to
+         * the WordPress configuration file: (NOT_USING_CLOUDPROXY, true)
+         */
+        if (SucuriScanFirewall::getKey()) {
+            $status = true;
+        } elseif (self::executeDNSLookups()) {
             $host_by_addr = @gethostbyname($http_host);
             $host_by_name = @gethostbyaddr($host_by_addr);
             $status = (bool) preg_match('/^cloudproxy[0-9]+\.sucuri\.net$/', $host_by_name);
-        } else {
-            $status = false;
-            $host_by_addr = '::1';
-            $host_by_name = 'localhost';
-        }
-
-        /*
-         * If the DNS reversion failed but the firewall API key is set, then consider
-         * the site as protected by a firewall. A fake key can be used to bypass the DNS
-         * checking, but that is not something that will affect us, only the client.
-         */
-        if (!$status && SucuriScanFirewall::getKey()) {
-            $status = true;
         }
 
         if ($verbose) {
@@ -698,87 +704,48 @@ class SucuriScan
     }
 
     /**
-     * Returns the current time measured in the number of seconds since the Unix Epoch.
-     *
-     * @see https://developer.wordpress.org/reference/functions/current_time/
-     * @return int Return current Unix timestamp.
-     */
-    public static function localTime()
-    {
-        return current_time('timestamp', false);
-    }
-
-    /**
      * Retrieve the date in localized format, based on timestamp.
      *
      * If the locale specifies the locale month and weekday, then the locale will
      * take over the format for the date. If it isn't, then the date format string
      * will be used instead.
      *
-     * @param int $timestamp Unix timestamp.
+     * @param null|string|int $timestamp Unix timestamp.
+     * @param string $format Optional format for the date and time.
      * @return string The date, translated if locale specifies it.
      */
-    public static function datetime($timestamp = null)
+    public static function datetime($timestamp = null, $format = null)
     {
-        global $sucuriscan_date_format, $sucuriscan_time_format;
+        $diff = 0; /* use server time */
+        $tz = SucuriScanOption::getOption(':timezone');
+        $length = strlen($tz); /* example: UTC+12.75 */
 
-        $tz_format = $sucuriscan_date_format . "\x20" . $sucuriscan_time_format;
-
-        if (is_numeric($timestamp) && $timestamp > 0) {
-            return date_i18n($tz_format, $timestamp);
+        if ($timestamp === null) {
+            $timestamp = time();
         }
 
-        return date_i18n($tz_format);
-    }
-
-    /**
-     * Retrieve the date in localized format based on the current time.
-     *
-     * @return string The date, translated if locale specifies it.
-     */
-    public static function currentDateTime()
-    {
-        return self::datetime();
-    }
-
-    /**
-     * Return the time passed since the specified timestamp until now.
-     *
-     * @param int|string $timestamp Unix time of a day in the past.
-     * @return string Time passed since the timestamp specified.
-     */
-    public static function timeAgo($timestamp = 0)
-    {
-        if (!is_numeric($timestamp)) {
-            $timestamp = strtotime($timestamp);
+        if ($length === 9
+            && substr($tz, 0, 3) === 'UTC'
+            && ($tz[3] === '-' || $tz[3] === '+')
+            && $tz[6] === '.'
+        ) {
+            $hour = (float) substr($tz, 4);
+            $sign = ($tz[3] === '-') ? -1 : +1;
+            $diff = ($hour * $sign);
+        } else {
+            /* reset; value seems to be corrupt */
+            SucuriScanOption::deleteOption(':timezone');
         }
 
-        $local_time = self::localTime();
-        $diff = abs($local_time - intval($timestamp));
-
-        if ($diff < 3) {
-            return 'just now';
+        if ($format === null) {
+            $format = sprintf(
+                "%s\x20%s",
+                SucuriScanOption::getOption('date_format'),
+                SucuriScanOption::getOption('time_format')
+            );
         }
 
-        $intervals = array(
-            1                => array( 'year', 31556926, ),
-            $diff < 31556926 => array( 'month', 2592000, ),
-            $diff < 2592000  => array( 'week', 604800, ),
-            $diff < 604800   => array( 'day', 86400, ),
-            $diff < 86400    => array( 'hour', 3600, ),
-            $diff < 3600     => array( 'minute', 60, ),
-            $diff < 60       => array( 'second', 1, ),
-        );
-
-        $value = floor($diff / $intervals[1][1]);
-        $time_ago = sprintf(
-            '%s %s%s ago',
-            $value,
-            $intervals[1][0],
-            ( $value > 1 ? 's' : '' )
-        );
-
-        return $time_ago;
+        return date($format, (intval($timestamp) + ($diff * 3600)));
     }
 
     /**
@@ -925,7 +892,7 @@ class SucuriScan
      */
     public static function isNginxServer()
     {
-        return (bool) preg_match('/^nginx(\/[0-9\.]+)?$/', @$_SERVER['SERVER_SOFTWARE']);
+        return (bool) (stripos(@$_SERVER['SERVER_SOFTWARE'], 'nginx') !== false);
     }
 
     /**
@@ -935,7 +902,7 @@ class SucuriScan
      */
     public static function isIISServer()
     {
-        return (bool) preg_match('/Microsoft-IIS/i', @$_SERVER['SERVER_SOFTWARE']);
+        return (bool) (stripos(@$_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS') !== false);
     }
 
     /**

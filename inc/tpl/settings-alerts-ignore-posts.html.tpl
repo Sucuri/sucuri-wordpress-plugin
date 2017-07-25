@@ -3,9 +3,9 @@
     <h3 class="sucuriscan-title">@@SUCURI.PostTypeAlerts@@</h3>
 
     <div class="inside">
-        <p class="sucuriscan-inline-alert-error sucuriscan-%%SUCURI.IgnoreRules.MessageVisibility%%">
-            @@SUCURI.PostTypeAlertsDisabled@@
-        </p>
+        <div class="sucuriscan-inline-alert-error sucuriscan-%%SUCURI.IgnoreRules.ErrorVisibility%%">
+            <p>@@SUCURI.PostTypeAlertsDisabled@@</p>
+        </div>
 
         <p>@@SUCURI.PostTypeAlertsInfo@@</p>
 

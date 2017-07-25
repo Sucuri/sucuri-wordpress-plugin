@@ -170,10 +170,11 @@ class SucuriScanEvent extends SucuriScan
      * to write the log into the queue when the previous request failed.
      *
      * @param string $message Information about the event.
-     * @param string $timestamp Time when the event was triggered.
+     * @param string|int $timestamp Time when the event was triggered.
+     * @param int $timeout Maximum time in seconds to connect to the API.
      * @return bool True if the event was logged, false otherwise.
      */
-    private static function sendLogToAPI($message = '', $timestamp = '')
+    private static function sendLogToAPI($message = '', $timestamp = '', $timeout = 1)
     {
         if (empty($message)) {
             return self::throwException('Event identifier cannot be empty');
@@ -183,7 +184,7 @@ class SucuriScanEvent extends SucuriScan
         $params['a'] = 'send_log';
         $params['m'] = $message;
         $params['time'] = $timestamp;
-        $args = array('timeout' => 5 /* seconds */);
+        $args = array('timeout' => $timeout);
 
         $resp = SucuriScanAPI::apiCallWordpress('POST', $params, true, $args);
 
@@ -196,6 +197,10 @@ class SucuriScanEvent extends SucuriScan
 
     /**
      * Sends the event message to a local queue system.
+     *
+     * Note: The method is public to facilitate the execution of some unit-tests
+     * but it could be private and be mocked by the test bootstrap script. Take
+     * this in consideration during the static analysis of the code.
      *
      * @param string $message Information about the security event.
      * @return bool True if the operation succeeded, false otherwise.
@@ -219,7 +224,7 @@ class SucuriScanEvent extends SucuriScan
             if ($monitor_fpath !== false) {
                 $local_event = sprintf(
                     "%s WordPressAudit %s %s : %s\n",
-                    date('Y-m-d H:i:s'),
+                    SucuriScan::datetime(null, 'Y-m-d H:i:s'),
                     SucuriScan::getTopLevelDomain(),
                     SucuriScanOption::getOption(':account'),
                     $message
@@ -232,7 +237,17 @@ class SucuriScanEvent extends SucuriScan
             }
         }
 
-        /* enqueue the event if the API is enabled */
+        /**
+         * Send event to the API if possible.
+         *
+         * If the user have not disabled the communication with the API service,
+         * the plugin will send a message with information about every triggered
+         * event in the website in realtime with a maximum connection time of
+         * two seconds. If the API service does not responds on time the plugin
+         * will insert the event into the local queue system and it will try to
+         * send the message again with a scheduled task every 24 hours, once the
+         * operation succeeds the event will be deleted from the queue.
+         */
         if (SucuriScanOption::isEnabled(':api_service')) {
             $cache = new SucuriScanCache('auditqueue');
             $key = str_replace('.', '_', microtime(true));
@@ -244,47 +259,77 @@ class SucuriScanEvent extends SucuriScan
 
     /**
      * Sends all the events from the queue to the API.
+     *
+     * @return array|bool Information about the dequeue process.
      */
     public static function sendLogsFromQueue()
     {
         if (SucuriScanOption::isDisabled(':api_service')) {
-            return;
+            return false;
         }
 
         $cache = new SucuriScanCache('auditqueue');
         $finfo = $cache->getDatastoreInfo();
         $events = $cache->getAll();
-        $counter = 0;
 
         if (!$events) {
-            return;
+            return false;
         }
 
-        /* Send around 15,000 logs for maximum 30 seconds */
+        $result = array(
+            'maxtime' => -1,
+            'ttllogs' => 0,
+            'success' => 0,
+            'failure' => 0,
+            'elapsed' => 0,
+        );
+
+        /**
+         * Send logs to the API with a limit.
+         *
+         * We will use the maximum execution time setting to limit the number of
+         * logs that the plugin will try to send to the API service before the
+         * server times out. In a regular installation, the limit is set to 30
+         * seconds, since the timeout for the HTTP request is 5 seconds we will
+         * instruct the plugin to wait (30 secs - 5 secs) and an additional one
+         * second to spare processing, so in a regular installation the plugin
+         * will try to send as much logs as possible to the API service in less
+         * than 25 seconds.
+         */
         $maxtime = (int) SucuriScan::iniGet('max_execution_time');
-        $maxreqs = ($maxtime > 1) ? (500 * $maxtime) : 5000;
+        $timeout = ($maxtime > 1) ? ($maxtime - 6) : 30;
+
+        /* record some statistics */
+        $startTime = microtime(true);
+        $result['maxtime'] = $maxtime;
+        $result['ttllogs'] = count($events);
 
         foreach ($events as $keyname => $message) {
             $offset = strpos($keyname, '_');
             $timestamp = substr($keyname, 0, $offset);
             $status = self::sendLogToAPI($message, $timestamp);
 
+            /* skip; API is busy */
             if ($status !== true) {
-                /* API is down */
-                break;
+                $result['failure']++;
+                continue;
             }
 
             /* dequeue event message */
             unset($events[$keyname]);
-            $counter++;
+            $result['success']++;
 
-            /* avoid memory limit */
-            if ($counter >= $maxreqs) {
+            /* avoid gateway timeout; max execution time */
+            $elapsedTime = (microtime(true) - $startTime);
+            if ($elapsedTime >= $timeout) {
                 break;
             }
         }
 
+        $result['elapsed'] = round(microtime(true) - $startTime, 4);
         $cache->override($events);
+
+        return $result;
     }
 
     /**
@@ -415,56 +460,17 @@ class SucuriScanEvent extends SucuriScan
     {
         $message = strip_tags($message);
 
-        /* auto-detect the action performed, either enabled or disabled. */
-        if (preg_match('/( was )?(enabled|disabled)$/', $message, $match)) {
-            $action = $match[2];
-        }
-
-        if ($action === 'enabled') {
+        /* auto-detect the action performed: enabled */
+        if (strpos($message, 'enabled') !== false) {
             return self::reportNoticeEvent($message);
         }
 
-        if ($action === 'disabled') {
+        /* auto-detect the action performed: disabled */
+        if (strpos($message, 'disabled') !== false) {
             return self::reportErrorEvent($message);
         }
 
         return self::reportInfoEvent($message);
-    }
-
-    /**
-     * Reports an esception on the code.
-     *
-     * @param Exception $exception A valid exception object of any type.
-     * @return bool Whether the report was filled correctly or not.
-     */
-    public static function reportException($exception)
-    {
-        $e_trace = $exception->getTrace();
-        $multiple_entries = array();
-
-        foreach ($e_trace as $e_child) {
-            $e_file = array_key_exists('file', $e_child)
-                ? basename($e_child['file'])
-                : '[internal function]';
-            $e_line = array_key_exists('line', $e_child)
-                ? basename($e_child['line'])
-                : '0';
-            $e_method = array_key_exists('class', $e_child)
-                ? $e_child['class'] . $e_child['type'] . $e_child['function']
-                : $e_child['function'];
-            $multiple_entries[] = sprintf(
-                '%s(%s): %s',
-                $e_file,
-                $e_line,
-                $e_method
-            );
-        }
-
-        return self::reportDebugEvent(sprintf(
-            '%s: (multiple entries): %s',
-            $exception->getMessage(),
-            @implode(',', $multiple_entries)
-        ));
     }
 
     /**
@@ -506,7 +512,11 @@ class SucuriScanEvent extends SucuriScan
 
             case 'failed_login':
                 $settings_url = SucuriScanTemplate::getUrl('settings');
-                $content .= sprintf(__('FailedLoginFooter'), $settings_url, $settings_url);
+                $content .= "\n" . sprintf(
+                    __('FailedLoginFooter', SUCURISCAN_TEXTDOMAIN),
+                    $settings_url,
+                    $settings_url
+                );
                 break;
 
             case 'bruteforce_attack':
@@ -644,13 +654,15 @@ class SucuriScanEvent extends SucuriScan
     }
 
     /**
-     * Modify the WordPress configuration file and change the keys that were defined
-     * by a new random-generated list of keys retrieved from the official WordPress
-     * API. The result of the operation will be either FALSE in case of error, or an
-     * array containing multiple indexes explaining the modification, among them you
-     * will find the old and new keys.
+     * Changes the WordPress secret keys.
      *
-     * @return array|bool Either FALSE in case of error, or an array with the old and new keys.
+     * Modify the WordPress configuration file to define new secret keys from a
+     * new randomly generated list of strings from the official WordPress API.
+     * The result of the operation will be either False in case of error, or an
+     * array containing multiple indexes explaining the modification, among them
+     * you will find the old and new keys.
+     *
+     * @return array|bool Array with the old and new keys, false otherwise.
      */
     public static function setNewConfigKeys()
     {

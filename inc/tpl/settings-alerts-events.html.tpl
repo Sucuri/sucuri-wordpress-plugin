@@ -3,6 +3,10 @@
     <h3 class="sucuriscan-title">@@SUCURI.SecurityAlerts@@</h3>
 
     <div class="inside">
+        <div class="sucuriscan-inline-alert-error sucuriscan-%%SUCURI.Alerts.NoAlertsVisibility%%">
+            <p>@@SUCURI.NoAlertsError@@</p>
+        </div>
+
         <form action="%%SUCURI.URL.Settings%%#alerts" method="post">
             <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
 

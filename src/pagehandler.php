@@ -23,19 +23,13 @@ function sucuriscan_page()
 {
     $params = array();
 
-    SucuriScanInterface::checkPageVisibility();
-
-    if (!SucuriScanFileInfo::isSplAvailable()) {
-        /* display a warning when system dependencies are not met */
-        SucuriScanInterface::error(__('RequiresModernPHP', SUCURISCAN_TEXTDOMAIN));
-    }
+    SucuriScanInterface::startupChecks();
 
     /* load data for the Integrity section */
     $params['Integrity'] = SucuriScanIntegrity::pageIntegrity();
 
     /* load data for the AuditLogs section */
     $params['AuditLogs'] = SucuriScanAuditLogs::pageAuditLogs();
-    $params['AuditLogsReport'] = SucuriScanAuditLogs::pageAuditLogsReport();
 
     /* load data for the SiteCheck section */
     $params['SiteCheck.iFramesTitle'] = __('iFrames', SUCURISCAN_TEXTDOMAIN);
@@ -56,11 +50,12 @@ function sucuriscan_page()
  */
 function sucuriscan_firewall_page()
 {
-    SucuriScanInterface::checkPageVisibility();
+    SucuriScanInterface::startupChecks();
 
     $params = array(
         'Firewall.Settings' => SucuriScanFirewall::settingsPage(),
         'Firewall.AuditLogs' => SucuriScanFirewall::auditlogsPage(),
+        'Firewall.IPAccess' => SucuriScanFirewall::ipAccessPage(),
         'Firewall.ClearCache' => SucuriScanFirewall::clearCachePage(),
     );
 
@@ -72,7 +67,7 @@ function sucuriscan_firewall_page()
  */
 function sucuriscan_lastlogins_page()
 {
-    SucuriScanInterface::checkPageVisibility();
+    SucuriScanInterface::startupChecks();
 
     // Reset the file with the last-logins logs.
     if (SucuriScanInterface::checkNonce()
@@ -105,7 +100,7 @@ function sucuriscan_lastlogins_page()
  */
 function sucuriscan_settings_page()
 {
-    SucuriScanInterface::checkPageVisibility();
+    SucuriScanInterface::startupChecks();
 
     $params = array();
     $nonce = SucuriScanInterface::checkNonce();
@@ -115,15 +110,15 @@ function sucuriscan_settings_page()
 
     /* settings - general */
     $params['Settings.General.ApiKey'] = sucuriscan_settings_general_apikey($nonce);
-    $params['Settings.General.DataStorage'] = sucuriscan_settings_general_datastorage();
+    $params['Settings.General.DataStorage'] = sucuriscan_settings_general_datastorage($nonce);
     $params['Settings.General.SelfHosting'] = sucuriscan_settings_general_selfhosting($nonce);
     $params['Settings.General.ReverseProxy'] = sucuriscan_settings_general_reverseproxy($nonce);
     $params['Settings.General.IPDiscoverer'] = sucuriscan_settings_general_ipdiscoverer($nonce);
-    $params['Settings.General.AuditLogStats'] = sucuriscan_settings_general_auditlogstats($nonce);
     $params['Settings.General.ImportExport'] = sucuriscan_settings_general_importexport($nonce);
+    $params['Settings.General.Timezone'] = sucuriscan_settings_general_timezone($nonce);
 
     /* settings - scanner */
-    $params['Settings.Scanner.Cronjobs'] = SucuriScanSettingsScanner::cronjobs();
+    $params['Settings.Scanner.Cronjobs'] = SucuriScanSettingsScanner::cronjobs($nonce);
     $params['Settings.Scanner.IntegrityDiffUtility'] = SucuriScanSettingsIntegrity::diffUtility($nonce);
     $params['Settings.Scanner.IntegrityLanguage'] = SucuriScanSettingsIntegrity::language($nonce);
     $params['Settings.Scanner.IntegrityCache'] = SucuriScanSettingsIntegrity::cache($nonce);
@@ -161,11 +156,11 @@ function sucuriscan_settings_page()
     /* settings - api service */
     $params['Settings.APIService.Status'] = sucuriscan_settings_apiservice_status($nonce);
     $params['Settings.APIService.Proxy'] = sucuriscan_settings_apiservice_proxy();
-    $params['Settings.APIService.Timeout'] = sucuriscan_settings_apiservice_timeout($nonce);
+    $params['Settings.SiteCheck.Target'] = SucuriScanSiteCheck::targetURLOption();
+    $params['Settings.APIService.Checksums'] = sucuriscan_settings_apiservice_checksums($nonce);
 
     /* settings - website info */
     $params['Settings.Webinfo.Details'] = sucuriscan_settings_webinfo_details();
-    $params['Settings.Webinfo.WPConfig'] = sucuriscan_settings_webinfo_wpconfig();
     $params['Settings.Webinfo.HTAccess'] = sucuriscan_settings_webinfo_htaccess();
 
     echo SucuriScanTemplate::getTemplate('settings', $params);
@@ -180,11 +175,15 @@ function sucuriscan_ajax()
 
     if (SucuriScanInterface::checkNonce()) {
         SucuriScanAuditLogs::ajaxAuditLogs();
-        SucuriScanAuditLogs::ajaxAuditLogsReport();
         SucuriScanAuditLogs::ajaxAuditLogsSendLogs();
-        SucuriScanAuditLogs::ajaxAuditLogsResetCache();
         SucuriScanSiteCheck::ajaxMalwareScan();
         SucuriScanFirewall::auditlogsAjax();
+        SucuriScanFirewall::ipAccessAjax();
+        SucuriScanFirewall::blacklistAjax();
+        SucuriScanFirewall::deblacklistAjax();
+        SucuriScanFirewall::getSettingsAjax();
+        SucuriScanFirewall::clearCacheAjax();
+        SucuriScanFirewall::clearAutoCacheAjax();
         SucuriScanIntegrity::ajaxIntegrity();
         SucuriScanIntegrity::ajaxIntegrityDiffUtility();
         SucuriScanSettingsPosthack::availableUpdatesAjax();

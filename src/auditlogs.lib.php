@@ -64,11 +64,13 @@ class SucuriScanAuditLogs
 
         $response = array();
         $response['count'] = 0;
+        $response['status'] = '';
         $response['content'] = '';
         $response['queueSize'] = 0;
+        $response['pagination'] = '';
         $response['selfhosting'] = false;
 
-        /* Initialize the values for the pagination. */
+        /* initialize the values for the pagination */
         $maxPerPage = SUCURISCAN_AUDITLOGS_PER_PAGE;
         $pageNumber = SucuriScanTemplate::pageNumber();
         $logsLimit = ($pageNumber * $maxPerPage);
@@ -82,17 +84,27 @@ class SucuriScanAuditLogs
         /* API call if cache is invalid. */
         if (!$auditlogs || $pageNumber !== 1) {
             ob_start();
+            $start = microtime(true);
             $cacheTheResponse = true;
             $auditlogs = SucuriScanAPI::getAuditLogs($logsLimit);
-            $errors = ob_get_contents();
+            $errors = ob_get_contents(); /* capture errors */
+            $duration = microtime(true) - $start;
             ob_end_clean();
+
+            /* report latency in the API calls */
+            $response['status'] = !is_array($auditlogs)
+            ? __('AuditLogsNoAPI', SUCURISCAN_TEXTDOMAIN)
+            : sprintf('API %s secs', round($duration, 4));
         }
 
-        /* Stop everything and report errors. */
+        /* explain missing API key */
+        if (!SucuriScanAPI::getPluginKey()) {
+            $response['status'] = __('APIKeyMissing', SUCURISCAN_TEXTDOMAIN);
+        }
+
+        /* stop everything and report errors */
         if (!empty($errors)) {
-            header('Content-Type: text/html; charset=UTF-8');
-            print($errors);
-            exit(0);
+            $response['content'] .= $errors;
         }
 
         /* Cache the data for sometime. */
@@ -100,31 +112,39 @@ class SucuriScanAuditLogs
             $cache->add('response', $auditlogs);
         }
 
+        /* merge the logs from the queue system */
         if ($queuelogs = SucuriScanAPI::getAuditLogsFromQueue()) {
             if (!$auditlogs) {
                 $auditlogs = $queuelogs;
             } else {
+                $auditlogs['total_entries'] = isset($auditlogs['total_entries'])
+                    ? ($auditlogs['total_entries'] + $queuelogs['total_entries'])
+                    : $queuelogs['total_entries'];
                 $auditlogs['output'] = array_merge(
-                    $auditlogs['output'],
-                    $queuelogs['output']
+                    $queuelogs['output'],
+                    @$auditlogs['output']
                 );
                 $auditlogs['output_data'] = array_merge(
-                    $auditlogs['output_data'],
-                    $queuelogs['output_data']
+                    $queuelogs['output_data'],
+                    @$auditlogs['output_data']
                 );
             }
         }
 
-        if ($auditlogs) {
+        if (is_array($auditlogs)
+            && isset($auditlogs['output_data'])
+            && isset($auditlogs['total_entries'])
+            && is_array($auditlogs['output_data'])
+            && is_numeric($auditlogs['total_entries'])
+        ) {
             $counter_i = 0;
             $total_items = 0;
             $previousDate = '';
-            $todaysDate = date('M d, Y');
+            $todaysDate = SucuriScan::datetime(null, 'M d, Y');
             $iterator_start = ($pageNumber - 1) * $maxPerPage;
+            $total_items = count($auditlogs['output_data']);
 
-            if (array_key_exists('output_data', $auditlogs)) {
-                $total_items = count($auditlogs['output_data']);
-            }
+            usort($auditlogs['output_data'], array('SucuriScanAuditLogs', 'sortByDate'));
 
             for ($i = $iterator_start; $i < $total_items; $i++) {
                 if ($counter_i > $maxPerPage) {
@@ -139,15 +159,15 @@ class SucuriScanAuditLogs
 
                 $snippet_data = array(
                     'AuditLog.Event' => $audit_log['event'],
-                    'AuditLog.Time' => date('H:i', $audit_log['timestamp']),
-                    'AuditLog.Date' => date('M d, Y', $audit_log['timestamp']),
+                    'AuditLog.Time' => SucuriScan::datetime($audit_log['timestamp'], 'H:i'),
+                    'AuditLog.Date' => SucuriScan::datetime($audit_log['timestamp'], 'M d, Y'),
                     'AuditLog.Username' => $audit_log['username'],
                     'AuditLog.Address' => $audit_log['remote_addr'],
                     'AuditLog.Message' => $audit_log['message'],
                     'AuditLog.Extra' => '',
                 );
 
-                // Determine if we need to print the date.
+                /* determine if we need to print the date */
                 if ($snippet_data['AuditLog.Date'] === $previousDate) {
                     $snippet_data['AuditLog.Date'] = '';
                 } elseif ($snippet_data['AuditLog.Date'] === $todaysDate) {
@@ -157,7 +177,7 @@ class SucuriScanAuditLogs
                     $previousDate = $snippet_data['AuditLog.Date'];
                 }
 
-                // Decorate date if necessary.
+                /* decorate date if necessary */
                 if (!empty($snippet_data['AuditLog.Date'])) {
                     $snippet_data['AuditLog.Date'] =
                     '<div class="sucuriscan-auditlog-date">'
@@ -165,10 +185,9 @@ class SucuriScanAuditLogs
                     . '</div>';
                 }
 
-                // Print every file_list information item in a separate table.
+                /* print every file_list information item in a separate table */
                 if ($audit_log['file_list']) {
-                    $css_scrollable = $audit_log['file_list_count'] > 10 ? 'sucuriscan-list-as-table-scrollable' : '';
-                    $snippet_data['AuditLog.Extra'] .= '<ul class="sucuriscan-list-as-table ' . $css_scrollable . '">';
+                    $snippet_data['AuditLog.Extra'] .= '<ul class="sucuriscan-list-as-table">';
 
                     foreach ($audit_log['file_list'] as $log_extra) {
                         $snippet_data['AuditLog.Extra'] .= '<li>' . SucuriScan::escape($log_extra) . '</li>';
@@ -216,95 +235,6 @@ class SucuriScanAuditLogs
     }
 
     /**
-     * Draws the statistic charts with data from the security logs.
-     *
-     * The percentage of successful and failed logins. The percentage of events
-     * distributed by severity. The amount of events triggered by each user. And
-     * the amount of events triggered from each IP address. All these statistics
-     * will be rendered in the page.
-     *
-     * @return string HTML with the stats about the security logs.
-     */
-    public static function pageAuditLogsReport()
-    {
-        $params = array();
-        $logs4report = SucuriScanOption::getOption(':logs4report');
-
-        $params['AuditReport.Logs4Report'] = $logs4report;
-
-        return SucuriScanTemplate::getSection('auditlogs-report', $params);
-    }
-
-    /**
-     * Analyzes the latest security logs and generates statistics.
-     *
-     * A JSON-encoded data structure will be returned after the plugin reads,
-     * processes and extracts relevant information from the latest security logs.
-     * By default the plugin will use the latest 500 logs but the website owner
-     * can increase or decrease this value to reduce or extend the statistics.
-     *
-     * @codeCoverageIgnore - Notice that there is a test case that covers this
-     * code, but since the WP-Send-JSON method uses die() to stop any further
-     * output it means that XDebug cannot cover the next line, leaving a report
-     * with a missing line in the coverage. Since the test case takes care of
-     * the functionality of this code we will assume that it is fully covered.
-     */
-    public static function ajaxAuditLogsReport()
-    {
-        if (SucuriScanRequest::post('form_action') !== 'get_audit_logs_report') {
-            return;
-        }
-
-        $response = array();
-        $logs4report = SucuriScanOption::getOption(':logs4report');
-        $report = SucuriScanAPI::getAuditReport($logs4report);
-
-        $response['status'] = false;
-        $response['message'] = 'Not enough logs';
-        $response['eventsPerUserSeries'] = array();
-        $response['eventsPerUserCategories'] = array();
-        $response['eventsPerIPAddressSeries'] = array();
-        $response['eventsPerIPAddressCategories'] = array();
-        $response['eventsPerTypePoints'] = array();
-        $response['eventsPerTypeColors'] = array();
-        $response['eventsPerLogin'] = array();
-
-        if ($report) {
-            $response['status'] = true;
-            $response['message'] = '';
-            $response['eventsPerTypeColors'] = $report['event_colors'];
-
-            /* Generate report chart data for the events per type */
-            foreach ($report['events_per_type'] as $event => $times) {
-                $response['eventsPerTypePoints'][] = array(
-                    ucwords($event . "\x20events"),
-                    $times /* amount of events */
-                );
-            }
-
-            /* Generate report chart data for the events per login */
-            foreach ($report['events_per_login'] as $event => $times) {
-                $response['eventsPerLogin'][] = array(
-                    ucwords($event . "\x20logins"),
-                    $times /* number of logins */
-                );
-            }
-
-            /* Generate report chart data for the events per user */
-            $users = array_values($report['events_per_user']);
-            $response['eventsPerUserSeries'] = array_merge(array('data'), $users);
-            $response['eventsPerUserCategories'] = array_keys($report['events_per_user']);
-
-            /* Generate report chart data for the events per remote address */
-            $ips = array_values($report['events_per_ipaddress']);
-            $response['eventsPerIPAddressSeries'] = array_merge(array('data'), $ips);
-            $response['eventsPerIPAddressCategories'] = array_keys($report['events_per_ipaddress']);
-        }
-
-        wp_send_json($response, 200);
-    }
-
-    /**
      * Send the logs from the queue to the API.
      *
      * @codeCoverageIgnore - Notice that there is a test case that covers this
@@ -319,51 +249,28 @@ class SucuriScanAuditLogs
             return;
         }
 
-        $response = array();
-
         /* blocking; might take a while */
-        SucuriScanEvent::sendLogsFromQueue();
-
-        $cache = new SucuriScanCache('auditqueue');
-        $finfo = $cache->getDatastoreInfo();
-        $events = $cache->getAll();
-
-        $response['ok'] = true;
-        $response['queueSize'] = count($events);
-
-        wp_send_json($response, 200);
+        wp_send_json(SucuriScanEvent::sendLogsFromQueue(), 200);
     }
 
     /**
-     * Deletes the cache file with the auditlogs data.
+     * Sort the audit logs by date.
      *
-     * @codeCoverageIgnore - Notice that there is a test case that covers this
-     * code, but since the WP-Send-JSON method uses die() to stop any further
-     * output it means that XDebug cannot cover the next line, leaving a report
-     * with a missing line in the coverage. Since the test case takes care of
-     * the functionality of this code we will assume that it is fully covered.
+     * Considering that the logs from the API service will be merged with the
+     * logs from the local queue system to complement the information until the
+     * queue is emptied, we will have to sort the entries in the list to keep
+     * the dates in sync.
+     *
+     * @param array $a Data associated to a single log.
+     * @param array $b Data associated to another log.
+     * @return int Comparison between the dates of both logs.
      */
-    public static function ajaxAuditLogsResetCache()
+    public static function sortByDate($a, $b)
     {
-        if (SucuriScanRequest::post('form_action') !== 'reset_auditlogs_cache') {
-            return;
+        if ($a['timestamp'] === $b['timestamp']) {
+            return 0;
         }
 
-        $response = array();
-        $cache = new SucuriScanCache('auditlogs');
-        $cacheInfo = $cache->getDatastoreInfo();
-        $filename = $cacheInfo['fpath'];
-        $response['path'] = basename($filename);
-        $response['ok'] = false;
-
-        if (!file_exists($filename)) {
-            $response['error'] = 'cache does not exists';
-        } elseif (!is_writable($filename)) {
-            $response['error'] = 'cache is not resetable';
-        } else {
-            $response['ok'] = (bool) @unlink($filename);
-        }
-
-        wp_send_json($response, 200);
+        return ($a['timestamp'] > $b['timestamp']) ? -1 : 1;
     }
 }

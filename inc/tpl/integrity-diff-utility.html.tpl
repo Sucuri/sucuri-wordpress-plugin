@@ -1,19 +1,13 @@
 
 <div class="sucuriscan-integrity-diff-utility">
-    <div class="sucuriscan-inline-alert-info">
-        <p>@@SUCURI.DiffUtilityInfo@@</p>
-    </div>
-
-    <div class="sucuriscan-hidden sucuriscan-diff-instructions">
-        <p>@@SUCURI.DiffUtilityInstructions@@</p>
-    </div>
-
     %%%SUCURI.DiffUtility.Modal%%%
 
     <script type="text/javascript">
     /* global jQuery */
     /* jshint camelcase: false */
     jQuery(function ($) {
+        $('.sucuriscan-integrity-table th .sucuriscan-tooltip').removeClass('sucuriscan-hidden');
+
         $('.sucuriscan-integrity-table .sucuriscan-integrity-filepath').on('click', function (event) {
             event.preventDefault();
 
@@ -28,9 +22,8 @@
                 form_action: 'integrity_diff_utility',
                 filepath: filepath,
             }, function (data) {
-                var instructions = $('.sucuriscan-diff-instructions').html();
                 $('.sucuriscan-diff-utility-modal .sucuriscan-modal-inside').html(data);
-                $('.sucuriscan-diff-content').before(instructions);
+                $('.sucuriscan-diff-content').before('<p>@@SUCURI.DiffUtilityInstructions@@</p>');
             });
         });
     });

@@ -37,20 +37,6 @@ if (defined('SUCURISCAN')) {
     $sucuriscan_action_prefix = SucuriScan::isMultiSite() ? 'network_' : '';
 
     /**
-     * Settings options.
-     *
-     * The following global variables are mostly associative arrays where the
-     * key is linked to an option that will be stored in the database, and their
-     * correspondent values are the description of the option. These variables
-     * will be used in the settings page to offer the user a way to configure
-     * the behaviour of the plugin.
-     *
-     * @var string
-     */
-    $sucuriscan_date_format = get_option('date_format');
-    $sucuriscan_time_format = get_option('time_format');
-
-    /**
      * Remove the WordPress generator meta-tag from the source code.
      */
     remove_action('wp_head', 'wp_generator');
@@ -76,7 +62,6 @@ if (defined('SUCURISCAN')) {
     if (SucuriScan::runAdminInit()) {
         add_action('admin_init', 'SucuriScanInterface::handleOldPlugins');
         add_action('admin_init', 'SucuriScanInterface::createStorageFolder');
-        add_action('admin_init', 'SucuriScanInterface::noticeAfterUpdate');
     }
 
     /**
@@ -111,6 +96,7 @@ if (defined('SUCURISCAN')) {
         {
             global $locale;
 
+            $default_locale = 'en_US';
             $pofile = sprintf(
                 '%s/languages/%s-%s.po',
                 SUCURISCAN_PLUGIN_PATH,
@@ -126,15 +112,37 @@ if (defined('SUCURISCAN')) {
 
             /* attempt to import the English POT file into LOCALE */
             if (!file_exists($pofile) || !file_exists($mofile)) {
+                $fallback = array(
+                    'en_NZ' => 'en_US', /* English (New Zealand) */
+                    'en_CA' => 'en_US', /* English (Canada) */
+                    'en_ZA' => 'en_US', /* English (South Africa) */
+                    'en_GB' => 'en_US', /* English (UK) */
+                    'en_AU' => 'en_US', /* English (Australia) */
+                    'es_AR' => 'es_ES', /* Español de Argentina */
+                    'es_MX' => 'es_ES', /* Español de México */
+                    'es_CO' => 'es_ES', /* Español de Colombia */
+                    'es_GT' => 'es_ES', /* Español de Guatemala */
+                    'es_VE' => 'es_ES', /* Español de Venezuela */
+                    'es_CL' => 'es_ES', /* Español de Chile */
+                    'es_PE' => 'es_ES', /* Español de Perú */
+                );
+
+                /* try to find a similar translation */
+                if (array_key_exists($locale, $fallback)) {
+                    $default_locale = $fallback[$locale];
+                }
+
                 $en_pofile = sprintf(
-                    '%s/languages/%s-en_US.po',
+                    '%s/languages/%s-%s.po',
                     SUCURISCAN_PLUGIN_PATH,
-                    SUCURISCAN_TEXTDOMAIN
+                    SUCURISCAN_TEXTDOMAIN,
+                    $default_locale
                 );
                 $en_mofile = sprintf(
-                    '%s/languages/%s-en_US.mo',
+                    '%s/languages/%s-%s.mo',
                     SUCURISCAN_PLUGIN_PATH,
-                    SUCURISCAN_TEXTDOMAIN
+                    SUCURISCAN_TEXTDOMAIN,
+                    $default_locale
                 );
 
                 @copy($en_pofile, $pofile);
@@ -143,8 +151,8 @@ if (defined('SUCURISCAN')) {
 
             /* fallback to English on language import failure */
             if (!file_exists($pofile) || !file_exists($mofile)) {
-                $locale = 'en_US';
-                setlocale(LC_ALL, 'en_US');
+                $locale = $default_locale;
+                setlocale(LC_ALL, $default_locale);
             }
 
             load_plugin_textdomain(
@@ -247,15 +255,4 @@ if (defined('SUCURISCAN')) {
             add_action('admin_init', 'SucuriScanHook::hookWidgetDelete');
         }
     }
-
-    /**
-     * Clear the firewall cache if necessary.
-     *
-     * Every time a page or post is modified and saved into the database the
-     * plugin will send a HTTP request to the firewall API service and except
-     * that, if the API key is valid, the cache is reset. Notice that the cache
-     * of certain files is going to stay as it is due to the configuration on the
-     * edge of the servers.
-     */
-    add_action('save_post', 'SucuriScanFirewall::clearCacheHook');
 }

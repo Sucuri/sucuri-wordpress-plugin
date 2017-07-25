@@ -62,40 +62,6 @@ function sucuriscan_settings_apiservice_status($nonce)
 }
 
 /**
- * Returns the HTML to configure the API service timeout.
- *
- * @param bool $nonce True if the CSRF protection worked, false otherwise.
- * @return string HTML for the API service timeout option.
- */
-function sucuriscan_settings_apiservice_timeout($nonce)
-{
-    $params = array();
-
-    // Update the API request timeout.
-    if ($nonce) {
-        $timeout = (int) SucuriScanRequest::post(':request_timeout', '[0-9]+');
-
-        if ($timeout > 0) {
-            if ($timeout <= SUCURISCAN_MAX_REQUEST_TIMEOUT) {
-                $message = 'API request timeout set to <code>' . $timeout . '</code> seconds.';
-
-                SucuriScanOption::updateOption(':request_timeout', $timeout);
-                SucuriScanEvent::reportInfoEvent($message);
-                SucuriScanEvent::notifyEvent('plugin_change', $message);
-                SucuriScanInterface::info(__('HTTPTimeoutChange', SUCURISCAN_TEXTDOMAIN));
-            } else {
-                SucuriScanInterface::error(__('HTTPTimeoutFailure', SUCURISCAN_TEXTDOMAIN));
-            }
-        }
-    }
-
-    $params['MaxRequestTimeout'] = SUCURISCAN_MAX_REQUEST_TIMEOUT;
-    $params['RequestTimeout'] = SucuriScanOption::getOption(':request_timeout') . ' seconds';
-
-    return SucuriScanTemplate::getSection('settings-apiservice-timeout', $params);
-}
-
-/**
  * Returns the HTML to configure the API service proxy.
  *
  * @return string HTML for the API service proxy option.
@@ -130,4 +96,41 @@ function sucuriscan_settings_apiservice_proxy()
     }
 
     return SucuriScanTemplate::getSection('settings-apiservice-proxy', $params);
+}
+
+/**
+ * Returns the HTML to configure the URL for the checkums API.
+ *
+ * @param bool $nonce True if the CSRF protection worked, false otherwise.
+ * @return string HTML for the URL for the checksums API service.
+ */
+function sucuriscan_settings_apiservice_checksums($nonce)
+{
+    $params = array();
+    $url = SucuriScanRequest::post(':checksum_api');
+
+    if ($nonce && $url !== false) {
+        /* https://github.com/WordPress/WordPress - OR - WordPress/WordPress */
+        $pattern = '/^(https:\/\/github\.com\/)?([0-9a-zA-Z_]+\/[0-9a-zA-Z_]+)/';
+
+        if (@preg_match($pattern, $url, $match)) {
+            SucuriScanOption::updateOption(':checksum_api', $match[2]);
+
+            $message = 'Core integrity API changed: ' . SucuriScanAPI::checksumAPI();
+            SucuriScanEvent::reportInfoEvent($message);
+            SucuriScanEvent::notifyEvent('plugin_change', $message);
+            SucuriScanInterface::info(__('ChecksumsAPIChanged', SUCURISCAN_TEXTDOMAIN));
+        } else {
+            SucuriScanOption::deleteOption(':checksum_api');
+
+            $message = 'Core integrity API changed: ' . SucuriScanAPI::checksumAPI();
+            SucuriScanEvent::reportInfoEvent($message);
+            SucuriScanEvent::notifyEvent('plugin_change', $message);
+            SucuriScanInterface::info(__('ChecksumsAPIChanged', SUCURISCAN_TEXTDOMAIN));
+        }
+    }
+
+    $params['ChecksumsAPI'] = SucuriScanAPI::checksumAPI();
+
+    return SucuriScanTemplate::getSection('settings-apiservice-checksums', $params);
 }

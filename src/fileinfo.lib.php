@@ -136,7 +136,10 @@ class SucuriScanFileInfo extends SucuriScan
     private function ignoreFolder($path)
     {
         return (bool) ($this->ignore_directories && (
-            strpos($path, 'wp-content/backup') !== false
+            strpos($path, '/.hg') !== false
+            || strpos($path, '/.git') !== false
+            || strpos($path, '/.svn') !== false
+            || strpos($path, 'wp-content/backup') !== false
             || strpos($path, 'wp-content/cache') !== false
             || strpos($path, 'wp-content/uploads') !== false
             || strpos($path, 'wp-content/w3tc') !== false
@@ -206,7 +209,7 @@ class SucuriScanFileInfo extends SucuriScan
                     $objects = new DirectoryIterator($directory);
                 }
             } catch (RuntimeException $exception) {
-                SucuriScanEvent::reportException($exception);
+                /* ignore failure */
             }
             // @codeCoverageIgnoreEnd
 
@@ -314,6 +317,20 @@ class SucuriScanFileInfo extends SucuriScan
      */
     public function removeDirectoryTree($directory = '')
     {
+        $directory = realpath($directory);
+
+        if (!is_dir($directory)) {
+            return self::throwException('Directory does not exists');
+        }
+
+        if ($directory === ABSPATH . 'wp-content') {
+            return self::throwException('Cannot delete content directory');
+        }
+
+        if ($directory === ABSPATH . 'wp-content/uploads') {
+            return self::throwException('Cannot delete uploads directory');
+        }
+
         /* force complete scan */
         $this->ignore_files = false;
         $this->skip_directories = false;
@@ -328,24 +345,10 @@ class SucuriScanFileInfo extends SucuriScan
             }
         }
 
-        if (!function_exists('sucuriscanStrlenDiff')) {
-            /**
-             * Evaluates the difference between the length of two strings.
-             *
-             * @param string $a First string of characters that will be measured.
-             * @param string $b Second string of characters that will be measured.
-             * @return int The difference in length between the two strings.
-             */
-            function sucuriscanStrlenDiff($a = '', $b = '')
-            {
-                return strlen($b) - strlen($a);
-            }
-        }
-
         /* delete directories starting from the deepest level */
         if ($dir_tree = $this->getDirectoryTree($directory, 'directory')) {
             $dir_tree = array_unique($dir_tree);
-            usort($dir_tree, 'sucuriscanStrlenDiff');
+            usort($dir_tree, array('SucuriScanFileInfo', 'sortByLength'));
             foreach ($dir_tree as $dir_path) {
                 @rmdir($dir_path);
             }
@@ -355,6 +358,18 @@ class SucuriScanFileInfo extends SucuriScan
 
         /* check if we deleted all the files and sub-directories */
         return (bool) !($this->getDirectoryTree($directory));
+    }
+
+    /**
+     * Evaluates the difference between the length of two strings.
+     *
+     * @param string $a First string of characters that will be measured.
+     * @param string $b Second string of characters that will be measured.
+     * @return int The difference in length between the two strings.
+     */
+    public static function sortByLength($a, $b)
+    {
+        return strlen($b) - strlen($a);
     }
 
     /**

@@ -50,7 +50,7 @@ function sucuriscan_settings_alerts_recipients($nonce)
                 $message = sprintf(__('WillReceiveAlerts', SUCURISCAN_TEXTDOMAIN), $new_email);
 
                 SucuriScanOption::updateOption(':notify_to', implode(',', $emails));
-                SucuriScanEvent::reportInfoEvent($message);
+                SucuriScanEvent::reportInfoEvent('The email alerts will be sent to: ' . $new_email);
                 SucuriScanEvent::notifyEvent('plugin_change', $message);
                 SucuriScanInterface::info($message);
             } else {
@@ -76,7 +76,7 @@ function sucuriscan_settings_alerts_recipients($nonce)
                 $message = sprintf(__('WillNotReceiveAlerts', SUCURISCAN_TEXTDOMAIN), $deleted_emails_str);
 
                 SucuriScanOption::updateOption(':notify_to', implode(',', $emails));
-                SucuriScanEvent::reportInfoEvent($message);
+                SucuriScanEvent::reportInfoEvent('These emails will stop receiving alerts: ' . $deleted_emails_str);
                 SucuriScanEvent::notifyEvent('plugin_change', $message);
                 SucuriScanInterface::info($message);
             }
@@ -88,7 +88,7 @@ function sucuriscan_settings_alerts_recipients($nonce)
             SucuriScanMail::sendMail(
                 $recipients,
                 'Test Email Alert',
-                sprintf('Test email alert sent at %s', date('r')),
+                sprintf('Test email alert sent at %s', SucuriScan::datetime()),
                 array('Force' => true)
             );
             SucuriScanInterface::info(__('TestAlertSent', SUCURISCAN_TEXTDOMAIN));
@@ -130,7 +130,7 @@ function sucuriscan_settings_alerts_trustedips()
         if ($trust_ip = SucuriScanRequest::post(':trust_ip')) {
             if (SucuriScan::isValidIP($trust_ip) || SucuriScan::isValidCIDR($trust_ip)) {
                 $ip_info = SucuriScan::getIPInfo($trust_ip);
-                $ip_info['added_at'] = SucuriScan::localTime();
+                $ip_info['added_at'] = time();
                 $cache_key = md5($ip_info['remote_addr']);
 
                 if ($cache->exists($cache_key)) {
@@ -373,22 +373,24 @@ function sucuriscan_settings_alerts_events($nonce)
 {
     $params = array();
     $params['Alerts.Events'] = '';
+    $params['Alerts.NoAlertsVisibility'] = 'hidden';
 
     $notify_options = array(
-        'sucuriscan_notify_plugin_change' => __('OptionNotifyPluginChange', SUCURISCAN_TEXTDOMAIN),
-        'sucuriscan_prettify_mails' => __('OptionPrettifyMails', SUCURISCAN_TEXTDOMAIN),
-        'sucuriscan_use_wpmail' => __('OptionUseWordPressMail', SUCURISCAN_TEXTDOMAIN),
-        'sucuriscan_lastlogin_redirection' => __('OptionLastLoginRedirection', SUCURISCAN_TEXTDOMAIN),
-        'sucuriscan_notify_scan_checksums' => __('OptionNotifyScanChecksums', SUCURISCAN_TEXTDOMAIN),
-        'sucuriscan_notify_available_updates' => __('OptionNotifyAvailableUpdates', SUCURISCAN_TEXTDOMAIN),
+        'sucuriscan_notify_plugin_change' => 'setting:' . __('OptionNotifyPluginChange', SUCURISCAN_TEXTDOMAIN),
+        'sucuriscan_prettify_mails' => 'setting:' . __('OptionPrettifyMails', SUCURISCAN_TEXTDOMAIN),
+        'sucuriscan_use_wpmail' => 'setting:' . __('OptionUseWordPressMail', SUCURISCAN_TEXTDOMAIN),
+        'sucuriscan_lastlogin_redirection' => 'setting:' . __('OptionLastLoginRedirection', SUCURISCAN_TEXTDOMAIN),
+        'sucuriscan_notify_scan_checksums' => 'setting:' . __('OptionNotifyScanChecksums', SUCURISCAN_TEXTDOMAIN),
+        'sucuriscan_notify_available_updates' => 'setting:' . __('OptionNotifyAvailableUpdates', SUCURISCAN_TEXTDOMAIN),
         'sucuriscan_notify_user_registration' => 'user:' . __('OptionNotifyUserRegistration', SUCURISCAN_TEXTDOMAIN),
         'sucuriscan_notify_success_login' => 'user:' . __('OptionNotifySuccessLogin', SUCURISCAN_TEXTDOMAIN),
         'sucuriscan_notify_failed_login' => 'user:' . __('OptionNotifyFailedLogin', SUCURISCAN_TEXTDOMAIN),
+        'sucuriscan_notify_failed_password' => 'user:' . __('OptionNotifyFailedPassword', SUCURISCAN_TEXTDOMAIN),
         'sucuriscan_notify_bruteforce_attack' => 'user:' . __('OptionNotifyBruteforceAttack', SUCURISCAN_TEXTDOMAIN),
-        'sucuriscan_notify_post_publication' => __('OptionNotifyPostPublication', SUCURISCAN_TEXTDOMAIN),
-        'sucuriscan_notify_website_updated' => __('OptionNotifyWebsiteUpdated', SUCURISCAN_TEXTDOMAIN),
-        'sucuriscan_notify_settings_updated' => __('OptionNotifySettingsUpdated', SUCURISCAN_TEXTDOMAIN),
-        'sucuriscan_notify_theme_editor' => __('OptionNotifyThemeEditor', SUCURISCAN_TEXTDOMAIN),
+        'sucuriscan_notify_post_publication' => 'setting:' . __('OptionNotifyPostPublication', SUCURISCAN_TEXTDOMAIN),
+        'sucuriscan_notify_website_updated' => 'setting:' . __('OptionNotifyWebsiteUpdated', SUCURISCAN_TEXTDOMAIN),
+        'sucuriscan_notify_settings_updated' => 'setting:' . __('OptionNotifySettingsUpdated', SUCURISCAN_TEXTDOMAIN),
+        'sucuriscan_notify_theme_editor' => 'setting:' . __('OptionNotifyThemeEditor', SUCURISCAN_TEXTDOMAIN),
         'sucuriscan_notify_plugin_installed' => 'plugin:' . __('OptionNotifyPluginInstalled', SUCURISCAN_TEXTDOMAIN),
         'sucuriscan_notify_plugin_activated' => 'plugin:' . __('OptionNotifyPluginActivated', SUCURISCAN_TEXTDOMAIN),
         'sucuriscan_notify_plugin_deactivated' => 'plugin:' . __('OptionNotifyPluginDeactivated', SUCURISCAN_TEXTDOMAIN),
@@ -401,6 +403,25 @@ function sucuriscan_settings_alerts_events($nonce)
         'sucuriscan_notify_theme_updated' => 'theme:' . __('OptionNotifyThemeUpdated', SUCURISCAN_TEXTDOMAIN),
         'sucuriscan_notify_theme_deleted' => 'theme:' . __('OptionNotifyThemeDeleted', SUCURISCAN_TEXTDOMAIN),
     );
+
+    /**
+     * Hide successful and failed logins option.
+     *
+     * Due to an incompatibility with the Postman-SMTP plugin we cannot sent
+     * email alerts when a successful or failed user authentication happens, the
+     * result is an infinite loop while our plugin tries to notify about changes
+     * in the posts and the other plugin creates temporary post objects to track
+     * the emails.
+     *
+     * @date 30 June, 2017
+     * @see https://wordpress.org/plugins/postman-smtp/
+     * @see https://wordpress.org/support/topic/unable-to-access-wordpress-dashboard-after-update-to-1-8-7/
+     */
+    if (is_plugin_active('postman-smtp/postman-smtp.php')) {
+        $params['Alerts.NoAlertsVisibility'] = 'visible';
+        unset($notify_options['sucuriscan_notify_success_login']);
+        unset($notify_options['sucuriscan_notify_failed_login']);
+    }
 
     // Process form submission to change the alert settings.
     if ($nonce) {
@@ -433,42 +454,46 @@ function sucuriscan_settings_alerts_events($nonce)
         }
     }
 
-    // Build the HTML code for the interface.
-    if (is_array($notify_options)) {
-        $pattern = '/^([a-z]+:)?(.+)/';
+    /* build the HTML code for the checkbox input fields */
+    foreach ($notify_options as $alert_type => $alert_label) {
+        $alert_value = SucuriScanOption::getOption($alert_type);
+        $checked = ($alert_value == 'enabled') ? 'checked="checked"' : '';
+        $alert_icon = '';
 
-        foreach ($notify_options as $alert_type => $alert_label) {
-            $alert_value = SucuriScanOption::getOption($alert_type);
-            $checked = ($alert_value == 'enabled') ? 'checked="checked"' : '';
-            $alert_icon = '';
+        /* identify the optional icon */
+        $offset = strpos($alert_label, ':');
+        $alert_group = substr($alert_label, 0, $offset);
+        $alert_label = substr($alert_label, $offset+1);
 
-            if (@preg_match($pattern, $alert_label, $match)) {
-                $alert_group = str_replace(':', '', $match[1]);
-                $alert_label = $match[2];
+        switch ($alert_group) {
+            case 'user':
+                $alert_icon = 'dashicons-before dashicons-admin-users';
+                break;
 
-                switch ($alert_group) {
-                    case 'user':
-                        $alert_icon = 'dashicons-before dashicons-admin-users';
-                        break;
+            case 'plugin':
+                $alert_icon = 'dashicons-before dashicons-admin-plugins';
+                break;
 
-                    case 'plugin':
-                        $alert_icon = 'dashicons-before dashicons-admin-plugins';
-                        break;
+            case 'theme':
+                $alert_icon = 'dashicons-before dashicons-admin-appearance';
+                break;
 
-                    case 'theme':
-                        $alert_icon = 'dashicons-before dashicons-admin-appearance';
-                        break;
-                }
-            }
+            case 'setting':
+                $alert_icon = 'dashicons-before dashicons-admin-tools';
+                break;
 
-            $params['Alerts.Events'] .=
-            SucuriScanTemplate::getSnippet('settings-alerts-events', array(
-                'Event.Name' => $alert_type,
-                'Event.Checked' => $checked,
-                'Event.Label' => $alert_label,
-                'Event.LabelIcon' => $alert_icon,
-            ));
+            case 'widget':
+                $alert_icon = 'dashicons-before dashicons-admin-post';
+                break;
         }
+
+        $params['Alerts.Events'] .=
+        SucuriScanTemplate::getSnippet('settings-alerts-events', array(
+            'Event.Name' => $alert_type,
+            'Event.Checked' => $checked,
+            'Event.Label' => $alert_label,
+            'Event.LabelIcon' => $alert_icon,
+        ));
     }
 
     return SucuriScanTemplate::getSection('settings-alerts-events', $params);
@@ -481,11 +506,9 @@ function sucuriscan_settings_alerts_events($nonce)
  */
 function sucuriscan_settings_alerts_ignore_posts()
 {
-    $notify_new_site_content = SucuriScanOption::getOption(':notify_post_publication');
-
     $params = array(
-        'IgnoreRules.MessageVisibility' => 'visible',
         'IgnoreRules.PostTypes' => '',
+        'IgnoreRules.ErrorVisibility' => 'hidden',
     );
 
     if (SucuriScanInterface::checkNonce()) {
@@ -510,48 +533,55 @@ function sucuriscan_settings_alerts_ignore_posts()
         }
     }
 
-    if ($notify_new_site_content == 'enabled') {
-        $post_types = get_post_types();
-        $ignored_events = SucuriScanOption::getIgnoredEvents();
+    /* notifications are post updates are disabled; print error */
+    if (SucuriScanOption::isDisabled(':notify_post_publication')) {
+        $params['IgnoreRules.ErrorVisibility'] = 'visible';
+        $params['IgnoreRules.PostTypes'] = sprintf(
+            '<tr><td colspan="4">%s</td></tr>',
+            __('NoData', SUCURISCAN_TEXTDOMAIN)
+        );
 
-        $params['IgnoreRules.MessageVisibility'] = 'hidden';
+        return SucuriScanTemplate::getSection('settings-alerts-ignore-posts', $params);
+    }
 
-        /* Include custom non-registered post-types */
-        foreach ($ignored_events as $event => $time) {
-            if (!array_key_exists($event, $post_types)) {
-                $post_types[$event] = $event;
-            }
+    $post_types = SucuriScanOption::getPostTypes();
+    $ignored_events = SucuriScanOption::getIgnoredEvents();
+
+    /* include custom non-registered post-types */
+    foreach ($ignored_events as $event => $time) {
+        if (!array_key_exists($event, $post_types)) {
+            $post_types[$event] = $event;
+        }
+    }
+
+    /* Check which post-types are being ignored */
+    foreach ($post_types as $post_type) {
+        $post_type_title = ucwords(str_replace('_', chr(32), $post_type));
+
+        if (array_key_exists($post_type, $ignored_events)) {
+            $is_ignored_text = __('Yes', SUCURISCAN_TEXTDOMAIN);
+            $was_ignored_at = SucuriScan::datetime($ignored_events[ $post_type ]);
+            $is_ignored_class = 'danger';
+            $button_action = 'remove';
+            $button_text = __('PostTypeIgnore', SUCURISCAN_TEXTDOMAIN);
+        } else {
+            $is_ignored_text = __('No', SUCURISCAN_TEXTDOMAIN);
+            $was_ignored_at = '--';
+            $is_ignored_class = 'success';
+            $button_action = 'add';
+            $button_text = __('PostTypeUnignore', SUCURISCAN_TEXTDOMAIN);
         }
 
-        /* Check which post-types are being ignored */
-        foreach ($post_types as $post_type) {
-            $post_type_title = ucwords(str_replace('_', chr(32), $post_type));
-
-            if (array_key_exists($post_type, $ignored_events)) {
-                $is_ignored_text = __('Yes', SUCURISCAN_TEXTDOMAIN);
-                $was_ignored_at = SucuriScan::datetime($ignored_events[ $post_type ]);
-                $is_ignored_class = 'danger';
-                $button_action = 'remove';
-                $button_text = __('PostTypeIgnore', SUCURISCAN_TEXTDOMAIN);
-            } else {
-                $is_ignored_text = __('No', SUCURISCAN_TEXTDOMAIN);
-                $was_ignored_at = '--';
-                $is_ignored_class = 'success';
-                $button_action = 'add';
-                $button_text = __('PostTypeUnignore', SUCURISCAN_TEXTDOMAIN);
-            }
-
-            $params['IgnoreRules.PostTypes'] .=
-            SucuriScanTemplate::getSnippet('settings-alerts-ignore-posts', array(
-                'IgnoreRules.PostTypeTitle' => $post_type_title,
-                'IgnoreRules.IsIgnored' => $is_ignored_text,
-                'IgnoreRules.WasIgnoredAt' => $was_ignored_at,
-                'IgnoreRules.IsIgnoredClass' => $is_ignored_class,
-                'IgnoreRules.PostType' => $post_type,
-                'IgnoreRules.Action' => $button_action,
-                'IgnoreRules.ButtonText' => $button_text,
-            ));
-        }
+        $params['IgnoreRules.PostTypes'] .=
+        SucuriScanTemplate::getSnippet('settings-alerts-ignore-posts', array(
+            'IgnoreRules.PostTypeTitle' => $post_type_title,
+            'IgnoreRules.IsIgnored' => $is_ignored_text,
+            'IgnoreRules.WasIgnoredAt' => $was_ignored_at,
+            'IgnoreRules.IsIgnoredClass' => $is_ignored_class,
+            'IgnoreRules.PostType' => $post_type,
+            'IgnoreRules.Action' => $button_action,
+            'IgnoreRules.ButtonText' => $button_text,
+        ));
     }
 
     return SucuriScanTemplate::getSection('settings-alerts-ignore-posts', $params);

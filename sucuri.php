@@ -7,7 +7,7 @@
  * Author URI: https://sucuri.net/
  * Text Domain: sucuri-scanner
  * Author: Sucuri Inc.
- * Version: 1.8.6
+ * Version: 1.8.7
  */
 
 
@@ -83,12 +83,7 @@ define('SUCURISCAN', 'sucuriscan');
 /**
  * Current version of the plugin's code.
  */
-define('SUCURISCAN_VERSION', '1.8.6');
-
-/**
- * The name of the Sucuri plugin main file.
- */
-define('SUCURISCAN_PLUGIN_FILE', 'sucuri.php');
+define('SUCURISCAN_VERSION', '1.8.7');
 
 /**
  * Unique name of the plugin text domain.
@@ -112,14 +107,9 @@ define('SUCURISCAN_PLUGIN_FOLDER', basename(dirname(__FILE__)));
 define('SUCURISCAN_PLUGIN_PATH', WP_PLUGIN_DIR . '/' . SUCURISCAN_PLUGIN_FOLDER);
 
 /**
- * The fullpath of the main plugin file.
- */
-define('SUCURISCAN_PLUGIN_FILEPATH', SUCURISCAN_PLUGIN_PATH . '/' . SUCURISCAN_PLUGIN_FILE);
-
-/**
  * The local URL where the plugin's files and assets are served.
  */
-define('SUCURISCAN_URL', site_url(dirname(str_replace(ABSPATH, '', SUCURISCAN_PLUGIN_FILEPATH))));
+define('SUCURISCAN_URL', plugin_dir_url(__FILE__));
 
 /**
  * Remote URL where the public Sucuri API service is running.
@@ -186,7 +176,7 @@ define('SUCURISCAN_GET_PLUGINS_LIFETIME', 1800);
 /**
  * The maximum execution time of a HTTP request before timeout.
  */
-define('SUCURISCAN_MAX_REQUEST_TIMEOUT', 60);
+define('SUCURISCAN_MAX_REQUEST_TIMEOUT', 5);
 
 /**
  * Sets the text that will preceed the admin notices.

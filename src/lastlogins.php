@@ -103,7 +103,7 @@ function sucuriscan_lastlogins_all()
 
     if (!sucuriscan_lastlogins_datastore_is_writable()) {
         $fpath = SucuriScan::escape(sucuriscan_lastlogins_datastore_filepath());
-        SucuriScanInterface::error(sprintf(__('LastLoginsNotWritable'), $fpath));
+        SucuriScanInterface::error(sprintf(__('LastLoginsNotWritable', SUCURISCAN_TEXTDOMAIN), $fpath));
     }
 
     if ($last_logins = sucuriscan_get_logins($max_per_page, $offset)) {
@@ -128,7 +128,7 @@ function sucuriscan_lastlogins_all()
                 'UserList.RemoteAddr' => $user->user_remoteaddr,
                 'UserList.Hostname' => $user->user_hostname,
                 'UserList.Datetime' => $user->user_lastlogin,
-                'UserList.TimeAgo' => SucuriScan::timeAgo($user->user_lastlogin),
+                'UserList.TimeAgo' => SucuriScan::humanTime($user->user_lastlogin_timestamp),
                 'UserList.UserURL' => SucuriScan::adminURL('user-edit.php?user_id=' . $user->user_id),
             );
 
@@ -232,9 +232,7 @@ if (!function_exists('sucuri_set_lastlogin')) {
      */
     function sucuriscan_set_lastlogin($user_login = '')
     {
-        $datastore_filepath = sucuriscan_lastlogins_datastore_is_writable();
-
-        if ($datastore_filepath) {
+        if ($filename = sucuriscan_lastlogins_datastore_is_writable()) {
             $current_user = get_user_by('login', $user_login);
             $remote_addr = SucuriScan::getRemoteAddr();
 
@@ -247,7 +245,7 @@ if (!function_exists('sucuri_set_lastlogin')) {
             );
 
             @file_put_contents(
-                $datastore_filepath,
+                $filename,
                 json_encode($login_info) . "\n",
                 FILE_APPEND
             );

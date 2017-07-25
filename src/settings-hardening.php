@@ -255,7 +255,11 @@ class SucuriScanHardeningPage extends SucuriScan
         $params['Hardening.Title'] = __('HardeningUploadsTitle', SUCURISCAN_TEXTDOMAIN);
         $params['Hardening.Description'] = __('HardeningUploadsDescription', SUCURISCAN_TEXTDOMAIN);
 
-        if (SucuriScanHardening::isHardened($folder)) {
+        if (SucuriScan::isBehindFirewall()) {
+            $params['Hardening.Status'] = 1;
+            $params['Hardening.FieldAttrs'] = 'disabled';
+            $params['Hardening.FieldText'] = __('RevertHardening', SUCURISCAN_TEXTDOMAIN);
+        } elseif (SucuriScanHardening::isHardened($folder)) {
             $params['Hardening.Status'] = 1;
             $params['Hardening.FieldName'] = __FUNCTION__ . '_revert';
             $params['Hardening.FieldText'] = __('RevertHardening', SUCURISCAN_TEXTDOMAIN);
@@ -308,7 +312,11 @@ class SucuriScanHardeningPage extends SucuriScan
         $params['Hardening.Title'] = __('HardeningContentTitle', SUCURISCAN_TEXTDOMAIN);
         $params['Hardening.Description'] = __('HardeningContentDescription', SUCURISCAN_TEXTDOMAIN);
 
-        if (SucuriScanHardening::isHardened(WP_CONTENT_DIR)) {
+        if (SucuriScan::isBehindFirewall()) {
+            $params['Hardening.Status'] = 1;
+            $params['Hardening.FieldAttrs'] = 'disabled';
+            $params['Hardening.FieldText'] = __('RevertHardening', SUCURISCAN_TEXTDOMAIN);
+        } elseif (SucuriScanHardening::isHardened(WP_CONTENT_DIR)) {
             $params['Hardening.Status'] = 1;
             $params['Hardening.FieldName'] = __FUNCTION__ . '_revert';
             $params['Hardening.FieldText'] = __('RevertHardening', SUCURISCAN_TEXTDOMAIN);
@@ -371,7 +379,11 @@ class SucuriScanHardeningPage extends SucuriScan
         $params['Hardening.Title'] = __('HardeningIncludesTitle', SUCURISCAN_TEXTDOMAIN);
         $params['Hardening.Description'] = __('HardeningIncludesDescription', SUCURISCAN_TEXTDOMAIN);
 
-        if (SucuriScanHardening::isHardened($folder)) {
+        if (SucuriScan::isBehindFirewall()) {
+            $params['Hardening.Status'] = 1;
+            $params['Hardening.FieldAttrs'] = 'disabled';
+            $params['Hardening.FieldText'] = __('RevertHardening', SUCURISCAN_TEXTDOMAIN);
+        } elseif (SucuriScanHardening::isHardened($folder)) {
             $params['Hardening.Status'] = 1;
             $params['Hardening.FieldName'] = __FUNCTION__ . '_revert';
             $params['Hardening.FieldText'] = __('RevertHardening', SUCURISCAN_TEXTDOMAIN);

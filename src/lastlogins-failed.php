@@ -254,7 +254,6 @@ function sucuriscan_get_failed_logins($get_old_logs = false, $offset = 0, $limit
         $processed++; /* count decoded data */
 
         if (is_array($login_data)) {
-            $login_data['attempt_date'] = date('r', $login_data['attempt_time']);
             $login_data['attempt_count'] = ( $key + 1 );
 
             if (!$login_data['user_agent']) {
@@ -360,6 +359,8 @@ function sucuriscan_report_failed_logins($failed_logins = array())
         }
 
         foreach ($failed_logins['entries'] as $login_data) {
+            $login_data['attempt_date'] = SucuriScan::datetime($login_data['attempt_time']);
+
             if ($prettify_mails) {
                 $table_html .= '<tr>';
                 $table_html .= '<td>' . esc_attr($login_data['user_login']) . '</td>';

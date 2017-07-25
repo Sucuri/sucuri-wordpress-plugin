@@ -1,4 +1,35 @@
 
+<script type="text/javascript">
+/* global jQuery */
+/* jshint camelcase: false */
+jQuery(document).ready(function ($) {
+    $.post('%%SUCURI.AjaxURL.Firewall%%', {
+        action: 'sucuriscan_ajax',
+        sucuriscan_page_nonce: '%%SUCURI.PageNonce%%',
+        form_action: 'firewall_settings',
+    }, function (data) {
+        if (data.ok) {
+            var value;
+            $('#firewall-settings-table tbody').html('');
+            for (var name in data.settings) {
+                if (data.settings.hasOwnProperty(name) &&
+                    typeof data.settings[name] === 'string'
+                ) {
+                    value = data.settings[name];
+                    $('#firewall-settings-table tbody').append('<tr>' +
+                    '<td><label>' + name + '</label></td>' +
+                    '<td><span class="sucuriscan-monospace">' +
+                    value + '</span></td></tr>');
+                }
+            }
+        } else {
+            $('#firewall-settings-table tbody')
+            .html('<tr><td colspan="2">' + data.error + '</td></tr>');
+        }
+    });
+});
+</script>
+
 <div class="sucuriscan-panel">
     <h3 class="sucuriscan-title">@@SUCURI.FirewallSettingsTitle@@</h3>
 
@@ -10,6 +41,7 @@
         </div>
 
         <div class="sucuriscan-hstatus sucuriscan-hstatus-2 sucuriscan-firewall-apikey sucuriscan-%%SUCURI.Firewall.APIKeyVisibility%%">
+            <strong>@@SUCURI.FirewallKey@@:</strong>
             <span class="sucuriscan-monospace">%%SUCURI.Firewall.APIKey%%</span>
             <form action="%%SUCURI.URL.Firewall%%" method="post">
                 <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
@@ -27,7 +59,7 @@
             <br>
         </form>
 
-        <table class="wp-list-table widefat sucuriscan-table sucuriscan-firewall-settings sucuriscan-%%SUCURI.Firewall.SettingsVisibility%%">
+        <table class="wp-list-table widefat sucuriscan-table" id="firewall-settings-table">
             <thead>
                 <tr>
                     <th>@@SUCURI.Name@@</th>
@@ -36,7 +68,7 @@
             </thead>
 
             <tbody>
-                %%%SUCURI.Firewall.SettingOptions%%%
+                <tr><td colspan="2">@@SUCURI.Loading@@</td></tr>
             </tbody>
         </table>
 

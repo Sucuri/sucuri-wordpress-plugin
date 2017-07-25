@@ -29,11 +29,11 @@ msgstr "Settings"
 msgid "AuditLogs"
 msgstr "Audit Logs"
 
-msgid "Statistics"
-msgstr "Statistics"
-
 msgid "ClearCache"
 msgstr "Clear Cache"
+
+msgid "IPAccess"
+msgstr "IP Access"
 
 msgid "GenerateAPIKey"
 msgstr "Generate API Key"
@@ -183,7 +183,7 @@ msgid "SelfHostingDisabled"
 msgstr "The log exporter feature has been disabled"
 
 msgid "SelfHostingInfo"
-msgstr "This option allows you to export the WordPress audit logs to a local log file that can be read by a SIEM or any log analysis software <em>(we recommend OSSEC)</em>. That will give visibility from within WordPress to complement your log monitoring infrastructure."
+msgstr "This option allows you to export the WordPress audit logs to a local log file that can be read by a SIEM or any log analysis software <em>(we recommend OSSEC)</em>. That will give visibility from within WordPress to complement your log monitoring infrastructure. <b>NOTE:</b> Do not use a publicly accessible file, you must use a file at least one level up the document root to prevent leaks of information."
 
 msgid "SelfHostingFallback"
 msgstr "You don't have a valid API key to communicate with the remote API service. However, the self-hosting monitor is enabled, the plugin will read the logs from that file and display the data here. Notice that only the latest logs will be processed to keep a low memory footprint. Consider to generate a free API key to get a better coverage of the activity in your website."
@@ -193,6 +193,9 @@ msgstr "This data is cached for %%SUCURI.AuditLogs.Lifetime%% seconds"
 
 msgid "Refresh"
 msgstr "Refresh"
+
+msgid "AuditLogsNoAPI"
+msgstr "The API service is not available; logs are coming from the local server"
 
 msgid "AuditLogsQueue"
 msgstr "logs in the queue"
@@ -206,8 +209,8 @@ msgstr "WordPress version is not supported."
 msgid "NoWordPressFile"
 msgstr "File is not part of the official WordPress installation."
 
-msgid "CannotCheckMissingFile"
-msgstr "Cannot check the integrity of a non-existing file."
+msgid "ThereAreNoDifferences"
+msgstr "There are no differences between the installed and original files"
 
 msgid "ScheduledTask"
 msgstr "%1$s (every %2$d seconds)"
@@ -461,6 +464,9 @@ msgstr "The plugin has no permission to restore this file because its directory 
 msgid "SecurityAlerts"
 msgstr "Security Alerts"
 
+msgid "NoAlertsError"
+msgstr "You have installed a plugin or theme that is not fully compatible with our plugin, some of the security alerts (like the successful and failed logins) will not be sent to you. To prevent an infinite loop while detecting these changes in the website and sending the email alerts via a custom SMTP plugin, we have decided to stop any attempt to send the emails to prevent fatal errors."
+
 msgid "AlertSettingsUpdated"
 msgstr "The alert settings have been updated"
 
@@ -490,6 +496,9 @@ msgstr "Receive email alerts for successful login attempts"
 
 msgid "OptionNotifyFailedLogin"
 msgstr "Receive email alerts for failed login attempts <em>(you may receive tons of emails)</em>"
+
+msgid "OptionNotifyFailedPassword"
+msgstr "Receive email alerts for failed login attempts including the submitted password"
 
 msgid "OptionNotifyBruteforceAttack"
 msgstr "Receive email alerts for password guessing attacks <em>(summary of failed logins per hour)</em>"
@@ -600,7 +609,7 @@ msgid "DiffUtilityDescription"
 msgstr "If your server allows the execution of system commands, you can configure the plugin to use the <a href=\"https://en.wikipedia.org/wiki/Diff_utility\" target=\"_blank\" rel=\"noopener\">Unix Diff Utility</a> to compare the actual content of the file installed in the website and the original file provided by WordPress. This will show the differences between both files and then you can act upon the information provided."
 
 msgid "DiffUtilityInfo"
-msgstr "The Unix Diff Utility is enabled. You can click the files marked as modified <em>(the ones with the purple flag)</em> to see the differences detected by the scanner. If you consider the differences to be harmless you can mark the file as fixed, otherwise it is adviced to restore the original content immediately."
+msgstr "The Unix Diff Utility is enabled. You can click the files in the table to see the differences detected by the scanner. If you consider the differences to be harmless you can mark the file as fixed, otherwise it is adviced to restore the original content immediately."
 
 msgid "DiffUtilityInstructions"
 msgstr "Lines with a <b>minus</b> sign as the prefix <em>(here in red)</em> show the original code. Lines with a <b>plus</b> sign as the prefix <em>(here in green)</em> show the modified code. You can read more about the DIFF format from the WikiPedia article about the <a target=\"_blank\" href=\"https://en.wikipedia.org/wiki/Diff_utility\" rel=\"noopener\">Unix Diff Utility</a>."
@@ -770,12 +779,6 @@ msgstr "The post-type is invalid or it may be already ignored."
 msgid "APIServiceChanged"
 msgstr "The status of the API service has been changed"
 
-msgid "HTTPTimeoutChange"
-msgstr "The timeout for the HTTP requests has been changed"
-
-msgid "HTTPTimeoutFailure"
-msgstr "API request timeout in seconds is too high."
-
 msgid "PluginResetSuccess"
 msgstr "Local security logs, hardening and settings were deleted"
 
@@ -832,6 +835,9 @@ msgstr "Most of the tools in this plugin can be used without a specific configur
 
 msgid "APIKeyTerms"
 msgstr "Generating an API key implies that you agree to send the information collected by the plugin to the Sucuri API service which is a remote server where the information for the audit logs is stored, this is to prevent malicious users to delete the logs during an attack which may affect an investigation if you suspect that your website was hacked. We also use this information to display <a href=\"https://sucuri.net/security-reports/brute-force/\" target=\"_blank\">statistics</a> and try to use the data in an anonymous way as we are concerned about your privacy too. Please do not generate an API key if you do not agree with this, you can keep using the plugin without it anyway."
+
+msgid "APIKeyMissing"
+msgstr "API key is missing"
 
 msgid "APIKeyInvalidDomain"
 msgstr "Your domain <code>%%SUCURI.CleanDomain%%</code> does not seems to have a DNS <code>A</code> record so it will be considered as <em>invalid</em> by the API interface when you request the generation of a new key. Adding <code>www</code> at the beginning of the domain name may fix this issue. If you do not understand what is this then send an email to our support team requesting the key."
@@ -1083,7 +1089,7 @@ msgid "IntegrityBadDescription"
 msgstr "We identified that some of your WordPress core files were modified. That might indicate a hack or a broken file on your installation. If you are experiencing other malware issues, please use a <a href=\"https://sucuri.net/website-security/malware-removal\" target=\"_blank\">Server Side Scanner</a>."
 
 msgid "MarkFixedDescription"
-msgstr "Marking one or more files as fixed will force the plugin to ignore them during the next scan, very useful when you find false positives. Additionally you can restore the original content of the core files that appear as modified or deleted, this will tell the plugin to download a copy of the original files from the official <a href=\"https://core.svn.wordpress.org/tags/\" target=\"_blank\" rel=\"noopener\">WordPress repository</a>. Deleting a file is an irreversible action, be careful."
+msgstr "Marking one or more files as fixed will force the plugin to ignore them during the next scan, very useful when you find false positives. Additionally you can restore the original content of the core files that appear as modified or deleted, this will tell the plugin to download a copy of the original files from the official WordPress repository. Deleting a file is an irreversible action, be careful."
 
 msgid "Action"
 msgstr "Action"
@@ -1157,6 +1163,18 @@ msgstr "The firewall logs every request involved in an attack and separates them
 msgid "FirewallLogsNote"
 msgstr "Note that non-blocked requests are hidden from the logs, this is intentional."
 
+msgid "FirewallIPAccessTitle"
+msgstr "IP Address Access"
+
+msgid "FirewallIPAccessInfo"
+msgstr "This tool allows you to whitleist and blacklist one or more IP addresses from accessing your website. You can also configure the plugin to automatically blacklist any IP address involved in a password guessing brute-force attack. If a legitimate user fails to submit the correct credentials of their account they will have to log into the Firewall dashboard in order to delete their IP address from the blacklist, or try to login once again through a VPN."
+
+msgid "WhitelistIP"
+msgstr "Whitelist IP"
+
+msgid "BlacklistIP"
+msgstr "Blacklist IP"
+
 msgid "FirewallCacheTitle"
 msgstr "Clear Cache"
 
@@ -1171,6 +1189,9 @@ msgstr "Note that the firewall has <a href=\"https://kb.sucuri.net/firewall/Perf
 
 msgid "FirewallCacheWiki"
 msgstr "A web cache (or HTTP cache) is an information technology for the temporary storage (caching) of web documents, such as HTML pages and images, to reduce bandwidth usage, server load, and perceived lag. A web cache system stores copies of documents passing through it; subsequent requests may be satisfied from the cache if certain conditions are met. A web cache system can refer either to an appliance, or to a computer program. &mdash; <a href=\"https://en.wikipedia.org/wiki/Web_cache\" target=\"_blank\" rel=\"noopener\">WikiPedia - Web Cache</a>"
+
+msgid "FirewallAutoClearCache"
+msgstr "Clear cache automatically when a post or page is updated"
 
 msgid "LoginsAdmins"
 msgstr "Successful Logins (admins)"
@@ -1225,6 +1246,12 @@ msgstr "Recomendations"
 
 msgid "SiteCheckNoResults"
 msgstr "If our free scanner did not detect any issue, you may have a more complicated and hidden problem. You can <a target=\"_blank\" href=\"https://sucuri.net/website-security-platform/signup\">sign up with Sucuri</a> for a complete and in-depth scan + cleanup (not included in the free checks)."
+
+msgid "SiteCheckTarget"
+msgstr "Malware Scan Target"
+
+msgid "SiteCheckTargetInfo"
+msgstr "The remote malware scanner provided by the plugin is powered by <a href=\"https://sitecheck.sucuri.net/\" target=\"_blank\">Sucuri SiteCheck</a>, a service that takes a publicly accessible URL and scans it for malicious code. If your website is not visible to the Internet, for example, if it is hosted in a local development environment or a restricted network, the scanner will not be able to work on it. Additionally, if the website was installed in a non-standard directory the scanner will report a \"404 Not Found\" error. You can use this option to change the URL that will be scanned."
 
 msgid "PasswordAttack"
 msgstr "Password Guessing Brute Force Attacks"
@@ -1463,14 +1490,23 @@ msgstr "Data Storage"
 msgid "DataStorageInfo"
 msgstr "This is the directory where the plugin will store the security logs, the list of files marked as fixed in the core integrity tool, the cache for the malware scanner and 3rd-party plugin metadata. The plugin requires write permissions in this directory as well as the files contained in it. If you prefer to keep these files in a non-public directory <em>(one level up the document root) </em> please define a constant in the <em>\"wp-config.php\"</em> file named <em>\"SUCURI_DATA_STORAGE\"</em> with the absolute path to the new directory."
 
-msgid "LogsReport"
-msgstr "Audit Log Statistics"
+msgid "TimezoneTitle"
+msgstr "Timezone"
 
-msgid "LogsReportLimit"
-msgstr "The number of logs that will be used to generate the audit report has been changed"
+msgid "TimezoneInfo"
+msgstr "This option defines the timezone that will be used through out the entire plugin to print the dates and times whenever is necessary. This option also affects the date and time of the logs visible in the audit logs panel which is data that comes from a remote server configured to use Eastern Daylight Time (EDT). WordPress offers an option in the general settings page to allow you to configure the timezone for the entire website, however, if you are experiencing problems with the time in the audit logs, this option will help you fix them."
 
-msgid "LogsReportInfo"
-msgstr "The data used to generate these charts comes from the last <b>%%SUCURI.AuditReport.Logs4Report%% audit logs</b>, you can configure this number from the plugin settings page."
+msgid "TimezoneStatus"
+msgstr "The timezone for the date and time in the audit logs has been changed"
 
-msgid "LogsReportDescription"
-msgstr "Enabling this option allows you to have a quick view of the range of the activity of your users and/or the attacks directed against your website. By default, the plugin uses the latest entries in the audit logs and uses that information to draw bar and pie charts in the dashboard. The statistic are generated with a limited number of logs to reduce the memory consumption of the parser. You can increase the limit at your own discretion considering the amount of memory and maximum execution time that your PHP installation is allowed to use."
+msgid "ChecksumsAPI"
+msgstr "WordPress Checksums API"
+
+msgid "ChecksumsAPIInfo"
+msgstr "The WordPress integrity tool uses a remote API service maintained by the WordPress organization to determine which files in the installation were added, removed or modified. The API returns a list of files with their respective checksums, this information guarantees that the installation is not corrupt. You can, however, point the integrity tool to a GitHub repository in case that you are using a custom version of WordPress like the <a href=\"https://github.com/WordPress/WordPress\" target=\"_blank\">development version of the code</a>."
+
+msgid "ChecksumsAPIChanged"
+msgstr "The URL to retrieve the WordPress checksums has been changed"
+
+msgid "MaxExecutionTimeAlert"
+msgstr "Server is not fast enough to process this action; maximum execution time reached"

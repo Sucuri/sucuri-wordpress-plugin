@@ -61,23 +61,16 @@ function sucuriscan_settings_general_apikey($nonce)
     $display_manual_key_form = (bool) (SucuriScanRequest::post(':recover_key') !== false);
 
     if ($nonce) {
-        if (!empty($_POST)) {
-            $fpath = SucuriScanOption::optionsFilePath();
-
-            if (!is_writable($fpath)) {
-                SucuriScanInterface::error(sprintf(
-                    __('StorageNotWritable', SUCURISCAN_TEXTDOMAIN),
-                    $fpath /* absolute path of the data storage folder */
-                ));
-            }
-        }
-
         // Remove API key from the local storage.
-        if (SucuriScanRequest::post(':remove_api_key') !== false) {
-            SucuriScanAPI::setPluginKey('');
+        if (SucuriScanRequest::post(':remove_api_key') !== false
+            && SucuriScanAPI::setPluginKey('') !== false
+        ) {
             wp_clear_scheduled_hook('sucuriscan_scheduled_scan');
-            SucuriScanEvent::reportCriticalEvent('Sucuri API key was deleted.');
+
+            SucuriScanEvent::reportCriticalEvent('Sucuri API key has been deleted.');
             SucuriScanEvent::notifyEvent('plugin_change', 'Sucuri API key removed');
+            SucuriScanInterface::info('Sucuri API key has been deleted <code>'
+            . SucuriScan::escape(SucuriScanAPI::getPluginKey()) . '</code>');
         }
 
         // Save API key after it was recovered by the administrator.
@@ -147,7 +140,7 @@ function sucuriscan_settings_general_apikey($nonce)
  * @param bool $nonce True if the CSRF protection worked.
  * @return string Page with information about the data storage.
  */
-function sucuriscan_settings_general_datastorage()
+function sucuriscan_settings_general_datastorage($nonce)
 {
     $params = array();
     $files = array(
@@ -170,7 +163,7 @@ function sucuriscan_settings_general_datastorage()
     $params['Storage.Files'] = '';
     $params['Storage.Path'] = SucuriScan::dataStorePath();
 
-    if (SucuriScanInterface::checkNonce()) {
+    if ($nonce) {
         if ($filenames = SucuriScanRequest::post(':filename', '_array')) {
             $deleted = 0;
 
@@ -459,34 +452,6 @@ function sucuriscan_settings_general_ipdiscoverer($nonce)
 }
 
 /**
- * Renders a page with information about the auditlog stats feature.
- *
- * @param bool $nonce True if the CSRF protection worked.
- * @return string Page with information about the auditlog stats.
- */
-function sucuriscan_settings_general_auditlogstats($nonce)
-{
-    $params = array();
-
-    if ($nonce) {
-        // Update the limit for audit logs report.
-        if ($logs4report = SucuriScanRequest::post(':logs4report', '[0-9]{1,4}')) {
-            $message = 'Audit log statistics limit set to <code>' . $logs4report . '</code>';
-
-            SucuriScanOption::updateOption(':logs4report', $logs4report);
-            SucuriScanEvent::reportInfoEvent($message);
-            SucuriScanEvent::notifyEvent('plugin_change', $message);
-            SucuriScanInterface::info(__('LogsReportLimit', SUCURISCAN_TEXTDOMAIN));
-        }
-    }
-
-    $logs4report = SucuriScanOption::getOption(':logs4report');
-    $params['AuditLogStats.Limit'] = SucuriScan::escape($logs4report);
-
-    return SucuriScanTemplate::getSection('settings-general-auditlogstats', $params);
-}
-
-/**
  * Renders a page with information about the import export feature.
  *
  * @param bool $nonce True if the CSRF protection worked.
@@ -509,7 +474,6 @@ function sucuriscan_settings_general_importexport($nonce)
         ':ignored_events',
         ':language',
         ':lastlogin_redirection',
-        ':logs4report',
         ':maximum_failed_logins',
         ':notify_available_updates',
         ':notify_bruteforce_attack',
@@ -535,7 +499,6 @@ function sucuriscan_settings_general_importexport($nonce)
         ':notify_widget_added',
         ':notify_widget_deleted',
         ':prettify_mails',
-        ':request_timeout',
         ':revproxy',
         ':selfhosting_fpath',
         ':selfhosting_monitor',
@@ -595,4 +558,53 @@ function sucuriscan_settings_general_importexport($nonce)
     $params['Export'] = @json_encode($settings);
 
     return SucuriScanTemplate::getSection('settings-general-importexport', $params);
+}
+
+/**
+ * Renders a page with the option to configure the timezone.
+ *
+ * @param bool $nonce True if the CSRF protection worked.
+ * @return string Page to configure the timezone.
+ */
+function sucuriscan_settings_general_timezone($nonce)
+{
+    $params = array();
+    $current = time();
+    $options = array();
+    $offsets = array(
+        -12.0, -11.5, -11.0, -10.5, -10.0, -9.50, -9.00, -8.50, -8.00, -7.50,
+        -7.00, -6.50, -6.00, -5.50, -5.00, -4.50, -4.00, -3.50, -3.00, -2.50,
+        -2.00, -1.50, -1.00, -0.50, +0.00, +0.50, +1.00, +1.50, +2.00, +2.50,
+        +3.00, +3.50, +4.00, +4.50, +5.00, +5.50, +5.75, +6.00, +6.50, +7.00,
+        +7.50, +8.00, +8.50, +8.75, +9.00, +9.50, 10.00, 10.50, 11.00, 11.50,
+        12.00, 12.75, 13.00, 13.75, 14.00
+    );
+
+    foreach ($offsets as $hour) {
+        $sign = ($hour < 0) ? '-' : '+';
+        $fill = (abs($hour) < 10) ? '0' : '';
+        $keyname = sprintf('UTC%s%s%.2f', $sign, $fill, abs($hour));
+        $label = date('d M, Y H:i:s', $current + ($hour * 3600));
+        $options[$keyname] = $label;
+    }
+
+    if ($nonce) {
+        $pattern = 'UTC[\-\+][0-9]{2}\.[0-9]{2}';
+        $timezone = SucuriScanRequest::post(':timezone', $pattern);
+
+        if ($timezone) {
+            $message = 'Timezone override will use ' . $timezone;
+
+            SucuriScanOption::updateOption(':timezone', $timezone);
+            SucuriScanEvent::reportInfoEvent($message);
+            SucuriScanEvent::notifyEvent('plugin_change', $message);
+            SucuriScanInterface::info(__('TimezoneStatus', SUCURISCAN_TEXTDOMAIN));
+        }
+    }
+
+    $val = SucuriScanOption::getOption(':timezone');
+    $params['Timezone.Dropdown'] = SucuriScanTemplate::selectOptions($options, $val);
+    $params['Timezone.Example'] = SucuriScan::datetime();
+
+    return SucuriScanTemplate::getSection('settings-general-timezone', $params);
 }

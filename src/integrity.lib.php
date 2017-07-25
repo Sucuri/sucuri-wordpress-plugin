@@ -117,57 +117,76 @@ class SucuriScanIntegrity
             return SucuriScanInterface::error(__('NothingSelected', SUCURISCAN_TEXTDOMAIN));
         }
 
+        /* process files until the maximum execution time is reached */
+        $startTime = microtime(true);
+        $displayTimeoutAlert = false;
+        $maxtime = (int) SucuriScan::iniGet('max_execution_time');
+        $timeout = ($maxtime > 1) ? ($maxtime - 6) : 30;
+
         foreach ((array) $core_files as $file_meta) {
-            if (strpos($file_meta, '@')) {
-                @list($status_type, $file_path) = explode('@', $file_meta, 2);
+            if (strpos($file_meta, '@') === false) {
+                continue;
+            }
 
-                if (!$file_path || !$status_type) {
-                    continue;
-                }
+            /* avoid gateway timeout; max execution time */
+            $elapsedTime = (microtime(true) - $startTime);
+            if ($elapsedTime >= $timeout) {
+                $displayTimeoutAlert = true;
+                break;
+            }
 
-                $full_path = ABSPATH . '/' . $file_path;
+            @list($status_type, $file_path) = explode('@', $file_meta, 2);
 
-                if ($action === 'fixed' && (
-                    $status_type === 'added'
-                    || $status_type === 'removed'
-                    || $status_type === 'modified'
-                )) {
-                    $cache_key = md5($file_path);
-                    $cache_value = array(
-                        'file_path' => $file_path,
-                        'file_status' => $status_type,
-                        'ignored_at' => time(),
-                    );
-                    $cached = $cache->add($cache_key, $cache_value);
-                    $files_processed += ($cached ? 1 : 0);
+            if (!$file_path || !$status_type) {
+                continue;
+            }
+
+            $full_path = ABSPATH . '/' . $file_path;
+
+            if ($action === 'fixed' && (
+                $status_type === 'added'
+                || $status_type === 'removed'
+                || $status_type === 'modified'
+            )) {
+                $cache_key = md5($file_path);
+                $cache_value = array(
+                    'file_path' => $file_path,
+                    'file_status' => $status_type,
+                    'ignored_at' => time(),
+                );
+
+                if ($cache->add($cache_key, $cache_value)) {
                     $files_affected[] = $full_path;
-                    continue;
+                    $files_processed++;
                 }
+                continue;
+            }
 
-                if ($action === 'restore' && (
-                    $status_type === 'removed'
-                    || $status_type === 'modified'
-                )) {
-                    if ($content = SucuriScanAPI::getOriginalCoreFile($file_path)) {
-                        $basedir = dirname($full_path);
+            if ($action === 'restore' && (
+                $status_type === 'removed'
+                || $status_type === 'modified'
+            )) {
+                if ($content = SucuriScanAPI::getOriginalCoreFile($file_path)) {
+                    $basedir = dirname($full_path);
+
+                    if (!file_exists($basedir)) {
                         @mkdir($basedir, 0755, true);
-
-                        if (file_exists($basedir)) {
-                            $restored = @file_put_contents($full_path, $content);
-                            $files_processed += ($restored ? 1 : 0);
-                            $files_affected[] = $full_path;
-                        }
                     }
-                    continue;
-                }
 
-                if ($action === 'delete' && $status_type === 'added') {
-                    if (@unlink($full_path)) {
-                        $files_processed += 1;
+                    if (@file_put_contents($full_path, $content)) {
                         $files_affected[] = $full_path;
+                        $files_processed++;
                     }
-                    continue;
                 }
+                continue;
+            }
+
+            if ($action === 'delete' && $status_type === 'added') {
+                if (@unlink($full_path)) {
+                    $files_affected[] = $full_path;
+                    $files_processed++;
+                }
+                continue;
             }
         }
 
@@ -195,6 +214,10 @@ class SucuriScanIntegrity
                     SucuriScanEvent::reportWarningEvent($message);
                     break;
             }
+        }
+
+        if ($displayTimeoutAlert) {
+            SucuriScanInterface::error(__('MaxExecutionTimeAlert', SUCURISCAN_TEXTDOMAIN));
         }
 
         if ($files_processed != $files_selected) {
@@ -231,7 +254,6 @@ class SucuriScanIntegrity
     {
         $params = array();
         $affected_files = 0;
-        $siteVersion = SucuriScan::siteVersion();
 
         $params['Version'] = SucuriScan::siteVersion();
         $params['Integrity.List'] = '';
@@ -241,90 +263,83 @@ class SucuriScanIntegrity
         $params['Integrity.GoodVisibility'] = 'hidden';
         $params['Integrity.FailureVisibility'] = 'visible';
         $params['Integrity.FalsePositivesVisibility'] = 'hidden';
+        $params['Integrity.DiffUtility'] = '';
 
-        /* Check if we have already ignored irrelevant files */
-        self::ignoreIrrelevantFiles();
+        // Check if there are added, removed, or modified files.
+        $latest_hashes = self::checkIntegrityIntegrity();
+        $params['Integrity.RemoteChecksumsURL'] = SucuriScanAPI::checksumAPI();
 
-        if ($siteVersion) {
-            // Check if there are added, removed, or modified files.
-            $latest_hashes = self::checkIntegrityIntegrity($siteVersion);
-            $language = SucuriScanOption::getOption(':language');
-            $params['Integrity.RemoteChecksumsURL'] =
-                'https://api.wordpress.org/core/checksums/1.0/'
-                . '?version=' . $siteVersion . '&locale=' . $language;
+        if ($latest_hashes) {
+            $cache = new SucuriScanCache('integrity');
+            $ignored_files = $cache->getAll();
+            $counter = 0;
 
-            if ($latest_hashes) {
-                $cache = new SucuriScanCache('integrity');
-                $ignored_files = $cache->getAll();
-                $counter = 0;
+            $params['Integrity.BadVisibility'] = 'hidden';
+            $params['Integrity.GoodVisibility'] = 'visible';
+            $params['Integrity.FailureVisibility'] = 'hidden';
 
-                $params['Integrity.BadVisibility'] = 'hidden';
-                $params['Integrity.GoodVisibility'] = 'visible';
-                $params['Integrity.FailureVisibility'] = 'hidden';
+            foreach ($latest_hashes as $list_type => $file_list) {
+                if ($list_type == 'stable' || empty($file_list)) {
+                    continue;
+                }
 
-                foreach ($latest_hashes as $list_type => $file_list) {
-                    if ($list_type == 'stable' || empty($file_list)) {
+                foreach ($file_list as $file_info) {
+                    $file_path = $file_info['filepath'];
+                    $full_filepath = sprintf('%s/%s', rtrim(ABSPATH, '/'), $file_path);
+
+                    if ($ignored_files /* skip files marked as fixed */
+                        && array_key_exists(md5($file_path), $ignored_files)
+                    ) {
+                        $params['Integrity.FalsePositivesVisibility'] = 'visible';
                         continue;
                     }
 
-                    foreach ($file_list as $file_info) {
-                        $file_path = $file_info['filepath'];
-                        $full_filepath = sprintf('%s/%s', rtrim(ABSPATH, '/'), $file_path);
+                    // Add extra information to the file list.
+                    $file_size = @filesize($full_filepath);
+                    $file_size_human = ''; /* empty */
 
-                        if ($ignored_files /* skip files marked as fixed */
-                            && array_key_exists(md5($file_path), $ignored_files)
-                        ) {
-                            $params['Integrity.FalsePositivesVisibility'] = 'visible';
-                            continue;
+                    /* error message if the file cannot be fixed */
+                    $error = '';
+                    $visibility = 'hidden';
+
+                    if ($file_info['is_fixable'] !== true) {
+                        $visibility = 'visible';
+
+                        if ($list_type === 'added') {
+                            $error = __('ErrorIntegrityAdded', SUCURISCAN_TEXTDOMAIN);
+                        } elseif ($list_type === 'modified') {
+                            $error = __('ErrorIntegrityModified', SUCURISCAN_TEXTDOMAIN);
+                        } elseif ($list_type === 'removed') {
+                            $error = __('ErrorIntegrityRemoved', SUCURISCAN_TEXTDOMAIN);
                         }
-
-                        // Add extra information to the file list.
-                        $file_size = @filesize($full_filepath);
-                        $file_size_human = ''; /* empty */
-
-                        /* error message if the file cannot be fixed */
-                        $error = '';
-                        $visibility = 'hidden';
-
-                        if ($file_info['is_fixable'] !== true) {
-                            $visibility = 'visible';
-
-                            if ($list_type === 'added') {
-                                $error = __('ErrorIntegrityAdded', SUCURISCAN_TEXTDOMAIN);
-                            } elseif ($list_type === 'modified') {
-                                $error = __('ErrorIntegrityModified', SUCURISCAN_TEXTDOMAIN);
-                            } elseif ($list_type === 'removed') {
-                                $error = __('ErrorIntegrityRemoved', SUCURISCAN_TEXTDOMAIN);
-                            }
-                        }
-
-                        // Pretty-print the file size in human-readable form.
-                        if ($file_size !== false) {
-                            $file_size_human = SucuriScan::humanFileSize($file_size);
-                        }
-
-                        // Generate the HTML code from the snippet template for this file.
-                        $params['Integrity.List'] .=
-                        SucuriScanTemplate::getSnippet('integrity-incorrect', array(
-                            'Integrity.StatusType' => $list_type,
-                            'Integrity.FilePath' => $file_path,
-                            'Integrity.FileSize' => $file_size,
-                            'Integrity.FileSizeHuman' => $file_size_human,
-                            'Integrity.FileSizeNumber' => number_format($file_size),
-                            'Integrity.ModifiedAt' => SucuriScan::datetime($file_info['modified_at']),
-                            'Integrity.ErrorVisibility' => $visibility,
-                            'Integrity.ErrorMessage' => $error,
-                        ));
-                        $affected_files++;
-                        $counter++;
                     }
-                }
 
-                if ($counter > 0) {
-                    $params['Integrity.ListCount'] = $counter;
-                    $params['Integrity.BadVisibility'] = 'visible';
-                    $params['Integrity.GoodVisibility'] = 'hidden';
+                    // Pretty-print the file size in human-readable form.
+                    if ($file_size !== false) {
+                        $file_size_human = SucuriScan::humanFileSize($file_size);
+                    }
+
+                    // Generate the HTML code from the snippet template for this file.
+                    $params['Integrity.List'] .=
+                    SucuriScanTemplate::getSnippet('integrity-incorrect', array(
+                        'Integrity.StatusType' => $list_type,
+                        'Integrity.FilePath' => $file_path,
+                        'Integrity.FileSize' => $file_size,
+                        'Integrity.FileSizeHuman' => $file_size_human,
+                        'Integrity.FileSizeNumber' => number_format($file_size),
+                        'Integrity.ModifiedAt' => SucuriScan::datetime($file_info['modified_at']),
+                        'Integrity.ErrorVisibility' => $visibility,
+                        'Integrity.ErrorMessage' => $error,
+                    ));
+                    $affected_files++;
+                    $counter++;
                 }
+            }
+
+            if ($counter > 0) {
+                $params['Integrity.ListCount'] = $counter;
+                $params['Integrity.BadVisibility'] = 'visible';
+                $params['Integrity.GoodVisibility'] = 'hidden';
             }
         }
 
@@ -398,11 +413,9 @@ class SucuriScanIntegrity
             return;
         }
 
-        $version = SucuriScan::siteVersion();
-        $filepath = SucuriScanRequest::post('filepath');
-
         ob_start();
-        print(SucuriScanCommand::diffHTML($filepath, $version));
+        $filename = SucuriScanRequest::post('filepath');
+        print(SucuriScanCommand::diffHTML($filename));
         $response = ob_get_clean();
 
         wp_send_json($response, 200);
@@ -440,12 +453,11 @@ class SucuriScanIntegrity
      *   <li>added: Files present in the local project but not in the official WordPress packages.</li>
      * </ul>
      *
-     * @param string|int $version Valid version number of the WordPress project.
      * @return array|bool Associative array with these keys: modified, stable, removed, added.
      */
-    private static function checkIntegrityIntegrity($version = 0)
+    private static function checkIntegrityIntegrity()
     {
-        $latest_hashes = SucuriScanAPI::getOfficialChecksums($version);
+        $latest_hashes = SucuriScanAPI::getOfficialChecksums();
         $base_content_dir = defined('WP_CONTENT_DIR')
             ? basename(rtrim(WP_CONTENT_DIR, '/'))
             : '';
@@ -468,6 +480,7 @@ class SucuriScanIntegrity
         $wp_admin_hashes = self::integrityTree(ABSPATH . 'wp-admin', true);
         $wp_includes_hashes = self::integrityTree(ABSPATH . 'wp-includes', true);
         $wp_core_hashes = array_merge($wp_top_hashes, $wp_admin_hashes, $wp_includes_hashes);
+        $checksumAlgorithm = SucuriScanAPI::checksumAlgorithm();
 
         // Compare remote and local checksums and search removed files.
         foreach ($latest_hashes as $file_path => $remote) {
@@ -491,7 +504,17 @@ class SucuriScanIntegrity
 
             // Check whether the official file exists or not.
             if (file_exists($full_filepath)) {
-                $local = @md5_file($full_filepath);
+                /* skip folders; cannot calculate a hash easily */
+                if (is_dir($full_filepath)) {
+                    $output['stable'][] = array(
+                        'filepath' => $file_path,
+                        'is_fixable' => false,
+                        'modified_at' => 0,
+                    );
+                    continue;
+                }
+
+                $local = SucuriScanAPI::checksum($checksumAlgorithm, $full_filepath);
 
                 if ($local !== false && $local === $remote) {
                     $output['stable'][] = array(
@@ -550,10 +573,69 @@ class SucuriScanIntegrity
      */
     private static function ignoreIntegrityFilepath($path = '')
     {
-        // List of files that will be ignored from the integrity checking.
-        $ignore_files = array(
+        global $wp_local_package;
+
+        $irrelevant = array(
+            'php.ini',
+            '.htaccess',
+            '.htpasswd',
+            '.ftpquota',
+            'wp-includes/.htaccess',
+            'wp-admin/setup-config.php',
+            'wp-tests-config.php',
+            'wp-config.php',
+            'sitemap.xml',
+            'sitemap.xml.gz',
+            'readme.html',
+            'error_log',
+            'wp-pass.php',
+            'wp-rss.php',
+            'wp-feed.php',
+            'wp-register.php',
+            'wp-atom.php',
+            'wp-commentsrss2.php',
+            'wp-rss2.php',
+            'wp-rdf.php',
+            '404.php',
+            '503.php',
+            '500.php',
+            '500.shtml',
+            '400.shtml',
+            '401.shtml',
+            '402.shtml',
+            '403.shtml',
+            '404.shtml',
+            '405.shtml',
+            '406.shtml',
+            '407.shtml',
+            '408.shtml',
+            '409.shtml',
+            'healthcheck.html',
+        );
+
+        /**
+         * Ignore i18n files.
+         *
+         * Sites with i18n have differences compared with the official English
+         * version of the project, basically they have files with new variables
+         * specifying the language that will be used in the admin panel, site
+         * options, and emails.
+         */
+        if (isset($wp_local_package) && $wp_local_package != 'en_US') {
+            $irrelevant[] = 'wp-includes/version.php';
+            $irrelevant[] = 'wp-config-sample.php';
+        }
+
+        if (in_array($path, $irrelevant)) {
+            return true;
+        }
+
+        /* use regular expressions */
+        $ignore = false;
+        $irrelevant = array(
             '^sucuri-[0-9a-z\-]+\.php$',
             '^\S+-sucuri-db-dump-gzip-[0-9]{10}-[0-9a-z]{32}\.gz$',
+            '^\.sucuri-sss-resume-[0-9a-z]{32}\.php$',
             '^([^\/]*)\.(pdf|css|txt|jpg|gif|png|jpeg)$',
             '^wp-content\/(themes|plugins)\/.+',
             '^google[0-9a-z]{16}\.html$',
@@ -561,107 +643,13 @@ class SucuriScanIntegrity
             '\.ico$',
         );
 
-        // Determine whether a file must be ignored from the integrity checks or not.
-        foreach ($ignore_files as $ignore_pattern) {
-            if (@preg_match('/'.$ignore_pattern.'/', $path)) {
-                return true;
+        foreach ($irrelevant as $pattern) {
+            if (@preg_match('/'.$pattern.'/', $path)) {
+                $ignore = true;
+                break;
             }
         }
 
-        return false;
-    }
-
-    /**
-     * Includes some irrelevant files into the integrity cache.
-     */
-    private static function ignoreIrrelevantFiles()
-    {
-        global $wp_local_package;
-
-        if (SucuriScanOption::getOption(':integrity_startup') !== 'done') {
-            /* ignore files no matter if they do not exist */
-            self::ignoreIrrelevantFile('php.ini', false);
-            self::ignoreIrrelevantFile('.htaccess', false);
-            self::ignoreIrrelevantFile('.htpasswd', false);
-            self::ignoreIrrelevantFile('.ftpquota', false);
-            self::ignoreIrrelevantFile('wp-includes/.htaccess', false);
-            self::ignoreIrrelevantFile('wp-admin/setup-config.php', false);
-            self::ignoreIrrelevantFile('wp-config.php', false);
-            self::ignoreIrrelevantFile('sitemap.xml', false);
-            self::ignoreIrrelevantFile('sitemap.xml.gz', false);
-            self::ignoreIrrelevantFile('readme.html', false);
-            self::ignoreIrrelevantFile('error_log', false);
-
-            /* ignore irrelevant files only if they exist */
-            self::ignoreIrrelevantFile('wp-pass.php');
-            self::ignoreIrrelevantFile('wp-rss.php');
-            self::ignoreIrrelevantFile('wp-feed.php');
-            self::ignoreIrrelevantFile('wp-register.php');
-            self::ignoreIrrelevantFile('wp-atom.php');
-            self::ignoreIrrelevantFile('wp-commentsrss2.php');
-            self::ignoreIrrelevantFile('wp-rss2.php');
-            self::ignoreIrrelevantFile('wp-rdf.php');
-            self::ignoreIrrelevantFile('404.php');
-            self::ignoreIrrelevantFile('503.php');
-            self::ignoreIrrelevantFile('500.php');
-            self::ignoreIrrelevantFile('500.shtml');
-            self::ignoreIrrelevantFile('400.shtml');
-            self::ignoreIrrelevantFile('401.shtml');
-            self::ignoreIrrelevantFile('402.shtml');
-            self::ignoreIrrelevantFile('403.shtml');
-            self::ignoreIrrelevantFile('404.shtml');
-            self::ignoreIrrelevantFile('405.shtml');
-            self::ignoreIrrelevantFile('406.shtml');
-            self::ignoreIrrelevantFile('407.shtml');
-            self::ignoreIrrelevantFile('408.shtml');
-            self::ignoreIrrelevantFile('409.shtml');
-            self::ignoreIrrelevantFile('healthcheck.html');
-
-            /**
-             * Ignore i18n files.
-             *
-             * Sites with i18n have differences compared with the official English version
-             * of the project, basically they have files with new variables specifying the
-             * language that will be used in the admin panel, site options, and emails.
-             */
-            if (isset($wp_local_package) && $wp_local_package != 'en_US') {
-                self::ignoreIrrelevantFile('wp-includes/version.php');
-                self::ignoreIrrelevantFile('wp-config-sample.php');
-            }
-
-            SucuriScanOption::updateOption(':integrity_startup', 'done');
-        }
-    }
-
-    /**
-     * Forces the integrity checker to ignore a file.
-     *
-     * The first time the WordPress integrity checker it will include some files
-     * into a storage file that will be used to skip these files during the next
-     * scans. This is to reduce the amount of false/positives. The website owner
-     * is free to add more files that are considered harmless, or stop ignoring
-     * these files from a tool available in the scanner section in the settings
-     * page.
-     *
-     * @param string $path Relative path to the file.
-     * @param bool $checkExistence Stop if the file does not exists.
-     * @return bool True if the file was ignored, false otherwise.
-     */
-    private static function ignoreIrrelevantFile($path = '', $checkExistence = true)
-    {
-        if ($checkExistence && !file_exists(ABSPATH . '/' . $path)) {
-            return; /* skip if the file does not exists */
-        }
-
-        $cache = new SucuriScanCache('integrity');
-
-        $cache_key = md5($path);
-        $cache_value = array(
-            'file_path' => $path,
-            'file_status' => 'added',
-            'ignored_at' => time(),
-        );
-
-        return $cache->add($cache_key, $cache_value);
+        return $ignore;
     }
 }

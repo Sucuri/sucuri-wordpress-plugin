@@ -82,9 +82,26 @@ jQuery(document).ready(function ($) {
     $('.sucuriscan-container').on('mouseover', '.sucuriscan-tooltip', function (event) {
         var element = $(this);
         var content = element.attr('content');
+
+        if (!content) {
+            return;
+        }
+
+        /* create instance of tooltip container */
         var tooltip = $('<div>', { 'class': 'sucuriscan-tooltip-object' });
 
-        tooltip.text(content);
+        if (element.attr('tooltip-width')) {
+            var customWidth = element.attr('tooltip-width');
+            tooltip.css('width', customWidth);
+        }
+
+        /* interpret HTML code as is; careful with XSS */
+        if (element.attr('tooltip-html') === 'true') {
+            tooltip.html(content);
+        } else {
+            tooltip.text(content);
+        }
+
         element.append(tooltip);
         var arrowHeight = 10; /* border width */
         var tooltipHeight = tooltip.outerHeight();

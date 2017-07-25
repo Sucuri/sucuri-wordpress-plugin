@@ -292,7 +292,7 @@ class SucuriScanTemplate extends SucuriScanRequest
         /* replace the global pseudo-variables in the section/snippets templates. */
         if ($template == 'base'
             && array_key_exists('PageContent', $params)
-            && @preg_match('/%%SUCURI\.(.+)%%/', $params['PageContent'])
+            && strpos($params['PageContent'], '%%SUCURI.') !== false
         ) {
             $params['PageContent'] = self::replacePseudoVars($params['PageContent'], $params);
         }
@@ -432,7 +432,7 @@ class SucuriScanTemplate extends SucuriScanRequest
      */
     public static function pagination($base_url = '', $total_items = 0, $max_per_page = 1)
     {
-        // Calculate the number of links for the pagination.
+        /* calculate the number of links for the pagination */
         $html_links = '';
         $page_number = self::pageNumber();
         $max_pages = ceil($total_items / $max_per_page);
@@ -440,13 +440,14 @@ class SucuriScanTemplate extends SucuriScanRequest
         $start_page = 1;
         $extra_url = '';
 
-        // Fix for inline anchor URLs.
-        if (@preg_match('/^(.+)(#.+)$/', $base_url, $match)) {
-            $base_url = $match[1];
-            $extra_url = $match[2];
+        /* fix for inline anchor URLs */
+        if (($offset = strpos($base_url, '#')) !== false) {
+            $clean_url = substr($base_url, 0, $offset);
+            $extra_url = substr($base_url, $offset);
+            $base_url = $clean_url;
         }
 
-        // Keep the number of pagination buttons at limit.
+        /* keep the number of pagination buttons at limit */
         if ($max_pages > SUCURISCAN_MAX_PAGINATION_BUTTONS) {
             $final_page = SUCURISCAN_MAX_PAGINATION_BUTTONS;
             $middle = $final_page / 2; /* middle point */
@@ -457,7 +458,7 @@ class SucuriScanTemplate extends SucuriScanRequest
             }
         }
 
-        // Generate the HTML links for the pagination.
+        /* generate the HTML links for the pagination */
         for ($j = $start_page; $j <= $final_page; $j++) {
             $link_class = 'sucuriscan-pagination-link';
 

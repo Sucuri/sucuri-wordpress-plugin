@@ -30,11 +30,11 @@ msgstr "Ajustes"
 msgid "AuditLogs"
 msgstr "Registros"
 
-msgid "Statistics"
-msgstr "Estadísticas"
-
 msgid "ClearCache"
 msgstr "Limpiar Cache"
+
+msgid "IPAccess"
+msgstr "Acceso Por IP"
 
 msgid "GenerateAPIKey"
 msgstr "Generar Llave"
@@ -184,7 +184,7 @@ msgid "SelfHostingDisabled"
 msgstr "La herramienta para exportar los registros de seguridad ha sido desactivada"
 
 msgid "SelfHostingInfo"
-msgstr "Esta opción te permite guardar una copia de los registros de seguridad en un archivo ubicado en tu servidor que puede ser leído por un SIEM o cualquier otro sistema de análisis <em>(le recomendamos OSSEC)</em>. Esto te dará visibilidad de lo que sucede en tu sitio web para complementar tu infraestructura de monitoreo."
+msgstr "Esta opción te permite guardar una copia de los registros de seguridad en un archivo ubicado en tu servidor que puede ser leído por un SIEM o cualquier otro sistema de análisis (le recomendamos OSSEC). Esto te dará visibilidad de lo que sucede en tu sitio web para complementar tu infraestructura de monitoreo. <b>NOTA:</b> No use archivos que sean accesibles de forma pública, use un archivo que esté por lo menos un nivel arriva de la raíz del sitio web para evitar fugas de información."
 
 msgid "SelfHostingFallback"
 msgstr "No tienes una llave para comunicarte con la API. Sin embargo, la herramienta para exportar los registros de seguridad está activada, el plugin leerá el contenido de este archivo y mostrará esa información aquí. Ten en cuenta que solo los últimos registros serán procesados para mantener un consumo de memoria bajo. Considera generar una llave para obtener una mayor cobertura en la actividad de tu sitio web."
@@ -194,6 +194,9 @@ msgstr "Los registros son guardados por %%SUCURI.AuditLogs.Lifetime%% segundos"
 
 msgid "Refresh"
 msgstr "Actualizar"
+
+msgid "AuditLogsNoAPI"
+msgstr "La API no está disponible; la información viene del servidor local"
 
 msgid "AuditLogsQueue"
 msgstr "registros en cola"
@@ -207,8 +210,8 @@ msgstr "esta versión de WordPress no tiene soporte."
 msgid "NoWordPressFile"
 msgstr "El archivo no hace parte de la instalación oficial de WordPress."
 
-msgid "CannotCheckMissingFile"
-msgstr "No se pueden revisar archivos que no existen."
+msgid "ThereAreNoDifferences"
+msgstr "No existen diferencias entre el archivo instalado y el original"
 
 msgid "ScheduledTask"
 msgstr "%1$s (cada %2$d segundos)"
@@ -462,6 +465,9 @@ msgstr "El plugin no tiene permiso para restablecer el contenido de este archivo
 msgid "SecurityAlerts"
 msgstr "Alertas de Seguridad"
 
+msgid "NoAlertsError"
+msgstr "Usted ha instalado un plugin o plantilla que no es completamente compatible con nuestro plugin, algunas de las alertas de seguridad (como las autenticaciones exitosas y fallidas de usuario) no serán enviadas. Para prevenir un ciclo infinito mientras el plugin detecta cambios en el sitio y envía las alertas de seguridad a través de un plugin de SMTP personalizado, hemos decidido detener cualquier intento de enviar los correos para prevenir errores fatales."
+
 msgid "AlertSettingsUpdated"
 msgstr "La configuración para las alertas de seguridad ha sido actualizada"
 
@@ -491,6 +497,9 @@ msgstr "Recibir alertas por autenticaciones exitosas de usuario"
 
 msgid "OptionNotifyFailedLogin"
 msgstr "Recibir alertas por autenticaciones de usuario fallidas <em>(si tu sitio está siendo atacado recibirás multiples alertas por segundo, deselecciona para reducir el Spam)</em>"
+
+msgid "OptionNotifyFailedPassword"
+msgstr "Recibir alertas por autenticaciones de usuario fallidas incluyendo la contraseña enviada"
 
 msgid "OptionNotifyBruteforceAttack"
 msgstr "Recibir un resumen con todos los intentos de autenticación de usuario fallidos durante la misma hora. El reporte será eliminado del servidor una vez la información sea enviada a su correo"
@@ -601,7 +610,7 @@ msgid "DiffUtilityDescription"
 msgstr "Si tu proveedor de hosting permite la ejecución de comandos del sistema a través de PHP, puedes configurar el plugin para usar el comando <a href=\"https://en.wikipedia.org/wiki/Diff_utility\" target=\"_blank\" rel=\"noopener\">Diff de UNIX</a> para comparar el contenido actual de tus archivos con los archivos originales de WordPress. Esta herramienta te permitirá ver las diferencias entre ambos repositorios y actuar dependiendo de la información encontrada."
 
 msgid "DiffUtilityInfo"
-msgstr "El comand <b>diff</b> de Unix está activado. Puedes hacer clic en los archivos marcados como modificados <em>(señalados con la bandera violeta)</em> para ver las diferencias detectadas por el escáner. Si consideras que las diferencias no causan daño a tu sitio, puedes marcar el archivo como revisado, de otra forma se te sugiere restaurar el contenido original inmediatamente."
+msgstr "El comando diff de Unix está activado. Puedes hacer clic en los archivos en la tabla para ver las diferencias detectadas por el escáner. Si consideras que las diferencias no causan daño a tu sitio, puedes marcar el archivo como revisado, de otra forma se te sugiere restaurar el contenido original inmediatamente."
 
 msgid "DiffUtilityInstructions"
 msgstr "Las lineas con un signo <b>negativo</b> como prefijo <em>(marcadas en rojo)</em> muestran el código original. Las lineas con un signo <b>positivo</b> como prefijo <em>(marcadas en verde)</em> muestran el código actual. Puedes leer más acerca del formato DIFF en el artículo de WikiPedia <a target=\"_blank\" href=\"https://en.wikipedia.org/wiki/Diff_utility\" rel=\"noopener\">Unix Diff Utility</a>."
@@ -771,12 +780,6 @@ msgstr "Este tipo de publicaciones no es válido o ya han sido ignoradas"
 msgid "APIServiceChanged"
 msgstr "El estado de comunicación con la API ha sido cambiado"
 
-msgid "HTTPTimeoutChange"
-msgstr "El tiempo de espera para las conexiones a través de HTTP ha sido cambiado"
-
-msgid "HTTPTimeoutFailure"
-msgstr "El tiempo de espera para las conexiones a través de HTTP es muy alto"
-
 msgid "PluginResetSuccess"
 msgstr "Los registros de seguridad, configuraciones y cambios adicionales hechos por el plugin han sido eliminados"
 
@@ -833,6 +836,9 @@ msgstr "La mayoría de herramientas en este plugin pueden ser usadas sin una con
 
 msgid "APIKeyTerms"
 msgstr "Ten en cuenta que generar una llave implica que estás de acuerdo con enviar la información recolectada por el plugin a los servidores de Sucuri, esto te permite mantener los Tem de seguridad fuera del alcance de usuarios maliciosos que podrían intentar eliminarlos para limpiar sus huellas durante un ataque. Nosotros además usamos esta información de forma anónima para generar <a href=\"https://sucuri.net/security-reports/brute-force/\" target=\"_blank\">estadísticas</a>. Por favor, no generes la llave de autenticación si estás en desacuerdo con esto, puedes seguir usando el plugin sin la llave."
+
+msgid "APIKeyMissing"
+msgstr "La llave no existe"
 
 msgid "APIKeyInvalidDomain"
 msgstr "Tu sitio web <code>%%SUCURI.CleanDomain%%</code> parece no tener un registro de DNS tipo <code>A</code> así que la API lo considerará inválido durante el proceso de generación de la llave. Agrega <code>www</code> al inicio del dominio para intentar solucionar el problema. Envía un mensaje a nuestro servicio de soporte si no entiendes qué significa esto."
@@ -1084,7 +1090,7 @@ msgid "IntegrityBadDescription"
 msgstr "Hemos identificado que algunos de los archivos de WordPress han sido modificados. Esto podría indicar un ataque o la existencia de un archivo corrupto en tu instalación. Si estás experimentando otros problemas, por favor usa un <a target=\"_blank\" href=\"https://sucuri.net/es/seguridad-de-sitios-web/remocion-de-malware\">servicio de limpieza de malware</a>."
 
 msgid "MarkFixedDescription"
-msgstr "Marcar uno o más archivos como revisado forzará al plugin a ignorar dichos archivos durante futuros escaneos, esto es útil cuando un archivo contiene falsos/positivos. Adicionalmente, puedes restaurar el contenido original si estos han sido modificados o eliminados, el plugin descargará una copia del código desde el <a href=\"https://core.svn.wordpress.org/tags/\" target=\"_blank\" rel=\"noopener\">repositorio oficial de WordPress</a>. La eliminación de archivos es una operación irreversible, ten cuidado."
+msgstr "Marcar uno o más archivos como revisado forzará al plugin a ignorar dichos archivos durante futuros escaneos, esto es útil cuando un archivo contiene falsos/positivos. Adicionalmente, puedes restaurar el contenido original si estos han sido modificados o eliminados, el plugin descargará una copia del código desde el repositorio oficial de WordPress. La eliminación de archivos es una operación irreversible, ten cuidado."
 
 msgid "Action"
 msgstr "Acción"
@@ -1158,6 +1164,18 @@ msgstr "El Firewall de Sucuri registra todas las conexiones HTTP involucradas en
 msgid "FirewallLogsNote"
 msgstr "Las conexiones que no fueron bloqueadas son omitidas de la lista, esto es intencional."
 
+msgid "FirewallIPAccessTitle"
+msgstr "Dirección IP (Acceso)"
+
+msgid "FirewallIPAccessInfo"
+msgstr "Esta herramienta le permite bloquear y desbloquear el acceso a su sitio web de una o mas direcciones IP. Además, puede bloquear direcciones IP automáticamente cuando estas están involucradas en un ataque de fuerza bruta para adivinar la contraseña de uno o más usuarios registrados. Si un usuario legítimo es bloqueado después de enviar las credenciales incorrectas de su cuenta más de tres veces, ellos deberán ingresar al panel de control del Firewall para eliminar su dirección IP de la lista negra, o intentar acceder al sitio a través de una VPN."
+
+msgid "WhitelistIP"
+msgstr "Desbloquear Dirección IP"
+
+msgid "BlacklistIP"
+msgstr "Bloquear Dirección IP"
+
 msgid "FirewallCacheTitle"
 msgstr "Caché del Firewall"
 
@@ -1172,6 +1190,9 @@ msgstr "Tenga en cuenta que el Firewall tiene unas <a href=\"https://kb.sucuri.n
 
 msgid "FirewallCacheWiki"
 msgstr "La caché web es una tecnología para el almacenamiento temporal (caching) de documentos web, como páginas en HTML e imágenes, para reducir el uso de ancho de banda, la carga del servidor, y retrasos en las descargas. Un sistema de caché web guarda copias de los documentos que pasan a través de él; conexiones subsecuentes pueden devolver el contenido desde la caché si las condiciones lo permiten. &mdash; <a href=\"https://en.wikipedia.org/wiki/Web_cache\" target=\"_blank\" rel=\"noopener\">WikiPedia - Web Cache</a>"
+
+msgid "FirewallAutoClearCache"
+msgstr "Limpiar cache automáticamente cuando una publicación o página sea modificada"
 
 msgid "LoginsAdmins"
 msgstr "Autenticaciones Exitosas (admins)"
@@ -1226,6 +1247,12 @@ msgstr "Recomendaciones"
 
 msgid "SiteCheckNoResults"
 msgstr "Si nuestro escáner gratuito no ha detectado ningún problema, es posible que tu sitio tenga un problema más complicado y la infección esté escondida. Puede <a target=\"_blank\" href=\"https://sucuri.net/es/plataforma-de-seguridad-de-sitios-web/signup\">registrar una cuenta con Sucuri</a> para obtener un escaneo más detallado y eventualmente una limpieza absoluta de tu sitio web (no incluido con el plan gratuito)."
+
+msgid "SiteCheckTarget"
+msgstr "URL Para el Escáner de Malware"
+
+msgid "SiteCheckTargetInfo"
+msgstr "El escáner remoto de malware funciona gracias a <a href=\"https://sitecheck.sucuri.net/\" target=\"_blank\">Sucuri SiteCheck</a>, un servicio que toma la dirección de un sitio web con acceso público y la escanea en busca de código malicioso. Si su sitio web no es visible a través de Internet, por ejemplo, si el sitio está en un ambiente de desarrollo local or una red restringida, el escáner no podrá trabajar en él. Adicionalmente, si el sitio web fué instalado en un directorio diferente al sugerido el escáner reportará un error \"404 Not Found\". Puedes usar esta opción para cambiar la dirección del sitio web que será escaneado."
 
 msgid "PasswordAttack"
 msgstr "Ataque De Fuerza Bruta En Contra De Contraseñas"
@@ -1464,14 +1491,23 @@ msgstr "Almacenamiento de Datos"
 msgid "DataStorageInfo"
 msgstr "Este es el directorio donde el plugin guardará los registros de seguridad, el archivo con las configuraciones, la caché y datos adicionales de otras herramientas. El plugin requiere de permisos de escritura en este directorio, así como en los archivos contenidos allí. Si prefieres mantener estos archivos en un directorio diferente al especificado, por favor define una constante llamada <em>\"SUCURI_DATA_STORAGE\"</em> en el archivo de configuración de WordPress, con la ruta absoluta del nuevo directorio."
 
-msgid "LogsReport"
-msgstr "Estadísticas De Seguridad"
+msgid "TimezoneTitle"
+msgstr "Zona Horaria"
 
-msgid "LogsReportLimit"
-msgstr "El número máximo de registros que serán usados para la generación de gráficas con estadísticas de seguridad ha sido cambiado"
+msgid "TimezoneInfo"
+msgstr "Esta opción define la zona horaria que será usada a través de todo el plugin para mostrar las fechas y horas cuando sea necesario. Esta opción también afecta la fecha y hora de la información visible en el panel de registros de seguridad que viene de un servidor remoto configurado para usar Horario del este de Norteamérica (EDT por sus siglas en Inglés). WordPress ofrece una opción en la página de ajustes generales que te permite configurar la zona horaria para todo el sitio web, sin embargo, si estás experimentando problemas con la hora en los registros de seguridad, esta opción te ayudará a solucionarlos."
 
-msgid "LogsReportInfo"
-msgstr "Los datos usados para generar estas estadísticas son los últimos <b>%%SUCURI.AuditReport.Logs4Report%% eventos</b> en el registro de seguridad, puedes configurar este número desde la página de ajustes."
+msgid "TimezoneStatus"
+msgstr "La zona horaria para la fecha y hora en los registros de seguridad ha sido cambiada"
 
-msgid "LogsReportDescription"
-msgstr "Activar esta opción te permite visualizar estadísticas de los eventos ejecutados en tu sitio web, incluyendo la actividad de los usuarios y posibles ataques dirigidos a tu sitio web. Por defecto, el plugin utiliza los últimos registros de seguridad para generar las gráficas, el número de registros seleccionados es limitado para reducir el consumo de memoria por parte del analizador de datos. Puedes incrementar este número bajo tu propio riesgo, considerando la cantidad de recursos disponibles en tu servidor, y el tiempo de ejecución máxima de archivos PHP configurado por tu proveedor de hosting."
+msgid "ChecksumsAPI"
+msgstr "WordPress Checksums API"
+
+msgid "ChecksumsAPIInfo"
+msgstr "La herramienta que verifica la integridad de la instalación usa un servicio remoto mantenido por WordPress.org para determinar qué archivos fueron agregados, eliminados o modificados. La API devuelve una lista de archivos con sus respectivos checksums, esta información garantiza que la instalación no está corrupta. Tu puedes, sin embargo, apuntar el plugin a un repositorio en GitHub en caso de que estés usando una versión personalizada de WordPress como la <a href=\"https://github.com/WordPress/WordPress\" target=\"_blank\">versión alpha del código</a>."
+
+msgid "ChecksumsAPIChanged"
+msgstr "La dirección web para obtener los checksums de WordPress ha sido cambiada"
+
+msgid "MaxExecutionTimeAlert"
+msgstr "El servidor no pudo procesar esta acción rápido; tiempo máximo de ejecución alcanzado"
