@@ -1498,3 +1498,12 @@ msgstr "Esta opción define la zona horaria que será usada a través de todo el
 
 msgid "TimezoneStatus"
 msgstr "La zona horaria para la fecha y hora en los registros de seguridad ha sido cambiada"
+
+msgid "ChecksumsAPI"
+msgstr "WordPress Checksums API"
+
+msgid "ChecksumsAPIInfo"
+msgstr "La herramienta que verifica la integridad de la instalación usa un servicio remoto mantenido por WordPress.org para determinar qué archivos fueron agregados, eliminados o modificados. La API devuelve una lista de archivos con sus respectivos checksums, esta información garantiza que la instalación no está corrupta. Si tu estás usando una version personalizada de WordPress, por ejemplo, una que usa Microsoft SQL Server en lugar de MySQL, puedes notar un incremento en el número de archivos corruptos marcados por el plugin. Usa esta opción para cambiar la dirección web de la API a un servicio que tenga en cuenta estos cambios y así reducir la cantidad de falsos/positivos."
+
+msgid "ChecksumsAPIChanged"
+msgstr "La dirección web para obtener los checksums de WordPress ha sido cambiada"

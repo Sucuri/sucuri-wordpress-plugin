@@ -97,3 +97,41 @@ function sucuriscan_settings_apiservice_proxy()
 
     return SucuriScanTemplate::getSection('settings-apiservice-proxy', $params);
 }
+
+/**
+ * Returns the HTML to configure the URL for the checkums API.
+ *
+ * @return string HTML for the URL for the checksums API service.
+ */
+function sucuriscan_settings_apiservice_checksums($nonce)
+{
+    $params = array();
+    $url = SucuriScanRequest::post(':checksums_api');
+
+    if ($nonce && $url !== false) {
+        if (substr($url, 0, 4) === 'http' && parse_url($url) !== false) {
+            SucuriScanOption::updateOption(':checksums_api', $url);
+
+            $message = 'Core integrity API changed: ' . SucuriScanAPI::checksumsAPI();
+            SucuriScanEvent::reportInfoEvent($message);
+            SucuriScanEvent::notifyEvent('plugin_change', $message);
+            SucuriScanInterface::info(__('ChecksumsAPIChanged', SUCURISCAN_TEXTDOMAIN));
+        } else {
+            SucuriScanOption::deleteOption(':checksums_api');
+
+            $message = 'Core integrity API changed: ' . SucuriScanAPI::checksumsAPI();
+            SucuriScanEvent::reportInfoEvent($message);
+            SucuriScanEvent::notifyEvent('plugin_change', $message);
+            SucuriScanInterface::info(__('ChecksumsAPIChanged', SUCURISCAN_TEXTDOMAIN));
+        }
+    }
+
+    $params['ChecksumsAPI'] = sprintf(
+        '%s?version=%s&locale=%s',
+        SucuriScanAPI::checksumsAPI(),
+        SucuriScan::siteVersion(),
+        SucuriScanOption::getOption(':language')
+    );
+
+    return SucuriScanTemplate::getSection('settings-apiservice-checksums', $params);
+}

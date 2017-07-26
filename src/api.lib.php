@@ -739,6 +739,34 @@ class SucuriScanAPI extends SucuriScanOption
     }
 
     /**
+     * Returns the URL for the WordPress checksums API service.
+     *
+     * The webmaster can change this URL using an option form the settings page.
+     * This allows them to control which repository will be used to check the
+     * integrity of the installation.
+     *
+     * For example, projectnami.org offers an option to use Microsoft SQL Server
+     * instead of MySQL has a different set of files and even with the same
+     * filenames many of them have been modified to support the new database
+     * engine, since the checksums are different than the official ones the
+     * number of false positives will increase. This option allows the webmaster
+     * to point the plugin to a different URL where the new checksums for this
+     * project will be retrieved.
+     *
+     * @return string URL for the WordPress checksums API.
+     */
+    public static function checksumsAPI()
+    {
+        $custom = SucuriScanOption::getOption(':checksums_api');
+
+        if (strlen($custom) >= 10 && substr($custom, 0, 4) === 'http') {
+            return $custom; /* expect at least "http://x.y" */
+        }
+
+        return 'https://api.wordpress.org/core/checksums/1.0/';
+    }
+
+    /**
      * Retrieve a list with the checksums of the files in a specific version of WordPress.
      *
      * @see Release Archive https://wordpress.org/download/release-archive/
@@ -751,7 +779,7 @@ class SucuriScanAPI extends SucuriScanOption
         $result = false;
         $language = SucuriScanOption::getOption(':language');
         $params = array('version' => $version, 'locale' => $language);
-        $res = self::apiCall('https://api.wordpress.org/core/checksums/1.0/', 'GET', $params);
+        $res = self::apiCall(self::checksumsAPI(), 'GET', $params);
 
         if (is_array($res) && isset($res['checksums'])) {
             $result = isset($res['checksums'][$version])
