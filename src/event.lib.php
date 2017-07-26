@@ -198,10 +198,14 @@ class SucuriScanEvent extends SucuriScan
     /**
      * Sends the event message to a local queue system.
      *
+     * Note: The method is public to facilitate the execution of some unit-tests
+     * but it could be private and be mocked by the test bootstrap script. Take
+     * this in consideration during the static analysis of the code.
+     *
      * @param string $message Information about the security event.
      * @return bool True if the operation succeeded, false otherwise.
      */
-    private static function sendLogToQueue($message = '')
+    public static function sendLogToQueue($message = '')
     {
         /* create storage directory if necessary */
         SucuriScanInterface::createStorageFolder();

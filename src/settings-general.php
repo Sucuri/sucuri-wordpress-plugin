@@ -62,11 +62,15 @@ function sucuriscan_settings_general_apikey($nonce)
 
     if ($nonce) {
         // Remove API key from the local storage.
-        if (SucuriScanRequest::post(':remove_api_key') !== false) {
-            SucuriScanAPI::setPluginKey('');
+        if (SucuriScanRequest::post(':remove_api_key') !== false
+            && SucuriScanAPI::setPluginKey('') !== false
+        ) {
             wp_clear_scheduled_hook('sucuriscan_scheduled_scan');
-            SucuriScanEvent::reportCriticalEvent('Sucuri API key was deleted.');
+
+            SucuriScanEvent::reportCriticalEvent('Sucuri API key has been deleted.');
             SucuriScanEvent::notifyEvent('plugin_change', 'Sucuri API key removed');
+            SucuriScanInterface::info('Sucuri API key has been deleted <code>'
+            . SucuriScan::escape(SucuriScanAPI::getPluginKey()) . '</code>');
         }
 
         // Save API key after it was recovered by the administrator.
