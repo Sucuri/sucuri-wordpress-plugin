@@ -1510,3 +1510,6 @@ msgstr "The WordPress integrity tool uses a remote API service maintained by the
 
 msgid "ChecksumsAPIChanged"
 msgstr "The URL to retrieve the WordPress checksums has been changed"
+
+msgid "MaxExecutionTimeAlert"
+msgstr "Server is not fast enough to process this action; maximum execution time reached"

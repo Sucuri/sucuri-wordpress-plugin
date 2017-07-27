@@ -117,57 +117,76 @@ class SucuriScanIntegrity
             return SucuriScanInterface::error(__('NothingSelected', SUCURISCAN_TEXTDOMAIN));
         }
 
+        /* process files until the maximum execution time is reached */
+        $startTime = microtime(true);
+        $displayTimeoutAlert = false;
+        $maxtime = (int) SucuriScan::iniGet('max_execution_time');
+        $timeout = ($maxtime > 1) ? ($maxtime - 6) : 30;
+
         foreach ((array) $core_files as $file_meta) {
-            if (strpos($file_meta, '@')) {
-                @list($status_type, $file_path) = explode('@', $file_meta, 2);
+            if (strpos($file_meta, '@') === false) {
+                continue;
+            }
 
-                if (!$file_path || !$status_type) {
-                    continue;
-                }
+            /* avoid gateway timeout; max execution time */
+            $elapsedTime = (microtime(true) - $startTime);
+            if ($elapsedTime >= $timeout) {
+                $displayTimeoutAlert = true;
+                break;
+            }
 
-                $full_path = ABSPATH . '/' . $file_path;
+            @list($status_type, $file_path) = explode('@', $file_meta, 2);
 
-                if ($action === 'fixed' && (
-                    $status_type === 'added'
-                    || $status_type === 'removed'
-                    || $status_type === 'modified'
-                )) {
-                    $cache_key = md5($file_path);
-                    $cache_value = array(
-                        'file_path' => $file_path,
-                        'file_status' => $status_type,
-                        'ignored_at' => time(),
-                    );
-                    $cached = $cache->add($cache_key, $cache_value);
-                    $files_processed += ($cached ? 1 : 0);
+            if (!$file_path || !$status_type) {
+                continue;
+            }
+
+            $full_path = ABSPATH . '/' . $file_path;
+
+            if ($action === 'fixed' && (
+                $status_type === 'added'
+                || $status_type === 'removed'
+                || $status_type === 'modified'
+            )) {
+                $cache_key = md5($file_path);
+                $cache_value = array(
+                    'file_path' => $file_path,
+                    'file_status' => $status_type,
+                    'ignored_at' => time(),
+                );
+
+                if ($cache->add($cache_key, $cache_value)) {
                     $files_affected[] = $full_path;
-                    continue;
+                    $files_processed++;
                 }
+                continue;
+            }
 
-                if ($action === 'restore' && (
-                    $status_type === 'removed'
-                    || $status_type === 'modified'
-                )) {
-                    if ($content = SucuriScanAPI::getOriginalCoreFile($file_path)) {
-                        $basedir = dirname($full_path);
+            if ($action === 'restore' && (
+                $status_type === 'removed'
+                || $status_type === 'modified'
+            )) {
+                if ($content = SucuriScanAPI::getOriginalCoreFile($file_path)) {
+                    $basedir = dirname($full_path);
+
+                    if (!file_exists($basedir)) {
                         @mkdir($basedir, 0755, true);
-
-                        if (file_exists($basedir)) {
-                            $restored = @file_put_contents($full_path, $content);
-                            $files_processed += ($restored ? 1 : 0);
-                            $files_affected[] = $full_path;
-                        }
                     }
-                    continue;
-                }
 
-                if ($action === 'delete' && $status_type === 'added') {
-                    if (@unlink($full_path)) {
-                        $files_processed += 1;
+                    if (@file_put_contents($full_path, $content)) {
                         $files_affected[] = $full_path;
+                        $files_processed++;
                     }
-                    continue;
                 }
+                continue;
+            }
+
+            if ($action === 'delete' && $status_type === 'added') {
+                if (@unlink($full_path)) {
+                    $files_affected[] = $full_path;
+                    $files_processed++;
+                }
+                continue;
             }
         }
 
@@ -195,6 +214,10 @@ class SucuriScanIntegrity
                     SucuriScanEvent::reportWarningEvent($message);
                     break;
             }
+        }
+
+        if ($displayTimeoutAlert) {
+            SucuriScanInterface::error(__('MaxExecutionTimeAlert', SUCURISCAN_TEXTDOMAIN));
         }
 
         if ($files_processed != $files_selected) {

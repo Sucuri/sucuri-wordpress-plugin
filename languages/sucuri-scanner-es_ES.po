@@ -1510,3 +1510,6 @@ msgstr "La herramienta que verifica la integridad de la instalación usa un serv
 
 msgid "ChecksumsAPIChanged"
 msgstr "La dirección web para obtener los checksums de WordPress ha sido cambiada"
+
+msgid "MaxExecutionTimeAlert"
+msgstr "El servidor no pudo procesar esta acción rápido; tiempo máximo de ejecución alcanzado"
