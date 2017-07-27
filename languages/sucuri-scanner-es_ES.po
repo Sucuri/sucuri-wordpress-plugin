@@ -212,6 +212,9 @@ msgstr "El archivo no hace parte de la instalación oficial de WordPress."
 msgid "CannotCheckMissingFile"
 msgstr "No se pueden revisar archivos que no existen."
 
+msgid "ThereAreNoDifferences"
+msgstr "No existen diferencias entre el archivo instalado y el original"
+
 msgid "ScheduledTask"
 msgstr "%1$s (cada %2$d segundos)"
 
@@ -1503,7 +1506,7 @@ msgid "ChecksumsAPI"
 msgstr "WordPress Checksums API"
 
 msgid "ChecksumsAPIInfo"
-msgstr "La herramienta que verifica la integridad de la instalación usa un servicio remoto mantenido por WordPress.org para determinar qué archivos fueron agregados, eliminados o modificados. La API devuelve una lista de archivos con sus respectivos checksums, esta información garantiza que la instalación no está corrupta. Si tu estás usando una version personalizada de WordPress, por ejemplo, una que usa Microsoft SQL Server en lugar de MySQL, puedes notar un incremento en el número de archivos corruptos marcados por el plugin. Usa esta opción para cambiar la dirección web de la API a un servicio que tenga en cuenta estos cambios y así reducir la cantidad de falsos/positivos."
+msgstr "La herramienta que verifica la integridad de la instalación usa un servicio remoto mantenido por WordPress.org para determinar qué archivos fueron agregados, eliminados o modificados. La API devuelve una lista de archivos con sus respectivos checksums, esta información garantiza que la instalación no está corrupta. Tu puedes, sin embargo, apuntar el plugin a un repositorio en GitHub en caso de que estés usando una versión personalizada de WordPress como la <a href=\"https://github.com/WordPress/WordPress\" target=\"_blank\">versión alpha del código</a>."
 
 msgid "ChecksumsAPIChanged"
 msgstr "La dirección web para obtener los checksums de WordPress ha sido cambiada"

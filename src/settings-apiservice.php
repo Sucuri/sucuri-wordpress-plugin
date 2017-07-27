@@ -106,32 +106,30 @@ function sucuriscan_settings_apiservice_proxy()
 function sucuriscan_settings_apiservice_checksums($nonce)
 {
     $params = array();
-    $url = SucuriScanRequest::post(':checksums_api');
+    $url = SucuriScanRequest::post(':checksum_api');
 
     if ($nonce && $url !== false) {
-        if (substr($url, 0, 4) === 'http' && parse_url($url) !== false) {
-            SucuriScanOption::updateOption(':checksums_api', $url);
+        /* https://github.com/WordPress/WordPress - OR - WordPress/WordPress */
+        $pattern = '/^(https:\/\/github\.com\/)?([0-9a-zA-Z_]+\/[0-9a-zA-Z_]+)/';
 
-            $message = 'Core integrity API changed: ' . SucuriScanAPI::checksumsAPI();
+        if (@preg_match($pattern, $url, $match)) {
+            SucuriScanOption::updateOption(':checksum_api', $match[2]);
+
+            $message = 'Core integrity API changed: ' . SucuriScanAPI::checksumAPI();
             SucuriScanEvent::reportInfoEvent($message);
             SucuriScanEvent::notifyEvent('plugin_change', $message);
             SucuriScanInterface::info(__('ChecksumsAPIChanged', SUCURISCAN_TEXTDOMAIN));
         } else {
-            SucuriScanOption::deleteOption(':checksums_api');
+            SucuriScanOption::deleteOption(':checksum_api');
 
-            $message = 'Core integrity API changed: ' . SucuriScanAPI::checksumsAPI();
+            $message = 'Core integrity API changed: ' . SucuriScanAPI::checksumAPI();
             SucuriScanEvent::reportInfoEvent($message);
             SucuriScanEvent::notifyEvent('plugin_change', $message);
             SucuriScanInterface::info(__('ChecksumsAPIChanged', SUCURISCAN_TEXTDOMAIN));
         }
     }
 
-    $params['ChecksumsAPI'] = sprintf(
-        '%s?version=%s&locale=%s',
-        SucuriScanAPI::checksumsAPI(),
-        SucuriScan::siteVersion(),
-        SucuriScanOption::getOption(':language')
-    );
+    $params['ChecksumsAPI'] = SucuriScanAPI::checksumAPI();
 
     return SucuriScanTemplate::getSection('settings-apiservice-checksums', $params);
 }

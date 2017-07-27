@@ -212,6 +212,9 @@ msgstr "File is not part of the official WordPress installation."
 msgid "CannotCheckMissingFile"
 msgstr "Cannot check the integrity of a non-existing file."
 
+msgid "ThereAreNoDifferences"
+msgstr "There are no differences between the installed and original files"
+
 msgid "ScheduledTask"
 msgstr "%1$s (every %2$d seconds)"
 
@@ -1503,7 +1506,7 @@ msgid "ChecksumsAPI"
 msgstr "WordPress Checksums API"
 
 msgid "ChecksumsAPIInfo"
-msgstr "The WordPress integrity tool uses a remote API service maintained by the WordPress organization to determine which files in the installation were added, removed or modified. The API returns a list of files with their respective checksums, this information guarantees that the installation is not corrupt. If you are using a custom version of WordPress, for example, one that uses Microsoft SQL Server instead of MySQL, you will notice a significant amount of files being marked by the WordPress integrity tool as corrupt. Use this option to force the plugin to retrieve the correct checksums from a different API service."
+msgstr "The WordPress integrity tool uses a remote API service maintained by the WordPress organization to determine which files in the installation were added, removed or modified. The API returns a list of files with their respective checksums, this information guarantees that the installation is not corrupt. You can, however, point the integrity tool to a GitHub repository in case that you are using a custom version of WordPress like the <a href=\"https://github.com/WordPress/WordPress\" target=\"_blank\">development version of the code</a>."
 
 msgid "ChecksumsAPIChanged"
 msgstr "The URL to retrieve the WordPress checksums has been changed"

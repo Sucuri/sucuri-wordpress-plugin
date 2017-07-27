@@ -98,6 +98,22 @@ class SucuriScanAPI extends SucuriScanOption
         $args['blocking'] = true;
         $args['sslverify'] = true;
 
+        /* separate hardcoded query parameters */
+        if (empty($params) && strpos($url, '?')) {
+            $parts = @parse_url($url);
+
+            if (array_key_exists('query', $parts)) {
+                $portions = explode('&', $parts['query']);
+                $url = str_replace('?' . $parts['query'], '', $url);
+
+                foreach ($portions as $portion) {
+                    $bits = explode('=', $portion, 2);
+                    $params[$bits[0]] = $bits[1];
+                }
+            }
+        }
+
+        /* include current timestamp for trackability */
         if (!array_key_exists('time', $params)) {
             $params['time'] = time();
         }
@@ -741,6 +757,76 @@ class SucuriScanAPI extends SucuriScanOption
     /**
      * Returns the URL for the WordPress checksums API service.
      *
+     * @param string $version WordPress version number.
+     * @return string URL for the WordPress checksums API.
+     */
+    public static function checksumAPI()
+    {
+        $url = 'https://api.wordpress.org/core/checksums/1.0/?version={version}&locale={locale}';
+
+        if ($custom = SucuriScanOption::getOption(':checksum_api')) {
+            $url = sprintf(
+                'https://api.github.com/repos/%s/git/trees/master?recursive=1',
+                $custom /* expect: username/repository */
+            );
+        }
+
+        $url = str_replace('{version}', SucuriScan::siteVersion(), $url);
+        $url = str_replace('{locale}', SucuriScanOption::getOption(':language'), $url);
+
+        return $url;
+    }
+
+    /**
+     * Returns the name of the hash to use in the integrity tool
+     *
+     * By default, the plugin will use MD5 to hash the content of the specified
+     * file, however, if the core integrity tool is using a custom URL, and this
+     * URL is pointing to GitHub API, then we will assume that the checksum that
+     * comes from this service is using SHA1.
+     *
+     * @return string Hash to use in the integrity tool.
+     */
+    public static function checksumAlgorithm()
+    {
+        return strpos(self::checksumAPI(), '//api.github.com') ? 'sha1' : 'md5';
+    }
+
+    /**
+     * Calculates the md5/sha1 hash of a given file.
+     *
+     * When the user decides to configure the integrity tool to use the checksum
+     * from a GitHub repository the plugin will have to use the SHA1 algorithm
+     * instead of MD5 (which is what WordPress uses in their API). For this, we
+     * will have to calculate the GIT hash object of the file which is basically
+     * the merge of the text "blob" a single white space, the length of the text
+     * a null byte and then the text in itself (content of the file).
+     *
+     * Example:
+     *
+     * - Input: "hello world\n"
+     * - GIT (object): "blob 16\u0000hello world\n"
+     * - GIT (shaobj): "3b18e512dba79e4c8300dd08aeb37f8e728b8dad"
+     *
+     * @see https://git-scm.com/book/en/v2/Git-Internals-Git-Objects#_object_storage
+     *
+     * @param string $algorithm Either md5 or sha1.
+     * @param string $filename Absolute path to the given file.
+     * @return string Hash of the given file.
+     */
+    public static function checksum($algorithm, $filename)
+    {
+        if ($algorithm === 'sha1') {
+            $content = SucuriScanFileInfo::fileContent($filename);
+            return @sha1("blob\x20" . strlen($content) . "\x00" . $content);
+        }
+
+        return @md5_file($filename);
+    }
+
+    /**
+     * Returns the checksum of all the files of the current WordPress version.
+     *
      * The webmaster can change this URL using an option form the settings page.
      * This allows them to control which repository will be used to check the
      * integrity of the installation.
@@ -753,33 +839,35 @@ class SucuriScanAPI extends SucuriScanOption
      * to point the plugin to a different URL where the new checksums for this
      * project will be retrieved.
      *
-     * @return string URL for the WordPress checksums API.
-     */
-    public static function checksumsAPI()
-    {
-        $custom = SucuriScanOption::getOption(':checksums_api');
-
-        if (strlen($custom) >= 10 && substr($custom, 0, 4) === 'http') {
-            return $custom; /* expect at least "http://x.y" */
-        }
-
-        return 'https://api.wordpress.org/core/checksums/1.0/';
-    }
-
-    /**
-     * Retrieve a list with the checksums of the files in a specific version of WordPress.
+     * If the custom API is part of GitHub infrastructure, the plugin will try
+     * to build the expected JSON object from the output, if it fails it will
+     * pass the unmodified response to the rest of the code and try to analyze
+     * the integrity of the installation with that information.
      *
      * @see Release Archive https://wordpress.org/download/release-archive/
+     * @see https://api.github.com/repos/user/repo/git/trees/master?recursive=1
      *
-     * @param string|int $version Valid version number of the WordPress project.
-     * @return array|bool Associative object with the relative filepath and the checksums of the project files.
+     * @return array|bool Checksums of the WordPress installation.
      */
-    public static function getOfficialChecksums($version = 0)
+    public static function getOfficialChecksums()
     {
         $result = false;
-        $language = SucuriScanOption::getOption(':language');
-        $params = array('version' => $version, 'locale' => $language);
-        $res = self::apiCall(self::checksumsAPI(), 'GET', $params);
+        $url = self::checksumAPI();
+        $version = SucuriScan::siteVersion();
+        $res = self::apiCall($url, 'GET', array());
+
+        if (is_array($res)
+            && array_key_exists('sha', $res)
+            && array_key_exists('url', $res)
+            && array_key_exists('tree', $res)
+            && strpos($url, '//api.github.com')
+        ) {
+            $checksums = array();
+            foreach ($res['tree'] as $meta) {
+                $checksums[$meta['path']] = $meta['sha'];
+            }
+            $res = array('checksums' => array($version => $checksums));
+        }
 
         if (is_array($res) && isset($res['checksums'])) {
             $result = isset($res['checksums'][$version])
@@ -900,23 +988,33 @@ class SucuriScanAPI extends SucuriScanOption
      * @see https://i18n.svn.wordpress.org/
      * @see https://core.svn.wordpress.org/tags/VERSION_NUMBER/
      *
-     * @param string $path Relative path of a core file.
-     * @param string|int $version Optional Wordpress version number.
+     * @param string $filename Relative path of a core file.
      * @return string|bool Original code for the core file, false otherwise.
      */
-    public static function getOriginalCoreFile($path = '', $version = 0)
+    public static function getOriginalCoreFile($filename)
     {
-        if (empty($path)) {
-            return false;
+        $version = self::siteVersion();
+        $url = 'https://core.svn.wordpress.org/tags/{version}/{filename}';
+
+        if ($custom = SucuriScanOption::getOption(':checksum_api')) {
+            $url = sprintf(
+                'https://raw.githubusercontent.com/%s/master/{filename}',
+                $custom /* expect: username/repository */
+            );
         }
 
-        if ($version == 0) {
-            $version = self::siteVersion();
-        }
+        $url = str_replace('{version}', $version, $url);
+        $url = str_replace('{filename}', $filename, $url);
 
-        $resp = self::apiCall('https://core.svn.wordpress.org/tags/' . $version . '/' . $path, 'GET');
+        $resp = self::apiCall($url, 'GET');
 
         if (strpos($resp, '404 Not Found') !== false) {
+            /* not found comes from the official WordPress API */
+            return self::throwException('WordPress version is not supported anymore');
+        }
+
+        if (strpos($resp, '400: Invalid request') !== false) {
+            /* invalid request comes from the unofficial GitHub API */
             return self::throwException('WordPress version is not supported anymore');
         }
 

@@ -231,7 +231,6 @@ class SucuriScanIntegrity
     {
         $params = array();
         $affected_files = 0;
-        $siteVersion = SucuriScan::siteVersion();
 
         $params['Version'] = SucuriScan::siteVersion();
         $params['Integrity.List'] = '';
@@ -242,86 +241,81 @@ class SucuriScanIntegrity
         $params['Integrity.FailureVisibility'] = 'visible';
         $params['Integrity.FalsePositivesVisibility'] = 'hidden';
 
-        if ($siteVersion) {
-            // Check if there are added, removed, or modified files.
-            $latest_hashes = self::checkIntegrityIntegrity($siteVersion);
-            $language = SucuriScanOption::getOption(':language');
-            $params['Integrity.RemoteChecksumsURL'] =
-                'https://api.wordpress.org/core/checksums/1.0/'
-                . '?version=' . $siteVersion . '&locale=' . $language;
+        // Check if there are added, removed, or modified files.
+        $latest_hashes = self::checkIntegrityIntegrity();
+        $params['Integrity.RemoteChecksumsURL'] = SucuriScanAPI::checksumAPI();
 
-            if ($latest_hashes) {
-                $cache = new SucuriScanCache('integrity');
-                $ignored_files = $cache->getAll();
-                $counter = 0;
+        if ($latest_hashes) {
+            $cache = new SucuriScanCache('integrity');
+            $ignored_files = $cache->getAll();
+            $counter = 0;
 
-                $params['Integrity.BadVisibility'] = 'hidden';
-                $params['Integrity.GoodVisibility'] = 'visible';
-                $params['Integrity.FailureVisibility'] = 'hidden';
+            $params['Integrity.BadVisibility'] = 'hidden';
+            $params['Integrity.GoodVisibility'] = 'visible';
+            $params['Integrity.FailureVisibility'] = 'hidden';
 
-                foreach ($latest_hashes as $list_type => $file_list) {
-                    if ($list_type == 'stable' || empty($file_list)) {
+            foreach ($latest_hashes as $list_type => $file_list) {
+                if ($list_type == 'stable' || empty($file_list)) {
+                    continue;
+                }
+
+                foreach ($file_list as $file_info) {
+                    $file_path = $file_info['filepath'];
+                    $full_filepath = sprintf('%s/%s', rtrim(ABSPATH, '/'), $file_path);
+
+                    if ($ignored_files /* skip files marked as fixed */
+                        && array_key_exists(md5($file_path), $ignored_files)
+                    ) {
+                        $params['Integrity.FalsePositivesVisibility'] = 'visible';
                         continue;
                     }
 
-                    foreach ($file_list as $file_info) {
-                        $file_path = $file_info['filepath'];
-                        $full_filepath = sprintf('%s/%s', rtrim(ABSPATH, '/'), $file_path);
+                    // Add extra information to the file list.
+                    $file_size = @filesize($full_filepath);
+                    $file_size_human = ''; /* empty */
 
-                        if ($ignored_files /* skip files marked as fixed */
-                            && array_key_exists(md5($file_path), $ignored_files)
-                        ) {
-                            $params['Integrity.FalsePositivesVisibility'] = 'visible';
-                            continue;
+                    /* error message if the file cannot be fixed */
+                    $error = '';
+                    $visibility = 'hidden';
+
+                    if ($file_info['is_fixable'] !== true) {
+                        $visibility = 'visible';
+
+                        if ($list_type === 'added') {
+                            $error = __('ErrorIntegrityAdded', SUCURISCAN_TEXTDOMAIN);
+                        } elseif ($list_type === 'modified') {
+                            $error = __('ErrorIntegrityModified', SUCURISCAN_TEXTDOMAIN);
+                        } elseif ($list_type === 'removed') {
+                            $error = __('ErrorIntegrityRemoved', SUCURISCAN_TEXTDOMAIN);
                         }
-
-                        // Add extra information to the file list.
-                        $file_size = @filesize($full_filepath);
-                        $file_size_human = ''; /* empty */
-
-                        /* error message if the file cannot be fixed */
-                        $error = '';
-                        $visibility = 'hidden';
-
-                        if ($file_info['is_fixable'] !== true) {
-                            $visibility = 'visible';
-
-                            if ($list_type === 'added') {
-                                $error = __('ErrorIntegrityAdded', SUCURISCAN_TEXTDOMAIN);
-                            } elseif ($list_type === 'modified') {
-                                $error = __('ErrorIntegrityModified', SUCURISCAN_TEXTDOMAIN);
-                            } elseif ($list_type === 'removed') {
-                                $error = __('ErrorIntegrityRemoved', SUCURISCAN_TEXTDOMAIN);
-                            }
-                        }
-
-                        // Pretty-print the file size in human-readable form.
-                        if ($file_size !== false) {
-                            $file_size_human = SucuriScan::humanFileSize($file_size);
-                        }
-
-                        // Generate the HTML code from the snippet template for this file.
-                        $params['Integrity.List'] .=
-                        SucuriScanTemplate::getSnippet('integrity-incorrect', array(
-                            'Integrity.StatusType' => $list_type,
-                            'Integrity.FilePath' => $file_path,
-                            'Integrity.FileSize' => $file_size,
-                            'Integrity.FileSizeHuman' => $file_size_human,
-                            'Integrity.FileSizeNumber' => number_format($file_size),
-                            'Integrity.ModifiedAt' => SucuriScan::datetime($file_info['modified_at']),
-                            'Integrity.ErrorVisibility' => $visibility,
-                            'Integrity.ErrorMessage' => $error,
-                        ));
-                        $affected_files++;
-                        $counter++;
                     }
-                }
 
-                if ($counter > 0) {
-                    $params['Integrity.ListCount'] = $counter;
-                    $params['Integrity.BadVisibility'] = 'visible';
-                    $params['Integrity.GoodVisibility'] = 'hidden';
+                    // Pretty-print the file size in human-readable form.
+                    if ($file_size !== false) {
+                        $file_size_human = SucuriScan::humanFileSize($file_size);
+                    }
+
+                    // Generate the HTML code from the snippet template for this file.
+                    $params['Integrity.List'] .=
+                    SucuriScanTemplate::getSnippet('integrity-incorrect', array(
+                        'Integrity.StatusType' => $list_type,
+                        'Integrity.FilePath' => $file_path,
+                        'Integrity.FileSize' => $file_size,
+                        'Integrity.FileSizeHuman' => $file_size_human,
+                        'Integrity.FileSizeNumber' => number_format($file_size),
+                        'Integrity.ModifiedAt' => SucuriScan::datetime($file_info['modified_at']),
+                        'Integrity.ErrorVisibility' => $visibility,
+                        'Integrity.ErrorMessage' => $error,
+                    ));
+                    $affected_files++;
+                    $counter++;
                 }
+            }
+
+            if ($counter > 0) {
+                $params['Integrity.ListCount'] = $counter;
+                $params['Integrity.BadVisibility'] = 'visible';
+                $params['Integrity.GoodVisibility'] = 'hidden';
             }
         }
 
@@ -395,11 +389,9 @@ class SucuriScanIntegrity
             return;
         }
 
-        $version = SucuriScan::siteVersion();
-        $filepath = SucuriScanRequest::post('filepath');
-
         ob_start();
-        print(SucuriScanCommand::diffHTML($filepath, $version));
+        $filename = SucuriScanRequest::post('filepath');
+        print(SucuriScanCommand::diffHTML($filename));
         $response = ob_get_clean();
 
         wp_send_json($response, 200);
@@ -437,12 +429,11 @@ class SucuriScanIntegrity
      *   <li>added: Files present in the local project but not in the official WordPress packages.</li>
      * </ul>
      *
-     * @param string|int $version Valid version number of the WordPress project.
      * @return array|bool Associative array with these keys: modified, stable, removed, added.
      */
-    private static function checkIntegrityIntegrity($version = 0)
+    private static function checkIntegrityIntegrity()
     {
-        $latest_hashes = SucuriScanAPI::getOfficialChecksums($version);
+        $latest_hashes = SucuriScanAPI::getOfficialChecksums();
         $base_content_dir = defined('WP_CONTENT_DIR')
             ? basename(rtrim(WP_CONTENT_DIR, '/'))
             : '';
@@ -465,6 +456,7 @@ class SucuriScanIntegrity
         $wp_admin_hashes = self::integrityTree(ABSPATH . 'wp-admin', true);
         $wp_includes_hashes = self::integrityTree(ABSPATH . 'wp-includes', true);
         $wp_core_hashes = array_merge($wp_top_hashes, $wp_admin_hashes, $wp_includes_hashes);
+        $checksumAlgorithm = SucuriScanAPI::checksumAlgorithm();
 
         // Compare remote and local checksums and search removed files.
         foreach ($latest_hashes as $file_path => $remote) {
@@ -488,7 +480,17 @@ class SucuriScanIntegrity
 
             // Check whether the official file exists or not.
             if (file_exists($full_filepath)) {
-                $local = @md5_file($full_filepath);
+                /* skip folders; cannot calculate a hash easily */
+                if (is_dir($full_filepath)) {
+                    $output['stable'][] = array(
+                        'filepath' => $file_path,
+                        'is_fixable' => false,
+                        'modified_at' => 0,
+                    );
+                    continue;
+                }
+
+                $local = SucuriScanAPI::checksum($checksumAlgorithm, $full_filepath);
 
                 if ($local !== false && $local === $remote) {
                     $output['stable'][] = array(

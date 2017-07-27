@@ -100,12 +100,11 @@ class SucuriScanCommand extends SucuriScan
      * the elements in the code to facilitate the styling of the diff report.
      *
      * @param string $filepath Relative path to the core WordPress file.
-     * @param string $version Version number of the WordPress installation.
      * @return string|bool HTML code with the diff report, false on failure.
      */
-    public static function diffHTML($filepath, $version)
+    public static function diffHTML($filepath)
     {
-        $checksums = SucuriScanAPI::getOfficialChecksums($version);
+        $checksums = SucuriScanAPI::getOfficialChecksums();
 
         if (!$checksums) {
             return SucuriScanInterface::error(__('UnsupportedWordPress', SUCURISCAN_TEXTDOMAIN));
@@ -125,7 +124,7 @@ class SucuriScanCommand extends SucuriScan
         if ($handle = @fopen($tempfile, 'w')) {
             $a = $tempfile; /* original file to compare */
             $b = ABSPATH . '/' . $filepath; /* modified */
-            $content = SucuriScanAPI::getOriginalCoreFile($filepath, $version);
+            $content = SucuriScanAPI::getOriginalCoreFile($filepath);
             @fwrite($handle, $content); /* create a copy of the original file */
             $output = self::diff($a, $b);
             @fclose($tempfile);
@@ -133,7 +132,7 @@ class SucuriScanCommand extends SucuriScan
         }
 
         if (!is_array($output) || empty($output)) {
-            return ''; /* no differences found */
+            return SucuriScanInterface::error(__('ThereAreNoDifferences', SUCURISCAN_TEXTDOMAIN));
         }
 
         $response = "<ul class='" . SUCURISCAN . "-diff-content'>\n";

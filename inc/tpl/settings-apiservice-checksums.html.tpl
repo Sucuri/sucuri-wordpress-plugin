@@ -15,7 +15,7 @@
             <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
             <fieldset class="sucuriscan-clearfix">
                 <label>@@SUCURI.ChecksumsAPI@@:</label>
-                <input type="text" name="sucuriscan_checksums_api" />
+                <input type="text" name="sucuriscan_checksum_api" placeholder="e.g. URL — or — user/repo" size="30" />
                 <button type="submit" class="button button-primary">@@SUCURI.Submit@@</button>
             </fieldset>
         </form>
