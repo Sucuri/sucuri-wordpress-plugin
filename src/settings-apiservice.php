@@ -101,6 +101,7 @@ function sucuriscan_settings_apiservice_proxy()
 /**
  * Returns the HTML to configure the URL for the checkums API.
  *
+ * @param bool $nonce True if the CSRF protection worked, false otherwise.
  * @return string HTML for the URL for the checksums API service.
  */
 function sucuriscan_settings_apiservice_checksums($nonce)

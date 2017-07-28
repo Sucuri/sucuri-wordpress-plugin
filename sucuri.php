@@ -86,11 +86,6 @@ define('SUCURISCAN', 'sucuriscan');
 define('SUCURISCAN_VERSION', '1.8.7');
 
 /**
- * The name of the Sucuri plugin main file.
- */
-define('SUCURISCAN_PLUGIN_FILE', 'sucuri.php');
-
-/**
  * Unique name of the plugin text domain.
  */
 define('SUCURISCAN_TEXTDOMAIN', 'sucuri-scanner');
@@ -110,11 +105,6 @@ define('SUCURISCAN_PLUGIN_FOLDER', basename(dirname(__FILE__)));
  * The fullpath where the plugin's files will be located.
  */
 define('SUCURISCAN_PLUGIN_PATH', WP_PLUGIN_DIR . '/' . SUCURISCAN_PLUGIN_FOLDER);
-
-/**
- * The fullpath of the main plugin file.
- */
-define('SUCURISCAN_PLUGIN_FILEPATH', SUCURISCAN_PLUGIN_PATH . '/' . SUCURISCAN_PLUGIN_FILE);
 
 /**
  * The local URL where the plugin's files and assets are served.

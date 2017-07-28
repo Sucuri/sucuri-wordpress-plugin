@@ -134,6 +134,8 @@ class SucuriScanAuditLogs
         if (is_array($auditlogs)
             && isset($auditlogs['output_data'])
             && isset($auditlogs['total_entries'])
+            && is_array($auditlogs['output_data'])
+            && is_numeric($auditlogs['total_entries'])
         ) {
             $counter_i = 0;
             $total_items = 0;
@@ -264,7 +266,7 @@ class SucuriScanAuditLogs
      * @param array $b Data associated to another log.
      * @return int Comparison between the dates of both logs.
      */
-    private static function sortByDate($a, $b)
+    public static function sortByDate($a, $b)
     {
         if ($a['timestamp'] === $b['timestamp']) {
             return 0;

@@ -614,7 +614,7 @@ class SucuriScanAPI extends SucuriScanOption
      * Parse the event logs with multiple entries.
      *
      * @param string $event_log Event log that will be processed.
-     * @return array List of parts of the event log.
+     * @return string|array List of parts of the event log.
      */
     public static function parseMultipleEntries($event_log = '')
     {
@@ -757,7 +757,6 @@ class SucuriScanAPI extends SucuriScanOption
     /**
      * Returns the URL for the WordPress checksums API service.
      *
-     * @param string $version WordPress version number.
      * @return string URL for the WordPress checksums API.
      */
     public static function checksumAPI()

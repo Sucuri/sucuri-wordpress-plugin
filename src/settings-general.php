@@ -140,7 +140,7 @@ function sucuriscan_settings_general_apikey($nonce)
  * @param bool $nonce True if the CSRF protection worked.
  * @return string Page with information about the data storage.
  */
-function sucuriscan_settings_general_datastorage()
+function sucuriscan_settings_general_datastorage($nonce)
 {
     $params = array();
     $files = array(
@@ -163,7 +163,7 @@ function sucuriscan_settings_general_datastorage()
     $params['Storage.Files'] = '';
     $params['Storage.Path'] = SucuriScan::dataStorePath();
 
-    if (SucuriScanInterface::checkNonce()) {
+    if ($nonce) {
         if ($filenames = SucuriScanRequest::post(':filename', '_array')) {
             $deleted = 0;
 
@@ -584,7 +584,7 @@ function sucuriscan_settings_general_timezone($nonce)
         $sign = ($hour < 0) ? '-' : '+';
         $fill = (abs($hour) < 10) ? '0' : '';
         $keyname = sprintf('UTC%s%s%.2f', $sign, $fill, abs($hour));
-        $label = SucuriScan::datetime($current + ($hour * 3600));
+        $label = date('d M, Y H:i:s', $current + ($hour * 3600));
         $options[$keyname] = $label;
     }
 

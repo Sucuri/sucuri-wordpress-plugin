@@ -651,36 +651,4 @@ class SucuriScanIntegrity
 
         return $ignore;
     }
-
-    /**
-     * Forces the integrity checker to ignore a file.
-     *
-     * The first time the WordPress integrity checker it will include some files
-     * into a storage file that will be used to skip these files during the next
-     * scans. This is to reduce the amount of false/positives. The website owner
-     * is free to add more files that are considered harmless, or stop ignoring
-     * these files from a tool available in the scanner section in the settings
-     * page.
-     *
-     * @param string $path Relative path to the file.
-     * @param bool $checkExistence Stop if the file does not exists.
-     * @return bool True if the file was ignored, false otherwise.
-     */
-    private static function ignoreIrrelevantFile($path = '', $checkExistence = true)
-    {
-        if ($checkExistence && !file_exists(ABSPATH . '/' . $path)) {
-            return; /* skip if the file does not exists */
-        }
-
-        $cache = new SucuriScanCache('integrity');
-
-        $cache_key = md5($path);
-        $cache_value = array(
-            'file_path' => $path,
-            'file_status' => 'added',
-            'ignored_at' => time(),
-        );
-
-        return $cache->add($cache_key, $cache_value);
-    }
 }

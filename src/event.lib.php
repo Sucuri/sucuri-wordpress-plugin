@@ -170,7 +170,7 @@ class SucuriScanEvent extends SucuriScan
      * to write the log into the queue when the previous request failed.
      *
      * @param string $message Information about the event.
-     * @param string $timestamp Time when the event was triggered.
+     * @param string|int $timestamp Time when the event was triggered.
      * @param int $timeout Maximum time in seconds to connect to the API.
      * @return bool True if the event was logged, false otherwise.
      */

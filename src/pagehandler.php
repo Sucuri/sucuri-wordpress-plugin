@@ -110,7 +110,7 @@ function sucuriscan_settings_page()
 
     /* settings - general */
     $params['Settings.General.ApiKey'] = sucuriscan_settings_general_apikey($nonce);
-    $params['Settings.General.DataStorage'] = sucuriscan_settings_general_datastorage();
+    $params['Settings.General.DataStorage'] = sucuriscan_settings_general_datastorage($nonce);
     $params['Settings.General.SelfHosting'] = sucuriscan_settings_general_selfhosting($nonce);
     $params['Settings.General.ReverseProxy'] = sucuriscan_settings_general_reverseproxy($nonce);
     $params['Settings.General.IPDiscoverer'] = sucuriscan_settings_general_ipdiscoverer($nonce);
@@ -118,7 +118,7 @@ function sucuriscan_settings_page()
     $params['Settings.General.Timezone'] = sucuriscan_settings_general_timezone($nonce);
 
     /* settings - scanner */
-    $params['Settings.Scanner.Cronjobs'] = SucuriScanSettingsScanner::cronjobs();
+    $params['Settings.Scanner.Cronjobs'] = SucuriScanSettingsScanner::cronjobs($nonce);
     $params['Settings.Scanner.IntegrityDiffUtility'] = SucuriScanSettingsIntegrity::diffUtility($nonce);
     $params['Settings.Scanner.IntegrityLanguage'] = SucuriScanSettingsIntegrity::language($nonce);
     $params['Settings.Scanner.IntegrityCache'] = SucuriScanSettingsIntegrity::cache($nonce);

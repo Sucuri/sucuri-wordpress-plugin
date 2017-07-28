@@ -54,7 +54,6 @@ class SucuriScanSiteCheck extends SucuriScanAPI
      *
      * @see https://sitecheck.sucuri.net/
      *
-     * @param string $domain The clean version of the website's domain.
      * @param bool $clear Request the results from a fresh scan or not.
      * @return array|bool JSON encoded website scan results.
      */
@@ -414,7 +413,7 @@ class SucuriScanSiteCheck extends SucuriScanAPI
     /**
      * Returns the content for the scripts section.
      *
-     * @return string Content for the scripts section.
+     * @return array Content for the scripts section.
      */
     public static function scriptsContent()
     {

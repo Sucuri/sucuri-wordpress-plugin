@@ -103,7 +103,7 @@ function sucuriscan_lastlogins_all()
 
     if (!sucuriscan_lastlogins_datastore_is_writable()) {
         $fpath = SucuriScan::escape(sucuriscan_lastlogins_datastore_filepath());
-        SucuriScanInterface::error(sprintf(__('LastLoginsNotWritable'), $fpath));
+        SucuriScanInterface::error(sprintf(__('LastLoginsNotWritable', SUCURISCAN_TEXTDOMAIN), $fpath));
     }
 
     if ($last_logins = sucuriscan_get_logins($max_per_page, $offset)) {

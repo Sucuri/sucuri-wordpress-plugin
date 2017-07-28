@@ -27,7 +27,7 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
      * @param bool $nonce True if the CSRF protection worked.
      * @return string Page with information about the cronjobs.
      */
-    public static function cronjobs()
+    public static function cronjobs($nonce)
     {
         $params = array(
             'Cronjobs.List' => '',
@@ -35,14 +35,9 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
             'Cronjob.Schedules' => '',
         );
 
-        $schedule_allowed = SucuriScanEvent::availableSchedules();
-
-        if (SucuriScanInterface::checkNonce()) {
+        if ($nonce) {
             // Modify the scheduled tasks (run now, remove, re-schedule).
-            $available = ($schedule_allowed === null)
-                ? SucuriScanEvent::availableSchedules()
-                : $schedule_allowed;
-            $allowed_actions = array_keys($available);
+            $allowed_actions = array_keys(SucuriScanEvent::availableSchedules());
             $allowed_actions[] = 'runnow'; /* execute in the next 10 seconds */
             $allowed_actions[] = 'remove'; /* can be reinstalled automatically */
             $allowed_actions = sprintf('(%s)', implode('|', $allowed_actions));
@@ -105,9 +100,7 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
         }
 
         $cronjobs = _get_cron_array();
-        $available = ($schedule_allowed === null)
-            ? SucuriScanEvent::availableSchedules()
-            : $schedule_allowed;
+        $available = SucuriScanEvent::availableSchedules();
 
         /* Hardcode the first one to allow the immediate execution of the cronjob(s) */
         $params['Cronjob.Schedules'] .= '<option value="runnow">'

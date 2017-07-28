@@ -710,7 +710,7 @@ class SucuriScan
      * take over the format for the date. If it isn't, then the date format string
      * will be used instead.
      *
-     * @param int $timestamp Unix timestamp.
+     * @param null|string|int $timestamp Unix timestamp.
      * @param string $format Optional format for the date and time.
      * @return string The date, translated if locale specifies it.
      */
