@@ -209,9 +209,6 @@ msgstr "esta versión de WordPress no tiene soporte."
 msgid "NoWordPressFile"
 msgstr "El archivo no hace parte de la instalación oficial de WordPress."
 
-msgid "CannotCheckMissingFile"
-msgstr "No se pueden revisar archivos que no existen."
-
 msgid "ThereAreNoDifferences"
 msgstr "No existen diferencias entre el archivo instalado y el original"
 
