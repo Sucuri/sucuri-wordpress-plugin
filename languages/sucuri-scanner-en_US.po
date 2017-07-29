@@ -609,7 +609,7 @@ msgid "DiffUtilityDescription"
 msgstr "If your server allows the execution of system commands, you can configure the plugin to use the <a href=\"https://en.wikipedia.org/wiki/Diff_utility\" target=\"_blank\" rel=\"noopener\">Unix Diff Utility</a> to compare the actual content of the file installed in the website and the original file provided by WordPress. This will show the differences between both files and then you can act upon the information provided."
 
 msgid "DiffUtilityInfo"
-msgstr "The Unix Diff Utility is enabled. You can click the files marked as modified <em>(the ones with the purple flag)</em> to see the differences detected by the scanner. If you consider the differences to be harmless you can mark the file as fixed, otherwise it is adviced to restore the original content immediately."
+msgstr "The Unix Diff Utility is enabled. You can click the files in the table to see the differences detected by the scanner. If you consider the differences to be harmless you can mark the file as fixed, otherwise it is adviced to restore the original content immediately."
 
 msgid "DiffUtilityInstructions"
 msgstr "Lines with a <b>minus</b> sign as the prefix <em>(here in red)</em> show the original code. Lines with a <b>plus</b> sign as the prefix <em>(here in green)</em> show the modified code. You can read more about the DIFF format from the WikiPedia article about the <a target=\"_blank\" href=\"https://en.wikipedia.org/wiki/Diff_utility\" rel=\"noopener\">Unix Diff Utility</a>."
@@ -1089,7 +1089,7 @@ msgid "IntegrityBadDescription"
 msgstr "We identified that some of your WordPress core files were modified. That might indicate a hack or a broken file on your installation. If you are experiencing other malware issues, please use a <a href=\"https://sucuri.net/website-security/malware-removal\" target=\"_blank\">Server Side Scanner</a>."
 
 msgid "MarkFixedDescription"
-msgstr "Marking one or more files as fixed will force the plugin to ignore them during the next scan, very useful when you find false positives. Additionally you can restore the original content of the core files that appear as modified or deleted, this will tell the plugin to download a copy of the original files from the official <a href=\"https://core.svn.wordpress.org/tags/\" target=\"_blank\" rel=\"noopener\">WordPress repository</a>. Deleting a file is an irreversible action, be careful."
+msgstr "Marking one or more files as fixed will force the plugin to ignore them during the next scan, very useful when you find false positives. Additionally you can restore the original content of the core files that appear as modified or deleted, this will tell the plugin to download a copy of the original files from the official WordPress repository. Deleting a file is an irreversible action, be careful."
 
 msgid "Action"
 msgstr "Action"

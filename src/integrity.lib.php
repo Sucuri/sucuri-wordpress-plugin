@@ -263,6 +263,7 @@ class SucuriScanIntegrity
         $params['Integrity.GoodVisibility'] = 'hidden';
         $params['Integrity.FailureVisibility'] = 'visible';
         $params['Integrity.FalsePositivesVisibility'] = 'hidden';
+        $params['Integrity.DiffUtility'] = '';
 
         // Check if there are added, removed, or modified files.
         $latest_hashes = self::checkIntegrityIntegrity();

@@ -180,15 +180,16 @@ class SucuriScanFirewall extends SucuriScanAPI
      */
     public static function settingsExplanation($settings = array())
     {
+        if (!is_array($settings)) {
+            return array(/* empty */);
+        }
+
         $cache_modes = array(
             'docache' => __('FirewallDoCache', SUCURISCAN_TEXTDOMAIN),
             'sitecache' => __('FirewallSiteCache', SUCURISCAN_TEXTDOMAIN),
             'nocache' => __('FirewallNoCache', SUCURISCAN_TEXTDOMAIN),
             'nocacheatall' => __('FirewallNoCacheAtAll', SUCURISCAN_TEXTDOMAIN),
         );
-
-        // TODO: Prefer Array over stdClass, modify the API library.
-        $settings = @json_decode(json_encode($settings), true);
 
         foreach ($settings as $keyname => $value) {
             if ($keyname == 'proxy_active') {

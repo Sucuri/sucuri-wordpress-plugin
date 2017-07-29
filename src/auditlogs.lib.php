@@ -187,8 +187,7 @@ class SucuriScanAuditLogs
 
                 /* print every file_list information item in a separate table */
                 if ($audit_log['file_list']) {
-                    $css_scrollable = $audit_log['file_list_count'] > 10 ? 'sucuriscan-list-as-table-scrollable' : '';
-                    $snippet_data['AuditLog.Extra'] .= '<ul class="sucuriscan-list-as-table ' . $css_scrollable . '">';
+                    $snippet_data['AuditLog.Extra'] .= '<ul class="sucuriscan-list-as-table">';
 
                     foreach ($audit_log['file_list'] as $log_extra) {
                         $snippet_data['AuditLog.Extra'] .= '<li>' . SucuriScan::escape($log_extra) . '</li>';

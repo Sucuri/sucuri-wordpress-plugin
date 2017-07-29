@@ -609,7 +609,7 @@ msgid "DiffUtilityDescription"
 msgstr "Si su proveedor de hosting permite la ejecución de comandos del sistema a través de PHP, puede configurar el plugin para usar el comando <a href=\"https://en.wikipedia.org/wiki/Diff_utility\" target=\"_blank\" rel=\"noopener\">Diff de UNIX</a> para comparar el contenido actual de sus archivos con los archivos originales de WordPress. Esta herramienta le permitirá ver las diferencias entre ambos repositorios y actuar dependiendo de la información encontrada."
 
 msgid "DiffUtilityInfo"
-msgstr "El comand <b>diff</b> de Unix está activado. Puede hacer clic en los archivos marcados como modificados <em>(señalados con la bandera violeta)</em> para ver las diferencias detectadas por el escaner. Si usted considera que las diferencias no causan daño a su sitio puede marcar el archivo como revisado, de otra forma se le sugiere restaurar el contenido original inmediatamente."
+msgstr "El comando diff de Unix está activado. Puede hacer clic en los archivos en la tabla para ver las diferencias detectadas por el escaner. Si usted considera que las diferencias no causan daño a su sitio puede marcar el archivo como revisado, de otra forma se le sugiere restaurar el contenido original inmediatamente."
 
 msgid "DiffUtilityInstructions"
 msgstr "Las lineas con un signo <b>negativo</b> como prefijo <em>(marcadas en rojo)</em> muestran el código original. Las lineas con un signo <b>positivo</b> como prefijo <em>(marcadas en verde)</em> muestran el código actual. Puede leer más acerca del formato DIFF en el artículo de WikiPedia <a target=\"_blank\" href=\"https://en.wikipedia.org/wiki/Diff_utility\" rel=\"noopener\">Unix Diff Utility</a>."
@@ -1089,7 +1089,7 @@ msgid "IntegrityBadDescription"
 msgstr "Hemos identificado que algunos de los archivos de WordPress han sido modificados. Esto podría indicar un ataque o la existencia de un archivo corrupto en su instalación. Si usted está experimentando otros problemas, por favor use un <a target=\"_blank\" href=\"https://sucuri.net/website-security/malware-removal\">servicio de limpieza de malware</a>."
 
 msgid "MarkFixedDescription"
-msgstr "Marcar uno o más archivos como revisado forzará al plugin a ignorar dichos archivos durante futuros escaneos, esto es útil cuando un archivo contiene falsos/positivos. Adicionalmente, puede restaurar el contenido original si estos han sido modificados o eliminados, el plugin descargará una copia del código desde el <a href=\"https://core.svn.wordpress.org/tags/\" target=\"_blank\" rel=\"noopener\">repositorio oficial de WordPress</a>. La eliminación de archivos es una operación irreversible, sea cuidadoso."
+msgstr "Marcar uno o más archivos como revisado forzará al plugin a ignorar dichos archivos durante futuros escaneos, esto es útil cuando un archivo contiene falsos/positivos. Adicionalmente, puede restaurar el contenido original si estos han sido modificados o eliminados, el plugin descargará una copia del código desde el repositorio oficial de WordPress. La eliminación de archivos es una operación irreversible, sea cuidadoso."
 
 msgid "Action"
 msgstr "Acción"
