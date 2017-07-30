@@ -249,13 +249,9 @@ class SucuriScanEvent extends SucuriScan
          * operation succeeds the event will be deleted from the queue.
          */
         if (SucuriScanOption::isEnabled(':api_service')) {
-            $status = self::sendLogToAPI($message, time(), 2);
-
-            if (!$status) {
-                $cache = new SucuriScanCache('auditqueue');
-                $key = str_replace('.', '_', microtime(true));
-                $written = $cache->add($key, $message);
-            }
+            $cache = new SucuriScanCache('auditqueue');
+            $key = str_replace('.', '_', microtime(true));
+            $written = $cache->add($key, $message);
         }
 
         return true;
