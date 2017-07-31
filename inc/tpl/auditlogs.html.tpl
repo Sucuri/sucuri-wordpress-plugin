@@ -2,7 +2,7 @@
 <script type="text/javascript">
 /* global jQuery */
 /* jshint camelcase:false */
-jQuery(function ($) {
+jQuery(document).ready(function ($) {
     var writeQueueSize = function (queueSize) {
         if (queueSize === 0) {
             $('.sucuriscan-auditlogs-sendlogs-response').html('');

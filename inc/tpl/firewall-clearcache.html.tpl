@@ -2,7 +2,7 @@
 <script type="text/javascript">
 /* global jQuery */
 /* jshint camelcase: false */
-jQuery(function ($) {
+jQuery(document).ready(function ($) {
     $('#firewall-clear-cache-button').on('click', function (event) {
         event.preventDefault();
 

@@ -5,7 +5,7 @@
     <script type="text/javascript">
     /* global jQuery */
     /* jshint camelcase: false */
-    jQuery(function ($) {
+    jQuery(document).ready(function ($) {
         $('#sucuriscan-reset-password-button').on('click', function (event) {
             event.preventDefault();
             $('.sucuriscan-reset-password-table :checkbox:checked').each(function (key, el) {
@@ -51,7 +51,7 @@
                 %%%SUCURI.ResetPassword.UserList%%%
 
                 <tr class="sucuriscan-%%SUCURI.ResetPassword.PaginationVisibility%%">
-                    <td colspan="4">
+                    <td colspan="5">
                         <ul class="sucuriscan-pagination">
                             %%%SUCURI.ResetPassword.PaginationLinks%%%
                         </ul>

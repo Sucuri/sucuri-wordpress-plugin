@@ -12,7 +12,7 @@
         <script type="text/javascript">
         /* global jQuery */
         /* jshint camelcase: false */
-        jQuery(function ($) {
+        jQuery(document).ready(function ($) {
             $('#sucuriscan-firewall-auditlogs-button').on('click', function (event) {
                 event.preventDefault();
 

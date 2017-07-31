@@ -5,7 +5,7 @@
     <script type="text/javascript">
     /* global jQuery */
     /* jshint camelcase: false */
-    jQuery(function ($) {
+    jQuery(document).ready(function ($) {
         $.post('%%SUCURI.AjaxURL.Dashboard%%', {
             action: 'sucuriscan_ajax',
             sucuriscan_page_nonce: '%%SUCURI.PageNonce%%',

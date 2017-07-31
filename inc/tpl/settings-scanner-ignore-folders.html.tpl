@@ -8,7 +8,7 @@
         <script type="text/javascript">
         /* global jQuery */
         /* jshint camelcase: false */
-        jQuery(function ($) {
+        jQuery(document).ready(function ($) {
             $('.sucuriscan-ignorescanning tbody').html(
                 '<tr><td colspan="3"><span>@@SUCURI.Loading@@</span></td></tr>'
             );

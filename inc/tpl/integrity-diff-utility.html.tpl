@@ -5,7 +5,7 @@
     <script type="text/javascript">
     /* global jQuery */
     /* jshint camelcase: false */
-    jQuery(function ($) {
+    jQuery(document).ready(function ($) {
         $('.sucuriscan-integrity-table th .sucuriscan-tooltip').removeClass('sucuriscan-hidden');
 
         $('.sucuriscan-integrity-table .sucuriscan-integrity-filepath').on('click', function (event) {

@@ -4,7 +4,7 @@
 <script type="text/javascript">
 /* global jQuery */
 /* jshint camelcase: false */
-jQuery(function ($) {
+jQuery(document).ready(function ($) {
     var sucuriscanSiteCheckLinks = function (target, links) {
         if (links.length === 0) {
             $(target).html('<div><em>@@SUCURI.NoData@@</em></div>');
