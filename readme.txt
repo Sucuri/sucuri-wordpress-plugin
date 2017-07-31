@@ -4,7 +4,7 @@ Donate Link: https://sucuri.net/
 Tags: malware, security, firewall, scan, spam, virus, sucuri, protection, WordPress Security, Login Security, Security Auditing, File Integrity, htaccess, phishing, backdoors, SQL Injection, RFI, LFI, XSS, CSRF, website firewall, Website Security, Performance Optimization, Zero Day, Software Vulnerability, Exploits, Hacks, Attackers, Bad Actors, Reverse Proxy, Two Factor Security, Two Factor Authentication, Security Logs, HeatBleed Vulnerability, Website Protection, Bash Vulnerability, RevSlider Vulnerability, MailPoet Vulnerability, Malware Prevention, Website Security, Website Firewall, Website AntiVirus, Security Response, Security Detection, Security Prevention
 Requires at least: 3.6
 Tested up to: 4.8.0
-Stable tag: 1.8.7
+Stable tag: 1.8.8
 
 The Sucuri WordPress Security plugin is a security toolset for security integrity monitoring, malware detection and security hardening.
 
@@ -181,10 +181,37 @@ No, it is not required. The Website Firewall runs in the cloud without the need 
 
 == Upgrade Notice ==
 
-= 1.8.7 =
+= 1.8.8 =
 This version adds support for the latest version of WordPress. Introduces new features and fixes some bugs reported by the WordPress community as well as bugs found by our automated testing system.
 
 == Changelog ==
+
+= 1.8.8 =
+* Add smart limit to send logs from the queue to the API
+* Add option to ignore events for post transitions
+* Fix infinite loop with email alerts and SMTP plugin
+* Add option to configure the malware scanner target URL
+* Add option to enable the auto clear cache firewall function
+* Modify status of the directory hardening using the Firewall
+* Modify error message in audit logs when the API key is missing
+* Modify timing for the dashboard alerts after an update
+* Modify firewall clear cache button to execute via Ajax
+* Modify firewall settings page to load data via Ajax
+* Add option to blacklist IP addresses with the Firewall API
+* Fix order of the audit logs when the queue is merged
+* Add more directories to ignore during the scans
+* Add option to customize the URL for the malware scans
+* Fix error interception for Firewall API errors
+* Add support for other English and Spanish based languages
+* Modify mechanism to ignore files from integrity checks
+* Add option to stop sending the failed login passwords
+* Modify default value for some of the alert settings
+* Remove unnecessary statistics panel for the audit logs
+* Modify output for the malware results to simplify links
+* Add option to override the timezone for the datetime
+* Add option to configure the WordPress checksums API
+* Add maximum execution time avoidance in the integrity tool
+* Add support to run diff on deleted WordPress files
 
 = 1.8.7 =
 * Fix multiple issues with the API calls
