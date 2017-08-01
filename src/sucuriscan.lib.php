@@ -143,11 +143,11 @@ class SucuriScan
     public static function humanFileSize($bytes = 0, $decimals = 2)
     {
         $sz = 'BKMGTP';
-        $factor = floor((strlen((string) $bytes) - 1) / 3);
+        $factor = (int) floor((strlen((string) $bytes) - 1) / 3);
         $number = $bytes / pow(1024, $factor);
         $result = sprintf("%.{$decimals}f", $number) . @$sz[$factor];
         $zeroes = '.' . str_repeat('0', $decimals);
-        $result = str_replace($zeroes, '', $result); /* remove unused zeroes */
+        $result = str_replace($zeroes, '', $result);
 
         return $result;
     }
