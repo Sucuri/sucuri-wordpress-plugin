@@ -23,12 +23,7 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  */
 function sucuriscan_settings_webinfo_details()
 {
-    global $wpdb;
-
-    $params = array(
-        'ServerInfo.Variables' => '',
-    );
-
+    $params = array();
     $info_vars = array(
         'Plugin_version' => SUCURISCAN_VERSION,
         'Last_filesystem_scan' => SucuriScanFSScanner::getFilesystemRuntime(true),
@@ -37,11 +32,10 @@ function sucuriscan_settings_webinfo_details()
         'Server' => __('Unknown', SUCURISCAN_TEXTDOMAIN),
         'WordPress_debug' => __('NotActive', SUCURISCAN_TEXTDOMAIN),
         'Memory_usage' => __('Unknown', SUCURISCAN_TEXTDOMAIN),
-        'MySQL_version' => '0.0',
-        'SQL_mode' => __('NotSet', SUCURISCAN_TEXTDOMAIN),
         'PHP_version' => PHP_VERSION,
     );
 
+    $params['ServerInfo.Variables'] = '';
     $info_vars['Datetime_and_Timezone'] = sprintf(
         '%s (%s)',
         SucuriScan::datetime(),
@@ -58,15 +52,6 @@ function sucuriscan_settings_webinfo_details()
 
     if (isset($_SERVER['SERVER_SOFTWARE'])) {
         $info_vars['Server'] = $_SERVER['SERVER_SOFTWARE'];
-    }
-
-    if ($wpdb) {
-        $info_vars['MySQL_version'] = $wpdb->get_var('SELECT VERSION() AS version');
-
-        $mysql_info = $wpdb->get_results('SHOW VARIABLES LIKE "sql_mode"');
-        if (is_array($mysql_info) && !empty($mysql_info[0]->Value)) {
-            $info_vars['SQL_mode'] = $mysql_info[0]->Value;
-        }
     }
 
     /* PHP INI Settings */
