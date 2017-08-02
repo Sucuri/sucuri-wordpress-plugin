@@ -270,8 +270,18 @@ class SucuriScanOption extends SucuriScanRequest
             }
         }
 
+        /**
+         * Cache default value to stop querying the database.
+         *
+         * The option was not found in the database either, we will return the
+         * data from the array of default values hardcoded in the source code,
+         * then will attempt to write the default value into the flat settings
+         * file to stop querying the database in subsequent requests.
+         */
         if (strpos($option, SUCURISCAN . '_') === 0) {
-            return self::getDefaultOptions($option);
+            $value = self::getDefaultOptions($option);
+            self::updateOption($option, $value);
+            return $value;
         }
 
         return false;
