@@ -61,14 +61,14 @@ function sucuriscan_lastlogins_admins()
             foreach ($last_logins['entries'] as $i => $lastlogin) {
                 if ($i === 0) {
                     $user_snippet['AdminUsers.RegisteredAt'] = SucuriScan::datetime(
-                        $lastlogin->user_registered_timestamp
+                        $lastlogin['user_registered_timestamp']
                     );
                 }
 
                 $user_snippet['AdminUsers.LastLogins'] .=
                 SucuriScanTemplate::getSnippet('lastlogins-admins-lastlogin', array(
-                    'AdminUsers.RemoteAddr' => $lastlogin->user_remoteaddr,
-                    'AdminUsers.Datetime' => SucuriScan::datetime($lastlogin->user_lastlogin_timestamp),
+                    'AdminUsers.RemoteAddr' => $lastlogin['user_remoteaddr'],
+                    'AdminUsers.Datetime' => SucuriScan::datetime($lastlogin['user_lastlogin_timestamp']),
                 ));
             }
         }
@@ -119,24 +119,24 @@ function sucuriscan_lastlogins_all()
 
         foreach ($last_logins['entries'] as $user) {
             $user_dataset = array(
-                'UserList.Number' => $user->line_num,
-                'UserList.UserId' => $user->user_id,
+                'UserList.Number' => $user['line_num'],
+                'UserList.UserId' => $user['user_id'],
                 'UserList.Username' => __('Unknown', SUCURISCAN_TEXTDOMAIN),
                 'UserList.Displayname' => '',
                 'UserList.Email' => '',
                 'UserList.Registered' => '',
-                'UserList.RemoteAddr' => $user->user_remoteaddr,
-                'UserList.Hostname' => $user->user_hostname,
-                'UserList.Datetime' => $user->user_lastlogin,
-                'UserList.TimeAgo' => SucuriScan::humanTime($user->user_lastlogin_timestamp),
-                'UserList.UserURL' => SucuriScan::adminURL('user-edit.php?user_id=' . $user->user_id),
+                'UserList.RemoteAddr' => $user['user_remoteaddr'],
+                'UserList.Hostname' => $user['user_hostname'],
+                'UserList.Datetime' => $user['user_lastlogin'],
+                'UserList.TimeAgo' => SucuriScan::humanTime($user['user_lastlogin_timestamp']),
+                'UserList.UserURL' => SucuriScan::adminURL('user-edit.php?user_id=' . $user['user_id']),
             );
 
-            if ($user->user_exists) {
-                $user_dataset['UserList.Username'] = $user->user_login;
-                $user_dataset['UserList.Displayname'] = $user->display_name;
-                $user_dataset['UserList.Email'] = $user->user_email;
-                $user_dataset['UserList.Registered'] = $user->user_registered;
+            if ($user['user_exists']) {
+                $user_dataset['UserList.Username'] = $user['user_login'];
+                $user_dataset['UserList.Displayname'] = $user['display_name'];
+                $user_dataset['UserList.Email'] = $user['user_email'];
+                $user_dataset['UserList.Registered'] = $user['user_registered'];
             }
 
             $params['UserList'] .= SucuriScanTemplate::getSnippet('lastlogins-all', $user_dataset);
@@ -177,11 +177,7 @@ function sucuriscan_lastlogins_datastore_exists()
         @file_put_contents($fpath, "<?php exit(0); ?>\n", LOCK_EX);
     }
 
-    if (file_exists($fpath)) {
-        return $fpath;
-    }
-
-    return false;
+    return file_exists($fpath) ? $fpath : false;
 }
 
 /**
@@ -305,6 +301,7 @@ function sucuriscan_get_logins($limit = 10, $offset = 0, $user_id = 0)
      *
      * @var object
      */
+    $user_ids = array();
     $current_user = wp_get_current_user();
     $is_admin_user = (bool) current_user_can('manage_options');
 
@@ -332,28 +329,43 @@ function sucuriscan_get_logins($limit = 10, $offset = 0, $user_id = 0)
             continue;
         }
 
-        // Get the WP_User object and add extra information from the last-login data.
         $last_login['user_exists'] = false;
-        $user_account = get_userdata($last_login['user_id']);
-
-        if ($user_account) {
-            $last_login['user_exists'] = true;
-
-            foreach ($user_account->data as $var_name => $var_value) {
-                $last_login[ $var_name ] = $var_value;
-
-                if ($var_name == 'user_registered') {
-                    $last_login['user_registered_timestamp'] = strtotime($var_value);
-                }
-            }
-        }
+        $user_ids[] = $last_login['user_id'];
 
         $last_login['line_num'] = $i + 1;
-        $last_logins['entries'][] = (object) $last_login;
+        $last_logins['entries'][] = $last_login;
         $parsed_lines += 1;
 
         if ($limit > 0 && $parsed_lines >= $limit) {
             break;
+        }
+    }
+
+    /* no need for database query */
+    if (empty($user_ids)) {
+        return $last_logins;
+    }
+
+    /* extra information for the unique user accounts */
+    $user_ids = array_unique($user_ids);
+    $dbquery = new WP_User_Query(array('include' => $user_ids));
+
+    if ($dbquery) {
+        $results = $dbquery->get_results();
+
+        foreach ($last_logins['entries'] as $key => $entry) {
+            foreach ($results as $dbentry) {
+                if ($entry['user_id'] === $dbentry->ID) {
+                    $last_logins['entries'][$key]['user_exists'] = true;
+                    $last_logins['entries'][$key]['user_nicename'] = $dbentry->user_nicename;
+                    $last_logins['entries'][$key]['user_email'] = $dbentry->user_email;
+                    $last_logins['entries'][$key]['user_url'] = $dbentry->user_url;
+                    $last_logins['entries'][$key]['user_status'] = $dbentry->user_status;
+                    $last_logins['entries'][$key]['display_name'] = $dbentry->display_name;
+                    $last_logins['entries'][$key]['user_registered'] = $dbentry->user_registered;
+                    $last_logins['entries'][$key]['user_registered_timestamp'] = strtotime($dbentry->user_registered);
+                }
+            }
         }
     }
 
@@ -411,9 +423,9 @@ if (!function_exists('sucuri_get_user_lastlogin')) {
                 $page_url = SucuriScanTemplate::getUrl('lastlogins');
                 $message = sprintf(
                     __('LastLoginMessage', SUCURISCAN_TEXTDOMAIN),
-                    SucuriScan::datetime($row->user_lastlogin_timestamp),
-                    SucuriScan::escape($row->user_remoteaddr),
-                    SucuriScan::escape($row->user_hostname),
+                    SucuriScan::datetime($row['user_lastlogin_timestamp']),
+                    SucuriScan::escape($row['user_remoteaddr']),
+                    SucuriScan::escape($row['user_hostname']),
                     SucuriScan::escape($page_url)
                 );
                 SucuriScanInterface::info($message);
@@ -421,5 +433,6 @@ if (!function_exists('sucuri_get_user_lastlogin')) {
         }
     }
 
+    add_action('network_admin_notices', 'sucuriscan_get_user_lastlogin');
     add_action('admin_notices', 'sucuriscan_get_user_lastlogin');
 }
