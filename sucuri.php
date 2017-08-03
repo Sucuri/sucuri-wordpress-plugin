@@ -109,7 +109,7 @@ define('SUCURISCAN_PLUGIN_PATH', WP_PLUGIN_DIR . '/' . SUCURISCAN_PLUGIN_FOLDER)
 /**
  * The local URL where the plugin's files and assets are served.
  */
-define('SUCURISCAN_URL', plugin_dir_url(__FILE__));
+define('SUCURISCAN_URL', rtrim(plugin_dir_url(__FILE__), '/'));
 
 /**
  * Remote URL where the public Sucuri API service is running.
