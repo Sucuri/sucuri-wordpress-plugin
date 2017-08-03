@@ -517,7 +517,7 @@ function sucuriscan_settings_alerts_ignore_posts()
             $ignore_rule = SucuriScanRequest::post(':ignorerule');
 
             if ($action == 'add') {
-                if (!preg_match('/^[a-z_]+$/', $ignore_rule)) {
+                if (!preg_match('/^[a-z_\-]+$/', $ignore_rule)) {
                     SucuriScanInterface::error(__('OnlyLowerUppercase', SUCURISCAN_TEXTDOMAIN));
                 } elseif (SucuriScanOption::addIgnoredEvent($ignore_rule)) {
                     SucuriScanInterface::info(__('PostTypeIgnored', SUCURISCAN_TEXTDOMAIN));
