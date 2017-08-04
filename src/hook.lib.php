@@ -193,13 +193,8 @@ class SucuriScanHook extends SucuriScanEvent
                  * a brute-force attack (if it exists) because the time passed
                  * between the first and last login attempt is big enough to
                  * mitigate the attack.
-                 *
-                 * We will consider the current failed login event as the first
-                 * entry of that file in case of future attempts during the next
-                 * sixty minutes.
                  */
                 sucuriscan_reset_failed_logins();
-                sucuriscan_log_failed_login($title, $password);
             }
         }
     }
