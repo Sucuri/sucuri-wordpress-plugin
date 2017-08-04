@@ -51,6 +51,7 @@ function sucuriscan_failed_logins_panel()
     $max_failed_logins = SucuriScanOption::getOption(':maximum_failed_logins');
     $notify_bruteforce_attack = SucuriScanOption::getOption(':notify_bruteforce_attack');
     $failed_logins = sucuriscan_get_all_failed_logins($page_offset, $max_per_page);
+    $show_password = SucuriScanOption::isEnabled(':notify_failed_password');
 
     if ($failed_logins) {
         $counter = 0;
@@ -72,6 +73,10 @@ function sucuriscan_failed_logins_panel()
                 } else {
                     $wrong_user_password = 'empty';
                     $wrong_user_password_color = 'info';
+                }
+
+                if (!$show_password) {
+                    $wrong_user_password = 'hidden';
                 }
 
                 $template_variables['FailedLogins.List'] .=
