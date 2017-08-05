@@ -402,11 +402,17 @@ class SucuriScanAPI extends SucuriScanOption
     {
         $auditlogs = array();
         $cache = new SucuriScanCache('auditqueue');
+        $events = $cache->getAll();
 
-        if ($events = $cache->getAll()) {
+        if (is_array($events) && !empty($events)) {
             $events = array_reverse($events);
 
             foreach ($events as $micro => $message) {
+                if (!is_string($message)) {
+                    /* incompatible JSON data */
+                    continue;
+                }
+
                 $offset = strpos($micro, '_');
                 $time = substr($micro, 0, $offset);
                 $auditlogs[] = sprintf(
@@ -418,14 +424,16 @@ class SucuriScanAPI extends SucuriScanOption
             }
         }
 
-        return self::parseAuditLogs(array(
+        $res = array(
             'status' => 1,
             'action' => 'get_logs',
             'request_time' => time(),
             'verbose' => 0,
             'output' => array_reverse($auditlogs),
             'total_entries' => count($auditlogs),
-        ));
+        );
+
+        return self::parseAuditLogs($res);
     }
 
     /**
