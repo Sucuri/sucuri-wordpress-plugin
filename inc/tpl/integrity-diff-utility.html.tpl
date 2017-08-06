@@ -2,6 +2,8 @@
 <div class="sucuriscan-integrity-diff-utility">
     %%%SUCURI.DiffUtility.Modal%%%
 
+    <style type="text/css">.sucuriscan-integrity-filepath {cursor: pointer}</style>
+
     <script type="text/javascript">
     /* global jQuery */
     /* jshint camelcase: false */

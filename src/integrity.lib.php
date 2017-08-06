@@ -319,6 +319,10 @@ class SucuriScanIntegrity
                         $file_size_human = SucuriScan::humanFileSize($file_size);
                     }
 
+                    $modified_at = $file_info['modified_at']
+                    ? SucuriScan::datetime($file_info['modified_at'])
+                    : ''; /* empty modification date for deleted files */
+
                     // Generate the HTML code from the snippet template for this file.
                     $params['Integrity.List'] .=
                     SucuriScanTemplate::getSnippet('integrity-incorrect', array(
@@ -327,7 +331,7 @@ class SucuriScanIntegrity
                         'Integrity.FileSize' => $file_size,
                         'Integrity.FileSizeHuman' => $file_size_human,
                         'Integrity.FileSizeNumber' => number_format($file_size),
-                        'Integrity.ModifiedAt' => SucuriScan::datetime($file_info['modified_at']),
+                        'Integrity.ModifiedAt' => $modified_at,
                         'Integrity.ErrorVisibility' => $visibility,
                         'Integrity.ErrorMessage' => $error,
                     ));
