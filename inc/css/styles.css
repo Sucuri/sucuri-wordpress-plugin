@@ -863,3 +863,51 @@ body.sucuri-security_page_sucuriscan_hardening {
 .sucuriscan-firewall-accesslog {
     word-break: break-all;
 }
+.rtl .sucuriscan-header .sucuriscan-pull-left {
+    float: right;
+}
+.rtl .sucuriscan-header .sucuriscan-pull-right {
+    float: left;
+}
+.rtl .sucuriscan-header .sucuriscan-navbar li {
+    float: right;
+}
+.rtl .sucuriscan-tabs .sucuriscan-tabs-buttons li {
+    float: right;
+}
+.rtl .sucuriscan-tabs .sucuriscan-tabs-buttons li:first-child {
+    margin-left: 0;
+    margin-right: 12px;
+}
+.rtl .sucuriscan-tabs .sucuriscan-tabs-buttons a {
+    border-right: 1px solid #dfdfdf;
+    border-left: 0;
+}
+.rtl .sucuriscan-tabs .sucuriscan-tabs-buttons li:first-child a {
+    border-top-right-radius: 6px;
+}
+.rtl .sucuriscan-tabs .sucuriscan-tabs-buttons li:last-child a {
+    border-left: 1px solid #ccc;
+    border-top-left-radius: 6px;
+}
+.rtl .sucuriscan-hstatus form {
+    left: 20px;
+    right: initial;
+}
+.rtl .sucuriscan-container fieldset span,
+.rtl .sucuriscan-container fieldset label,
+.rtl .sucuriscan-container fieldset select,
+.rtl .sucuriscan-container fieldset button,
+.rtl .sucuriscan-container fieldset input[type=text],
+.rtl .sucuriscan-container fieldset input[type=checkbox],
+.rtl .wp-core-ui .sucuriscan-container fieldset .button,
+.rtl .wp-core-ui .sucuriscan-container fieldset .button-primary,
+.rtl .wp-core-ui .sucuriscan-container fieldset .button-secondary {
+    float: right !important;
+    margin-left: 0;
+    margin-right: 5px;
+}
+.rtl .wrap .sucuriscan-alert > .close {
+    right: initial;
+    left: 20px;
+}
