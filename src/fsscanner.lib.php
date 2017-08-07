@@ -3,9 +3,15 @@
 /**
  * Code related to the fsscanner.lib.php interface.
  *
- * @package Sucuri Security
- * @subpackage fsscanner.lib.php
- * @copyright Since 2010 Sucuri Inc.
+ * PHP version 5
+ *
+ * @category   Library
+ * @package    Sucuri
+ * @subpackage SucuriScanner
+ * @author     Daniel Cid <dcid@sucuri.net>
+ * @copyright  2010-2017 Sucuri Inc.
+ * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
+ * @link       https://wordpress.org/plugins/sucuri-scanner
  */
 
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
@@ -24,14 +30,22 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  * with the current content to establish what content has been updated. Updated
  * content is then submitted to the remote server and it is stored for future
  * analysis.
+ *
+ * @category   Library
+ * @package    Sucuri
+ * @subpackage SucuriScanner
+ * @author     Daniel Cid <dcid@sucuri.net>
+ * @copyright  2010-2017 Sucuri Inc.
+ * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
+ * @link       https://wordpress.org/plugins/sucuri-scanner
  */
 class SucuriScanFSScanner extends SucuriScan
 {
     /**
      * Retrieve the last time when the filesystem scan was ran.
      *
-     * @param bool $format Whether the timestamp must be formatted as date/time or not.
-     * @return string The timestamp of the runtime, or an string with the date/time.
+     * @param  bool $format Whether the timestamp must be formatted as date/time or not.
+     * @return string       The timestamp of the runtime, or an string with the date/time.
      */
     public static function getFilesystemRuntime($format = false)
     {
@@ -51,8 +65,8 @@ class SucuriScanFSScanner extends SucuriScan
     /**
      * Add a new directory path to the list of ignored paths.
      *
-     * @param string $path The (full) absolute path of a directory.
-     * @return bool TRUE if the directory path was added to the list, FALSE otherwise.
+     * @param  string $path The (full) absolute path of a directory.
+     * @return bool         TRUE if the directory path was added to the list, FALSE otherwise.
      */
     public static function ignoreDirectory($path = '')
     {
@@ -70,8 +84,8 @@ class SucuriScanFSScanner extends SucuriScan
     /**
      * Remove a directory path from the list of ignored paths.
      *
-     * @param string $path The (full) absolute path of a directory.
-     * @return bool TRUE if the directory path was removed to the list, FALSE otherwise.
+     * @param  string $path The (full) absolute path of a directory.
+     * @return bool         TRUE if the directory path was removed to the list, FALSE otherwise.
      */
     public static function unignoreDirectory($path = '')
     {

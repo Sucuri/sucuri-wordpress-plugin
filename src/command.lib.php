@@ -3,9 +3,15 @@
 /**
  * Code related to the command.lib.php interface.
  *
- * @package Sucuri Security
- * @subpackage command.lib.php
- * @copyright Since 2010 Sucuri Inc.
+ * PHP version 5
+ *
+ * @category   Library
+ * @package    Sucuri
+ * @subpackage SucuriScanner
+ * @author     Daniel Cid <dcid@sucuri.net>
+ * @copyright  2010-2017 Sucuri Inc.
+ * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
+ * @link       https://wordpress.org/plugins/sucuri-scanner
  */
 
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
@@ -23,6 +29,14 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  * and folders using the built-in PHP class SplFileInfo. The SplFileInfo class
  * offers a high-level object oriented interface to information for an individual
  * file.
+ *
+ * @category   Library
+ * @package    Sucuri
+ * @subpackage SucuriScanner
+ * @author     Daniel Cid <dcid@sucuri.net>
+ * @copyright  2010-2017 Sucuri Inc.
+ * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
+ * @link       https://wordpress.org/plugins/sucuri-scanner
  */
 class SucuriScanCommand extends SucuriScan
 {
@@ -44,8 +58,8 @@ class SucuriScanCommand extends SucuriScan
     /**
      * Checks if an external command exists or not.
      *
-     * @param string $cmd Name of the external command.
-     * @return bool True if the command exists, false otherwise.
+     * @param  string $cmd Name of the external command.
+     * @return bool        True if the command exists, false otherwise.
      */
     public static function exists($cmd)
     {
@@ -67,20 +81,24 @@ class SucuriScanCommand extends SucuriScan
     /**
      * Compares two files line by line.
      *
-     * @param string $a File path of the original file.
-     * @param string $b File path of the modified file.
-     * @return array Line-by-line changes (if any).
+     * @param  string $a File path of the original file.
+     * @param  string $b File path of the modified file.
+     * @return array     Line-by-line changes (if any).
      */
     public static function diff($a, $b)
     {
-        $out = array(); /* default empty */
+        $out = array();
 
         if (self::exists('diff')) {
-            @exec(sprintf(
-                'diff -u -- %s %s 2> /dev/null',
-                escapeshellarg($a),
-                escapeshellarg($b)
-            ), $out, $err);
+            @exec(
+                sprintf(
+                    'diff -u -- %s %s 2> /dev/null',
+                    escapeshellarg($a),
+                    escapeshellarg($b)
+                ),
+                $out,
+                $err
+            );
         }
 
         return $out;
@@ -99,26 +117,27 @@ class SucuriScanCommand extends SucuriScan
      * them in the dashboard. Some basic CSS classes will be attached to some of
      * the elements in the code to facilitate the styling of the diff report.
      *
-     * @param string $filepath Relative path to the core WordPress file.
-     * @return string|bool HTML code with the diff report, false on failure.
+     * @param  string $filepath Relative path to the core WordPress file.
+     * @return string|bool      HTML code with the diff report, false on failure.
      */
     public static function diffHTML($filepath)
     {
         $checksums = SucuriScanAPI::getOfficialChecksums();
 
         if (!$checksums) {
-            return SucuriScanInterface::error(__('UnsupportedWordPress', SUCURISCAN_TEXTDOMAIN));
+            return SucuriScanInterface::error('Unsupported WordPress version.');
         }
 
         if (!array_key_exists($filepath, $checksums)) {
-            return SucuriScanInterface::error(__('NoWordPressFile', SUCURISCAN_TEXTDOMAIN));
+            return SucuriScanInterface::error('Not an official WordPress file.');
         }
 
         $output = ''; /* initialize empty with no differences */
         $a = tempnam(sys_get_temp_dir(), SUCURISCAN . '-integrity-');
         $b = tempnam(sys_get_temp_dir(), SUCURISCAN . '-integrity-');
+        $handle = @fopen($a, 'w');
 
-        if ($handle = @fopen($a, 'w')) {
+        if ($handle) {
             @fwrite($handle, SucuriScanAPI::getOriginalCoreFile($filepath));
             @copy(ABSPATH . '/' . $filepath, $b);
             $output = self::diff($a, $b);
@@ -129,7 +148,7 @@ class SucuriScanCommand extends SucuriScan
         @unlink($b); /* delete modified file */
 
         if (!is_array($output) || empty($output)) {
-            return SucuriScanInterface::error(__('ThereAreNoDifferences', SUCURISCAN_TEXTDOMAIN));
+            return SucuriScanInterface::error('There are no differences.');
         }
 
         $response = "<ul class='" . SUCURISCAN . "-diff-content'>\n";

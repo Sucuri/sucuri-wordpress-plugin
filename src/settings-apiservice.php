@@ -3,9 +3,15 @@
 /**
  * Code related to the settings-apiservice.php interface.
  *
- * @package Sucuri Security
- * @subpackage settings-apiservice.php
- * @copyright Since 2010 Sucuri Inc.
+ * PHP version 5
+ *
+ * @category   Library
+ * @package    Sucuri
+ * @subpackage SucuriScanner
+ * @author     Daniel Cid <dcid@sucuri.net>
+ * @copyright  2010-2017 Sucuri Inc.
+ * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
+ * @link       https://wordpress.org/plugins/sucuri-scanner
  */
 
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
@@ -27,8 +33,8 @@ function sucuriscan_settings_apiservice_status($nonce)
     $params = array();
 
     $params['ApiStatus.StatusNum'] = '1';
-    $params['ApiStatus.Status'] = __('Enabled', SUCURISCAN_TEXTDOMAIN);
-    $params['ApiStatus.SwitchText'] = __('Disable', SUCURISCAN_TEXTDOMAIN);
+    $params['ApiStatus.Status'] = 'Enabled';
+    $params['ApiStatus.SwitchText'] = 'Disable';
     $params['ApiStatus.SwitchValue'] = 'disable';
     $params['ApiStatus.WarningVisibility'] = 'visible';
     $params['ApiStatus.ErrorVisibility'] = 'hidden';
@@ -36,14 +42,16 @@ function sucuriscan_settings_apiservice_status($nonce)
 
     if ($nonce) {
         // Enable or disable the API service communication.
-        if ($api_service = SucuriScanRequest::post(':api_service', '(en|dis)able')) {
+        $api_service = SucuriScanRequest::post(':api_service', '(en|dis)able');
+
+        if ($api_service) {
             $action_d = $api_service . 'd';
             $message = 'API service communication was <code>' . $action_d . '</code>';
 
             SucuriScanEvent::reportInfoEvent($message);
             SucuriScanEvent::notifyEvent('plugin_change', $message);
             SucuriScanOption::updateOption(':api_service', $action_d);
-            SucuriScanInterface::info(__('APIServiceChanged', SUCURISCAN_TEXTDOMAIN));
+            SucuriScanInterface::info('The status of the API service has been changed');
         }
     }
 
@@ -51,8 +59,8 @@ function sucuriscan_settings_apiservice_status($nonce)
 
     if ($api_service === 'disabled') {
         $params['ApiStatus.StatusNum'] = '0';
-        $params['ApiStatus.Status'] = __('Disabled', SUCURISCAN_TEXTDOMAIN);
-        $params['ApiStatus.SwitchText'] = __('Enable', SUCURISCAN_TEXTDOMAIN);
+        $params['ApiStatus.Status'] = 'Disabled';
+        $params['ApiStatus.SwitchText'] = 'Enable';
         $params['ApiStatus.SwitchValue'] = 'enable';
         $params['ApiStatus.WarningVisibility'] = 'hidden';
         $params['ApiStatus.ErrorVisibility'] = 'visible';
@@ -119,14 +127,14 @@ function sucuriscan_settings_apiservice_checksums($nonce)
             $message = 'Core integrity API changed: ' . SucuriScanAPI::checksumAPI();
             SucuriScanEvent::reportInfoEvent($message);
             SucuriScanEvent::notifyEvent('plugin_change', $message);
-            SucuriScanInterface::info(__('ChecksumsAPIChanged', SUCURISCAN_TEXTDOMAIN));
+            SucuriScanInterface::info('The URL to retrieve the WordPress checksums has been changed');
         } else {
             SucuriScanOption::deleteOption(':checksum_api');
 
             $message = 'Core integrity API changed: ' . SucuriScanAPI::checksumAPI();
             SucuriScanEvent::reportInfoEvent($message);
             SucuriScanEvent::notifyEvent('plugin_change', $message);
-            SucuriScanInterface::info(__('ChecksumsAPIChanged', SUCURISCAN_TEXTDOMAIN));
+            SucuriScanInterface::info('The URL to retrieve the WordPress checksums has been changed');
         }
     }
 

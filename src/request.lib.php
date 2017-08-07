@@ -3,9 +3,15 @@
 /**
  * Code related to the request.lib.php interface.
  *
- * @package Sucuri Security
- * @subpackage request.lib.php
- * @copyright Since 2010 Sucuri Inc.
+ * PHP version 5
+ *
+ * @category   Library
+ * @package    Sucuri
+ * @subpackage SucuriScanner
+ * @author     Daniel Cid <dcid@sucuri.net>
+ * @copyright  2010-2017 Sucuri Inc.
+ * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
+ * @link       https://wordpress.org/plugins/sucuri-scanner
  */
 
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
@@ -23,6 +29,14 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  * HTTP request, generally after a form submission or while loading a URL. Use
  * these methods at most instead of accessing an index in the global PHP
  * variables _POST, _GET, _REQUEST since they may come with insecure data.
+ *
+ * @category   Library
+ * @package    Sucuri
+ * @subpackage SucuriScanner
+ * @author     Daniel Cid <dcid@sucuri.net>
+ * @copyright  2010-2017 Sucuri Inc.
+ * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
+ * @link       https://wordpress.org/plugins/sucuri-scanner
  */
 class SucuriScanRequest extends SucuriScan
 {
@@ -33,9 +47,9 @@ class SucuriScanRequest extends SucuriScan
      * will return False if the value doesn't matches what the RegExp defined.
      * Very useful to whitelist user input besides form validations.
      *
-     * @param array $list The array where the specified key will be searched.
-     * @param string $key Name of the variable contained in _POST.
-     * @param string $pattern Optional pattern to match allowed values.
+     * @param  array  $list    The array where the specified key will be searched.
+     * @param  string $key     Name of the variable contained in _POST.
+     * @param  string $pattern Optional pattern to match allowed values.
      * @return array|string|bool Value from the global _GET or _POST variable.
      */
     private static function request($list = array(), $key = '', $pattern = '')
@@ -80,9 +94,9 @@ class SucuriScanRequest extends SucuriScan
      * Returns the value stored in a specific index in the global _GET variable,
      * you can specify a pattern as the second argument to match allowed values.
      *
-     * @param string $key Name of the variable contained in _GET.
-     * @param string $pattern Optional pattern to match allowed values.
-     * @return array|string Value from the global _GET variable.
+     * @param  string $key     Name of the variable contained in _GET.
+     * @param  string $pattern Optional pattern to match allowed values.
+     * @return array|string    Value from the global _GET variable.
      */
     public static function get($key = '', $pattern = '')
     {
@@ -93,9 +107,9 @@ class SucuriScanRequest extends SucuriScan
      * Returns the value stored in a specific index in the global _POST variable,
      * you can specify a pattern as the second argument to match allowed values.
      *
-     * @param string $key Name of the variable contained in _POST.
-     * @param string $pattern Optional pattern to match allowed values.
-     * @return array|string Value from the global _POST variable.
+     * @param  string $key     Name of the variable contained in _POST.
+     * @param  string $pattern Optional pattern to match allowed values.
+     * @return array|string    Value from the global _POST variable.
      */
     public static function post($key = '', $pattern = '')
     {
@@ -106,9 +120,9 @@ class SucuriScanRequest extends SucuriScan
      * Returns the value stored in a specific index in the global _REQUEST variable,
      * you can specify a pattern as the second argument to match allowed values.
      *
-     * @param string $key Name of the variable contained in _REQUEST.
-     * @param string $pattern Optional pattern to match allowed values.
-     * @return array|string Value from the global _REQUEST variable.
+     * @param  string $key     Name of the variable contained in _REQUEST.
+     * @param  string $pattern Optional pattern to match allowed values.
+     * @return array|string    Value from the global _REQUEST variable.
      */
     public static function getOrPost($key = '', $pattern = '')
     {

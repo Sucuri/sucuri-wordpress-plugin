@@ -5,11 +5,19 @@
  * Description: The <a href="https://sucuri.net/" target="_blank">Sucuri</a> plugin provides the website owner the best Activity Auditing, SiteCheck Remote Malware Scanning, Effective Security Hardening and Post-Hack features. SiteCheck will check for malware, spam, blacklisting and other security issues like .htaccess redirects, hidden eval code, etc. The best thing about it is it's completely free.
  * Plugin URI: https://wordpress.sucuri.net/
  * Author URI: https://sucuri.net/
- * Text Domain: sucuri-scanner
  * Author: Sucuri Inc.
  * Version: 1.8.8
+ *
+ * PHP version 5
+ *
+ * @category   Library
+ * @package    Sucuri
+ * @subpackage SucuriScanner
+ * @author     Daniel Cid <dcid@sucuri.net>
+ * @copyright  2010-2017 Sucuri Inc.
+ * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
+ * @link       https://wordpress.org/plugins/sucuri-scanner
  */
-
 
 /**
  * Main file to control the plugin.
@@ -19,14 +27,6 @@
  * during the direct access of any of the extra PHP files the interpreter will
  * return a 403/Forbidden response and immediately exit the execution, this will
  * prevent unwanted access to code with unmet dependencies.
- *
- * @package   Sucuri Security
- * @author    Daniel Cid <dcid@sucuri.net>
- * @license   Released under the GPL.
- * @copyright Since 2010 Sucuri Inc.
- * @since     File available since Release 0.1
- * @link      https://wordpress.org/plugins/sucuri-scanner/
- * @link      https://wordpress.sucuri.net/
  */
 define('SUCURISCAN_INIT', true);
 
@@ -84,11 +84,6 @@ define('SUCURISCAN', 'sucuriscan');
  * Current version of the plugin's code.
  */
 define('SUCURISCAN_VERSION', '1.8.8');
-
-/**
- * Unique name of the plugin text domain.
- */
-define('SUCURISCAN_TEXTDOMAIN', 'sucuri-scanner');
 
 /**
  * The name of the folder where the plugin's files will be located.
@@ -166,7 +161,7 @@ define('SUCURISCAN_SCANNER_FREQUENCY', 10800);
 /**
  * The life time of the cache for the results of the SiteCheck scans.
  */
-define('SUCURISCAN_SITECHECK_LIFETIME', 1200);
+define('SUCURISCAN_SITECHECK_LIFETIME', 21600);
 
 /**
  * The life time of the cache for the results of the get_plugins function.
@@ -194,48 +189,48 @@ if (!array_key_exists('SERVER_NAME', $_SERVER)) {
 }
 
 /* Load all classes before anything else. */
-require_once('src/sucuriscan.lib.php');
-require_once('src/request.lib.php');
-require_once('src/fileinfo.lib.php');
-require_once('src/cache.lib.php');
-require_once('src/option.lib.php');
-require_once('src/event.lib.php');
-require_once('src/hook.lib.php');
-require_once('src/api.lib.php');
-require_once('src/mail.lib.php');
-require_once('src/command.lib.php');
-require_once('src/template.lib.php');
-require_once('src/fsscanner.lib.php');
-require_once('src/hardening.lib.php');
-require_once('src/interface.lib.php');
-require_once('src/auditlogs.lib.php');
-require_once('src/sitecheck.lib.php');
-require_once('src/integrity.lib.php');
-require_once('src/firewall.lib.php');
-require_once('src/installer-skin.lib.php');
+require_once 'src/sucuriscan.lib.php';
+require_once 'src/request.lib.php';
+require_once 'src/fileinfo.lib.php';
+require_once 'src/cache.lib.php';
+require_once 'src/option.lib.php';
+require_once 'src/event.lib.php';
+require_once 'src/hook.lib.php';
+require_once 'src/api.lib.php';
+require_once 'src/mail.lib.php';
+require_once 'src/command.lib.php';
+require_once 'src/template.lib.php';
+require_once 'src/fsscanner.lib.php';
+require_once 'src/hardening.lib.php';
+require_once 'src/interface.lib.php';
+require_once 'src/auditlogs.lib.php';
+require_once 'src/sitecheck.lib.php';
+require_once 'src/integrity.lib.php';
+require_once 'src/firewall.lib.php';
+require_once 'src/installer-skin.lib.php';
 
 /* Load page and ajax handlers */
-require_once('src/pagehandler.php');
+require_once 'src/pagehandler.php';
 
 /* Load handlers for main pages (lastlogins). */
-require_once('src/lastlogins.php');
-require_once('src/lastlogins-loggedin.php');
-require_once('src/lastlogins-failed.php');
-require_once('src/lastlogins-blocked.php');
+require_once 'src/lastlogins.php';
+require_once 'src/lastlogins-loggedin.php';
+require_once 'src/lastlogins-failed.php';
+require_once 'src/lastlogins-blocked.php';
 
 /* Load handlers for main pages (settings). */
-require_once('src/settings.php');
-require_once('src/settings-general.php');
-require_once('src/settings-scanner.php');
-require_once('src/settings-integrity.php');
-require_once('src/settings-hardening.php');
-require_once('src/settings-posthack.php');
-require_once('src/settings-alerts.php');
-require_once('src/settings-apiservice.php');
-require_once('src/settings-webinfo.php');
+require_once 'src/settings.php';
+require_once 'src/settings-general.php';
+require_once 'src/settings-scanner.php';
+require_once 'src/settings-integrity.php';
+require_once 'src/settings-hardening.php';
+require_once 'src/settings-posthack.php';
+require_once 'src/settings-alerts.php';
+require_once 'src/settings-apiservice.php';
+require_once 'src/settings-webinfo.php';
 
 /* Load global variables and triggers */
-require_once('src/globals.php');
+require_once 'src/globals.php';
 
 /**
  * Uninstalls the plugin, its settings and reverts the hardening.
@@ -246,15 +241,18 @@ require_once('src/globals.php');
  * inserted into the sub-database associated to a multi-site installation, will
  * revert the hardening applied to the core directories, and will delete all the
  * security logs, cache and additional data stored in the storage directory.
+ *
+ * @return void
  */
-function sucuriscan_deactivate()
+function sucuriscanResetAndDeactivate()
 {
-    global $wpdb;
+    if (array_key_exists('wpdb', $GLOBALS)) {
+        /* Delete all plugin related options from the database */
+        $options = $GLOBALS['wpdb']->get_results(
+            'SELECT option_id, option_name FROM ' . $GLOBALS['wpdb']->options
+            . ' WHERE option_name LIKE "' . SUCURISCAN . '%"'
+        );
 
-    if ($wpdb) {
-        /* Delete all the possible plugin related options from the database */
-        $sql = "SELECT * FROM {$wpdb->options} WHERE option_name LIKE 'sucuriscan%'";
-        $options = $wpdb->get_results($sql);
         foreach ($options as $option) {
             delete_site_option($option->option_name);
             delete_option($option->option_name);
@@ -288,4 +286,4 @@ function sucuriscan_deactivate()
     $fifo->removeDirectoryTree($directory);
 }
 
-register_deactivation_hook(__FILE__, 'sucuriscan_deactivate');
+register_deactivation_hook(__FILE__, 'sucuriscanResetAndDeactivate');

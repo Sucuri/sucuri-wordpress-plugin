@@ -3,9 +3,15 @@
 /**
  * Code related to the settings-scanner.php interface.
  *
- * @package Sucuri Security
- * @subpackage settings-scanner.php
- * @copyright Since 2010 Sucuri Inc.
+ * PHP version 5
+ *
+ * @category   Library
+ * @package    Sucuri
+ * @subpackage SucuriScanner
+ * @author     Daniel Cid <dcid@sucuri.net>
+ * @copyright  2010-2017 Sucuri Inc.
+ * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
+ * @link       https://wordpress.org/plugins/sucuri-scanner
  */
 
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
@@ -18,14 +24,22 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
 
 /**
  * Returns the HTML to configure the scanner.
+ *
+ * @category   Library
+ * @package    Sucuri
+ * @subpackage SucuriScanner
+ * @author     Daniel Cid <dcid@sucuri.net>
+ * @copyright  2010-2017 Sucuri Inc.
+ * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
+ * @link       https://wordpress.org/plugins/sucuri-scanner
  */
 class SucuriScanSettingsScanner extends SucuriScanSettings
 {
     /**
      * Renders a page with information about the cronjobs feature.
      *
-     * @param bool $nonce True if the CSRF protection worked.
-     * @return string Page with information about the cronjobs.
+     * @param  bool $nonce True if the CSRF protection worked.
+     * @return string      Page with information about the cronjobs.
      */
     public static function cronjobs($nonce)
     {
@@ -41,8 +55,9 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
             $allowed_actions[] = 'runnow'; /* execute in the next 10 seconds */
             $allowed_actions[] = 'remove'; /* can be reinstalled automatically */
             $allowed_actions = sprintf('(%s)', implode('|', $allowed_actions));
+            $cronjob_action = SucuriScanRequest::post(':cronjob_action', $allowed_actions);
 
-            if ($cronjob_action = SucuriScanRequest::post(':cronjob_action', $allowed_actions)) {
+            if ($cronjob_action) {
                 $cronjobs = SucuriScanRequest::post(':cronjobs', '_array');
 
                 if (!empty($cronjobs)) {
@@ -50,43 +65,55 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
 
                     if ($cronjob_action == 'runnow') {
                         /* Force execution of the selected scheduled tasks. */
-                        SucuriScanInterface::info(sprintf(
-                            __('CronjobsWillRunSoon', SUCURISCAN_TEXTDOMAIN),
-                            $total_tasks /* some cronjobs will be ignored */
-                        ));
-                        SucuriScanEvent::reportNoticeEvent(sprintf(
-                            'Force execution of scheduled tasks: (multiple entries): %s',
-                            @implode(',', $cronjobs)
-                        ));
+                        SucuriScanInterface::info(
+                            sprintf(
+                                '%d tasks has been scheduled to run in the next ten seconds.',
+                                $total_tasks /* some cronjobs will be ignored */
+                            )
+                        );
+                        SucuriScanEvent::reportNoticeEvent(
+                            sprintf(
+                                'Force execution of scheduled tasks: (multiple entries): %s',
+                                @implode(',', $cronjobs)
+                            )
+                        );
 
                         foreach ($cronjobs as $task_name) {
                             wp_schedule_single_event(time() + 10, $task_name);
                         }
                     } elseif ($cronjob_action == 'remove' || $cronjob_action == '_oneoff') {
                         /* Force deletion of the selected scheduled tasks. */
-                        SucuriScanInterface::info(sprintf(
-                            __('CronjobsWereDeleted', SUCURISCAN_TEXTDOMAIN),
-                            $total_tasks /* some cronjobs will be ignored */
-                        ));
-                        SucuriScanEvent::reportNoticeEvent(sprintf(
-                            'Delete scheduled tasks: (multiple entries): %s',
-                            @implode(',', $cronjobs)
-                        ));
+                        SucuriScanInterface::info(
+                            sprintf(
+                                '%d scheduled tasks have been removed.',
+                                $total_tasks /* some cronjobs will be ignored */
+                            )
+                        );
+                        SucuriScanEvent::reportNoticeEvent(
+                            sprintf(
+                                'Delete scheduled tasks: (multiple entries): %s',
+                                @implode(',', $cronjobs)
+                            )
+                        );
 
                         foreach ($cronjobs as $task_name) {
                             wp_clear_scheduled_hook($task_name);
                         }
                     } else {
-                        SucuriScanInterface::info(sprintf(
-                            __('CronjobsWereReinstalled', SUCURISCAN_TEXTDOMAIN),
-                            $total_tasks, /* some cronjobs will be ignored */
-                            $cronjob_action /* frequency to run cronjob */
-                        ));
-                        SucuriScanEvent::reportNoticeEvent(sprintf(
-                            'Re-configure scheduled tasks %s: (multiple entries): %s',
-                            $cronjob_action,
-                            @implode(',', $cronjobs)
-                        ));
+                        SucuriScanInterface::info(
+                            sprintf(
+                                '%d tasks has been re-scheduled to run <code>%s</code>.',
+                                $total_tasks, /* some cronjobs will be ignored */
+                                $cronjob_action /* frequency to run cronjob */
+                            )
+                        );
+                        SucuriScanEvent::reportNoticeEvent(
+                            sprintf(
+                                'Re-configure scheduled tasks %s: (multiple entries): %s',
+                                $cronjob_action,
+                                @implode(',', $cronjobs)
+                            )
+                        );
 
                         foreach ($cronjobs as $task_name) {
                             $next_due = wp_next_scheduled($task_name);
@@ -94,7 +121,7 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
                         }
                     }
                 } else {
-                    SucuriScanInterface::error(__('CronjobsWereNotSelected', SUCURISCAN_TEXTDOMAIN));
+                    SucuriScanInterface::error('No scheduled tasks were selected from the list.');
                 }
             }
         }
@@ -104,7 +131,7 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
 
         /* Hardcode the first one to allow the immediate execution of the cronjob(s) */
         $params['Cronjob.Schedules'] .= '<option value="runnow">'
-        . __('CronjobRunNow', SUCURISCAN_TEXTDOMAIN) . '</option>';
+        . 'Execute Now (in +10 seconds)' . '</option>';
 
         foreach ($available as $freq => $name) {
             $params['Cronjob.Schedules'] .= sprintf('<option value="%s">%s</option>', $freq, $name);
@@ -118,14 +145,16 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
                     }
 
                     $params['Cronjobs.Total'] += 1;
-                    $params['Cronjobs.List'] .=
-                    SucuriScanTemplate::getSnippet('settings-scanner-cronjobs', array(
-                        'Cronjob.Hook' => $hook,
-                        'Cronjob.Schedule' => $event['schedule'],
-                        'Cronjob.NextTime' => SucuriScan::datetime($timestamp),
-                        'Cronjob.NextTimeHuman' => SucuriScan::humanTime($timestamp),
-                        'Cronjob.Arguments' => SucuriScan::implode(', ', $event['args']),
-                    ));
+                    $params['Cronjobs.List'] .= SucuriScanTemplate::getSnippet(
+                        'settings-scanner-cronjobs',
+                        array(
+                            'Cronjob.Hook' => $hook,
+                            'Cronjob.Schedule' => $event['schedule'],
+                            'Cronjob.NextTime' => SucuriScan::datetime($timestamp),
+                            'Cronjob.NextTimeHuman' => SucuriScan::humanTime($timestamp),
+                            'Cronjob.Arguments' => SucuriScan::implode(', ', $event['args']),
+                        )
+                    );
                 }
             }
         }
@@ -138,6 +167,8 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
 
     /**
      * Returns a list of directories in the website.
+     *
+     * @return void
      */
     public static function ignoreFoldersAjax()
     {
@@ -155,7 +186,7 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
                     'IgnoreScan.Directory' => '',
                     'IgnoreScan.DirectoryPath' => '',
                     'IgnoreScan.IgnoredAt' => '',
-                    'IgnoreScan.IgnoredAtText' => __('Okay', SUCURISCAN_TEXTDOMAIN),
+                    'IgnoreScan.IgnoredAtText' => 'OK',
                 );
 
                 if ($group == 'is_ignored') {
@@ -163,7 +194,7 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
                     $snippet['IgnoreScan.Directory'] = urlencode($dir_data['directory_path']);
                     $snippet['IgnoreScan.DirectoryPath'] = $dir_data['directory_path'];
                     $snippet['IgnoreScan.IgnoredAt'] = SucuriScan::datetime($dir_data['ignored_at']);
-                    $snippet['IgnoreScan.IgnoredAtText'] = __('Ignored', SUCURISCAN_TEXTDOMAIN);
+                    $snippet['IgnoreScan.IgnoredAtText'] = 'Ignored';
                 } elseif ($group == 'is_not_ignored') {
                     $valid_entry = true;
                     $snippet['IgnoreScan.Directory'] = urlencode($dir_data);
@@ -187,8 +218,8 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
      * directories with media files like images, audio, videos, etc and directories
      * used to store cache data.
      *
-     * @param bool $nonce True if the CSRF protection worked, false otherwise.
-     * @return string HTML for the folder scanner skipper.
+     * @param  bool $nonce True if the CSRF protection worked, false otherwise.
+     * @return string      HTML for the folder scanner skipper.
      */
     public static function ignoreFolders($nonce)
     {
@@ -196,50 +227,58 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
 
         if ($nonce) {
             // Ignore a new directory path for the file system scans.
-            if ($action = SucuriScanRequest::post(':ignorescanning_action', '(ignore|unignore)')) {
-                $ign_dirs = SucuriScanRequest::post(':ignorescanning_dirs', '_array');
-                $ign_file = SucuriScanRequest::post(':ignorescanning_file');
+            $ign_file = SucuriScanRequest::post(':ignorescanning_file');
+            $ign_dirs = SucuriScanRequest::post(':ignorescanning_dirs', '_array');
 
-                if ($action == 'ignore') {
-                    // Target a single file path to be ignored.
-                    if ($ign_file !== false) {
-                        $ign_dirs = array($ign_file);
-                        unset($_POST['sucuriscan_ignorescanning_file']);
+            if (SucuriScanRequest::post(':ignorescanning_action') === 'ignore') {
+                // Target a single file path to be ignored.
+                if ($ign_file !== false) {
+                    $ign_dirs = array($ign_file);
+                    unset($_POST['sucuriscan_ignorescanning_file']);
+                }
+
+                // Target a list of directories to be ignored.
+                if (is_array($ign_dirs) && !empty($ign_dirs)) {
+                    $were_ignored = 0;
+
+                    foreach ($ign_dirs as $resource_path) {
+                        if (file_exists($resource_path)
+                            && SucuriScanFSScanner::ignoreDirectory($resource_path)
+                        ) {
+                            $were_ignored++;
+                        }
                     }
 
-                    // Target a list of directories to be ignored.
-                    if (is_array($ign_dirs) && !empty($ign_dirs)) {
-                        $were_ignored = array();
-
-                        foreach ($ign_dirs as $resource_path) {
-                            if (file_exists($resource_path)
-                                && SucuriScanFSScanner::ignoreDirectory($resource_path)
-                            ) {
-                                $were_ignored[] = $resource_path;
-                            }
-                        }
-
-                        if (!empty($were_ignored)) {
-                            SucuriScanInterface::info(__('ItemsProcessed', SUCURISCAN_TEXTDOMAIN));
-                            SucuriScanEvent::reportWarningEvent(sprintf(
+                    if ($were_ignored > 0) {
+                        SucuriScanInterface::info('Selected files have been successfully processed.');
+                        SucuriScanEvent::reportWarningEvent(
+                            sprintf(
                                 'Resources will not be scanned: (multiple entries): %s',
                                 @implode(',', $ign_dirs)
-                            ));
-                        }
+                            )
+                        );
                     }
-                } elseif ($action == 'unignore'
-                    && is_array($ign_dirs)
-                    && !empty($ign_dirs)
-                ) {
+                }
+            }
+
+            if (SucuriScanRequest::post(':ignorescanning_action') === 'unignore') {
+                if (is_array($ign_dirs) && !empty($ign_dirs)) {
+                    $were_ignored = 0;
+
                     foreach ($ign_dirs as $directory_path) {
                         SucuriScanFSScanner::unignoreDirectory($directory_path);
+                        $were_ignored++;
                     }
 
-                    SucuriScanInterface::info(__('ItemsProcessed', SUCURISCAN_TEXTDOMAIN));
-                    SucuriScanEvent::reportNoticeEvent(sprintf(
-                        'Resources will be scanned: (multiple entries): %s',
-                        @implode(',', $ign_dirs)
-                    ));
+                    if ($were_ignored > 0) {
+                        SucuriScanInterface::info('Selected files have been successfully processed.');
+                        SucuriScanEvent::reportNoticeEvent(
+                            sprintf(
+                                'Resources will be scanned: (multiple entries): %s',
+                                @implode(',', $ign_dirs)
+                            )
+                        );
+                    }
                 }
             }
         }

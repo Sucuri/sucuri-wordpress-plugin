@@ -3,9 +3,15 @@
 /**
  * Code related to the event.lib.php interface.
  *
- * @package Sucuri Security
- * @subpackage event.lib.php
- * @copyright Since 2010 Sucuri Inc.
+ * PHP version 5
+ *
+ * @category   Library
+ * @package    Sucuri
+ * @subpackage SucuriScanner
+ * @author     Daniel Cid <dcid@sucuri.net>
+ * @copyright  2010-2017 Sucuri Inc.
+ * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
+ * @link       https://wordpress.org/plugins/sucuri-scanner
  */
 
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
@@ -29,7 +35,13 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  * response to events is said to be event-driven, often with the goal of being
  * interactive.
  *
- * @see https://en.wikipedia.org/wiki/Event_%28computing%29
+ * @category   Library
+ * @package    Sucuri
+ * @subpackage SucuriScanner
+ * @author     Daniel Cid <dcid@sucuri.net>
+ * @copyright  2010-2017 Sucuri Inc.
+ * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
+ * @link       https://wordpress.org/plugins/sucuri-scanner
  */
 class SucuriScanEvent extends SucuriScan
 {
@@ -43,6 +55,8 @@ class SucuriScanEvent extends SucuriScan
      * list with the checksum of the new file list, if there are differences we
      * will assume that someone or something modified one or more files and send
      * an email alsert about the incident.
+     *
+     * @return void
      */
     public static function installScheduledTask()
     {
@@ -72,13 +86,13 @@ class SucuriScanEvent extends SucuriScan
 
         foreach ($jobs as $unique => $info) {
             $schedules[$unique] = sprintf(
-                __('ScheduledTask', SUCURISCAN_TEXTDOMAIN),
+                '%s (every %d seconds)',
                 $info['display'],
                 $info['interval']
             );
         }
 
-        $schedules['_oneoff'] = __('ScheduledTaskNever', SUCURISCAN_TEXTDOMAIN);
+        $schedules['_oneoff'] = 'Never (no execution)';
 
         return $schedules;
     }
@@ -110,8 +124,8 @@ class SucuriScanEvent extends SucuriScan
     /**
      * Decides if the file system scanner can run or not.
      *
-     * @param bool $force_scan Force the execution of the scanner.
-     * @return bool True if the scanner can run, false otherwise.
+     * @param  bool $force_scan Force the execution of the scanner.
+     * @return bool             True if the scanner can run, false otherwise.
      */
     private static function runFileScanner($force_scan = false)
     {
@@ -135,8 +149,8 @@ class SucuriScanEvent extends SucuriScan
      * analyze them using the Sucuri Monitoring service, this will generate the
      * audit logs for this site and be part of the integrity checks.
      *
-     * @param bool $force_scan Whether the filesystem scan was forced by an administrator user or not.
-     * @return bool True if the filesystem scan was successful, false otherwise.
+     * @param  bool $force_scan Whether the filesystem scan was forced by an administrator user or not.
+     * @return bool             True if the filesystem scan was successful, false otherwise.
      */
     public static function filesystemScan($force_scan = false)
     {
@@ -169,10 +183,10 @@ class SucuriScanEvent extends SucuriScan
      * in a failure. However, this procedure depends on the ability of the plugin
      * to write the log into the queue when the previous request failed.
      *
-     * @param string $message Information about the event.
-     * @param string|int $timestamp Time when the event was triggered.
-     * @param int $timeout Maximum time in seconds to connect to the API.
-     * @return bool True if the event was logged, false otherwise.
+     * @param  string     $message   Information about the event.
+     * @param  string|int $timestamp Time when the event was triggered.
+     * @param  int        $timeout   Maximum time in seconds to connect to the API.
+     * @return bool                  True if the event was logged, false otherwise.
      */
     private static function sendLogToAPI($message = '', $timestamp = '', $timeout = 1)
     {
@@ -202,8 +216,8 @@ class SucuriScanEvent extends SucuriScan
      * but it could be private and be mocked by the test bootstrap script. Take
      * this in consideration during the static analysis of the code.
      *
-     * @param string $message Information about the security event.
-     * @return bool True if the operation succeeded, false otherwise.
+     * @param  string $message Information about the security event.
+     * @return bool            True if the operation succeeded, false otherwise.
      */
     public static function sendLogToQueue($message = '')
     {
@@ -335,9 +349,9 @@ class SucuriScanEvent extends SucuriScan
     /**
      * Generates an audit event log (to be sent later).
      *
-     * @param int $severity Importance of the event that will be reported, values from one to five.
-     * @param string $message The explanation of the event.
-     * @return bool True if the event was logged in the monitoring service, false otherwise.
+     * @param  int    $severity Importance of the event that will be reported.
+     * @param  string $message  The explanation of the event.
+     * @return bool             True if the event was logged, false otherwise.
      */
     private static function reportEvent($severity = 0, $message = '')
     {
@@ -354,7 +368,7 @@ class SucuriScanEvent extends SucuriScan
         }
 
         $severity = intval($severity);
-        $severity_name = 'Info'; /* default */
+        $severity_name = 'Info';
         $severities = array(
             /* 0 */ 'Debug',
             /* 1 */ 'Notice',
@@ -374,20 +388,22 @@ class SucuriScanEvent extends SucuriScan
         $message = str_replace("\n", '', $message);
         $message = str_replace("\t", '', $message);
 
-        return self::sendLogToQueue(sprintf(
-            '%s:%s %s; %s',
-            $severity_name,
-            $username,
-            $remote_ip,
-            $message
-        ));
+        return self::sendLogToQueue(
+            sprintf(
+                '%s:%s %s; %s',
+                $severity_name,
+                $username,
+                $remote_ip,
+                $message
+            )
+        );
     }
 
     /**
      * Reports a debug event on the website.
      *
-     * @param string $message Text witht the explanation of the event or action performed.
-     * @return bool Either true or false depending on the success of the operation.
+     * @param  string $message Text witht the explanation of the event or action performed.
+     * @return bool            Either true or false depending on the success of the operation.
      */
     public static function reportDebugEvent($message = '')
     {
@@ -397,8 +413,8 @@ class SucuriScanEvent extends SucuriScan
     /**
      * Reports a notice event on the website.
      *
-     * @param string $message Text witht the explanation of the event or action performed.
-     * @return bool Either true or false depending on the success of the operation.
+     * @param  string $message Text witht the explanation of the event or action performed.
+     * @return bool            Either true or false depending on the success of the operation.
      */
     public static function reportNoticeEvent($message = '')
     {
@@ -408,8 +424,8 @@ class SucuriScanEvent extends SucuriScan
     /**
      * Reports a info event on the website.
      *
-     * @param string $message Text witht the explanation of the event or action performed.
-     * @return bool Either true or false depending on the success of the operation.
+     * @param  string $message Text witht the explanation of the event or action performed.
+     * @return bool            Either true or false depending on the success of the operation.
      */
     public static function reportInfoEvent($message = '')
     {
@@ -419,8 +435,8 @@ class SucuriScanEvent extends SucuriScan
     /**
      * Reports a warning event on the website.
      *
-     * @param string $message Text witht the explanation of the event or action performed.
-     * @return bool Either true or false depending on the success of the operation.
+     * @param  string $message Text witht the explanation of the event or action performed.
+     * @return bool            Either true or false depending on the success of the operation.
      */
     public static function reportWarningEvent($message = '')
     {
@@ -430,8 +446,8 @@ class SucuriScanEvent extends SucuriScan
     /**
      * Reports a error event on the website.
      *
-     * @param string $message Text witht the explanation of the event or action performed.
-     * @return bool Either true or false depending on the success of the operation.
+     * @param  string $message Text witht the explanation of the event or action performed.
+     * @return bool            Either true or false depending on the success of the operation.
      */
     public static function reportErrorEvent($message = '')
     {
@@ -441,8 +457,8 @@ class SucuriScanEvent extends SucuriScan
     /**
      * Reports a critical event on the website.
      *
-     * @param string $message Text witht the explanation of the event or action performed.
-     * @return bool Either true or false depending on the success of the operation.
+     * @param  string $message Text witht the explanation of the event or action performed.
+     * @return bool            Either true or false depending on the success of the operation.
      */
     public static function reportCriticalEvent($message = '')
     {
@@ -450,36 +466,12 @@ class SucuriScanEvent extends SucuriScan
     }
 
     /**
-     * Reports a notice or error event for enable and disable actions.
-     *
-     * @param string $message Text witht the explanation of the event or action performed.
-     * @param string $action An optional text, hopefully either enabled or disabled.
-     * @return bool Either true or false depending on the success of the operation.
-     */
-    public static function reportAutoEvent($message = '', $action = '')
-    {
-        $message = strip_tags($message);
-
-        /* auto-detect the action performed: enabled */
-        if (strpos($message, 'enabled') !== false) {
-            return self::reportNoticeEvent($message);
-        }
-
-        /* auto-detect the action performed: disabled */
-        if (strpos($message, 'disabled') !== false) {
-            return self::reportErrorEvent($message);
-        }
-
-        return self::reportInfoEvent($message);
-    }
-
-    /**
      * Send a notification to the administrator of the specified events, only if
      * the administrator accepted to receive alerts for this type of events.
      *
-     * @param string $event The name of the event that was triggered.
-     * @param string $content Body of the email that will be sent to the administrator.
-     * @return bool True if the email was apparently sent, false otherwise.
+     * @param  string $event   The name of the event that was triggered.
+     * @param  string $content Body of the email that will be sent to the administrator.
+     * @return bool            True if the email was apparently sent, false otherwise.
      */
     public static function notifyEvent($event = '', $content = '')
     {
@@ -513,7 +505,20 @@ class SucuriScanEvent extends SucuriScan
             case 'failed_login':
                 $settings_url = SucuriScanTemplate::getUrl('settings');
                 $content .= "\n" . sprintf(
-                    __('FailedLoginFooter', SUCURISCAN_TEXTDOMAIN),
+                    "<br><br>\n\n<em>Explanation: Someone failed to login to y"
+                    . "our site. If you are getting too many of these messages"
+                    . ", it is likely your site is under a password guessing b"
+                    . "rute-force attack [1]. You can disable the failed login"
+                    . " alerts from here [2]. Alternatively, you can consider "
+                    . "to install a firewall between your website and your vis"
+                    . "itors to filter out these and other attacks, take a loo"
+                    . "k at Sucuri Firewall [3].</em><br><br>\n\n[1] <a href='"
+                    . "https://kb.sucuri.net/definitions/attacks/brute-force/p"
+                    . "assword-guessing'>https://kb.sucuri.net/definitions/att"
+                    . "acks/brute-force/password-guessing</a><br>\n[2] <a href"
+                    . "='%s'>%s</a> <br>\n[3] <a href='https://sucuri.net/webs"
+                    . "ite-firewall/?wpalert'>https://sucuri.net/website-firew"
+                    . "all/</a><br>\n",
                     $settings_url,
                     $settings_url
                 );
@@ -534,7 +539,7 @@ class SucuriScanEvent extends SucuriScan
                 $email_params['ForceHTML'] = true;
         }
 
-        $title = __('EmailSubject.' . $event, SUCURISCAN_TEXTDOMAIN);
+        $title = ucwords(str_replace('_', "\x20", $event));
 
         return SucuriScanMail::sendMail(
             $email,
@@ -547,13 +552,13 @@ class SucuriScanEvent extends SucuriScan
     /**
      * Check whether an IP address is being trusted or not.
      *
-     * @param string $remote_addr The supposed ip address that will be checked.
-     * @return bool True if the IP address of the user is trusted, false otherwise.
+     * @param  string $addr The supposed ip address that will be checked.
+     * @return bool         True if the user IP is trusted, false otherwise.
      */
-    public static function isTrustedIP($remote_addr = '')
+    public static function isTrustedIP($addr = '')
     {
-        if (!$remote_addr) {
-            $remote_addr = SucuriScan::getRemoteAddr();
+        if (!$addr) {
+            $addr = SucuriScan::getRemoteAddr();
         }
 
         $cache = new SucuriScanCache('trustip', false);
@@ -564,7 +569,7 @@ class SucuriScanEvent extends SucuriScan
         }
 
         /* check if exact IP address match is whitelisted */
-        if (array_key_exists(md5($remote_addr), $trusted_ips)) {
+        if (array_key_exists(md5($addr), $trusted_ips)) {
             return true;
         }
 
@@ -578,31 +583,31 @@ class SucuriScanEvent extends SucuriScan
             // Generate the regular expression for a specific CIDR range.
             switch ($ip_info->cidr_range) {
                 case 24:
-                    $ip_pattern =
-                    '/^' . $ip_parts[0]
-                    . '.' . $ip_parts[1]
-                    . '.' . $ip_parts[2]
-                    . '\.[0-9]{1,3}$/';
+                    $ip_pattern = sprintf(
+                        '/^%d\.%d\.%d\.[0-9]{1,3}$/',
+                        intval($ip_parts[0]),
+                        intval($ip_parts[1]),
+                        intval($ip_parts[2])
+                    );
                     break;
 
                 case 16:
-                    $ip_pattern =
-                    '/^' . $ip_parts[0]
-                    . '.' . $ip_parts[1]
-                    . '\.[0-9]{1,3}'
-                    . '\.[0-9]{1,3}$/';
+                    $ip_pattern = sprintf(
+                        '/^%d\.%d\.[0-9]{1,3}\.[0-9]{1,3}$/',
+                        intval($ip_parts[0]),
+                        intval($ip_parts[1])
+                    );
                     break;
 
                 case 8:
-                    $ip_pattern =
-                    '/^' . $ip_parts[0]
-                    . '\.[0-9]{1,3}'
-                    . '\.[0-9]{1,3}'
-                    . '\.[0-9]{1,3}$/';
+                    $ip_pattern = sprintf(
+                        '/^%d\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$/',
+                        intval($ip_parts[0])
+                    );
                     break;
             }
 
-            if ($ip_pattern && preg_match($ip_pattern, $remote_addr)) {
+            if ($ip_pattern && preg_match($ip_pattern, $addr)) {
                 $is_trusted_ip = true;
                 break;
             }
@@ -614,8 +619,8 @@ class SucuriScanEvent extends SucuriScan
     /**
      * Generate and set a new password for a specific user not in session.
      *
-     * @param int $user_id User account identifier.
-     * @return bool True if the process exit clean, false otherwise.
+     * @param  int $user_id User account identifier.
+     * @return bool         True if the process exit clean, false otherwise.
      */
     public static function setNewPassword($user_id = 0)
     {
@@ -630,19 +635,22 @@ class SucuriScanEvent extends SucuriScan
         $display_name = $user->display_name;
         $new_password = wp_generate_password(15, true, false);
 
-        $message = SucuriScanTemplate::getSection('settings-posthack-reset-password-alert', array(
-            'ResetPassword.UserName' => $user_login,
-            'ResetPassword.DisplayName' => $display_name,
-            'ResetPassword.Password' => $new_password,
-            'ResetPassword.Website' => $website,
-        ));
+        $message = SucuriScanTemplate::getSection(
+            'settings-posthack-reset-password-alert',
+            array(
+                'ResetPassword.UserName' => $user_login,
+                'ResetPassword.DisplayName' => $display_name,
+                'ResetPassword.Password' => $new_password,
+                'ResetPassword.Website' => $website,
+            )
+        );
 
         /* Skip per hour alert limit and force text/html content-type */
         $data_set = array('Force' => true, 'ForceHTML' => true);
 
         $sent = SucuriScanMail::sendMail(
             $user->user_email,
-            __('EmailSubject.password_change', SUCURISCAN_TEXTDOMAIN),
+            'Password Change',
             $message,
             $data_set
         );
@@ -667,7 +675,7 @@ class SucuriScanEvent extends SucuriScan
     public static function setNewConfigKeys()
     {
         $new_wpconfig = '';
-        $config_path = self::getWPConfigPath();
+        $config_path = self::getConfigPath();
 
         if (!$config_path) {
             return false;
