@@ -6,14 +6,14 @@
 
     <td class="adminusers-lastlogin">
         <div class="sucuriscan-%%SUCURI.AdminUsers.NoLastLogins%%">
-            <em>@@SUCURI.NoData@@</em>
+            <em>no data available</em>
         </div>
 
         <table class="widefat sucuriscan-admins-lastlogins sucuriscan-%%SUCURI.AdminUsers.NoLastLoginsTable%%">
             <thead>
                 <tr>
-                    <th>@@SUCURI.RemoteAddr@@</th>
-                    <th>@@SUCURI.Datetime@@</th>
+                    <th>IP Address</th>
+                    <th>Date/Time</th>
                 </tr>
             </thead>
 
@@ -24,6 +24,6 @@
     </td>
 
     <td>
-        <a href="%%SUCURI.AdminUsers.UserURL%%" target="_blank" class="button button-primary">@@SUCURI.Edit@@</a>
+        <a href="%%SUCURI.AdminUsers.UserURL%%" target="_blank" class="button button-primary" rel="noopener">Edit</a>
     </td>
 </tr>

@@ -1,16 +1,16 @@
 
 <div class="sucuriscan-panel">
-    <h3 class="sucuriscan-title">@@SUCURI.IgnoreFiles@@</h3>
+    <h3 class="sucuriscan-title">Ignore Files And Folders During The Scans</h3>
 
     <div class="inside">
-        <p>@@SUCURI.IgnoreFilesInfo@@</p>
+        <p>Use this tool to select the files and/or folders that are too heavy for the scanner to process. These are usually folders with images, media files like videos and audios, backups and &mdash; in general &mdash; anything that is not code-related. Ignoring these files or folders will reduce the memory consumption of the PHP script.</p>
 
         <script type="text/javascript">
         /* global jQuery */
         /* jshint camelcase: false */
         jQuery(document).ready(function ($) {
             $('.sucuriscan-ignorescanning tbody').html(
-                '<tr><td colspan="3"><span>@@SUCURI.Loading@@</span></td></tr>'
+                '<tr><td colspan="3"><span>Loading...</span></td></tr>'
             );
             $.post('%%SUCURI.AjaxURL.Dashboard%%', {
                 action: 'sucuriscan_ajax',
@@ -27,9 +27,9 @@
             <input type="hidden" name="sucuriscan_ignorescanning_action" value="ignore" />
 
             <fieldset class="sucuriscan-clearfix">
-                <label>@@SUCURI.IgnoreFilesSingle@@:</label>
+                <label>Ignore One Single File:</label>
                 <input type="text" name="sucuriscan_ignorescanning_file" placeholder="e.g. /private/cert.crt" />
-                <button type="submit" class="button button-primary">@@SUCURI.Submit@@</button>
+                <button type="submit" class="button button-primary">Submit</button>
             </fieldset>
         </form>
 
@@ -44,8 +44,8 @@
                         <label class="screen-reader-text" for="cb-select-all-1">Select All</label>
                         <input id="cb-select-all-1" type="checkbox">
                     </td>
-                    <th class="manage-column">@@SUCURI.FilePath@@</th>
-                    <th class="manage-column">@@SUCURI.Status@@</th>
+                    <th class="manage-column">File Path</th>
+                    <th class="manage-column">Status</th>
                 </thead>
 
                 <tbody>
@@ -55,13 +55,13 @@
             <div class="sucuriscan-recipient-form">
                 <label>
                     <select name="sucuriscan_ignorescanning_action">
-                        <option value="">@@SUCURI.Action@@</option>
-                        <option value="ignore">@@SUCURI.Ignore@@</option>
-                        <option value="unignore">@@SUCURI.Unignore@@</option>
+                        <option value="">Action</option>
+                        <option value="ignore">Ignore</option>
+                        <option value="unignore">Unignore</option>
                     </select>
                 </label>
 
-                <button type="submit" class="button button-primary">@@SUCURI.Submit@@</button>
+                <button type="submit" class="button button-primary">Submit</button>
             </div>
         </form>
     </div>
