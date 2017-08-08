@@ -324,7 +324,7 @@ class SucuriScan
      */
     public static function siteVersion()
     {
-        if (array_key_exists('wp_version', $GLOBALS)) {
+        if (isset($GLOBALS['wp_version'])) {
             return self::escape($GLOBALS['wp_version']);
         }
 

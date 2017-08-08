@@ -206,7 +206,7 @@ class SucuriScanIntegrity
         /* report files affected as a single event */
         if (!empty($files_affected)) {
             $message = $action_titles[$action] . ':';
-            $message .= count($files_affected) > 1 ? "\x20(multiple entries):" : '';
+            $message .= count($files_affected) > 1 ? "\x20(multiple entries):\x20" : '';
             $message .= @implode(',', $files_affected);
 
             switch ($action) {
