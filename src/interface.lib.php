@@ -67,7 +67,7 @@ class SucuriScanInterface
             'sucuriscan1',
             SUCURISCAN_URL . '/inc/css/styles.css',
             array(/* empty */),
-            substr(md5_file(SUCURISCAN_URL . '/inc/css/styles.css'), 0, 7)
+            '3eeb7af'
         );
         wp_enqueue_style('sucuriscan1');
 
@@ -75,7 +75,7 @@ class SucuriScanInterface
             'sucuriscan1',
             SUCURISCAN_URL . '/inc/js/scripts.js',
             array(/* empty */),
-            substr(md5_file(SUCURISCAN_URL . '/inc/js/scripts.js'), 0, 7)
+            '81f6bb4'
         );
         wp_enqueue_script('sucuriscan1');
 
@@ -279,7 +279,17 @@ class SucuriScanInterface
 
             if (!$nonce_value || !wp_verify_nonce($nonce_value, $nonce_name)) {
                 SucuriScan::throwException('Nonce is invalid');
-                wp_die('WordPress Nonce verification failed, try again going back and checking the form.');
+                self::error(
+                    'WordPress CSRF verification failed. The submitted form is'
+                    . ' missing an important unique code that prevents automat'
+                    . 'ed unwated access, go back and try again. If you did no'
+                    . 't submit a form, this error message could be an indicat'
+                    . 'ion of an incompatibility between this plugin and anoth'
+                    . 'er add-on; one of them is inserting data into the globa'
+                    . 'l POST variable when the HTTP request is coming via GET'
+                    . '. Disable them one by one (while reloading this page) t'
+                    . 'o find the culprit.'
+                );
                 return false;
             }
         }
