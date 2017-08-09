@@ -1,9 +1,9 @@
 
 <div class="sucuriscan-panel">
-    <h3 class="sucuriscan-title">WordPress Integrity (False/Positives)</h3>
+    <h3 class="sucuriscan-title">WordPress Integrity (False Positives)</h3>
 
     <div class="inside">
-        <p>Since the scanner doesn't reads the files during the execution of the integrity check, it is possible to find false/positives. Files listed here have been marked as false/positives and will be ignored by the scanner in subsequent scans.</p>
+        <p>Since the scanner doesn't reads the files during the execution of the integrity check, it is possible to find false positives. Files listed here have been marked as false positives and will be ignored by the scanner in subsequent scans.</p>
 
         <form action="%%SUCURI.URL.Settings%%#scanner" method="post">
             <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />

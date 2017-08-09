@@ -12,7 +12,7 @@
 
             <p>We identified that some of your WordPress core files were modified. That might indicate a hack or a broken file on your installation. If you are experiencing other malware issues, please use a <a href="https://sucuri.net/website-security/malware-removal" target="_blank" rel="noopener">Server Side Scanner</a>.</p>
 
-            <p><a href="%%SUCURI.URL.Settings%%#scanner">Review False/Positives</a></p>
+            <p><a href="%%SUCURI.URL.Settings%%#scanner">Review False Positives</a></p>
         </div>
     </div>
 

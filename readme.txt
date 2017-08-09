@@ -265,7 +265,7 @@ This version adds support for the latest version of WordPress. Introduces new fe
 * Fix lazy load of the CSS and Scripts on the correct pages
 * Add audit log message fixer for the wpephpcompat_jobs event
 * Fix website URL in the template for the email alerts
-* Add message in the core integrity tool for false/positives
+* Add message in the core integrity tool for false positives
 * Add option to reset the content of some storage files
 * Add mechanism to display self-hosting logs as fallback
 * Fix incoherent failed login processor on pagination

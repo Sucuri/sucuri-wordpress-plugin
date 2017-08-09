@@ -10,7 +10,7 @@
         </div>
 
         <div class="sucuriscan-inline-alert-error">
-            <p>Blocking users per IP address is a feature provided by the <a href="https://sucuri.net/website-firewall/" target="_blank" rel="noopener">Sucuri Firewall</a>; to avoid the duplication of code and reduce the amount of false/positives this feature will never be implemented in this plugin.</p>
+            <p>Blocking users per IP address is a feature provided by the <a href="https://sucuri.net/website-firewall/" target="_blank" rel="noopener">Sucuri Firewall</a>; to avoid the duplication of code and reduce the amount of false positives this feature will never be implemented in this plugin.</p>
         </div>
 
         <form action="%%SUCURI.URL.Lastlogins%%#blocked" method="post">

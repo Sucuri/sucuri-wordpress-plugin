@@ -301,7 +301,7 @@ function sucuriscan_settings_general_selfhosting($nonce)
 
         if ($monitor_fpath !== false) {
             if (empty($monitor_fpath)) {
-                $message = 'Log exporter was disabled.';
+                $message = 'Log exporter was disabled';
 
                 SucuriScanEvent::reportInfoEvent($message);
                 SucuriScanOption::deleteOption(':selfhosting_fpath');
@@ -317,7 +317,7 @@ function sucuriscan_settings_general_selfhosting($nonce)
             } else {
                 @file_put_contents($monitor_fpath, '', LOCK_EX);
 
-                $message = 'Log exporter file path was set correctly.';
+                $message = 'Log exporter file path was correctly set';
 
                 SucuriScanEvent::reportInfoEvent($message);
                 SucuriScanOption::updateOption(':selfhosting_monitor', 'enabled');

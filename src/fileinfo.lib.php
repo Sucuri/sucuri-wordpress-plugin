@@ -45,7 +45,7 @@ class SucuriScanFileInfo extends SucuriScan
      * be used to return the directory tree, this should be disabled when scanning a
      * directory without the need to filter the items in the list.
      *
-     * @var boolean
+     * @var bool
      */
     public $ignore_files;
 
@@ -54,7 +54,7 @@ class SucuriScanFileInfo extends SucuriScan
      * be used to return the directory tree, this should be disabled when scanning a
      * path without the need to filter the items in the list.
      *
-     * @var boolean
+     * @var bool
      */
     public $ignore_directories;
 
@@ -71,7 +71,7 @@ class SucuriScanFileInfo extends SucuriScan
     /**
      * Whether the filesystem scanner should run recursively or not.
      *
-     * @var boolean
+     * @var bool
      */
     public $run_recursively;
 
@@ -84,7 +84,7 @@ class SucuriScanFileInfo extends SucuriScan
      * are ignored and that a folder may be empty some times there could be issues
      * because the deletion will not reach these resources.
      *
-     * @var boolean
+     * @var bool
      */
     public $skip_directories;
 

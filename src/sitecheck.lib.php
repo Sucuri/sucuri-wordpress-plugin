@@ -366,10 +366,7 @@ class SucuriScanSiteCheck extends SucuriScanAPI
     {
         $data = self::scanAndCollectData();
 
-        return sprintf(
-            'iFrames: %d',
-            @count($data['LINKS']['IFRAME'])
-        );
+        return sprintf('iFrames: %d', @count($data['LINKS']['IFRAME']));
     }
 
     /**
@@ -381,10 +378,7 @@ class SucuriScanSiteCheck extends SucuriScanAPI
     {
         $data = self::scanAndCollectData();
 
-        return sprintf(
-            'Links: %d',
-            @count($data['LINKS']['URL'])
-        );
+        return sprintf('Links: %d', @count($data['LINKS']['URL']));
     }
 
     /**
@@ -405,10 +399,7 @@ class SucuriScanSiteCheck extends SucuriScanAPI
             $total += count($data['LINKS']['JSEXTERNAL']);
         }
 
-        return sprintf(
-            'Scripts: %d',
-            $total
-        );
+        return sprintf('Scripts: %d', $total);
     }
 
     /**

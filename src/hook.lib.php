@@ -28,7 +28,8 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  * The term hooking covers a range of techniques used to alter or augment the
  * behavior of an operating system, of applications, or of other software
  * components by intercepting method calls or messages or events passed
- * between software components. Code that handles such intercepted functionmethods, events or messages is called a "hook".
+ * between software components. Code that handles such intercepted function
+ * methods, events or messages is called a "hook".
  *
  * Hooking is used for many purposes, including debugging and extending
  * functionality. Examples might include intercepting keyboard or mouse event

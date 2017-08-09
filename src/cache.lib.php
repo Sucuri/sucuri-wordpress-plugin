@@ -73,7 +73,7 @@ class SucuriScanCache extends SucuriScan
      * This variable will only be TRUE if the datastore file specified exists, is
      * writable and readable, in any other case it will always be FALSE.
      *
-     * @var boolean
+     * @var bool
      */
     private $usable_datastore;
 

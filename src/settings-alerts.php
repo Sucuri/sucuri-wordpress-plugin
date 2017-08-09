@@ -97,6 +97,7 @@ function sucuriscan_settings_alerts_recipients($nonce)
                 sprintf('Test email alert sent at %s', SucuriScan::datetime()),
                 array('Force' => true)
             );
+
             SucuriScanInterface::info('A test alert was sent to your email, check your inbox');
         }
     }
@@ -203,15 +204,13 @@ function sucuriscan_settings_alerts_subject($nonce)
         'Alerts.CustomValue' => '',
     );
 
-    $header = 'Sucuri Alert';
-
     $subjects = array(
-        $header . ', :domain, :event',
-        $header . ', :domain, :event, :remoteaddr',
-        $header . ', :domain, :event, :username',
-        $header . ', :domain, :event, :email',
-        $header . ', :event, :remoteaddr',
-        $header . ', :event',
+        'Sucuri Alert, :domain, :event',
+        'Sucuri Alert, :domain, :event, :remoteaddr',
+        'Sucuri Alert, :domain, :event, :username',
+        'Sucuri Alert, :domain, :event, :email',
+        'Sucuri Alert, :event, :remoteaddr',
+        'Sucuri Alert, :event',
     );
 
     // Process form submission to change the alert settings.
