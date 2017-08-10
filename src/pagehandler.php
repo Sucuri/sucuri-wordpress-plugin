@@ -205,7 +205,6 @@ function sucuriscan_ajax()
         SucuriScanSettingsPosthack::getPluginsAjax();
         SucuriScanSettingsPosthack::resetPasswordAjax();
         SucuriScanSettingsPosthack::resetPluginAjax();
-        SucuriScanSettingsScanner::ignoreFoldersAjax();
     }
 
     wp_send_json(array('ok' => false, 'error' => 'invalid ajax action'), 200);

@@ -166,51 +166,6 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
     }
 
     /**
-     * Returns a list of directories in the website.
-     *
-     * @return void
-     */
-    public static function ignoreFoldersAjax()
-    {
-        if (SucuriScanRequest::post('form_action') !== 'get_ignored_files') {
-            return;
-        }
-
-        $response = ''; /* request response */
-        $ignored_dirs = SucuriScanFSScanner::getIgnoredDirectoriesLive();
-
-        foreach ($ignored_dirs as $group => $dir_list) {
-            foreach ($dir_list as $dir_data) {
-                $valid_entry = false;
-                $snippet = array(
-                    'IgnoreScan.Directory' => '',
-                    'IgnoreScan.DirectoryPath' => '',
-                    'IgnoreScan.IgnoredAt' => '',
-                    'IgnoreScan.IgnoredAtText' => 'OK',
-                );
-
-                if ($group == 'is_ignored') {
-                    $valid_entry = true;
-                    $snippet['IgnoreScan.Directory'] = urlencode($dir_data['directory_path']);
-                    $snippet['IgnoreScan.DirectoryPath'] = $dir_data['directory_path'];
-                    $snippet['IgnoreScan.IgnoredAt'] = SucuriScan::datetime($dir_data['ignored_at']);
-                    $snippet['IgnoreScan.IgnoredAtText'] = 'Ignored';
-                } elseif ($group == 'is_not_ignored') {
-                    $valid_entry = true;
-                    $snippet['IgnoreScan.Directory'] = urlencode($dir_data);
-                    $snippet['IgnoreScan.DirectoryPath'] = $dir_data;
-                }
-
-                if ($valid_entry) {
-                    $response .= SucuriScanTemplate::getSnippet('settings-scanner-ignore-folders', $snippet);
-                }
-            }
-        }
-
-        wp_send_json($response, true);
-    }
-
-    /**
      * Returns the HTML for the folder scanner skipper.
      *
      * If the website has too many files it would be wise to force the plugin to
@@ -225,62 +180,46 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
     {
         $params = array();
 
+        $params['IgnoreScan.List'] = '';
+
         if ($nonce) {
-            // Ignore a new directory path for the file system scans.
-            $ign_file = SucuriScanRequest::post(':ignorescanning_file');
-            $ign_dirs = SucuriScanRequest::post(':ignorescanning_dirs', '_array');
+            $ign_ress = SucuriScanRequest::post(':ignorefolder');
+            $ign_dirs = SucuriScanRequest::post(':unignorefolders', '_array');
 
-            if (SucuriScanRequest::post(':ignorescanning_action') === 'ignore') {
-                // Target a single file path to be ignored.
-                if ($ign_file !== false) {
-                    $ign_dirs = array($ign_file);
-                    unset($_POST['sucuriscan_ignorescanning_file']);
-                }
-
-                // Target a list of directories to be ignored.
-                if (is_array($ign_dirs) && !empty($ign_dirs)) {
-                    $were_ignored = 0;
-
-                    foreach ($ign_dirs as $resource_path) {
-                        if (file_exists($resource_path)
-                            && SucuriScanFSScanner::ignoreDirectory($resource_path)
-                        ) {
-                            $were_ignored++;
-                        }
-                    }
-
-                    if ($were_ignored > 0) {
-                        SucuriScanInterface::info('Selected files have been successfully processed.');
-                        SucuriScanEvent::reportWarningEvent(
-                            sprintf(
-                                'Resources will not be scanned: (multiple entries): %s',
-                                @implode(',', $ign_dirs)
-                            )
-                        );
-                    }
-                }
+            if ($ign_ress !== false && SucuriScanFSScanner::ignoreDirectory($ign_ress)) {
+                SucuriScanInterface::info('Selected files have been successfully processed.');
+                SucuriScanEvent::reportWarningEvent('This directory will not be scanned: ' . $ign_ress);
             }
 
-            if (SucuriScanRequest::post(':ignorescanning_action') === 'unignore') {
-                if (is_array($ign_dirs) && !empty($ign_dirs)) {
-                    $were_ignored = 0;
-
-                    foreach ($ign_dirs as $directory_path) {
-                        SucuriScanFSScanner::unignoreDirectory($directory_path);
-                        $were_ignored++;
-                    }
-
-                    if ($were_ignored > 0) {
-                        SucuriScanInterface::info('Selected files have been successfully processed.');
-                        SucuriScanEvent::reportNoticeEvent(
-                            sprintf(
-                                'Resources will be scanned: (multiple entries): %s',
-                                @implode(',', $ign_dirs)
-                            )
-                        );
-                    }
+            if ($ign_dirs !== false && is_array($ign_dirs) && !empty($ign_dirs)) {
+                foreach ($ign_dirs as $dir) {
+                    SucuriScanFSScanner::unignoreDirectory($dir);
                 }
+
+                SucuriScanInterface::info('Selected files have been successfully processed.');
+                SucuriScanEvent::reportNoticeEvent(
+                    'Directories will be scanned: (multiple entries): '
+                    . @implode(',', $ign_dirs) /* all directories */
+                );
             }
+        }
+
+        $ignored_dirs = SucuriScanFSScanner::getIgnoredDirectories();
+
+        foreach ($ignored_dirs['directories'] as $index => $folder) {
+            $ts = $ignored_dirs['ignored_at_list'][$index];
+
+            $params['IgnoreScan.List'] .= SucuriScanTemplate::getSnippet(
+                'settings-scanner-ignore-folders',
+                array(
+                    'IgnoreScan.Directory' => $folder,
+                    'IgnoreScan.IgnoredAt' => SucuriScan::datetime($ts),
+                )
+            );
+        }
+
+        if (empty($ignored_dirs['directories'])) {
+            $params['IgnoreScan.List'] .= '<tr><td colspan="3">no data available</td></tr>';
         }
 
         return SucuriScanTemplate::getSection('settings-scanner-ignore-folders', $params);

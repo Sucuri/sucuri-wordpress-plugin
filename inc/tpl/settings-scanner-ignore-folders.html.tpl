@@ -5,30 +5,12 @@
     <div class="inside">
         <p>Use this tool to select the files and/or folders that are too heavy for the scanner to process. These are usually folders with images, media files like videos and audios, backups and &mdash; in general &mdash; anything that is not code-related. Ignoring these files or folders will reduce the memory consumption of the PHP script.</p>
 
-        <script type="text/javascript">
-        /* global jQuery */
-        /* jshint camelcase: false */
-        jQuery(document).ready(function ($) {
-            $('.sucuriscan-ignorescanning tbody').html(
-                '<tr><td colspan="3"><span>Loading...</span></td></tr>'
-            );
-            $.post('%%SUCURI.AjaxURL.Dashboard%%', {
-                action: 'sucuriscan_ajax',
-                sucuriscan_page_nonce: '%%SUCURI.PageNonce%%',
-                form_action: 'get_ignored_files',
-            }, function (data) {
-                $('.sucuriscan-ignorescanning tbody').html(data);
-            });
-        });
-        </script>
-
         <form action="%%SUCURI.URL.Settings%%#scanner" method="post">
             <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
-            <input type="hidden" name="sucuriscan_ignorescanning_action" value="ignore" />
 
             <fieldset class="sucuriscan-clearfix">
-                <label>Ignore One Single File:</label>
-                <input type="text" name="sucuriscan_ignorescanning_file" placeholder="e.g. /private/cert.crt" />
+                <label>Ignore a file or directory:</label>
+                <input type="text" name="sucuriscan_ignorefolder" placeholder="e.g. /private/directory/" />
                 <button type="submit" class="button button-primary">Submit</button>
             </fieldset>
         </form>
@@ -49,20 +31,11 @@
                 </thead>
 
                 <tbody>
+                    %%%SUCURI.IgnoreScan.List%%%
                 </tbody>
             </table>
 
-            <div class="sucuriscan-recipient-form">
-                <label>
-                    <select name="sucuriscan_ignorescanning_action">
-                        <option value="">Action</option>
-                        <option value="ignore">Ignore</option>
-                        <option value="unignore">Unignore</option>
-                    </select>
-                </label>
-
-                <button type="submit" class="button button-primary">Submit</button>
-            </div>
+            <button type="submit" class="button button-primary">Unignore Selected Directories</button>
         </form>
     </div>
 </div>
