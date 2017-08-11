@@ -584,21 +584,28 @@ class SucuriScan
     }
 
     /**
-     * Check whether the DNS lookups should be execute or not.
+     * Checks if the server IP is part of the Firewall network.
      *
-     * DNS lookups are only necessary if you are planning to use a reverse proxy
-     * or firewall, this is used to set the correct IP address when the firewall
-     * filters the requests. If you are not planning to use any of these is better
-     * to disable this option, otherwise the load time of your site may be affected.
+     * Assumming that the website is being protected by the Sucuri Firewall, we
+     * will check if the client IP address is part of the range of addresses
+     * that we know are ours.
      *
-     * @return bool True if the DNS lookups should be executed, false otherwise.
+     * @return boolean True if the website is using one of our IP addresses.
      */
-    public static function executeDNSLookups()
+    private static function isFirewallAddr()
     {
-        return (bool) !(
-            defined('NOT_USING_CLOUDPROXY')
-            || SucuriScanOption::isDisabled(':dns_lookups')
-        );
+        if (!array_key_exists('HTTP_X_SUCURI_CLIENTIP', $_SERVER)) {
+            return false;
+        }
+
+        if (SucuriScanFirewall::getKey()
+            || preg_match('/^192\.88\.13[45]/', $_SERVER['HTTP_X_SUCURI_CLIENTIP'])
+            || preg_match('/^185\.93\.(228|229|230|231)/', $_SERVER['HTTP_X_SUCURI_CLIENTIP'])
+        ) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -609,43 +616,20 @@ class SucuriScan
      */
     public static function isBehindFirewall($verbose = false)
     {
-        $status = false;
-        $host_by_addr = '::1';
-        $host_by_name = 'localhost';
+        if (!$verbose) {
+            return (bool) self::isFirewallAddr();
+        }
+
         $http_host = self::getTopLevelDomain();
+        $host_by_addr = @gethostbyname($http_host);
+        $host_by_name = @gethostbyaddr($host_by_addr);
 
-        /**
-         * Consider firewall protected if the API key is set.
-         *
-         * Assume that the Sucuri Firewall is protecting this website if there
-         * is a valid API key set in the Firewall page, otherwise execute the
-         * DNS lookup to try to find the name of the server which will help us
-         * determine if the website is behind the Sucuri Firewall or not.
-         *
-         * Notice that this DNS lookup may slow down a website that is hosted in
-         * a hosting pointing to a slow DNS server, the latency in the queries
-         * will be noticeable. Webmasters can disable this behavior by setting
-         * the ":dns_lookups" option as "disabled" or adding this constant to
-         * the WordPress configuration file: (NOT_USING_CLOUDPROXY, true)
-         */
-        if (SucuriScanFirewall::getKey()) {
-            $status = true;
-        } elseif (self::executeDNSLookups()) {
-            $host_by_addr = @gethostbyname($http_host);
-            $host_by_name = @gethostbyaddr($host_by_addr);
-            $status = (bool) preg_match('/^cloudproxy[0-9]+\.sucuri\.net$/', $host_by_name);
-        }
-
-        if ($verbose) {
-            return array(
-                'http_host' => $http_host,
-                'host_name' => $host_by_name,
-                'host_addr' => $host_by_addr,
-                'status' => $status,
-            );
-        }
-
-        return $status;
+        return array(
+            'status' => self::isFirewallAddr(),
+            'http_host' => self::getTopLevelDomain(),
+            'host_name' => $host_by_name,
+            'host_addr' => $host_by_addr,
+        );
     }
 
     /**
