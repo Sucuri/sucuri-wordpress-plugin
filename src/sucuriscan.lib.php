@@ -599,8 +599,8 @@ class SucuriScan
         }
 
         if (SucuriScanFirewall::getKey()
-            || preg_match('/^192\.88\.13[45]/', $_SERVER['HTTP_X_SUCURI_CLIENTIP'])
-            || preg_match('/^185\.93\.(228|229|230|231)/', $_SERVER['HTTP_X_SUCURI_CLIENTIP'])
+            || preg_match('/^192\.88\.13[45]/', $_SERVER['REMOTE_ADDR'])
+            || preg_match('/^185\.93\.(228|229|230|231)/', $_SERVER['REMOTE_ADDR'])
         ) {
             return true;
         }
