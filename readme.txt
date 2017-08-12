@@ -4,7 +4,7 @@ Donate Link: https://sucuri.net/
 Tags: malware, security, firewall, scan, spam, virus, sucuri, protection, WordPress Security, Login Security, Security Auditing, File Integrity, htaccess, phishing, backdoors, SQL Injection, RFI, LFI, XSS, CSRF, website firewall, Website Security, Performance Optimization, Zero Day, Software Vulnerability, Exploits, Hacks, Attackers, Bad Actors, Reverse Proxy, Two Factor Security, Two Factor Authentication, Security Logs, HeatBleed Vulnerability, Website Protection, Bash Vulnerability, RevSlider Vulnerability, MailPoet Vulnerability, Malware Prevention, Website Security, Website Firewall, Website AntiVirus, Security Response, Security Detection, Security Prevention
 Requires at least: 3.6
 Tested up to: 4.8.0
-Stable tag: 1.8.8
+Stable tag: 1.8.11
 
 The Sucuri WordPress Security plugin is a security toolset for security integrity monitoring, malware detection and security hardening.
 
@@ -181,10 +181,37 @@ No, it is not required. The Website Firewall runs in the cloud without the need 
 
 == Upgrade Notice ==
 
-= 1.8.8 =
+= 1.8.11 =
 This version adds support for the latest version of WordPress. Introduces new features and fixes some bugs reported by the WordPress community as well as bugs found by our automated testing system.
 
 == Changelog ==
+
+= 1.8.11 =
+* Modify Sucuri firewall detection with regular expressions
+* Modify option to force scanner to ignore directories
+* Modify form to monitor and ignore post-types
+* Modify miscellaneous changes in some alert messages
+* Modify error message displaying for invalid CSRF validations
+* Fix minor issues with the version detection code
+* Remove internationalization support for consistency
+* Add support for the RTL reading direction
+* Add API key in admin notice when it is being deleted
+* Fix modification date for corrupt core files
+* Fix audit log parser for incompatible JSON data
+* Fix password visibility when the option is changed
+
+= 1.8.10 =
+* Version bump skipped
+
+= 1.8.9 =
+* Remove duplicated failed user authentication log
+* Remove trailing forward slash from asset URL
+* Fix post-type ignore tool to allow hyphens in the ID
+* Fix queries to the database in the last logins page
+* Remove unnecessary option queries to the database
+* Fix PHP notice for a string offset cast occurred
+* Remove unnecessary data from the website info page
+* Modify timing for the execution of the Ajax requests
 
 = 1.8.8 =
 * Add smart limit to send logs from the queue to the API
