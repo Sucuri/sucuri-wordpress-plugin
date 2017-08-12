@@ -545,7 +545,7 @@ function sucuriscan_settings_alerts_ignore_posts()
         // Ignore a new event for email alerts.
         $action = SucuriScanRequest::post(':ignorerule_action');
         $ignore_rule = SucuriScanRequest::post(':ignorerule');
-        $selected_types = SucuriScanRequest::post(':posttypes', '_array');
+        $selected = SucuriScanRequest::post(':posttypes', '_array');
 
         if ($action === 'add') {
             if (!preg_match('/^[a-z_\-]+$/', $ignore_rule)) {
@@ -567,7 +567,7 @@ function sucuriscan_settings_alerts_ignore_posts()
             $timestamp = time();
 
             foreach ($post_types as $post_type) {
-                if (!in_array($post_type, $selected_types)) {
+                if (is_array($selected) && !in_array($post_type, $selected)) {
                     $ignored_events[$post_type] = $timestamp;
                 }
             }
