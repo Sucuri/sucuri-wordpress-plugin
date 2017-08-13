@@ -284,12 +284,9 @@ class SucuriScanAPI extends SucuriScanOption
         if (stripos($raw, 'log file not found') !== false) {
             $key = SucuriScanOption::getOption(':api_key');
             $msg .= '; this generally happens when you use an invalid API key,'
-            . ' the key will be deleted to hide these warnings, if you want to'
-            . ' recover it go to the settings page and follow the instructions'
-            . ' in the "API Key" section: <code>' . SucuriScan::escape($key)
-            . '</code>';
+            . ' or when the connection with the API service suddently closes.';
 
-            SucuriScanOption::deleteOption(':api_key');
+            SucuriScanEvent::reportCriticalEvent($msg);
         }
 
         // Special response for invalid firewall API keys.
