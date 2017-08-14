@@ -235,23 +235,27 @@ class SucuriScanFileInfo extends SucuriScan
                     continue;
                 }
 
-                /* check only files */
-                if ($fifo->isFile()
-                    && $filterby === 'file'
-                    && !$this->ignoreFile($filepath)
-                    && !$this->ignoreFolder($filepath)
-                ) {
-                    $files[] = $filepath;
-                    continue;
-                }
+                try {
+                    /* check only files */
+                    if ($fifo->isFile()
+                        && $filterby === 'file'
+                        && !$this->ignoreFile($filepath)
+                        && !$this->ignoreFolder($filepath)
+                    ) {
+                        $files[] = $filepath;
+                        continue;
+                    }
 
-                /* check only directories */
-                if ($fifo->isDir()
-                    && $filterby === 'directory'
-                    && !$this->ignoreFolder($filepath)
-                ) {
-                    $files[] = $filepath;
-                    continue;
+                    /* check only directories */
+                    if ($fifo->isDir()
+                        && $filterby === 'directory'
+                        && !$this->ignoreFolder($filepath)
+                    ) {
+                        $files[] = $filepath;
+                        continue;
+                    }
+                } catch (RuntimeException $e) {
+                    SucuriScanEvent::reportCriticalEvent($e->getMessage());
                 }
             }
 
