@@ -691,7 +691,7 @@ class SucuriScanFirewall extends SucuriScanAPI
 
         $params['FirewallAutoClearCache'] = 'data-status="disabled"';
 
-        if (SucuriScanOption::isEnabled(':auto_clear_cache')) {
+        if (self::shouldAutoClearCache()) {
             $params['FirewallAutoClearCache'] = 'checked="checked"';
         }
 
@@ -711,7 +711,7 @@ class SucuriScanFirewall extends SucuriScanAPI
      */
     public static function clearCacheHook()
     {
-        if (SucuriScanOption::isEnabled(':auto_clear_cache')) {
+        if (self::shouldAutoClearCache()) {
             ob_start();
             self::clearCache();
             $error = ob_get_clean();
@@ -775,5 +775,18 @@ class SucuriScanFirewall extends SucuriScanAPI
         }
 
         wp_send_json($response, 200);
+    }
+
+    /**
+     * Returns true if the plugin should flush the firewall cache.
+     *
+     * @return bool True if the plugin should flush the firewall cache.
+     */
+    private static function shouldAutoClearCache()
+    {
+        return (bool) (
+            defined('SUCURI_CLEAR_CACHE_ON_PUBLISH')
+            || SucuriScanOption::isEnabled(':auto_clear_cache')
+        );
     }
 }
