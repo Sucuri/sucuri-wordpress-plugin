@@ -476,7 +476,6 @@ function sucuriscan_settings_general_importexport($nonce)
     $params = array();
     $allowed = array(
         ':addr_header',
-        ':api_key',
         ':api_protocol',
         ':api_service',
         ':cloudproxy_apikey',
