@@ -139,8 +139,8 @@ function sucuriscan_settings_alerts_trustedips()
         if ($trust_ip) {
             if (SucuriScan::isValidIP($trust_ip) || SucuriScan::isValidCIDR($trust_ip)) {
                 $ip_info = SucuriScan::getIPInfo($trust_ip);
-                $ip_info['added_at'] = time();
                 $cache_key = md5($ip_info['remote_addr']);
+                $ip_info['added_at'] = time();
 
                 if ($cache->exists($cache_key)) {
                     SucuriScanInterface::error('The IP specified address was already added.');

@@ -89,7 +89,7 @@ body.sucuri-security_page_sucuriscan_hardening {
 }
 .sucuriscan-container .sucuriscan-full-textarea {
     width: 100%;
-    min-height: 300px;
+    min-height: 400px;
     background: #efefef;
     word-break: break-all;
     padding: 20px;

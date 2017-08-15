@@ -770,15 +770,15 @@ class SucuriScan
      */
     public static function isValidCIDR($remote_addr = '')
     {
-        $status = false;
-
-        if (preg_match('/^([0-9\.]{7,15})\/(8|16|24)$/', $remote_addr, $match)) {
-            if (self::isValidIP($match[1])) {
-                $status = true;
-            }
+        if (!is_string($remote_addr)) {
+            return false;
         }
 
-        return $status;
+        if (preg_match('/^([0-9\.]{7,15})\/(8|16|24)$/', $remote_addr, $match)) {
+            return self::isValidIP($match[1]);
+        }
+
+        return false;
     }
 
     /**
