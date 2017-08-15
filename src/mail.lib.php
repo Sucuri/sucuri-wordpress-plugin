@@ -204,6 +204,7 @@ class SucuriScanMail extends SucuriScanOption
         $params['Subject'] = $subject;
         $params['Website'] = $website;
         $params['RemoteAddress'] = self::getRemoteAddr();
+        $params['ReverseAddress'] = gethostbyaddr($params['RemoteAddress']);
         $params['Message'] = $message;
         $params['User'] = $display_name;
         $params['Time'] = SucuriScan::datetime();
