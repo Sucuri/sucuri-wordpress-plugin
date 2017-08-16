@@ -3,9 +3,15 @@
 /**
  * Code related to the cli.lib.php interface.
  *
- * @package Sucuri Security
- * @subpackage cli.lib.php
- * @copyright Since 2010 Sucuri Inc.
+ * PHP version 5
+ *
+ * @category   Library
+ * @package    Sucuri
+ * @subpackage SucuriScanCLI
+ * @author     Daniel Cid <dcid@sucuri.net>
+ * @copyright  2010-2017 Sucuri Inc.
+ * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
+ * @link       https://wordpress.org/plugins/sucuri-scanner
  */
 
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
@@ -18,6 +24,14 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
 
 /**
  * Manage Sucuri API registration.
+ *
+ * @category   Library
+ * @package    Sucuri
+ * @subpackage SucuriScanner
+ * @author     Daniel Cid <dcid@sucuri.net>
+ * @copyright  2010-2017 Sucuri Inc.
+ * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
+ * @link       https://wordpress.org/plugins/sucuri-scanner
  */
 class SucuriScanCLI extends WP_CLI_Command
 {
@@ -43,6 +57,9 @@ class SucuriScanCLI extends WP_CLI_Command
      *     # Registration recovery
      *     wp sucuri register
      *     Warning: We already have an API key created for this site. It has been sent to the email admin@example.com for recovery.
+     *
+     * @param  array $args Arguments from the command line interface.
+     * @return void
      */
     public function register($args)
     {
