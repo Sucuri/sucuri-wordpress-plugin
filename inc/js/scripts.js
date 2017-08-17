@@ -138,4 +138,22 @@ jQuery(document).ready(function($) {
             .find('.sucuriscan-tooltip-object')
             .remove();
     });
+
+    $('.sucuriscan-container').on('click', 'button.sucuriscan-show-section', function(event) {
+        event.preventDefault();
+
+        var button = $(this);
+        var current = button.text();
+        var onText = button.attr('on');
+        var offText = button.attr('off');
+        var section = button.attr('section');
+
+        if (current === onText) {
+            $('#' + section).removeClass('sucuriscan-hidden');
+            button.html(offText);
+        } else {
+            $('#' + section).addClass('sucuriscan-hidden');
+            button.html(onText);
+        }
+    });
 });
