@@ -906,4 +906,15 @@ class SucuriScan
     {
         return (bool) (stripos(@$_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS') !== false);
     }
+
+    /**
+     * Returns the md5 hash representing the content of a file.
+     *
+     * @param  string $file Relative path to the file.
+     * @return string       Seven first characters in the hash of the file.
+     */
+    public static function fileVersion($file = '')
+    {
+        return substr(md5_file(SUCURISCAN_PLUGIN_PATH . '/' . $file), 0, 7);
+    }
 }

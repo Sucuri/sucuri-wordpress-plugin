@@ -67,7 +67,7 @@ class SucuriScanInterface
             'sucuriscan1',
             SUCURISCAN_URL . '/inc/css/styles.css',
             array(/* empty */),
-            '3eeb7af'
+            SucuriScan::fileVersion('inc/css/styles.css')
         );
         wp_enqueue_style('sucuriscan1');
 
@@ -75,7 +75,7 @@ class SucuriScanInterface
             'sucuriscan1',
             SUCURISCAN_URL . '/inc/js/scripts.js',
             array(/* empty */),
-            '81f6bb4'
+            SucuriScan::fileVersion('inc/js/scripts.js')
         );
         wp_enqueue_script('sucuriscan1');
 
@@ -84,7 +84,7 @@ class SucuriScanInterface
                 'sucuriscan3',
                 SUCURISCAN_URL . '/inc/css/flags.min.css',
                 array(/* empty */),
-                substr(md5(time()), 0, 7)
+                SucuriScan::fileVersion('inc/css/flags.min.css')
             );
             wp_enqueue_style('sucuriscan3');
         }
