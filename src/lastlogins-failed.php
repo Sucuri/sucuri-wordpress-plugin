@@ -57,7 +57,6 @@ function sucuriscan_failed_logins_panel()
     $max_failed_logins = SucuriScanOption::getOption(':maximum_failed_logins');
     $notify_bruteforce_attack = SucuriScanOption::getOption(':notify_bruteforce_attack');
     $failed_logins = sucuriscan_get_all_failed_logins($page_offset, $max_per_page);
-    $show_password = SucuriScanOption::isEnabled(':notify_failed_password');
 
     if ($failed_logins) {
         $counter = 0;
@@ -70,21 +69,6 @@ function sucuriscan_failed_logins_panel()
                     continue;
                 }
 
-                $wrong_user_password = 'hidden';
-                $wrong_user_password_color = 'default';
-
-                if (isset($login_data['user_password']) && !empty($login_data['user_password'])) {
-                    $wrong_user_password = $login_data['user_password'];
-                    $wrong_user_password_color = 'danger';
-                } else {
-                    $wrong_user_password = 'empty';
-                    $wrong_user_password_color = 'info';
-                }
-
-                if (!$show_password) {
-                    $wrong_user_password = 'hidden';
-                }
-
                 $template_variables['FailedLogins.List'] .= SucuriScanTemplate::getSnippet(
                     'lastlogins-failedlogins',
                     array(
@@ -92,8 +76,6 @@ function sucuriscan_failed_logins_panel()
                         'FailedLogins.Username' => $login_data['user_login'],
                         'FailedLogins.RemoteAddr' => $login_data['remote_addr'],
                         'FailedLogins.UserAgent' => $login_data['user_agent'],
-                        'FailedLogins.Password' => $wrong_user_password,
-                        'FailedLogins.PasswordColor' => $wrong_user_password_color,
                         'FailedLogins.Datetime' => SucuriScan::datetime($login_data['attempt_time']),
                     )
                 );
@@ -314,11 +296,10 @@ function sucuriscan_get_failed_logins($get_old_logs = false, $offset = 0, $limit
  * this entry will contain the username, timestamp of the login attempt, remote
  * address of the computer sending the request, and the user-agent.
  *
- * @param  string $user_login     Information from the current failed login event.
- * @param  string $wrong_password Wrong password used during the supposed attack.
- * @return bool                   Whether the information of the current failed login event was stored or not.
+ * @param  string $user_login Information from the current failed login event.
+ * @return bool               True if the information was saved, false otherwise.
  */
-function sucuriscan_log_failed_login($user_login = '', $wrong_password = '')
+function sucuriscan_log_failed_login($user_login = '')
 {
     $storage = sucuriscan_failed_logins_datastore_path();
 
@@ -329,7 +310,6 @@ function sucuriscan_log_failed_login($user_login = '', $wrong_password = '')
     $login_data = json_encode(
         array(
             'user_login' => $user_login,
-            'user_password' => $wrong_password,
             'attempt_time' => time(),
             'remote_addr' => SucuriScan::getRemoteAddr(),
             'user_agent' => SucuriScan::getUserAgent(),
