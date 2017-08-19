@@ -3,8 +3,8 @@ Contributors: dd@sucuri.net
 Donate Link: https://sucuri.net/
 Tags: malware, security, firewall, scan, spam, virus, sucuri, protection, WordPress Security, Login Security, Security Auditing, File Integrity, htaccess, phishing, backdoors, SQL Injection, RFI, LFI, XSS, CSRF, website firewall, Website Security, Performance Optimization, Zero Day, Software Vulnerability, Exploits, Hacks, Attackers, Bad Actors, Reverse Proxy, Two Factor Security, Two Factor Authentication, Security Logs, HeatBleed Vulnerability, Website Protection, Bash Vulnerability, RevSlider Vulnerability, MailPoet Vulnerability, Malware Prevention, Website Security, Website Firewall, Website AntiVirus, Security Response, Security Detection, Security Prevention
 Requires at least: 3.6
-Tested up to: 4.8.0
-Stable tag: 1.8.11
+Tested up to: 4.9.4
+Stable tag: 1.8.12
 
 The Sucuri WordPress Security plugin is a security toolset for security integrity monitoring, malware detection and security hardening.
 
@@ -181,10 +181,30 @@ No, it is not required. The Website Firewall runs in the cloud without the need 
 
 == Upgrade Notice ==
 
-= 1.8.11 =
+= 1.8.12 =
 This version adds support for the latest version of WordPress. Introduces new features and fixes some bugs reported by the WordPress community as well as bugs found by our automated testing system.
 
 == Changelog ==
+
+= 1.8.12 =
+* Fix invalid array when deselecting all security alerts
+* Add language files to the list of ignored changes
+* Modify internal response to the log file not found error
+* Add option to force the firewall cache flush
+* Fix unexpected exception when open_basedir is in place
+* Add support to export and import trusted IP addresses
+* Add link to the audit logs API endpoint for developers
+* Add reverse ip address in all email alerts from visitor
+* Remove API key from the settings that can be exported
+* Modify code to make default plugin options filterable
+* Add ability to store the settings in the object cache
+* Add support for wp-cli and command to generate an API key
+* Fix missing documentation tags in the command line library
+* Fix format and coding standard in CSS and JavaScript files
+* Add button to toggle the visibility of the post-types table
+* Modify order of the added, modified, removed core files
+* Fix relative file path when ABSPATH is point to root
+* Add additional notifications for changes on users
 
 = 1.8.11 =
 * Modify Sucuri firewall detection with regular expressions
