@@ -259,7 +259,10 @@ class SucuriScan
      */
     public static function fixPath($path = '')
     {
-        return rtrim(str_replace(DIRECTORY_SEPARATOR, '/', $path), '/');
+        $new = str_replace(DIRECTORY_SEPARATOR, '/', $path);
+        $new = rtrim($new, '/'); /* purge right side. */
+
+        return empty($new) ? '/' : $new;
     }
 
     /**

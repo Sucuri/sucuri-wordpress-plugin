@@ -297,7 +297,13 @@ class SucuriScanFileInfo extends SucuriScan
             $filesize = @filesize($filepath);
 
             if ($as_array) {
-                $basename = str_replace($abspath . '/', '', $filepath);
+                $basename = $filepath;
+
+                if (strlen($abspath . '/') > 1) {
+                    /* convert absolute path into relative path */
+                    $basename = str_replace($abspath . '/', '', $filepath);
+                }
+
                 $signatures[$basename] = array(
                     'filepath' => $filepath,
                     'checksum' => $file_checksum,
