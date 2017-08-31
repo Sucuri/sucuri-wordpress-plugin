@@ -207,6 +207,7 @@ if (defined('SUCURISCAN')) {
         add_action('wp_ajax_sucuriscan_ajax', 'sucuriscan_ajax');
     }
 
+
     /**
      * Function call interceptors.
      *
@@ -228,6 +229,7 @@ if (defined('SUCURISCAN')) {
         add_action('delete_user', 'SucuriScanHook::hookUserDelete', 50, 5);
         add_action('edit_link', 'SucuriScanHook::hookLinkEdit', 50, 5);
         add_action('login_form_resetpass', 'SucuriScanHook::hookLoginFormResetpass', 50, 5);
+        add_action('profile_update','SucuriScanHook::hookProfileUpdate','50','5');
         add_action('publish_page', 'SucuriScanHook::hookPublishPage', 50, 5);
         add_action('publish_phone', 'SucuriScanHook::hookPublishPhone', 50, 5);
         add_action('publish_post', 'SucuriScanHook::hookPublishPost', 50, 5);

@@ -878,6 +878,16 @@ class SucuriScanHook extends SucuriScanEvent
     }
 
     /**
+     * Send an alert notifying that a user was edited.
+     * @param int $id The identifier of the edited user account
+     * @param object $old_user_data Object containing user's data prior to update.
+     */
+    public static function hookProfileUpdate($id = 0, $old_user_data)
+    {
+        self::reportWarningEvent('User account edited; ID: ' . $id);
+    }
+
+    /**
      * Send an alert notifying that a new user account was created.
      *
      * @param int $id The identifier of the new user account created.
