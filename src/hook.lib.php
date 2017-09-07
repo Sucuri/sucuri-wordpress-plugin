@@ -52,6 +52,29 @@ class SucuriScanHook extends SucuriScanEvent
         self::reportNoticeEvent($message);
         self::notifyEvent('post_publication', $message);
     }
+    
+    /**
+     * Send and alert notifying that a user was added to a blog.
+     *
+     * @param int    $user_id User ID.
+     * @param string $role    User role.
+     * @param int    $blog_id Blog ID.
+     */
+    public static function hookAddUserToBlog($user_id, $role, $blog_id) {
+        $message = sprintf('User added to blog; user_id: %s; role: %s, blog_id: %s', $user_id, $role, $blog_id);
+        self::reportWarningEvent($message);
+    }
+
+    /**
+     * Send and alert notifying that a user was removed from a blog.
+     *
+     * @param int    $user_id User ID.
+     * @param int    $blog_id Blog ID.
+     */
+    public static function hookRemoveUserFromBlog($user_id, $blog_id) {
+        $message = sprintf('User removed from blog; user_id: %s; blog_id: %s', $user_id, $blog_id);
+        self::reportWarningEvent($message);
+    }
 
     /**
      * Send an alert notifying that a category was created.
