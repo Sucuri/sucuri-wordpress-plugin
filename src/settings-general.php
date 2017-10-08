@@ -158,7 +158,7 @@ function sucuriscan_settings_general_datastorage($nonce)
         '', /* <root> */
         'auditlogs',
         'auditqueue',
-        'blockedusers',
+        'blockedusers', /* TODO: deprecated on 1.8.12 */
         'failedlogins',
         'hookdata',
         'ignorescanning',

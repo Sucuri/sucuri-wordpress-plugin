@@ -62,7 +62,6 @@ if (defined('SUCURISCAN')) {
      * execute the bootstrap method of the plugin.
      */
     add_action('init', 'SucuriScanInterface::initialize', 1);
-    add_action('init', 'SucuriScanBlockedUsers::blockUserLogin', 1);
     add_action('admin_enqueue_scripts', 'SucuriScanInterface::enqueueScripts', 1);
 
     if (SucuriScan::runAdminInit()) {

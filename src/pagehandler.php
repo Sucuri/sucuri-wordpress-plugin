@@ -101,7 +101,6 @@ function sucuriscan_lastlogins_page()
         'LastLogins.Admins' => sucuriscan_lastlogins_admins(),
         'LoggedInUsers' => sucuriscan_loggedin_users_panel(),
         'FailedLogins' => sucuriscan_failed_logins_panel(),
-        'BlockedUsers' => SucuriScanBlockedUsers::page(),
     );
 
     echo SucuriScanTemplate::getTemplate('lastlogins', $params);
