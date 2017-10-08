@@ -267,7 +267,7 @@ class SucuriScanTemplate extends SucuriScanRequest
 
         $output = ''; /* initialize response */
         $_page = self::get('page', '_page');
-        $params['SucuriURL'] = SUCURISCAN_URL;
+        $params['PluginURL'] = SUCURISCAN_URL;
         $trailing = $_page ? 'admin.php?page=' . $_page : '';
         $params['CurrentURL'] = SucuriScan::adminURL($trailing);
 

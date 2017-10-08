@@ -28,7 +28,7 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  * Generates the HTML code to display a list of options in the settings page to
  * allow the website owner to configure the functionality of the WordPress core
  * integrity scanner and the optional Unix diff utility. This also includes some
- * options to configure the website installation language and the false/positive
+ * options to configure the website installation language and the false positive
  * cache file.
  *
  * @category   Library

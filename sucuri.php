@@ -86,6 +86,11 @@ define('SUCURISCAN', 'sucuriscan');
 define('SUCURISCAN_VERSION', '1.8.12');
 
 /**
+ * Defines the human readable name of the plugin.
+ */
+define('SUCURISCAN_PLUGIN_NAME', 'Sucuri Security - Auditing, Malware Scanner and Hardening');
+
+/**
  * The name of the folder where the plugin's files will be located.
  *
  * Note that we are using the constant FILE instead of DIR because some
