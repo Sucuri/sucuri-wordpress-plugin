@@ -194,7 +194,7 @@ if (!array_key_exists('SERVER_NAME', $_SERVER)) {
 }
 
 /* Load all classes before anything else. */
-require_once 'src/sucuriscan.lib.php';
+require_once 'src/base.lib.php';
 require_once 'src/request.lib.php';
 require_once 'src/fileinfo.lib.php';
 require_once 'src/cache.lib.php';
