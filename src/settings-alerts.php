@@ -210,6 +210,7 @@ function sucuriscan_settings_alerts_subject($nonce)
         'Sucuri Alert, :domain, :event, :username',
         'Sucuri Alert, :domain, :event, :email',
         'Sucuri Alert, :event, :remoteaddr',
+        'Sucuri Alert, :event, :hostname',
         'Sucuri Alert, :event',
     );
 
