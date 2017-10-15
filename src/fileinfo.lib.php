@@ -41,6 +41,13 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
 class SucuriScanFileInfo extends SucuriScan
 {
     /**
+     * List of directories with read permission.
+     *
+     * @var array
+     */
+    private $open_basedir;
+
+    /**
      * Whether the list of files that can be ignored from the filesystem scan will
      * be used to return the directory tree, this should be disabled when scanning a
      * directory without the need to filter the items in the list.
@@ -93,6 +100,7 @@ class SucuriScanFileInfo extends SucuriScan
      */
     public function __construct()
     {
+        $this->open_basedir = SucuriScan::openBasedir();
         $this->ignore_files = true;
         $this->ignore_directories = true;
         $this->ignored_directories = array();
@@ -186,6 +194,17 @@ class SucuriScanFileInfo extends SucuriScan
     }
 
     /**
+     * Checks whether a directory is readable or not.
+     *
+     * @param  string $dir Path to the directory.
+     * @return bool        True if the directory is readable, false otherwise.
+     */
+    private function isDirReadable($dir)
+    {
+        return (bool) (in_array($dir, $this->open_basedir) && is_dir($dir));
+    }
+
+    /**
      * Reads a directory and retrieves all its files.
      *
      * @see http://www.php.net/manual/en/class.recursivedirectoryiterator.php
@@ -202,7 +221,7 @@ class SucuriScanFileInfo extends SucuriScan
     {
         $files = array();
 
-        if (is_dir($directory) && self::isSplAvailable()) {
+        if ($this->isDirReadable($directory) && self::isSplAvailable()) {
             $objects = array();
 
             $this->ignored_directories = SucuriScanFSScanner::getIgnoredDirectories();

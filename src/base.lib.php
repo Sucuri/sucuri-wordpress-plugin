@@ -114,6 +114,7 @@ class SucuriScan
             'post_max_size' => '8M',
             'max_execution_time' => '30',
             'max_input_time' => '-1',
+            'max_input_time' => '',
         );
 
         if ($ini_value === false) {
@@ -131,6 +132,16 @@ class SucuriScan
         }
 
         return $ini_value;
+    }
+
+    /**
+     * Returns a list of directories with read permission.
+     *
+     * @return array Directories with read permission.
+     */
+    public static function openBasedir()
+    {
+        return explode(':', self::iniGet('open_basedir'));
     }
 
     /**
