@@ -297,7 +297,6 @@ class SucuriScanAPI extends SucuriScanOption
 
             SucuriScanOption::setRevProxy('disable', true);
             SucuriScanOption::setAddrHeader('REMOTE_ADDR', true);
-            SucuriScanOption::deleteOption(':cloudproxy_apikey');
 
             return SucuriScanInterface::error($msg);
         }
