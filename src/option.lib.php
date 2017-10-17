@@ -114,7 +114,7 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_use_wpmail' => 'enabled',
         );
 
-        return $defaults;
+        return (array) apply_filters('sucuriscan_option_defaults', $defaults);
     }
 
     /**
