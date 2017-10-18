@@ -19,10 +19,11 @@
                 <form action="%%SUCURI.URL.Settings%%#general" method="post">
                     <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
                     <button type="submit" name="sucuriscan_recover_key" class="button button-primary">Recover Via E-mail</button>
+                    <a href="%%SUCURI.URL.Settings%%&recover#general" class="button button-primary">Manual Activation</a>
                 </form>
             </div>
 
-            <p>If you do not have access to the administrator email, you can reinstall the plugin. The API key is generated using an administrator email and the domain of the website.</p>
+            <p>If you do not have access to the administrator email, you can reinstall the plugin. The API key is generated using an administrator email and the domain of the website. Click the "Manual Activation" button if you already have a valid API key to authenticate this website with the remote API web service.</p>
         </div>
 
         <div class="sucuriscan-hstatus sucuriscan-hstatus-1 sucuriscan-%%SUCURI.APIKey.RemoveVisibility%%">

@@ -63,6 +63,7 @@ body.sucuri-security_page_sucuriscan_hardening {
     line-height: 30px;
     font-weight: 700;
     cursor: initial;
+    margin-left: 0;
 }
 .sucuriscan-container fieldset span {
     line-height: 30px;
@@ -80,9 +81,6 @@ body.sucuri-security_page_sucuriscan_hardening {
     margin: 0;
     float: left;
     margin-left: 5px;
-}
-.sucuriscan-container fieldset label {
-    margin-left: 0;
 }
 .sucuriscan-container fieldset input[type='checkbox'] {
     margin-top: 7px;
@@ -497,7 +495,8 @@ body.sucuri-security_page_sucuriscan_hardening {
     border-color: #ebccd1;
     color: #a94442;
 }
-.sucuriscan-hstatus-0 .button-primary {
+.sucuriscan-hstatus-0 .button-primary,
+.wp-core-ui .sucuriscan-container .sucuriscan-hstatus-0 .button-primary:visited {
     background: #9b2b27;
     border-color: #9b2b27;
 }
