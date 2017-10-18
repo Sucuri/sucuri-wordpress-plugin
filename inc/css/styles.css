@@ -94,6 +94,10 @@ body.sucuri-security_page_sucuriscan_hardening {
     padding: 20px;
     margin: 0;
 }
+#adminmenu li.toplevel_page_sucuriscan .wp-menu-image img {
+    width: 18px;
+    height: 18px;
+}
 .sucuriscan-header {
     margin-top: 4px;
 }
@@ -103,6 +107,9 @@ body.sucuri-security_page_sucuriscan_hardening {
     margin-left: 10px;
     margin-right: 8px;
     text-decoration: none;
+}
+.sucuriscan-header .sucuriscan-logo img {
+    height: 33px;
 }
 .sucuriscan-header .sucuriscan-subtitle {
     color: #727376;
