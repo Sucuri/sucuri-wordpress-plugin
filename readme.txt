@@ -1,7 +1,7 @@
 === Sucuri Security - Auditing, Malware Scanner and Security Hardening ===
 Contributors: dd@sucuri.net
 Donate Link: https://sucuri.net/
-Tags: malware, security, firewall, scan, spam, virus, sucuri, protection, WordPress Security, Login Security, Security Auditing, File Integrity, htaccess, phishing, backdoors, SQL Injection, RFI, LFI, XSS, CSRF, website firewall, Website Security, Performance Optimization, Zero Day, Software Vulnerability, Exploits, Hacks, Attackers, Bad Actors, Reverse Proxy, Two Factor Security, Two Factor Authentication, Security Logs, HeatBleed Vulnerability, Website Protection, Bash Vulnerability, RevSlider Vulnerability, MailPoet Vulnerability, Malware Prevention, Website Security, Website Firewall, Website AntiVirus, Security Response, Security Detection, Security Prevention
+Tags: malware, security, firewall, scan, spam, virus, sucuri, protection, blacklist, detection, hardening, file integrity
 Requires at least: 3.6
 Tested up to: 4.9.4
 Stable tag: 1.8.14
