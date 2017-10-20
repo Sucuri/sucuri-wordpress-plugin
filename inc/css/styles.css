@@ -617,9 +617,11 @@ body.sucuri-security_page_sucuriscan_hardening {
 }
 .sucuriscan-integrity-correct .sucuriscan-integrity-right {
     background: url('../images/checkmark.png') no-repeat 25px 30px;
+    background-size: 62px 62px;
 }
 .sucuriscan-integrity-incorrect .sucuriscan-integrity-right {
     background: url('../images/checkcross.png') no-repeat 25px 30px;
+    background-size: 62px 62px;
 }
 .sucuriscan-integrity-loading .sucuriscan-integrity-missing {
     height: 147px;
@@ -716,12 +718,15 @@ body.sucuri-security_page_sucuriscan_hardening {
 }
 .sucuriscan-sitecheck-list-INFO {
     background: url('../images/checkinfo.png') no-repeat;
+    background-size: 18px 18px;
 }
 .sucuriscan-sitecheck-list-WARN {
     background: url('../images/checkwarn.png') no-repeat;
+    background-size: 18px 18px;
 }
 .sucuriscan-sitecheck-list-NOTICE {
     background: url('../images/checknotice.png') no-repeat;
+    background-size: 18px 18px;
 }
 .sucuriscan-sitecheck-list-INFO a,
 .sucuriscan-sitecheck-list-NOTICE a {
