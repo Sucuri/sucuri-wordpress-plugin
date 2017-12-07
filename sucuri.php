@@ -237,6 +237,11 @@ require_once('src/settings-webinfo.php');
 /* Load global variables and triggers */
 require_once('src/globals.php');
 
+/* Load WP-CLI command */
+if ( defined( 'WP_CLI' ) && WP_CLI ) {
+    require_once('src/cli.lib.php');
+}
+
 /**
  * Uninstalls the plugin, its settings and reverts the hardening.
  *
