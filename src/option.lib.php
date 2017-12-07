@@ -171,9 +171,9 @@ class SucuriScanOption extends SucuriScanRequest
      */
     public static function getAllOptions()
     {
-        $options = wp_cache_get( 'alloptions', SUCURISCAN, WP_DEBUG );
+        $options = wp_cache_get('alloptions', SUCURISCAN, WP_DEBUG);
 
-        if ( $options && is_array( $options ) ) {
+        if ($options && is_array($options)) {
             return $options;
         }
 
@@ -196,7 +196,7 @@ class SucuriScanOption extends SucuriScanRequest
             }
         }
 
-        wp_cache_set( 'alloptions', $options, SUCURISCAN );
+        wp_cache_set('alloptions', $options, SUCURISCAN);
 
         return $options;
     }
@@ -209,7 +209,7 @@ class SucuriScanOption extends SucuriScanRequest
      */
     public static function writeNewOptions($options = array())
     {
-        wp_cache_delete( 'alloptions', SUCURISCAN );
+        wp_cache_delete('alloptions', SUCURISCAN);
 
         $fpath = self::optionsFilePath();
         $content = "<?php exit(0); ?>\n";
