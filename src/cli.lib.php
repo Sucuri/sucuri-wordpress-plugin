@@ -24,6 +24,11 @@ class SucuriScanCLI extends WP_CLI_Command
     /**
      * Register and connect to the Sucuri API.
      *
+     * ## OPTIONS
+     *
+     * [<api_key>]
+     * : Sucuri API key to register with.
+     *
      * ## EXAMPLES
      *
      *     # New registration
@@ -31,14 +36,20 @@ class SucuriScanCLI extends WP_CLI_Command
      *     API key: 99e656abef7a123d1cffe73f91ba63702
      *     Success: The API key for your site was successfully generated and saved.
      *
+     *     # Existing key registration
+     *     wp sucuri register 99e656abef7a123d1cffe73f91ba63702
+     *     Success: The API key for your site was successfully saved.
+     *
      *     # Registration recovery
      *     wp sucuri register
      *     Warning: We already have an API key created for this site. It has been sent to the email admin@example.com for recovery.
      */
     public function register($args)
     {
+        list($api_key) = $args;
+
         ob_start();
-        $registered = SucuriScanAPI::registerSite();
+        $registered = $api_key ? SucuriScanAPI::setPluginKey($api_key, true) : SucuriScanAPI::registerSite();
         $output = ob_get_clean();
 
         preg_match_all('/<p><b>SUCURI:<\/b>(.+)<\/p>/', $output, $matches);
@@ -46,7 +57,11 @@ class SucuriScanCLI extends WP_CLI_Command
         $message = isset($matches[1][0]) ? trim(strip_tags($matches[1][0])) : 'An unknown error occurred during registration.';
 
         if (! $registered) {
-            WP_CLI::warning($message);
+            WP_CLI::error($message);
+        }
+
+        if ($registered && $api_key) {
+            WP_CLI::success('The API key for your site was successfully saved.');
             return;
         }
 
