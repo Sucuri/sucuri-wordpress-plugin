@@ -18,5 +18,13 @@
                 <button type="submit" class="button button-primary">%%SUCURI.ApiStatus.SwitchText%%</button>
             </form>
         </div>
+
+        <p>
+            <strong>Are you a developer?</strong> You may be interested in our API. Feel free to use the URL shown below to access the latest 50 entries in your security log, change the value for the parameter <code>l=N</code> if you need more. Be aware that the API doesn't provides an offset parameter, so if you have the intension to query specific sections of the log you will need to wrap the HTTP request around your own cache mechanism. We <strong>DO NOT</strong> take feature requests for the API, this is a semi-private service tailored for the specific needs of the plugin and not intended to be used by 3rd-party apps, we may change the behavior of each API endpoint without previous notice, use it at your own risk.
+        </p>
+
+        <div class="sucuriscan-hstatus sucuriscan-hstatus-2 sucuriscan-monospace">
+            <span>curl -s "https://wordpress.sucuri.net/api/?k=%%SUCURI.ApiStatus.ApiKey%%&a=get_logs&l=50" | python -m json.tool</span>
+        </div>
     </div>
 </div>

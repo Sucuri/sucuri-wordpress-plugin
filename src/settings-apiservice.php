@@ -39,6 +39,7 @@ function sucuriscan_settings_apiservice_status($nonce)
     $params['ApiStatus.WarningVisibility'] = 'visible';
     $params['ApiStatus.ErrorVisibility'] = 'hidden';
     $params['ApiStatus.ServiceURL'] = SUCURISCAN_API_URL;
+    $params['ApiStatus.ApiKey'] = '';
 
     if ($nonce) {
         // Enable or disable the API service communication.
@@ -65,6 +66,9 @@ function sucuriscan_settings_apiservice_status($nonce)
         $params['ApiStatus.WarningVisibility'] = 'hidden';
         $params['ApiStatus.ErrorVisibility'] = 'visible';
     }
+
+    $api_key = SucuriScanAPI::getPluginKey();
+    $params['ApiStatus.ApiKey'] = $api_key ? $api_key : 'NONE';
 
     return SucuriScanTemplate::getSection('settings-apiservice-status', $params);
 }
