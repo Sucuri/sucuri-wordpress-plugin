@@ -2,7 +2,7 @@
 <script type="text/javascript">
 /* global jQuery */
 /* jshint camelcase: false */
-jQuery(function ($) {
+jQuery(document).ready(function ($) {
     $.post('%%SUCURI.AjaxURL.Dashboard%%', {
         action: 'sucuriscan_ajax',
         sucuriscan_page_nonce: '%%SUCURI.PageNonce%%',
@@ -19,9 +19,9 @@ jQuery(function ($) {
     <div class="sucuriscan-panel sucuriscan-integrity sucuriscan-integrity-loading">
         <div class="sucuriscan-clearfix">
             <div class="sucuriscan-pull-left sucuriscan-integrity-left">
-                <h2 class="sucuriscan-title">@@SUCURI.IntegrityTitle@@</h2>
+                <h2 class="sucuriscan-title">WordPress Integrity</h2>
 
-                <p>@@SUCURI.IntegrityDescription@@</p>
+                <p>We inspect your WordPress installation and look for modifications on the core files as provided by WordPress.org. Files located in the root directory, wp-admin and wp-includes will be compared against the files distributed with v%%SUCURI.WordPressVersion%%; all files with inconsistencies will be listed here. Any changes might indicate a hack.</p>
             </div>
 
             <div class="sucuriscan-pull-right sucuriscan-integrity-right">
@@ -31,6 +31,6 @@ jQuery(function ($) {
             </div>
         </div>
 
-        <p>@@SUCURI.Loading@@</p>
+        <p>Loading...</p>
     </div>
 </div>

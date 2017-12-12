@@ -3,9 +3,15 @@
 /**
  * Code related to the hardening.lib.php interface.
  *
- * @package Sucuri Security
- * @subpackage hardening.lib.php
- * @copyright Since 2010 Sucuri Inc.
+ * PHP version 5
+ *
+ * @category   Library
+ * @package    Sucuri
+ * @subpackage SucuriScanner
+ * @author     Daniel Cid <dcid@sucuri.net>
+ * @copyright  2010-2017 Sucuri Inc.
+ * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
+ * @link       https://wordpress.org/plugins/sucuri-scanner
  */
 
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
@@ -33,6 +39,14 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  * scripts and tools like Bastille Linux, JASS for Solaris systems and
  * Apache/PHP Hardener that can, for example, deactivate unneeded features in
  * configuration files or perform various other protective measures.
+ *
+ * @category   Library
+ * @package    Sucuri
+ * @subpackage SucuriScanner
+ * @author     Daniel Cid <dcid@sucuri.net>
+ * @copyright  2010-2017 Sucuri Inc.
+ * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
+ * @link       https://wordpress.org/plugins/sucuri-scanner
  */
 class SucuriScanHardening extends SucuriScan
 {
@@ -65,8 +79,8 @@ class SucuriScanHardening extends SucuriScan
      * The permissions to modify the file are checked before anything else, this
      * method is self-contained.
      *
-     * @param string $directory Valid directory path where to place the access rules.
-     * @return bool True if the rules are successfully added, false otherwise.
+     * @param  string $directory Valid directory path where to place the access rules.
+     * @return bool              True if the rules are successfully added, false otherwise.
      */
     public static function hardenDirectory($directory = '')
     {
@@ -97,8 +111,8 @@ class SucuriScanHardening extends SucuriScan
      * all files with certain extension in any mixed case. The file is truncated if
      * after the operation its size is equals to zero.
      *
-     * @param string $directory Valid directory path where to access rules are.
-     * @return bool True if the rules are successfully deleted, false otherwise.
+     * @param  string $directory Valid directory path where to access rules are.
+     * @return bool              True if the rules are successfully deleted, false otherwise.
      */
     public static function unhardenDirectory($directory = '')
     {
@@ -124,8 +138,8 @@ class SucuriScanHardening extends SucuriScan
     /**
      * Remove the hardening applied in previous versions.
      *
-     * @param string $directory Valid directory path.
-     * @return bool True if the access control file was fixed.
+     * @param  string $directory Valid directory path.
+     * @return bool              True if the access control file was fixed.
      */
     private static function fixPreviousHardening($directory = '')
     {
@@ -147,8 +161,8 @@ class SucuriScanHardening extends SucuriScan
     /**
      * Check whether a directory is hardened or not.
      *
-     * @param string $directory Valid directory path.
-     * @return bool True if the directory is hardened, false otherwise.
+     * @param  string $directory Valid directory path.
+     * @return bool              True if the directory is hardened, false otherwise.
      */
     public static function isHardened($directory = '')
     {
@@ -167,8 +181,8 @@ class SucuriScanHardening extends SucuriScan
     /**
      * Returns the path to the Apache access control file.
      *
-     * @param string $folder Folder where the htaccess file is supposed to be.
-     * @return string Path to the htaccess file in the specified folder.
+     * @param  string $folder Folder where the htaccess file is supposed to be.
+     * @return string         Path to the htaccess file in the specified folder.
      */
     private static function htaccess($folder = '')
     {
@@ -186,8 +200,8 @@ class SucuriScanHardening extends SucuriScan
      * can send a direct request to it. The method will generate both the rules
      * for Apache 2.4 and a compatibility conditional for older versions.
      *
-     * @param string $file File to be ignored by the hardening.
-     * @return string Access control rules to whitelist the file.
+     * @param  string $file File to be ignored by the hardening.
+     * @return string       Access control rules to whitelist the file.
      */
     private static function whitelistRule($file = '')
     {
@@ -217,20 +231,20 @@ class SucuriScanHardening extends SucuriScan
      * admin can ignore this hardening in one or more files if direct access to
      * it is required, as is the case with some 3rd-party plugins and themes.
      *
-     * @param string $file File to be ignored by the hardening.
-     * @param string $folder Folder hosting the specified file.
-     * @return bool True if the file has been whitelisted, false otherwise.
+     * @param  string $file   File to be ignored by the hardening.
+     * @param  string $folder Folder hosting the specified file.
+     * @return bool           True if the file has been whitelisted, false otherwise.
      */
     public static function whitelist($file = '', $folder = '')
     {
         $htaccess = self::htaccess($folder);
 
         if (!file_exists($htaccess)) {
-            throw new Exception(__('HTAccessIsMissing', SUCURISCAN_TEXTDOMAIN));
+            throw new Exception('Access control file does not exists');
         }
 
         if (!is_writable($htaccess)) {
-            throw new Exception(__('HTAccessNotWritable', SUCURISCAN_TEXTDOMAIN));
+            throw new Exception('Access control file is not writable');
         }
 
         return (bool) @file_put_contents(
@@ -250,9 +264,9 @@ class SucuriScanHardening extends SucuriScan
      * theme required it, they can decide to revert the whitelisting using this
      * method which is executed by one of the tools in the settings page.
      *
-     * @param string $file File to stop ignoring from the hardening.
-     * @param string $folder Folder hosting the specified file.
-     * @return bool True if the file has been dewhitelisted, false otherwise.
+     * @param  string $file   File to stop ignoring from the hardening.
+     * @param  string $folder Folder hosting the specified file.
+     * @return bool           True if the file has been dewhitelisted, false otherwise.
      */
     public static function dewhitelist($file = '', $folder = '')
     {
@@ -273,8 +287,8 @@ class SucuriScanHardening extends SucuriScan
     /**
      * Returns a list of whitelisted files in folder.
      *
-     * @param string $folder Directory to scan for whitelisted files.
-     * @return array List of whitelisted files, false on failure.
+     * @param  string $folder Directory to scan for whitelisted files.
+     * @return array          List of whitelisted files, false on failure.
      */
     public static function getWhitelisted($folder = '')
     {
@@ -282,6 +296,6 @@ class SucuriScanHardening extends SucuriScan
         $content = SucuriScanFileInfo::fileContent($htaccess);
         @preg_match_all('/<Files (\S+)>/', $content, $matches);
 
-        return $matches[1] /* empty for no matches */;
+        return $matches[1];
     }
 }

@@ -1,2 +1,2 @@
 
-@@SUCURI.PasswordChangeAlert@@
+WordPress has generated a new (random) password for your account <b>%%SUCURI.ResetPassword.UserName%%</b> at <a target="_blank" href="http://%%SUCURI.ResetPassword.Website%%" rel="noopener">%%SUCURI.ResetPassword.Website%%</a>. The change has been requested by one of the admins in this website for security reasons. Your new password is &mdash; <span style="font-family:Menlo, Monaco, monospace, serif;font-weight:700">%%%SUCURI.ResetPassword.Password%%%</span> &mdash; please change it as soon as possible.

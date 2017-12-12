@@ -3,9 +3,15 @@
 /**
  * Code related to the lastlogins-loggedin.php interface.
  *
- * @package Sucuri Security
- * @subpackage lastlogins-loggedin.php
- * @copyright Since 2010 Sucuri Inc.
+ * PHP version 5
+ *
+ * @category   Library
+ * @package    Sucuri
+ * @subpackage SucuriScanner
+ * @author     Daniel Cid <dcid@sucuri.net>
+ * @copyright  2010-2017 Sucuri Inc.
+ * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
+ * @link       https://wordpress.org/plugins/sucuri-scanner
  */
 
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
@@ -38,15 +44,18 @@ function sucuriscan_loggedin_users_panel()
             $logged_in_user['last_activity_datetime'] = SucuriScan::datetime($logged_in_user['last_activity']);
             $logged_in_user['user_registered_datetime'] = SucuriScan::datetime(strtotime($logged_in_user['user_registered']));
 
-            $params['LoggedInUsers.List'] .= SucuriScanTemplate::getSnippet('lastlogins-loggedin', array(
-                'LoggedInUsers.Id' => $logged_in_user['user_id'],
-                'LoggedInUsers.UserURL' => SucuriScan::adminURL('user-edit.php?user_id=' . $logged_in_user['user_id']),
-                'LoggedInUsers.UserLogin' => $logged_in_user['user_login'],
-                'LoggedInUsers.UserEmail' => $logged_in_user['user_email'],
-                'LoggedInUsers.LastActivity' => $logged_in_user['last_activity_datetime'],
-                'LoggedInUsers.Registered' => $logged_in_user['user_registered_datetime'],
-                'LoggedInUsers.RemoteAddr' => $logged_in_user['remote_addr'],
-            ));
+            $params['LoggedInUsers.List'] .= SucuriScanTemplate::getSnippet(
+                'lastlogins-loggedin',
+                array(
+                    'LoggedInUsers.Id' => $logged_in_user['user_id'],
+                    'LoggedInUsers.UserURL' => SucuriScan::adminURL('user-edit.php?user_id=' . $logged_in_user['user_id']),
+                    'LoggedInUsers.UserLogin' => $logged_in_user['user_login'],
+                    'LoggedInUsers.UserEmail' => $logged_in_user['user_email'],
+                    'LoggedInUsers.LastActivity' => $logged_in_user['last_activity_datetime'],
+                    'LoggedInUsers.Registered' => $logged_in_user['user_registered_datetime'],
+                    'LoggedInUsers.RemoteAddr' => $logged_in_user['remote_addr'],
+                )
+            );
         }
     }
 
@@ -104,8 +113,9 @@ function sucuriscan_save_online_users($logged_in_users = array())
 
 if (!function_exists('sucuriscan_unset_online_user_on_logout')) {
     /**
-     * Remove a logged in user from the list of registered users in session when
-     * the logout page is requested.
+     * Remove a logged in user from the list.
+     *
+     * @return void
      */
     function sucuriscan_unset_online_user_on_logout()
     {
@@ -123,9 +133,9 @@ if (!function_exists('sucuriscan_unset_online_user_on_logout')) {
  * Remove a logged in user from the list of registered users in session using
  * the user identifier and the ip address of the last computer used to login.
  *
- * @param int $user_id User ID of the account that will be logged out.
- * @param string $remote_addr IP address of the computer where the user logged in.
- * @return bool Either TRUE or FALSE representing the success or fail of the operation.
+ * @param  int    $user_id     User ID of the account that will be logged out.
+ * @param  string $remote_addr IP address of the computer where the user logged in.
+ * @return bool                True on success, false otherwise.
  */
 function sucuriscan_unset_online_user($user_id = 0, $remote_addr = '')
 {
@@ -150,8 +160,9 @@ if (!function_exists('sucuriscan_set_online_user')) {
     /**
      * Add an user account to the list of registered users in session.
      *
-     * @param string $user_login The name of the user account that just logged in the site.
-     * @param bool $user The WordPress object containing all the information associated to the user.
+     * @param  string $user_login The name of the user account that just logged in the site.
+     * @param  bool   $user       The WordPress object containing all the information associated to the user.
+     * @return void
      */
     function sucuriscan_set_online_user($user_login = '', $user = false)
     {

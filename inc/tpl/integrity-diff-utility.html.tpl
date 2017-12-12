@@ -2,10 +2,12 @@
 <div class="sucuriscan-integrity-diff-utility">
     %%%SUCURI.DiffUtility.Modal%%%
 
+    <style type="text/css">.sucuriscan-integrity-filepath {cursor: pointer}</style>
+
     <script type="text/javascript">
     /* global jQuery */
     /* jshint camelcase: false */
-    jQuery(function ($) {
+    jQuery(document).ready(function ($) {
         $('.sucuriscan-integrity-table th .sucuriscan-tooltip').removeClass('sucuriscan-hidden');
 
         $('.sucuriscan-integrity-table .sucuriscan-integrity-filepath').on('click', function (event) {
@@ -23,7 +25,13 @@
                 filepath: filepath,
             }, function (data) {
                 $('.sucuriscan-diff-utility-modal .sucuriscan-modal-inside').html(data);
-                $('.sucuriscan-diff-content').before('<p>@@SUCURI.DiffUtilityInstructions@@</p>');
+                $('.sucuriscan-diff-content').before('<p>Lines with a <b>minus' +
+            	'</b> sign as the prefix <em>(here in red)</em> show the origi' +
+            	'nal code. Lines with a <b>plus</b> sign as the prefix <em>(he' +
+            	're in green)</em> show the modified code. You can read more a' +
+            	'bout the DIFF format from the WikiPedia article about the <a ' +
+            	'target="_blank" href="https://en.wikipedia.org/wiki/Diff_util' +
+            	'ity" rel="noopener">Unix Diff Utility</a>.</p>');
             });
         });
     });
