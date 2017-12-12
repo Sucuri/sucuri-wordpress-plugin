@@ -5,7 +5,7 @@
     </th>
 
     <td>
-        <a href="%%SUCURI.ResetPlugin.Repository%%" target="_blank">%%SUCURI.ResetPlugin.Plugin%%</a>
+        <a href="%%SUCURI.ResetPlugin.Repository%%" target="_blank" rel="noopener">%%SUCURI.ResetPlugin.Plugin%%</a>
     </td>
 
     <td class="sucuriscan-reset-plugin-response">

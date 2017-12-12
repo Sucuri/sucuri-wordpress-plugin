@@ -1,13 +1,13 @@
 
 <div class="sucuriscan-tabs">
     <ul class="sucuriscan-clearfix sucuriscan-tabs-buttons">
-        <li><a href="%%SUCURI.URL.Settings%%#general">@@SUCURI.General@@</a></li>
-        <li><a href="%%SUCURI.URL.Settings%%#scanner">@@SUCURI.Scanner@@</a></li>
-        <li><a href="%%SUCURI.URL.Settings%%#hardening">@@SUCURI.Hardening@@</a></li>
-        <li><a href="%%SUCURI.URL.Settings%%#posthack">@@SUCURI.PostHack@@</a></li>
-        <li><a href="%%SUCURI.URL.Settings%%#alerts">@@SUCURI.Alerts@@</a></li>
-        <li><a href="%%SUCURI.URL.Settings%%#apiservice">@@SUCURI.APICommunication@@</a></li>
-        <li><a href="%%SUCURI.URL.Settings%%#webinfo">@@SUCURI.WebsiteInfo@@</a></li>
+        <li><a href="%%SUCURI.URL.Settings%%#general">General</a></li>
+        <li><a href="%%SUCURI.URL.Settings%%#scanner">Scanner</a></li>
+        <li><a href="%%SUCURI.URL.Settings%%#hardening">Hardening</a></li>
+        <li><a href="%%SUCURI.URL.Settings%%#posthack">Post-Hack</a></li>
+        <li><a href="%%SUCURI.URL.Settings%%#alerts">Alerts</a></li>
+        <li><a href="%%SUCURI.URL.Settings%%#apiservice">API Service Communication</a></li>
+        <li><a href="%%SUCURI.URL.Settings%%#webinfo">Website Info</a></li>
     </ul>
 
     <div class="sucuriscan-tabs-containers">
@@ -33,8 +33,6 @@
             %%%SUCURI.Settings.Scanner.Cronjobs%%%
 
             %%%SUCURI.Settings.Scanner.IntegrityDiffUtility%%%
-
-            %%%SUCURI.Settings.Scanner.IntegrityLanguage%%%
 
             %%%SUCURI.Settings.Scanner.IntegrityCache%%%
 

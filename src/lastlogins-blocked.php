@@ -3,9 +3,15 @@
 /**
  * Code related to the lastlogins-blocked.php interface.
  *
- * @package Sucuri Security
- * @subpackage lastlogins-blocked.php
- * @copyright Since 2010 Sucuri Inc.
+ * PHP version 5
+ *
+ * @category   Library
+ * @package    Sucuri
+ * @subpackage SucuriScanner
+ * @author     Daniel Cid <dcid@sucuri.net>
+ * @copyright  2010-2017 Sucuri Inc.
+ * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
+ * @link       https://wordpress.org/plugins/sucuri-scanner
  */
 
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
@@ -28,6 +34,14 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  * in the Firewall service and it also provides a better filtering mechanism for
  * any other suspicious login attempt. We will encourage people to leverage the
  * power of the Firewall.
+ *
+ * @category   Library
+ * @package    Sucuri
+ * @subpackage SucuriScanner
+ * @author     Daniel Cid <dcid@sucuri.net>
+ * @copyright  2010-2017 Sucuri Inc.
+ * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
+ * @link       https://wordpress.org/plugins/sucuri-scanner
  */
 class SucuriScanBlockedUsers extends SucuriScanLastLogins
 {
@@ -47,7 +61,7 @@ class SucuriScanBlockedUsers extends SucuriScanLastLogins
 
             if (is_array($unblockUsers) && !empty($unblockUsers)) {
                 self::unblock($unblockUsers);
-                SucuriScanInterface::info(__('AccountsWereUnblocked', SUCURISCAN_TEXTDOMAIN));
+                SucuriScanInterface::info('Selected user accounts were unblocked');
             }
         }
 
@@ -56,13 +70,15 @@ class SucuriScanBlockedUsers extends SucuriScanLastLogins
 
         if (is_array($blocked) && !empty($blocked)) {
             foreach ($blocked as $data) {
-                $output['BlockedUsers.List'] .=
-                SucuriScanTemplate::getSnippet('lastlogins-blockedusers', array(
-                    'BlockedUsers.Username' => $data->username,
-                    'BlockedUsers.BlockedAt' => self::datetime($data->blocked_at),
-                    'BlockedUsers.FirstAttempt' => self::datetime($data->first_attempt),
-                    'BlockedUsers.LastAttempt' => self::datetime($data->last_attempt),
-                ));
+                $output['BlockedUsers.List'] .= SucuriScanTemplate::getSnippet(
+                    'lastlogins-blockedusers',
+                    array(
+                        'BlockedUsers.Username' => $data->username,
+                        'BlockedUsers.BlockedAt' => self::datetime($data->blocked_at),
+                        'BlockedUsers.FirstAttempt' => self::datetime($data->first_attempt),
+                        'BlockedUsers.LastAttempt' => self::datetime($data->last_attempt),
+                    )
+                );
             }
 
             $output['BlockedUsers.NoItemsVisibility'] = 'hidden';
@@ -74,7 +90,8 @@ class SucuriScanBlockedUsers extends SucuriScanLastLogins
     /**
      * Blocks one or more usernames.
      *
-     * @param array $users List of usernames.
+     * @param  array $users List of usernames.
+     * @return void
      */
     public static function block($users = array())
     {
@@ -104,7 +121,8 @@ class SucuriScanBlockedUsers extends SucuriScanLastLogins
     /**
      * Unblocks one or more usernames.
      *
-     * @param array $users List of usernames.
+     * @param  array $users List of usernames.
+     * @return void
      */
     public static function unblock($users = array())
     {
@@ -129,43 +147,47 @@ class SucuriScanBlockedUsers extends SucuriScanLastLogins
      * check to see if the username has been blocked by an admin and proceed
      * according to the expected behavior. Either we will stop the request right
      * here or let it propagate to the authentication checker.
+     *
+     * @return void
      */
     public static function blockUserLogin()
     {
-        if (class_exists('SucuriScanRequest')
-            && class_exists('SucuriScanCache')
+        if (!class_exists('SucuriScanRequest') || !class_exists('SucuriScanCache')) {
+            return;
+        }
+
+        $username = SucuriScanRequest::post('log');
+        $password = SucuriScanRequest::post('pwd');
+
+        if ($username === false || $password === false) {
+            return;
+        }
+
+        $cache = new SucuriScanCache('blockedusers');
+        $blocked = $cache->getAll();
+        $cache_key = md5($username);
+
+        if (is_array($blocked)
+            && is_string($cache_key)
+            && array_key_exists($cache_key, $blocked)
         ) {
-            $username = SucuriScanRequest::post('log');
-            $password = SucuriScanRequest::post('pwd');
+            $blocked[$cache_key]->last_attempt = time();
+            $cache->set($cache_key, $blocked[$cache_key]);
 
-            if ($username !== false && $password !== false) {
-                $cache = new SucuriScanCache('blockedusers');
-                $blocked = $cache->getAll();
-                $cache_key = md5($username);
-
-                if (is_array($blocked)
-                    && is_string($cache_key)
-                    && array_key_exists($cache_key, $blocked)
-                ) {
-                    $blocked[$cache_key]->last_attempt = time();
-                    $cache->set($cache_key, $blocked[$cache_key]);
-
-                    if (!headers_sent()) {
-                        header('HTTP/1.1 403 Forbidden');
-                    }
-
-                    exit(0);
-                }
+            if (!headers_sent()) {
+                header('HTTP/1.1 403 Forbidden');
             }
+
+            exit(0);
         }
     }
 
     /**
      * Finds the first login attempt of a specific username.
      *
-     * @param array $logs List of failed login attempts.
-     * @param string $user Username to be inspected.
-     * @return int Timestamp of the first login attempt.
+     * @param  array  $logs List of failed login attempts.
+     * @param  string $user Username to be inspected.
+     * @return int          Timestamp of the first login attempt.
      */
     private static function firstAttempt($logs, $user)
     {
@@ -187,9 +209,9 @@ class SucuriScanBlockedUsers extends SucuriScanLastLogins
     /**
      * Finds the last login attempt of a specific username.
      *
-     * @param array $logs List of failed login attempts.
-     * @param string $user Username to be inspected.
-     * @return int Timestamp of the last login attempt.
+     * @param  array  $logs List of failed login attempts.
+     * @param  string $user Username to be inspected.
+     * @return int          Timestamp of the last login attempt.
      */
     private static function lastAttempt($logs, $user)
     {

@@ -14,14 +14,14 @@
     <tbody>
         <tr>
             <td style="padding:20px 20px 10px 20px;border:1px solid #ccc;border-top:none">
-                <h4 style="text-transform:uppercase;margin:0">@@SUCURI.Information@@:</h4>
+                <h4 style="text-transform:uppercase;margin:0">Information:</h4>
                 <p style="margin:0 0 10px 0">
-                    @@SUCURI.Website@@: <a href="http://%%SUCURI.Website%%">%%SUCURI.Website%%</a><br>
-                    @@SUCURI.RemoteAddr@@: %%SUCURI.RemoteAddress%%<br>
-                    @@SUCURI.Datetime@@: %%SUCURI.Time%%<br>
+                    Website: <a href="http://%%SUCURI.Website%%">%%SUCURI.Website%%</a><br>
+                    IP Address: %%SUCURI.RemoteAddress%%<br>
+                    Date/Time: %%SUCURI.Time%%<br>
                     %%SUCURI.User%%
                 </p>
-                <h4 style="text-transform:uppercase;margin:0">@@SUCURI.Message@@:</h4>
+                <h4 style="text-transform:uppercase;margin:0">Message:</h4>
                 <p style="margin:0 0 10px 0">%%%SUCURI.Message%%%</p>
             </td>
         </tr>

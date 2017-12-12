@@ -8,5 +8,5 @@
 
     <td><span title="%%SUCURI.UserList.Datetime%%">%%SUCURI.UserList.TimeAgo%%</span></td>
 
-    <td><a href="%%SUCURI.UserList.UserURL%%" target="_blank">@@SUCURI.Edit@@</a></td>
+    <td><a href="%%SUCURI.UserList.UserURL%%" target="_blank" rel="noopener">Edit</a></td>
 </tr>

@@ -3,9 +3,15 @@
 /**
  * Code related to the cache.lib.php interface.
  *
- * @package Sucuri Security
- * @subpackage cache.lib.php
- * @copyright Since 2010 Sucuri Inc.
+ * PHP version 5
+ *
+ * @category   Library
+ * @package    Sucuri
+ * @subpackage SucuriScanner
+ * @author     Daniel Cid <dcid@sucuri.net>
+ * @copyright  2010-2017 Sucuri Inc.
+ * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
+ * @link       https://wordpress.org/plugins/sucuri-scanner
  */
 
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
@@ -28,6 +34,14 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  *
  * [1] https://codex.wordpress.org/Class_Reference/WP_Object_Cache
  * [2] https://codex.wordpress.org/Class_Reference/WP_Object_Cache#Persistent_Caching
+ *
+ * @category   Library
+ * @package    Sucuri
+ * @subpackage SucuriScanner
+ * @author     Daniel Cid <dcid@sucuri.net>
+ * @copyright  2010-2017 Sucuri Inc.
+ * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
+ * @link       https://wordpress.org/plugins/sucuri-scanner
  */
 class SucuriScanCache extends SucuriScan
 {
@@ -42,16 +56,16 @@ class SucuriScanCache extends SucuriScan
      *
      * [1] /public/data/sucuri-DATASTORE.php
      *
-     * @var null|string
+     * @var string
      */
-    private $datastore = null;
+    private $datastore;
 
     /**
      * The full path of the datastore file.
      *
      * @var string
      */
-    private $datastore_path = '';
+    private $datastore_path;
 
     /**
      * Whether the datastore file is usable or not.
@@ -59,15 +73,15 @@ class SucuriScanCache extends SucuriScan
      * This variable will only be TRUE if the datastore file specified exists, is
      * writable and readable, in any other case it will always be FALSE.
      *
-     * @var boolean
+     * @var bool
      */
-    private $usable_datastore = false;
+    private $usable_datastore;
 
     /**
      * Initializes the cache library.
      *
-     * @param string $datastore Name of the storage file.
-     * @param bool $auto_create Forces the creation of the storage file.
+     * @param string $datastore   Name of the storage file.
+     * @param bool   $auto_create Forces the creation of the storage file.
      */
     public function __construct($datastore = '', $auto_create = true)
     {
@@ -95,8 +109,8 @@ class SucuriScanCache extends SucuriScan
     /**
      * Default content of every datastore file.
      *
-     * @param array $finfo Rainbow table with the key names and decoded values.
-     * @return string Default content of every datastore file.
+     * @param  array $finfo Rainbow table with the key names and decoded values.
+     * @return string       Default content of every datastore file.
      */
     private function datastoreInfo($finfo = array())
     {
@@ -126,8 +140,8 @@ class SucuriScanCache extends SucuriScan
      * user running the server, in case that it does not exists the method will
      * tries to create it by itself with the right permissions to use it.
      *
-     * @param bool $auto_create Create the file is it does not exists.
-     * @return string|bool Absolute path to the storage file, false otherwise.
+     * @param  bool $auto_create Create the file is it does not exists.
+     * @return string|bool       Absolute path to the storage file, false otherwise.
      */
     private function datastoreFilePath($auto_create = false)
     {
@@ -156,8 +170,8 @@ class SucuriScanCache extends SucuriScan
      * key we will use a primitive string transformation technique to reduce the
      * execution time, regular expressions are significantly slow.
      *
-     * @param string $key Unique name for the data.
-     * @return bool True if the key is valid, false otherwise.
+     * @param  string $key Unique name for the data.
+     * @return bool        True if the key is valid, false otherwise.
      */
     private function validKeyName($key = '')
     {
@@ -187,8 +201,8 @@ class SucuriScanCache extends SucuriScan
     /**
      * Update the content of the datastore file with the new entries.
      *
-     * @param array $finfo Rainbow table with the key names and decoded values.
-     * @return bool TRUE if the operation finished successfully, FALSE otherwise.
+     * @param  array $finfo Rainbow table with the key names and decoded values.
+     * @return bool         TRUE if the operation finished successfully, FALSE otherwise.
      */
     private function saveNewEntries($finfo = array())
     {
@@ -213,23 +227,24 @@ class SucuriScanCache extends SucuriScan
      * and decoded data as the values of each entry. Duplicated key names will
      * be merged automatically.
      *
-     * @param bool $assoc Force object to array conversion.
-     * @param bool $onlyInfo Returns the cache headers and no content.
-     * @return array Rainbow table with the key names and decoded values.
+     * @param  bool $assoc    Force object to array conversion.
+     * @param  bool $onlyInfo Returns the cache headers and no content.
+     * @return array          Rainbow table with the key names and decoded values.
      */
     private function getDatastoreContent($assoc = false, $onlyInfo = false)
     {
         $object = array();
         $object['info'] = array();
         $object['entries'] = array();
+        $lines = SucuriScanFileInfo::fileLines($this->datastore_path);
 
-        if ($lines = SucuriScanFileInfo::fileLines($this->datastore_path)) {
+        if (is_array($lines) && !empty($lines)) {
             foreach ($lines as $line) {
                 if (strpos($line, "//\x20") === 0
                     && strpos($line, '=') !== false
-                    && $line[strlen($line)-1] === ';'
+                    && $line[strlen($line) - 1] === ';'
                 ) {
-                    $section = substr($line, 3, strlen($line)-4);
+                    $section = substr($line, 3, strlen($line) - 4);
                     list($header, $value) = explode('=', $section, 2);
                     $object['info'][$header] = $value;
                     continue;
@@ -278,8 +293,8 @@ class SucuriScanCache extends SucuriScan
     /**
      * Get the total number of unique entries in the datastore file.
      *
-     * @param array $finfo Rainbow table with the key names and decoded values.
-     * @return int Total number of unique entries found in the datastore file.
+     * @param  array $finfo Rainbow table with the key names and decoded values.
+     * @return int          Total number of unique entries found in the datastore file.
      */
     public function getCount($finfo = null)
     {
@@ -296,13 +311,13 @@ class SucuriScanCache extends SucuriScan
      * the caching process, any others besides this are just methods used to handle
      * the data inside those files.
      *
-     * @param int $lifetime Life time of the key in the datastore file.
-     * @param array $finfo Rainbow table with the key names and decoded values.
-     * @return bool TRUE if the life time of the data has expired, FALSE otherwise.
+     * @param  int   $lifetime Life time of the key in the datastore file.
+     * @param  array $finfo    Rainbow table with the key names and decoded values.
+     * @return bool            TRUE if the life time of the data has expired, FALSE otherwise.
      */
     public function dataHasExpired($lifetime = 0, $finfo = null)
     {
-        if (is_null($finfo)) {
+        if (!is_array($finfo)) {
             $meta = $this->getDatastoreInfo();
             $finfo = array('info' => $meta);
         }
@@ -324,9 +339,9 @@ class SucuriScanCache extends SucuriScan
      * duplicated, but when getting the value of the same key later again it will
      * return only the value of the first occurrence found in the file.
      *
-     * @param string $key Unique name for the data.
-     * @param mixed $data Data to associate to the key.
-     * @return bool True if the data was cached, false otherwise.
+     * @param  string $key  Unique name for the data.
+     * @param  mixed  $data Data to associate to the key.
+     * @return bool         True if the data was cached, false otherwise.
      */
     public function add($key = '', $data = '')
     {
@@ -336,9 +351,9 @@ class SucuriScanCache extends SucuriScan
     /**
      * Update the data of all the key names matching the one specified.
      *
-     * @param string $key Unique name for the data.
-     * @param mixed $data Data to associate to the key.
-     * @return bool True if the cache data was updated, false otherwise.
+     * @param  string $key  Unique name for the data.
+     * @param  mixed  $data Data to associate to the key.
+     * @return bool         True if the cache data was updated, false otherwise.
      */
     public function set($key = '', $data = '')
     {
@@ -355,10 +370,10 @@ class SucuriScanCache extends SucuriScan
     /**
      * Retrieve the first occurrence of the key found in the datastore file.
      *
-     * @param string $key Unique name for the data.
-     * @param int $lifetime Seconds before the data expires.
-     * @param string $assoc Force data to be converted to an array.
-     * @return mixed Data associated to the key.
+     * @param  string $key      Unique name for the data.
+     * @param  int    $lifetime Seconds before the data expires.
+     * @param  string $assoc    Force data to be converted to an array.
+     * @return mixed            Data associated to the key.
      */
     public function get($key = '', $lifetime = 0, $assoc = '')
     {
@@ -380,9 +395,9 @@ class SucuriScanCache extends SucuriScan
     /**
      * Retrieve all the entries found in the datastore file.
      *
-     * @param int $lifetime Life time of the key in the datastore file.
-     * @param string $assoc Force data to be converted to an array.
-     * @return mixed All the entries stored in the cache file.
+     * @param  int    $lifetime Life time of the key in the datastore file.
+     * @param  string $assoc    Force data to be converted to an array.
+     * @return mixed            All the entries stored in the cache file.
      */
     public function getAll($lifetime = 0, $assoc = '')
     {
@@ -398,8 +413,8 @@ class SucuriScanCache extends SucuriScan
     /**
      * Check whether a specific key exists in the datastore file.
      *
-     * @param string $key Unique name for the data.
-     * @return bool True if the data exists, false otherwise.
+     * @param  string $key Unique name for the data.
+     * @return bool        True if the data exists, false otherwise.
      */
     public function exists($key = '')
     {
@@ -415,8 +430,8 @@ class SucuriScanCache extends SucuriScan
     /**
      * Delete any entry from the datastore file matching the key name specified.
      *
-     * @param string $key Unique name for the data.
-     * @return bool True if the data was deleted, false otherwise.
+     * @param  string $key Unique name for the data.
+     * @return bool        True if the data was deleted, false otherwise.
      */
     public function delete($key = '')
     {
@@ -438,15 +453,17 @@ class SucuriScanCache extends SucuriScan
     /**
      * Replaces the entire content of the cache file.
      *
-     * @param array $entries New data for the cache.
-     * @return bool True if the cache was replaced.
+     * @param  array $entries New data for the cache.
+     * @return bool           True if the cache was replaced.
      */
     public function override($entries = array())
     {
-        return $this->saveNewEntries(array(
-            'info' => $this->getDatastoreInfo(),
-            'entries' => $entries,
-        ));
+        return $this->saveNewEntries(
+            array(
+                'info' => $this->getDatastoreInfo(),
+                'entries' => $entries,
+            )
+        );
     }
 
     /**

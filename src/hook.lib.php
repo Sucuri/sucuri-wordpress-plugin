@@ -3,9 +3,15 @@
 /**
  * Code related to the hook.lib.php interface.
  *
- * @package Sucuri Security
- * @subpackage hook.lib.php
- * @copyright Since 2010 Sucuri Inc.
+ * PHP version 5
+ *
+ * @category   Library
+ * @package    Sucuri
+ * @subpackage SucuriScanner
+ * @author     Daniel Cid <dcid@sucuri.net>
+ * @copyright  2010-2017 Sucuri Inc.
+ * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
+ * @link       https://wordpress.org/plugins/sucuri-scanner
  */
 
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
@@ -22,27 +28,38 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  * The term hooking covers a range of techniques used to alter or augment the
  * behavior of an operating system, of applications, or of other software
  * components by intercepting method calls or messages or events passed
- * between software components. Code that handles such intercepted functionmethods, events or messages is called a "hook".
+ * between software components. Code that handles such intercepted function
+ * methods, events or messages is called a "hook".
  *
  * Hooking is used for many purposes, including debugging and extending
  * functionality. Examples might include intercepting keyboard or mouse event
  * messages before they reach an application, or intercepting operating system
  * calls in order to monitor behavior or modify the method of an application
  * or other component; it is also widely used in benchmarking programs.
+ *
+ * @category   Library
+ * @package    Sucuri
+ * @subpackage SucuriScanner
+ * @author     Daniel Cid <dcid@sucuri.net>
+ * @copyright  2010-2017 Sucuri Inc.
+ * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
+ * @link       https://wordpress.org/plugins/sucuri-scanner
  */
 class SucuriScanHook extends SucuriScanEvent
 {
     /**
      * Send to Sucuri servers an alert notifying that an attachment was added to a post.
      *
-     * @param int $id The post identifier.
+     * @param  int $id The post identifier.
+     * @return void
      */
     public static function hookAttachmentAdd($id = 0)
     {
         $title = 'unknown';
         $mime_type = 'unknown';
+        $data = get_post($id);
 
-        if ($data = get_post($id)) {
+        if ($data) {
             $id = $data->ID;
             $title = $data->post_title;
             $mime_type = $data->post_mime_type;
@@ -56,7 +73,8 @@ class SucuriScanHook extends SucuriScanEvent
     /**
      * Send an alert notifying that a category was created.
      *
-     * @param int $id The identifier of the category created.
+     * @param  int $id The identifier of the category created.
+     * @return void
      */
     public static function hookCategoryCreate($id = 0)
     {
@@ -67,10 +85,10 @@ class SucuriScanHook extends SucuriScanEvent
         self::notifyEvent('post_publication', $message);
     }
 
-    // TODO: Detect auto updates in core, themes, and plugin files.
-
     /**
      * Detects when the core files are updated.
+     *
+     * @return void
      */
     public static function hookCoreUpdate()
     {
@@ -88,15 +106,17 @@ class SucuriScanHook extends SucuriScanEvent
     /**
      * Send an alert notifying that a new link was added to the bookmarks.
      *
-     * @param int $id Identifier of the new link created;
+     * @param  int $id Identifier of the new link created;
+     * @return void
      */
     public static function hookLinkAdd($id = 0)
     {
         $title = 'unknown';
         $target = '_none';
         $url = 'undefined/url';
+        $data = get_bookmark($id);
 
-        if ($data = get_bookmark($id)) {
+        if ($data) {
             $title = $data->link_name;
             $target = $data->link_target;
             $url = $data->link_url;
@@ -116,15 +136,17 @@ class SucuriScanHook extends SucuriScanEvent
     /**
      * Send an alert notifying that a new link was added to the bookmarks.
      *
-     * @param int $id Identifier of the new link created;
+     * @param  int $id Identifier of the new link created;
+     * @return void
      */
     public static function hookLinkEdit($id = 0)
     {
         $title = 'unknown';
         $target = '_none';
         $url = 'undefined/url';
+        $data = get_bookmark($id);
 
-        if ($data = get_bookmark($id)) {
+        if ($data) {
             $title = $data->link_name;
             $target = $data->link_target;
             $url = $data->link_url;
@@ -145,7 +167,8 @@ class SucuriScanHook extends SucuriScanEvent
      * Send an alert notifying that an attempt to login into the
      * administration panel failed.
      *
-     * @param string $title The name of the user account involved in the transaction.
+     * @param  string $title The name of the user account involved in the transaction.
+     * @return void
      */
     public static function hookLoginFailure($title = '')
     {
@@ -166,7 +189,9 @@ class SucuriScanHook extends SucuriScanEvent
         self::notifyEvent('failed_login', $message);
 
         /* report brute-force attack if necessary */
-        if ($logins = sucuriscan_get_failed_logins()) {
+        $logins = sucuriscan_get_failed_logins();
+
+        if (is_array($logins) && !empty($logins)) {
             $max_time = 3600; /* report logins in the last hour */
             $maximum = SucuriScanOption::getOption(':maximum_failed_logins');
 
@@ -193,19 +218,16 @@ class SucuriScanHook extends SucuriScanEvent
                  * a brute-force attack (if it exists) because the time passed
                  * between the first and last login attempt is big enough to
                  * mitigate the attack.
-                 *
-                 * We will consider the current failed login event as the first
-                 * entry of that file in case of future attempts during the next
-                 * sixty minutes.
                  */
                 sucuriscan_reset_failed_logins();
-                sucuriscan_log_failed_login($title, $password);
             }
         }
     }
 
     /**
      * Detects usage of the password reset form.
+     *
+     * @return void
      */
     public static function hookLoginFormResetpass()
     {
@@ -219,7 +241,8 @@ class SucuriScanHook extends SucuriScanEvent
      * Send an alert notifying that an attempt to login into the
      * administration panel was successful.
      *
-     * @param string $title The name of the user account involved in the transaction.
+     * @param  string $title User account involved in the transaction.
+     * @return void
      */
     public static function hookLoginSuccess($title = '')
     {
@@ -236,6 +259,8 @@ class SucuriScanHook extends SucuriScanEvent
      * will compare the value sent with the form with the value in the database
      * and if there are differences will send an email alert notifying the admin
      * about the changes.
+     *
+     * @return void
      */
     public static function hookOptionsManagement()
     {
@@ -265,8 +290,7 @@ class SucuriScanHook extends SucuriScanEvent
             }
 
             /* identify the origin of the request */
-            $option_page = isset($_POST['option_page'])
-            ? $_POST['option_page'] : 'options';
+            $option_page = isset($_POST['option_page']) ? $_POST['option_page'] : 'options';
             $page_referer = 'Common';
 
             switch ($option_page) {
@@ -286,11 +310,13 @@ class SucuriScanHook extends SucuriScanEvent
 
             if ($options_changed_count) {
                 $message = $page_referer . ' settings changed';
-                self::reportErrorEvent(sprintf(
-                    '%s: (multiple entries): %s',
-                    $message,
-                    rtrim($options_changed_simple, ',')
-                ));
+                self::reportErrorEvent(
+                    sprintf(
+                        '%s: (multiple entries): %s',
+                        $message,
+                        rtrim($options_changed_simple, ',')
+                    )
+                );
                 self::notifyEvent('settings_updated', $message . "<br>\n" . $options_changed_str);
             }
         }
@@ -299,8 +325,9 @@ class SucuriScanHook extends SucuriScanEvent
     /**
      * Sends an alert with information about a plugin that has been activated.
      *
-     * @param string $plugin Name of the plugin.
-     * @param string $network_activation Whether the activation was global or not.
+     * @param  string $plugin             Name of the plugin.
+     * @param  string $network_activation Whether the activation was global or not.
+     * @return void
      */
     public static function hookPluginActivate($plugin = '', $network_activation = '')
     {
@@ -316,11 +343,12 @@ class SucuriScanHook extends SucuriScanEvent
      * able to detect a deactivation if the plugin has been deleted via FTP or
      * SSH or any file manager available in the hosting panel.
      *
-     * @param string $action Activated or deactivated.
-     * @param string $plugin Short name of the plugin file.
-     * @param string $network_activation Whether the action is global or not.
+     * @param  string $action  Activated or deactivated.
+     * @param  string $plugin  Short name of the plugin file.
+     * @param  string $network Whether the action is global or not.
+     * @return void
      */
-    private static function hookPluginChanges($action, $plugin = '', $network_activation = '')
+    private static function hookPluginChanges($action, $plugin = '', $network = '')
     {
         $filename = WP_PLUGIN_DIR . '/' . $plugin;
 
@@ -342,11 +370,12 @@ class SucuriScanHook extends SucuriScanEvent
         }
 
         $message = sprintf(
-            'Plugin %s: %s (v%s; %s)',
+            'Plugin %s: %s (v%s; %s%s)',
             $action, /* activated or deactivated */
             self::escape($info['Name']),
             self::escape($info['Version']),
-            self::escape($plugin)
+            self::escape($plugin),
+            ($network ? '; network' : '')
         );
         self::reportWarningEvent($message);
         self::notifyEvent('plugin_' . $action, $message);
@@ -355,8 +384,9 @@ class SucuriScanHook extends SucuriScanEvent
     /**
      * Sends an alert with information about a plugin that has been deactivated.
      *
-     * @param string $plugin Name of the plugin.
-     * @param string $network_activation Whether the deactivation was global or not.
+     * @param  string $plugin             Name of the plugin.
+     * @param  string $network_activation Whether the deactivation was global or not.
+     * @return void
      */
     public static function hookPluginDeactivate($plugin = '', $network_activation = '')
     {
@@ -365,6 +395,8 @@ class SucuriScanHook extends SucuriScanEvent
 
     /**
      * Detects when a plugin is deleted.
+     *
+     * @return void
      */
     public static function hookPluginDelete()
     {
@@ -399,13 +431,14 @@ class SucuriScanHook extends SucuriScanEvent
 
             // Report deleted plugins at once.
             if (!empty($items_affected)) {
-                $message_tpl = ( count($items_affected) > 1 )
-                    ? 'Plugins deleted: (multiple entries): %s'
-                    : 'Plugin deleted: %s';
-                $message = sprintf(
-                    $message_tpl,
-                    @implode(',', $items_affected)
-                );
+                if (count($items_affected) > 1) {
+                    $message = 'Plugins deleted: (multiple entries):';
+                } else {
+                    $message = 'Plugin deleted:';
+                }
+
+                $message .= "\x20" . @implode(',', $items_affected);
+
                 self::reportWarningEvent($message);
                 self::notifyEvent('plugin_deleted', $message);
             }
@@ -414,6 +447,8 @@ class SucuriScanHook extends SucuriScanEvent
 
     /**
      * Detects when the plugin editor is used.
+     *
+     * @return void
      */
     public static function hookPluginEditor()
     {
@@ -433,6 +468,8 @@ class SucuriScanHook extends SucuriScanEvent
 
     /**
      * Detects when a plugin is uploaded or installed.
+     *
+     * @return void
      */
     public static function hookPluginInstall()
     {
@@ -455,17 +492,20 @@ class SucuriScanHook extends SucuriScanEvent
 
     /**
      * Detects when a plugin is updated or upgraded.
+     *
+     * @return void
      */
     public static function hookPluginUpdate()
     {
         // Plugin update request.
         $plugin_update_actions = '(upgrade-plugin|do-plugin-upgrade|update-selected)';
 
-        if (current_user_can('update_plugins')
-            && (
-                SucuriScanRequest::getOrPost('action', $plugin_update_actions)
-                || SucuriScanRequest::getOrPost('action2', $plugin_update_actions)
-            )
+        if (!current_user_can('update_plugins')) {
+            return;
+        }
+
+        if (SucuriScanRequest::getOrPost('action', $plugin_update_actions)
+            || SucuriScanRequest::getOrPost('action2', $plugin_update_actions)
         ) {
             $plugin_list = array();
             $items_affected = array();
@@ -498,13 +538,14 @@ class SucuriScanHook extends SucuriScanEvent
 
             // Report updated plugins at once.
             if (!empty($items_affected)) {
-                $message_tpl = ( count($items_affected) > 1 )
-                    ? 'Plugins updated: (multiple entries): %s'
-                    : 'Plugin updated: %s';
-                $message = sprintf(
-                    $message_tpl,
-                    @implode(',', $items_affected)
-                );
+                if (count($items_affected) > 1) {
+                    $message = 'Plugins updated: (multiple entries):';
+                } else {
+                    $message = 'Plugin updated:';
+                }
+
+                $message .= "\x20" . @implode(',', $items_affected);
+
                 self::reportWarningEvent($message);
                 self::notifyEvent('plugin_updated', $message);
             }
@@ -524,32 +565,37 @@ class SucuriScanHook extends SucuriScanEvent
      * this informaiton to send it to the API. We will delete the temporary data
      * after the operation has succeeded.
      *
-     * @param int $id The identifier of the post deleted.
+     * @param  int $id The identifier of the post deleted.
+     * @return void
      */
     public static function hookPostBeforeDelete($id = 0)
     {
-        if ($data = get_post($id)) {
-            $out = array(); /* data to cache */
-            $cache = new SucuriScanCache('hookdata');
+        $data = get_post($id);
 
-            $out['id'] = $data->ID;
-            $out['author'] = $data->post_author;
-            $out['type'] = $data->post_type;
-            $out['status'] = $data->post_status;
-            $out['inserted'] = $data->post_date;
-            $out['modified'] = $data->post_modified;
-            $out['guid'] = $data->guid;
-            $out['title'] = empty($data->post_title)
-                ? '(empty)' : $data->post_title;
-
-            $cache->add('post_' . $id, $out);
+        if (!$data) {
+            return;
         }
+
+        $out = array(); /* data to cache */
+        $cache = new SucuriScanCache('hookdata');
+
+        $out['id'] = $data->ID;
+        $out['author'] = $data->post_author;
+        $out['type'] = $data->post_type;
+        $out['status'] = $data->post_status;
+        $out['inserted'] = $data->post_date;
+        $out['modified'] = $data->post_modified;
+        $out['guid'] = $data->guid;
+        $out['title'] = empty($data->post_title) ? '(empty)' : $data->post_title;
+
+        $cache->add('post_' . $id, $out);
     }
 
     /**
      * Send an alert notifying that a post was deleted.
      *
-     * @param int $id The identifier of the post deleted.
+     * @param  int $id The identifier of the post deleted.
+     * @return void
      */
     public static function hookPostDelete($id = 0)
     {
@@ -570,9 +616,10 @@ class SucuriScanHook extends SucuriScanEvent
     /**
      * Sends an alert for transitions between post statuses.
      *
-     * @param string $new New post status.
-     * @param string $old Old post status.
-     * @param object $post Post data.
+     * @param  string $new  New post status.
+     * @param  string $old  Old post status.
+     * @param  mixed  $post Post data.
+     * @return void
      */
     public static function hookPostStatus($new = '', $old = '', $post = null)
     {
@@ -642,14 +689,16 @@ class SucuriScanHook extends SucuriScanEvent
     /**
      * Send an alert notifying that a post was moved to the trash.
      *
-     * @param int $id The identifier of the trashed post.
+     * @param  int $id The identifier of the trashed post.
+     * @return void
      */
     public static function hookPostTrash($id = 0)
     {
         $title = 'Unknown';
         $status = 'none';
+        $data = get_post($id);
 
-        if ($data = get_post($id)) {
+        if ($data) {
             $title = $data->post_title;
             $status = $data->post_status;
         }
@@ -666,15 +715,17 @@ class SucuriScanHook extends SucuriScanEvent
     /**
      * Send an alert notifying that a post or page is created or updated.
      *
-     * @param int $id The identifier of the post or page published.
+     * @param  int $id The identifier of the post or page published.
+     * @return void
      */
     private static function hookPublish($id = 0)
     {
         $title = 'Unknown';
         $p_type = 'Publication';
         $action = 'published';
+        $data = get_post($id);
 
-        if ($data = get_post($id)) {
+        if ($data) {
             $title = $data->post_title;
             $p_type = ucwords($data->post_type);
             $action = 'updated';
@@ -684,7 +735,7 @@ class SucuriScanHook extends SucuriScanEvent
                 $action = 'created';
             }
 
-            SucuriScanFirewall::clearCacheHook($data);
+            SucuriScanFirewall::clearCacheHook();
         }
 
         $message = sprintf(
@@ -701,7 +752,8 @@ class SucuriScanHook extends SucuriScanEvent
     /**
      * Detects when a page is created or updated.
      *
-     * @param int $id The identifier of the post or page published.
+     * @param  int $id The identifier of the post or page published.
+     * @return void
      */
     public static function hookPublishPage($id = 0)
     {
@@ -711,7 +763,8 @@ class SucuriScanHook extends SucuriScanEvent
     /**
      * Detects when a post is created or updated via email.
      *
-     * @param int $id The identifier of the post or page published.
+     * @param  int $id The identifier of the post or page published.
+     * @return void
      */
     public static function hookPublishPhone($id = 0)
     {
@@ -721,7 +774,8 @@ class SucuriScanHook extends SucuriScanEvent
     /**
      * Detects when a post is created or updated.
      *
-     * @param int $id The identifier of the post or page published.
+     * @param  int $id The identifier of the post or page published.
+     * @return void
      */
     public static function hookPublishPost($id = 0)
     {
@@ -731,7 +785,8 @@ class SucuriScanHook extends SucuriScanEvent
     /**
      * Detects when a post is created or updated via XML-RPC.
      *
-     * @param int $id The identifier of the post or page published.
+     * @param  int $id The identifier of the post or page published.
+     * @return void
      */
     public static function hookPublishPostXMLRPC($id = 0)
     {
@@ -742,7 +797,8 @@ class SucuriScanHook extends SucuriScanEvent
      * Send an alert notifying that an attempt to retrieve the password
      * of an user account was tried.
      *
-     * @param string $title The name of the user account involved in the trasaction.
+     * @param  string $title The name of the user account involved in the trasaction.
+     * @return void
      */
     public static function hookRetrievePassword($title = '')
     {
@@ -753,6 +809,8 @@ class SucuriScanHook extends SucuriScanEvent
 
     /**
      * Detects when a theme is deleted.
+     *
+     * @return void
      */
     public static function hookThemeDelete()
     {
@@ -772,6 +830,8 @@ class SucuriScanHook extends SucuriScanEvent
 
     /**
      * Detects when the theme editor is used.
+     *
+     * @return void
      */
     public static function hookThemeEditor()
     {
@@ -792,6 +852,8 @@ class SucuriScanHook extends SucuriScanEvent
 
     /**
      * Detects when a theme is installed.
+     *
+     * @return void
      */
     public static function hookThemeInstall()
     {
@@ -811,7 +873,8 @@ class SucuriScanHook extends SucuriScanEvent
     /**
      * Send an alert notifying that the theme of the site was changed.
      *
-     * @param string $title The name of the new theme selected to used through out the site.
+     * @param  string $title The name of the new theme selected to used through out the site.
+     * @return void
      */
     public static function hookThemeSwitch($title = '')
     {
@@ -823,6 +886,8 @@ class SucuriScanHook extends SucuriScanEvent
 
     /**
      * Detects when a theme is automatically or manually updated.
+     *
+     * @return void
      */
     public static function hookThemeUpdate()
     {
@@ -853,14 +918,15 @@ class SucuriScanHook extends SucuriScanEvent
             }
 
             // Report updated themes at once.
-            if (!empty($items_affected)) {
-                $message_tpl = ( count($items_affected) > 1 )
-                    ? 'Themes updated: (multiple entries): %s'
-                    : 'Theme updated: %s';
-                $message = sprintf(
-                    $message_tpl,
-                    @implode(',', $items_affected)
-                );
+            if (is_array($items_affected) && !empty($items_affected)) {
+                if (count($items_affected) > 1) {
+                    $message = 'Themes updated: (multiple entries):';
+                } else {
+                    $message = 'Theme updated:';
+                }
+
+                $message .= "\x20" . implode(',', $items_affected);
+
                 self::reportWarningEvent($message);
                 self::notifyEvent('theme_updated', $message);
             }
@@ -870,7 +936,8 @@ class SucuriScanHook extends SucuriScanEvent
     /**
      * Send an alert notifying that a user account was deleted.
      *
-     * @param int $id The identifier of the user account deleted.
+     * @param  int $id The identifier of the user account deleted.
+     * @return void
      */
     public static function hookUserDelete($id = 0)
     {
@@ -880,15 +947,17 @@ class SucuriScanHook extends SucuriScanEvent
     /**
      * Send an alert notifying that a new user account was created.
      *
-     * @param int $id The identifier of the new user account created.
+     * @param  int $id The identifier of the new user account created.
+     * @return void
      */
     public static function hookUserRegister($id = 0)
     {
         $title = 'unknown';
         $email = 'user@domain.com';
         $roles = 'none';
+        $data = get_userdata($id);
 
-        if ($data = get_userdata($id)) {
+        if ($data) {
             $title = $data->user_login;
             $email = $data->user_email;
             $roles = @implode(', ', $data->roles);
@@ -907,6 +976,8 @@ class SucuriScanHook extends SucuriScanEvent
 
     /**
      * Detects when a widget is added.
+     *
+     * @return void
      */
     public static function hookWidgetAdd()
     {
@@ -915,6 +986,8 @@ class SucuriScanHook extends SucuriScanEvent
 
     /**
      * Detects when a widget is added.
+     *
+     * @return void
      */
     private static function hookWidgetChanges()
     {
@@ -950,6 +1023,8 @@ class SucuriScanHook extends SucuriScanEvent
 
     /**
      * Detects when a widget is deleted.
+     *
+     * @return void
      */
     public static function hookWidgetDelete()
     {

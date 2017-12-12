@@ -3,9 +3,15 @@
 /**
  * Code related to the settings-webinfo.php interface.
  *
- * @package Sucuri Security
- * @subpackage settings-webinfo.php
- * @copyright Since 2010 Sucuri Inc.
+ * PHP version 5
+ *
+ * @category   Library
+ * @package    Sucuri
+ * @subpackage SucuriScanner
+ * @author     Daniel Cid <dcid@sucuri.net>
+ * @copyright  2010-2017 Sucuri Inc.
+ * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
+ * @link       https://wordpress.org/plugins/sucuri-scanner
  */
 
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
@@ -23,25 +29,19 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  */
 function sucuriscan_settings_webinfo_details()
 {
-    global $wpdb;
-
-    $params = array(
-        'ServerInfo.Variables' => '',
-    );
-
+    $params = array();
     $info_vars = array(
         'Plugin_version' => SUCURISCAN_VERSION,
         'Last_filesystem_scan' => SucuriScanFSScanner::getFilesystemRuntime(true),
         'Datetime_and_Timezone' => '',
         'Operating_system' => sprintf('%s (%d Bit)', PHP_OS, PHP_INT_SIZE * 8),
-        'Server' => __('Unknown', SUCURISCAN_TEXTDOMAIN),
-        'WordPress_debug' => __('NotActive', SUCURISCAN_TEXTDOMAIN),
-        'Memory_usage' => __('Unknown', SUCURISCAN_TEXTDOMAIN),
-        'MySQL_version' => '0.0',
-        'SQL_mode' => __('NotSet', SUCURISCAN_TEXTDOMAIN),
+        'Server' => 'unknown',
+        'WordPress_debug' => 'not active',
+        'Memory_usage' => 'unknown',
         'PHP_version' => PHP_VERSION,
     );
 
+    $params['ServerInfo.Variables'] = '';
     $info_vars['Datetime_and_Timezone'] = sprintf(
         '%s (%s)',
         SucuriScan::datetime(),
@@ -49,7 +49,7 @@ function sucuriscan_settings_webinfo_details()
     );
 
     if (defined('WP_DEBUG') && WP_DEBUG) {
-        $info_vars['WordPress_debug'] = __('Active', SUCURISCAN_TEXTDOMAIN);
+        $info_vars['WordPress_debug'] = 'active';
     }
 
     if (function_exists('memory_get_usage')) {
@@ -58,15 +58,6 @@ function sucuriscan_settings_webinfo_details()
 
     if (isset($_SERVER['SERVER_SOFTWARE'])) {
         $info_vars['Server'] = $_SERVER['SERVER_SOFTWARE'];
-    }
-
-    if ($wpdb) {
-        $info_vars['MySQL_version'] = $wpdb->get_var('SELECT VERSION() AS version');
-
-        $mysql_info = $wpdb->get_results('SHOW VARIABLES LIKE "sql_mode"');
-        if (is_array($mysql_info) && !empty($mysql_info[0]->Value)) {
-            $info_vars['SQL_mode'] = $mysql_info[0]->Value;
-        }
     }
 
     /* PHP INI Settings */
@@ -106,11 +97,13 @@ function sucuriscan_settings_webinfo_details()
     foreach ($info_vars as $var_name => $var_value) {
         $var_name = str_replace('_', "\x20", $var_name);
 
-        $params['ServerInfo.Variables'] .=
-        SucuriScanTemplate::getSnippet('settings-webinfo-details', array(
-            'ServerInfo.Title' => $var_name,
-            'ServerInfo.Value' => $var_value,
-        ));
+        $params['ServerInfo.Variables'] .= SucuriScanTemplate::getSnippet(
+            'settings-webinfo-details',
+            array(
+                'ServerInfo.Title' => $var_name,
+                'ServerInfo.Value' => $var_value,
+            )
+        );
     }
 
     return SucuriScanTemplate::getSection('settings-webinfo-details', $params);
@@ -131,7 +124,7 @@ function sucuriscan_settings_webinfo_htaccess()
         'HTAccess.StandardVisible' => 'hidden',
         'HTAccess.NotFoundVisible' => 'hidden',
         'HTAccess.FoundVisible' => 'hidden',
-        'HTAccess.Fpath' => __('Unknown', SUCURISCAN_TEXTDOMAIN),
+        'HTAccess.Fpath' => 'unknown',
     );
 
     if ($htaccess) {
@@ -165,7 +158,9 @@ function sucuriscan_settings_webinfo_htaccess()
 function sucuriscan_htaccess_is_standard($rules = '')
 {
     if (!$rules) {
-        if ($htaccess = SucuriScan::getHtaccessPath()) {
+        $htaccess = SucuriScan::getHtaccessPath();
+
+        if ($htaccess) {
             $rules = SucuriScanFileInfo::fileContent($htaccess);
         }
     }
