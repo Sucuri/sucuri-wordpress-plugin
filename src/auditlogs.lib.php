@@ -3,9 +3,15 @@
 /**
  * Code related to the auditlogs.lib.php interface.
  *
- * @package Sucuri Security
- * @subpackage auditlogs.lib.php
- * @copyright Since 2010 Sucuri Inc.
+ * PHP version 5
+ *
+ * @category   Library
+ * @package    Sucuri
+ * @subpackage SucuriScanner
+ * @author     Daniel Cid <dcid@sucuri.net>
+ * @copyright  2010-2017 Sucuri Inc.
+ * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
+ * @link       https://wordpress.org/plugins/sucuri-scanner
  */
 
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
@@ -18,6 +24,14 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
 
 /**
  * Lists the logs collected by the API service.
+ *
+ * @category   Library
+ * @package    Sucuri
+ * @subpackage SucuriScanner
+ * @author     Daniel Cid <dcid@sucuri.net>
+ * @copyright  2010-2017 Sucuri Inc.
+ * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
+ * @link       https://wordpress.org/plugins/sucuri-scanner
  */
 class SucuriScanAuditLogs
 {
@@ -55,6 +69,8 @@ class SucuriScanAuditLogs
      * output it means that XDebug cannot cover the next line, leaving a report
      * with a missing line in the coverage. Since the test case takes care of
      * the functionality of this code we will assume that it is fully covered.
+     *
+     * @return void
      */
     public static function ajaxAuditLogs()
     {
@@ -92,14 +108,16 @@ class SucuriScanAuditLogs
             ob_end_clean();
 
             /* report latency in the API calls */
-            $response['status'] = !is_array($auditlogs)
-            ? __('AuditLogsNoAPI', SUCURISCAN_TEXTDOMAIN)
-            : sprintf('API %s secs', round($duration, 4));
+            if (!is_array($auditlogs)) {
+                $response['status'] = 'API is not available; using local queue';
+            } else {
+                $response['status'] = sprintf('API %s secs', round($duration, 4));
+            }
         }
 
         /* explain missing API key */
         if (!SucuriScanAPI::getPluginKey()) {
-            $response['status'] = __('APIKeyMissing', SUCURISCAN_TEXTDOMAIN);
+            $response['status'] = 'API key is missing';
         }
 
         /* stop everything and report errors */
@@ -113,13 +131,12 @@ class SucuriScanAuditLogs
         }
 
         /* merge the logs from the queue system */
-        if ($queuelogs = SucuriScanAPI::getAuditLogsFromQueue()) {
+        $queuelogs = SucuriScanAPI::getAuditLogsFromQueue();
+
+        if (is_array($queuelogs) && !empty($queuelogs)) {
             if (!$auditlogs) {
                 $auditlogs = $queuelogs;
             } else {
-                $auditlogs['total_entries'] = isset($auditlogs['total_entries'])
-                    ? ($auditlogs['total_entries'] + $queuelogs['total_entries'])
-                    : $queuelogs['total_entries'];
                 $auditlogs['output'] = array_merge(
                     $queuelogs['output'],
                     @$auditlogs['output']
@@ -128,102 +145,114 @@ class SucuriScanAuditLogs
                     $queuelogs['output_data'],
                     @$auditlogs['output_data']
                 );
+
+                if (isset($auditlogs['total_entries'])) {
+                    $auditlogs['total_entries'] = $auditlogs['total_entries'] + $queuelogs['total_entries'];
+                } else {
+                    $auditlogs['total_entries'] = $queuelogs['total_entries'];
+                }
             }
         }
 
-        if (is_array($auditlogs)
-            && isset($auditlogs['output_data'])
-            && isset($auditlogs['total_entries'])
-            && is_array($auditlogs['output_data'])
-            && is_numeric($auditlogs['total_entries'])
+        if (!is_array($auditlogs)
+            || !isset($auditlogs['output_data'])
+            || !isset($auditlogs['total_entries'])
+            || !is_array($auditlogs['output_data'])
+            || !is_numeric($auditlogs['total_entries'])
         ) {
-            $counter_i = 0;
-            $total_items = 0;
-            $previousDate = '';
-            $todaysDate = SucuriScan::datetime(null, 'M d, Y');
-            $iterator_start = ($pageNumber - 1) * $maxPerPage;
-            $total_items = count($auditlogs['output_data']);
+            $response['content'] = 'There are no logs.';
+            wp_send_json($response, 200);
+            return;
+        }
 
-            usort($auditlogs['output_data'], array('SucuriScanAuditLogs', 'sortByDate'));
+        $counter_i = 0;
+        $previousDate = '';
+        $outdata = (array) $auditlogs['output_data'];
+        $todaysDate = SucuriScan::datetime(null, 'M d, Y');
+        $iterator_start = ($pageNumber - 1) * $maxPerPage;
+        $show_password = SucuriScanOption::isEnabled(':notify_failed_password');
+        $total_items = count($outdata);
 
-            for ($i = $iterator_start; $i < $total_items; $i++) {
-                if ($counter_i > $maxPerPage) {
-                    break;
+        usort($outdata, array('SucuriScanAuditLogs', 'sortByDate'));
+
+        for ($i = $iterator_start; $i < $total_items; $i++) {
+            if ($counter_i > $maxPerPage) {
+                break;
+            }
+
+            if (!isset($outdata[$i])) {
+                continue;
+            }
+
+            $audit_log = (array) $outdata[$i];
+
+            if (!$show_password && strpos($audit_log['message'], ";\x20password:")) {
+                $idx = strpos($audit_log['message'], ";\x20password:");
+                $audit_log['message'] = substr($audit_log['message'], 0, $idx);
+            }
+
+            $snippet_data = array(
+                'AuditLog.Event' => $audit_log['event'],
+                'AuditLog.Time' => SucuriScan::datetime($audit_log['timestamp'], 'H:i'),
+                'AuditLog.Date' => SucuriScan::datetime($audit_log['timestamp'], 'M d, Y'),
+                'AuditLog.Username' => $audit_log['username'],
+                'AuditLog.Address' => $audit_log['remote_addr'],
+                'AuditLog.Message' => $audit_log['message'],
+                'AuditLog.Extra' => '',
+            );
+
+            /* determine if we need to print the date */
+            if ($snippet_data['AuditLog.Date'] === $previousDate) {
+                $snippet_data['AuditLog.Date'] = '';
+            } elseif ($snippet_data['AuditLog.Date'] === $todaysDate) {
+                $previousDate = $snippet_data['AuditLog.Date'];
+                $snippet_data['AuditLog.Date'] = 'Today';
+            } else {
+                $previousDate = $snippet_data['AuditLog.Date'];
+            }
+
+            /* decorate date if necessary */
+            if (!empty($snippet_data['AuditLog.Date'])) {
+                $snippet_data['AuditLog.Date'] = '<div class="sucuriscan-aud'
+                . 'itlog-date">' . $snippet_data['AuditLog.Date'] . '</div>';
+            }
+
+            /* print every file_list information item in a separate table */
+            if ($audit_log['file_list']) {
+                $snippet_data['AuditLog.Extra'] .= '<ul class="sucuriscan-list-as-table">';
+
+                foreach ($audit_log['file_list'] as $log_extra) {
+                    $snippet_data['AuditLog.Extra'] .= '<li>' . SucuriScan::escape($log_extra) . '</li>';
                 }
 
-                if (!isset($auditlogs['output_data'][$i])) {
-                    continue;
-                }
+                $snippet_data['AuditLog.Extra'] .= '</ul>';
+            }
 
-                $audit_log = $auditlogs['output_data'][$i];
+            /* simplify the details of events with low metadata */
+            if (strpos($audit_log['message'], 'status has been changed')) {
+                $snippet_data['AuditLog.Extra'] = implode(",\x20", $audit_log['file_list']);
+            }
 
-                $snippet_data = array(
-                    'AuditLog.Event' => $audit_log['event'],
-                    'AuditLog.Time' => SucuriScan::datetime($audit_log['timestamp'], 'H:i'),
-                    'AuditLog.Date' => SucuriScan::datetime($audit_log['timestamp'], 'M d, Y'),
-                    'AuditLog.Username' => $audit_log['username'],
-                    'AuditLog.Address' => $audit_log['remote_addr'],
-                    'AuditLog.Message' => $audit_log['message'],
-                    'AuditLog.Extra' => '',
+            $response['content'] .= SucuriScanTemplate::getSnippet('auditlogs', $snippet_data);
+            $counter_i += 1;
+        }
+
+        $response['count'] = $counter_i;
+
+        if ($total_items > 1) {
+            $maxpages = ceil($auditlogs['total_entries'] / $maxPerPage);
+
+            if ($maxpages > SUCURISCAN_MAX_PAGINATION_BUTTONS) {
+                $maxpages = SUCURISCAN_MAX_PAGINATION_BUTTONS;
+            }
+
+            if ($maxpages > 1) {
+                $response['pagination'] = SucuriScanTemplate::pagination(
+                    SucuriScanTemplate::getUrl(),
+                    ($maxPerPage * $maxpages),
+                    $maxPerPage
                 );
-
-                /* determine if we need to print the date */
-                if ($snippet_data['AuditLog.Date'] === $previousDate) {
-                    $snippet_data['AuditLog.Date'] = '';
-                } elseif ($snippet_data['AuditLog.Date'] === $todaysDate) {
-                    $previousDate = $snippet_data['AuditLog.Date'];
-                    $snippet_data['AuditLog.Date'] = __('Today', SUCURISCAN_TEXTDOMAIN);
-                } else {
-                    $previousDate = $snippet_data['AuditLog.Date'];
-                }
-
-                /* decorate date if necessary */
-                if (!empty($snippet_data['AuditLog.Date'])) {
-                    $snippet_data['AuditLog.Date'] =
-                    '<div class="sucuriscan-auditlog-date">'
-                    . $snippet_data['AuditLog.Date']
-                    . '</div>';
-                }
-
-                /* print every file_list information item in a separate table */
-                if ($audit_log['file_list']) {
-                    $snippet_data['AuditLog.Extra'] .= '<ul class="sucuriscan-list-as-table">';
-
-                    foreach ($audit_log['file_list'] as $log_extra) {
-                        $snippet_data['AuditLog.Extra'] .= '<li>' . SucuriScan::escape($log_extra) . '</li>';
-                    }
-
-                    $snippet_data['AuditLog.Extra'] .= '</ul>';
-                }
-
-                /* simplify the details of events with low metadata */
-                if (strpos($audit_log['message'], 'status has been changed')) {
-                    $snippet_data['AuditLog.Extra'] = implode(",\x20", $audit_log['file_list']);
-                }
-
-                $response['content'] .= SucuriScanTemplate::getSnippet('auditlogs', $snippet_data);
-                $counter_i += 1;
             }
-
-            $response['count'] = $counter_i;
-
-            if ($total_items > 1) {
-                $maxpages = ceil($auditlogs['total_entries'] / $maxPerPage);
-
-                if ($maxpages > SUCURISCAN_MAX_PAGINATION_BUTTONS) {
-                    $maxpages = SUCURISCAN_MAX_PAGINATION_BUTTONS;
-                }
-
-                if ($maxpages > 1) {
-                    $response['pagination'] = SucuriScanTemplate::pagination(
-                        SucuriScanTemplate::getUrl(),
-                        ($maxPerPage * $maxpages),
-                        $maxPerPage
-                    );
-                }
-            }
-        } else {
-            $response['content'] = __('NoLogs', SUCURISCAN_TEXTDOMAIN);
         }
 
         $cache = new SucuriScanCache('auditqueue');
@@ -242,6 +271,8 @@ class SucuriScanAuditLogs
      * output it means that XDebug cannot cover the next line, leaving a report
      * with a missing line in the coverage. Since the test case takes care of
      * the functionality of this code we will assume that it is fully covered.
+     *
+     * @return void
      */
     public static function ajaxAuditLogsSendLogs()
     {
@@ -261,9 +292,9 @@ class SucuriScanAuditLogs
      * queue is emptied, we will have to sort the entries in the list to keep
      * the dates in sync.
      *
-     * @param array $a Data associated to a single log.
-     * @param array $b Data associated to another log.
-     * @return int Comparison between the dates of both logs.
+     * @param  array $a Data associated to a single log.
+     * @param  array $b Data associated to another log.
+     * @return int      Comparison between the dates of both logs.
      */
     public static function sortByDate($a, $b)
     {

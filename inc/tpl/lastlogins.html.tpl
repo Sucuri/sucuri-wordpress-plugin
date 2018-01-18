@@ -1,11 +1,11 @@
 
 <div class="sucuriscan-tabs">
     <ul class="sucuriscan-clearfix sucuriscan-tabs-buttons">
-        <li><a href="%%SUCURI.URL.Lastlogins%%#allusers">@@SUCURI.AllUsers@@</a></li>
-        <li><a href="%%SUCURI.URL.Lastlogins%%#admins">@@SUCURI.Admins@@</a></li>
-        <li><a href="%%SUCURI.URL.Lastlogins%%#loggedin">@@SUCURI.LoggedInUsers@@</a></li>
-        <li><a href="%%SUCURI.URL.Lastlogins%%#failed">@@SUCURI.FailedLogins@@</a></li>
-        <li><a href="%%SUCURI.URL.Lastlogins%%#blocked">@@SUCURI.BlockedUsers@@</a></li>
+        <li><a href="%%SUCURI.URL.Lastlogins%%#allusers">All Users</a></li>
+        <li><a href="%%SUCURI.URL.Lastlogins%%#admins">Admins</a></li>
+        <li><a href="%%SUCURI.URL.Lastlogins%%#loggedin">Logged-in Users</a></li>
+        <li><a href="%%SUCURI.URL.Lastlogins%%#failed">Failed logins</a></li>
+        <li><a href="%%SUCURI.URL.Lastlogins%%#blocked">Blocked Users</a></li>
     </ul>
 
     <div class="sucuriscan-tabs-containers">

@@ -17,18 +17,18 @@
 
         <div class="sucuriscan-pull-right sucuriscan-navbar">
             <ul>
-                <li><a href="https://goo.gl/aByqP5" target="_blank" rel="noopener" class="button button-secondary">@@SUCURI.Review@@</a></li>
+                <li><a href="https://goo.gl/aByqP5" target="_blank" rel="noopener" class="button button-secondary">Review</a></li>
 
                 <li class="sucuriscan-%%SUCURI.GenerateAPIKey.Visibility%%">
                     <a href="#" class="button button-primary sucuriscan-modal-button sucuriscan-register-site-button"
-                    data-modalid="sucuriscan-register-site">@@SUCURI.GenerateAPIKey@@</a>
+                    data-modalid="sucuriscan-register-site">Generate API Key</a>
                 </li>
 
-                <li><a href="%%SUCURI.URL.Dashboard%%" class="button button-primary">@@SUCURI.Dashboard@@</a></li>
+                <li><a href="%%SUCURI.URL.Dashboard%%" class="button button-primary">Dashboard</a></li>
 
-                <li><a href="%%SUCURI.URL.Firewall%%" class="button button-primary">@@SUCURI.Firewall@@</a></li>
+                <li><a href="%%SUCURI.URL.Firewall%%" class="button button-primary">Firewall (WAF)</a></li>
 
-                <li><a href="%%SUCURI.URL.Settings%%" class="button button-primary">@@SUCURI.Settings@@</a></li>
+                <li><a href="%%SUCURI.URL.Settings%%" class="button button-primary">Settings</a></li>
             </ul>
         </div>
     </div>
@@ -38,6 +38,6 @@
     </div>
 
     <div class="sucuriscan-clearfix sucuriscan-footer">
-        <div>@@SUCURI.Copyright@@</div>
+        <div>Copyright &copy; %%SUCURI.Year%% Sucuri Inc. All Rights Reserved.</div>
     </div>
 </div>

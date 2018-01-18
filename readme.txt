@@ -4,7 +4,7 @@ Donate Link: https://sucuri.net/
 Tags: malware, security, firewall, scan, spam, virus, sucuri, protection, WordPress Security, Login Security, Security Auditing, File Integrity, htaccess, phishing, backdoors, SQL Injection, RFI, LFI, XSS, CSRF, website firewall, Website Security, Performance Optimization, Zero Day, Software Vulnerability, Exploits, Hacks, Attackers, Bad Actors, Reverse Proxy, Two Factor Security, Two Factor Authentication, Security Logs, HeatBleed Vulnerability, Website Protection, Bash Vulnerability, RevSlider Vulnerability, MailPoet Vulnerability, Malware Prevention, Website Security, Website Firewall, Website AntiVirus, Security Response, Security Detection, Security Prevention
 Requires at least: 3.6
 Tested up to: 4.8.0
-Stable tag: 1.8.7
+Stable tag: 1.8.11
 
 The Sucuri WordPress Security plugin is a security toolset for security integrity monitoring, malware detection and security hardening.
 
@@ -181,10 +181,64 @@ No, it is not required. The Website Firewall runs in the cloud without the need 
 
 == Upgrade Notice ==
 
-= 1.8.7 =
+= 1.8.11 =
 This version adds support for the latest version of WordPress. Introduces new features and fixes some bugs reported by the WordPress community as well as bugs found by our automated testing system.
 
 == Changelog ==
+
+= 1.8.11 =
+* Modify Sucuri firewall detection with regular expressions
+* Modify option to force scanner to ignore directories
+* Modify form to monitor and ignore post-types
+* Modify miscellaneous changes in some alert messages
+* Modify error message displaying for invalid CSRF validations
+* Fix minor issues with the version detection code
+* Remove internationalization support for consistency
+* Add support for the RTL reading direction
+* Add API key in admin notice when it is being deleted
+* Fix modification date for corrupt core files
+* Fix audit log parser for incompatible JSON data
+* Fix password visibility when the option is changed
+
+= 1.8.10 =
+* Version bump skipped
+
+= 1.8.9 =
+* Remove duplicated failed user authentication log
+* Remove trailing forward slash from asset URL
+* Fix post-type ignore tool to allow hyphens in the ID
+* Fix queries to the database in the last logins page
+* Remove unnecessary option queries to the database
+* Fix PHP notice for a string offset cast occurred
+* Remove unnecessary data from the website info page
+* Modify timing for the execution of the Ajax requests
+
+= 1.8.8 =
+* Add smart limit to send logs from the queue to the API
+* Add option to ignore events for post transitions
+* Fix infinite loop with email alerts and SMTP plugin
+* Add option to configure the malware scanner target URL
+* Add option to enable the auto clear cache firewall function
+* Modify status of the directory hardening using the Firewall
+* Modify error message in audit logs when the API key is missing
+* Modify timing for the dashboard alerts after an update
+* Modify firewall clear cache button to execute via Ajax
+* Modify firewall settings page to load data via Ajax
+* Add option to blacklist IP addresses with the Firewall API
+* Fix order of the audit logs when the queue is merged
+* Add more directories to ignore during the scans
+* Add option to customize the URL for the malware scans
+* Fix error interception for Firewall API errors
+* Add support for other English and Spanish based languages
+* Modify mechanism to ignore files from integrity checks
+* Add option to stop sending the failed login passwords
+* Modify default value for some of the alert settings
+* Remove unnecessary statistics panel for the audit logs
+* Modify output for the malware results to simplify links
+* Add option to override the timezone for the datetime
+* Add option to configure the WordPress checksums API
+* Add maximum execution time avoidance in the integrity tool
+* Add support to run diff on deleted WordPress files
 
 = 1.8.7 =
 * Fix multiple issues with the API calls
@@ -238,7 +292,7 @@ This version adds support for the latest version of WordPress. Introduces new fe
 * Fix lazy load of the CSS and Scripts on the correct pages
 * Add audit log message fixer for the wpephpcompat_jobs event
 * Fix website URL in the template for the email alerts
-* Add message in the core integrity tool for false/positives
+* Add message in the core integrity tool for false positives
 * Add option to reset the content of some storage files
 * Add mechanism to display self-hosting logs as fallback
 * Fix incoherent failed login processor on pagination

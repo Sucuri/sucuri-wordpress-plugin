@@ -3,9 +3,15 @@
 /**
  * Code related to the installer-skin.lib.php interface.
  *
- * @package Sucuri Security
- * @subpackage installer-skin.lib.php
- * @copyright Since 2010 Sucuri Inc.
+ * PHP version 5
+ *
+ * @category   Library
+ * @package    Sucuri
+ * @subpackage SucuriScanner
+ * @author     Daniel Cid <dcid@sucuri.net>
+ * @copyright  2010-2017 Sucuri Inc.
+ * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
+ * @link       https://wordpress.org/plugins/sucuri-scanner
  */
 
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
@@ -18,8 +24,8 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
 
 if (class_exists('SucuriScanInterface') && class_exists('SucuriScanRequest')) {
     if (SucuriScanRequest::post('form_action') == 'reset_plugin') {
-        include_once(ABSPATH . '/wp-admin/includes/class-wp-upgrader.php');
-        include_once(ABSPATH . '/wp-admin/includes/plugin-install.php');
+        include_once ABSPATH . '/wp-admin/includes/class-wp-upgrader.php';
+        include_once ABSPATH . '/wp-admin/includes/plugin-install.php';
 
         /**
          * Plugin Installer Skin for WordPress Plugin Installer.
@@ -30,16 +36,23 @@ if (class_exists('SucuriScanInterface') && class_exists('SucuriScanRequest')) {
          * process immediately and we will not be able to disregard these logs
          * after the operation has finished.
          *
-         * @see WP_Upgrader_Skin
-         *
          * @codeCoverageIgnore
+         *
+         * @category   Library
+         * @package    Sucuri
+         * @subpackage SucuriScanner
+         * @author     Daniel Cid <dcid@sucuri.net>
+         * @copyright  2010-2017 Sucuri Inc.
+         * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
+         * @link       https://wordpress.org/plugins/sucuri-scanner
          */
         class SucuriScanPluginInstallerSkin extends Plugin_Installer_Skin
         {
             /**
              * Reports the progress of the plugin installation.
              *
-             * @param string $string Message to send to the buffer.
+             * @param  string $string Message to send to the buffer.
+             * @return void
              */
             public function feedback($string = '')
             {

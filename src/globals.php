@@ -3,9 +3,15 @@
 /**
  * Code related to the globals.php interface.
  *
- * @package Sucuri Security
- * @subpackage globals.php
- * @copyright Since 2010 Sucuri Inc.
+ * PHP version 5
+ *
+ * @category   Library
+ * @package    Sucuri
+ * @subpackage SucuriScanner
+ * @author     Daniel Cid <dcid@sucuri.net>
+ * @copyright  2010-2017 Sucuri Inc.
+ * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
+ * @link       https://wordpress.org/plugins/sucuri-scanner
  */
 
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
@@ -69,100 +75,14 @@ if (defined('SUCURISCAN')) {
      *
      * @return array List of sub-pages of this plugin.
      */
-    function sucuriscan_pages()
+    function sucuriscanMainPages()
     {
         return array(
-            'sucuriscan' => __('Dashboard', SUCURISCAN_TEXTDOMAIN),
-            'sucuriscan_firewall' => __('Firewall', SUCURISCAN_TEXTDOMAIN),
-            'sucuriscan_lastlogins' => __('LastLogins', SUCURISCAN_TEXTDOMAIN),
-            'sucuriscan_settings' => __('Settings', SUCURISCAN_TEXTDOMAIN),
+            'sucuriscan' => 'Dashboard',
+            'sucuriscan_firewall' => 'Firewall (WAF)',
+            'sucuriscan_lastlogins' => 'Last Logins',
+            'sucuriscan_settings' => 'Settings',
         );
-    }
-
-    if (function_exists('load_plugin_textdomain')) {
-        /**
-         * Loads the language files for the entire interface.
-         *
-         * Internationalization is the process of developing your plugin so it
-         * can be translated into other languages. Localization describes the
-         * process of translating an internationalized plugin. Internationaliza-
-         * tion is often abbreviated as i18n (there are 18 letters between the
-         * i and the n) and localization is abbreviated as l10n (there are 10
-         * letters between the l and the n).
-         *
-         * @see https://codex.wordpress.org/I18n_for_WordPress_Developers
-         */
-        function sucuriscan_load_plugin_textdomain()
-        {
-            global $locale;
-
-            $default_locale = 'en_US';
-            $pofile = sprintf(
-                '%s/languages/%s-%s.po',
-                SUCURISCAN_PLUGIN_PATH,
-                SUCURISCAN_TEXTDOMAIN,
-                $locale
-            );
-            $mofile = sprintf(
-                '%s/languages/%s-%s.mo',
-                SUCURISCAN_PLUGIN_PATH,
-                SUCURISCAN_TEXTDOMAIN,
-                $locale
-            );
-
-            /* attempt to import the English POT file into LOCALE */
-            if (!file_exists($pofile) || !file_exists($mofile)) {
-                $fallback = array(
-                    'en_NZ' => 'en_US', /* English (New Zealand) */
-                    'en_CA' => 'en_US', /* English (Canada) */
-                    'en_ZA' => 'en_US', /* English (South Africa) */
-                    'en_GB' => 'en_US', /* English (UK) */
-                    'en_AU' => 'en_US', /* English (Australia) */
-                    'es_AR' => 'es_ES', /* Español de Argentina */
-                    'es_MX' => 'es_ES', /* Español de México */
-                    'es_CO' => 'es_ES', /* Español de Colombia */
-                    'es_GT' => 'es_ES', /* Español de Guatemala */
-                    'es_VE' => 'es_ES', /* Español de Venezuela */
-                    'es_CL' => 'es_ES', /* Español de Chile */
-                    'es_PE' => 'es_ES', /* Español de Perú */
-                );
-
-                /* try to find a similar translation */
-                if (array_key_exists($locale, $fallback)) {
-                    $default_locale = $fallback[$locale];
-                }
-
-                $en_pofile = sprintf(
-                    '%s/languages/%s-%s.po',
-                    SUCURISCAN_PLUGIN_PATH,
-                    SUCURISCAN_TEXTDOMAIN,
-                    $default_locale
-                );
-                $en_mofile = sprintf(
-                    '%s/languages/%s-%s.mo',
-                    SUCURISCAN_PLUGIN_PATH,
-                    SUCURISCAN_TEXTDOMAIN,
-                    $default_locale
-                );
-
-                @copy($en_pofile, $pofile);
-                @copy($en_mofile, $mofile);
-            }
-
-            /* fallback to English on language import failure */
-            if (!file_exists($pofile) || !file_exists($mofile)) {
-                $locale = $default_locale;
-                setlocale(LC_ALL, $default_locale);
-            }
-
-            load_plugin_textdomain(
-                SUCURISCAN_TEXTDOMAIN,
-                false, /* deprecated */
-                SUCURISCAN_PLUGIN_FOLDER . '/languages/'
-            );
-        }
-
-        add_action('init', 'sucuriscan_load_plugin_textdomain');
     }
 
     if (function_exists('add_action')) {
@@ -174,10 +94,12 @@ if (defined('SUCURISCAN')) {
          * administration panel of the subsites.
          *
          * @codeCoverageIgnore
+         *
+         * @return void
          */
-        function sucuriscan_add_menu_page()
+        function sucuriscanAddMenuPage()
         {
-            $pages = sucuriscan_pages();
+            $pages = sucuriscanMainPages();
 
             add_menu_page(
                 'Sucuri Security',
@@ -201,7 +123,7 @@ if (defined('SUCURISCAN')) {
         }
 
         /* Attach HTTP request handlers for the internal plugin pages */
-        add_action($sucuriscan_action_prefix . 'admin_menu', 'sucuriscan_add_menu_page');
+        add_action($sucuriscan_action_prefix . 'admin_menu', 'sucuriscanAddMenuPage');
 
         /* Attach HTTP request handlers for the AJAX requests */
         add_action('wp_ajax_sucuriscan_ajax', 'sucuriscan_ajax');

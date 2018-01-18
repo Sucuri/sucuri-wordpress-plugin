@@ -3,9 +3,15 @@
 /**
  * Code related to the pagehandler.php interface.
  *
- * @package Sucuri Security
- * @subpackage pagehandler.php
- * @copyright Since 2010 Sucuri Inc.
+ * PHP version 5
+ *
+ * @category   Library
+ * @package    Sucuri
+ * @subpackage SucuriScanner
+ * @author     Daniel Cid <dcid@sucuri.net>
+ * @copyright  2010-2017 Sucuri Inc.
+ * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
+ * @link       https://wordpress.org/plugins/sucuri-scanner
  */
 
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
@@ -18,6 +24,8 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
 
 /**
  * Renders the content of the plugin's dashboard page.
+ *
+ * @return void
  */
 function sucuriscan_page()
 {
@@ -32,12 +40,12 @@ function sucuriscan_page()
     $params['AuditLogs'] = SucuriScanAuditLogs::pageAuditLogs();
 
     /* load data for the SiteCheck section */
-    $params['SiteCheck.iFramesTitle'] = __('iFrames', SUCURISCAN_TEXTDOMAIN);
-    $params['SiteCheck.LinksTitle'] = __('Links', SUCURISCAN_TEXTDOMAIN);
-    $params['SiteCheck.ScriptsTitle'] = __('Scripts', SUCURISCAN_TEXTDOMAIN);
-    $params['SiteCheck.iFramesContent'] = __('Loading', SUCURISCAN_TEXTDOMAIN);
-    $params['SiteCheck.LinksContent'] = __('Loading', SUCURISCAN_TEXTDOMAIN);
-    $params['SiteCheck.ScriptsContent'] = __('Loading', SUCURISCAN_TEXTDOMAIN);
+    $params['SiteCheck.iFramesTitle'] = 'iFrames';
+    $params['SiteCheck.LinksTitle'] = 'Links';
+    $params['SiteCheck.ScriptsTitle'] = 'Scripts';
+    $params['SiteCheck.iFramesContent'] = 'Loading...';
+    $params['SiteCheck.LinksContent'] = 'Loading...';
+    $params['SiteCheck.ScriptsContent'] = 'Loading...';
     $params['SiteCheck.Malware'] = '<div id="sucuriscan-malware"></div>';
     $params['SiteCheck.Blacklist'] = '<div id="sucuriscan-blacklist"></div>';
     $params['SiteCheck.Recommendations'] = '<div id="sucuriscan-recommendations"></div>';
@@ -47,6 +55,8 @@ function sucuriscan_page()
 
 /**
  * Renders the content of the plugin's firewall page.
+ *
+ * @return void
  */
 function sucuriscan_firewall_page()
 {
@@ -64,6 +74,8 @@ function sucuriscan_firewall_page()
 
 /**
  * Renders the content of the plugin's last logins page.
+ *
+ * @return void
  */
 function sucuriscan_lastlogins_page()
 {
@@ -77,9 +89,9 @@ function sucuriscan_lastlogins_page()
 
         if (@unlink($file_path)) {
             sucuriscan_lastlogins_datastore_exists();
-            SucuriScanInterface::info(__('LastLoginsResetSuccess', SUCURISCAN_TEXTDOMAIN));
+            SucuriScanInterface::info('Last-Logins logs were successfully reset.');
         } else {
-            SucuriScanInterface::error(__('LastLoginsResetFailure', SUCURISCAN_TEXTDOMAIN));
+            SucuriScanInterface::error('Could not reset the last-logins data file.');
         }
     }
 
@@ -97,6 +109,8 @@ function sucuriscan_lastlogins_page()
 
 /**
  * Renders the content of the plugin's settings page.
+ *
+ * @return void
  */
 function sucuriscan_settings_page()
 {
@@ -120,7 +134,6 @@ function sucuriscan_settings_page()
     /* settings - scanner */
     $params['Settings.Scanner.Cronjobs'] = SucuriScanSettingsScanner::cronjobs($nonce);
     $params['Settings.Scanner.IntegrityDiffUtility'] = SucuriScanSettingsIntegrity::diffUtility($nonce);
-    $params['Settings.Scanner.IntegrityLanguage'] = SucuriScanSettingsIntegrity::language($nonce);
     $params['Settings.Scanner.IntegrityCache'] = SucuriScanSettingsIntegrity::cache($nonce);
     $params['Settings.Scanner.IgnoreFolders'] = SucuriScanSettingsScanner::ignoreFolders($nonce);
 
@@ -168,6 +181,8 @@ function sucuriscan_settings_page()
 
 /**
  * Handles all the AJAX plugin's requests.
+ *
+ * @return void
  */
 function sucuriscan_ajax()
 {
@@ -190,7 +205,6 @@ function sucuriscan_ajax()
         SucuriScanSettingsPosthack::getPluginsAjax();
         SucuriScanSettingsPosthack::resetPasswordAjax();
         SucuriScanSettingsPosthack::resetPluginAjax();
-        SucuriScanSettingsScanner::ignoreFoldersAjax();
     }
 
     wp_send_json(array('ok' => false, 'error' => 'invalid ajax action'), 200);
