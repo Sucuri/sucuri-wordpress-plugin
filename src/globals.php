@@ -143,7 +143,7 @@ if (defined('SUCURISCAN')) {
         add_action('activated_plugin', 'SucuriScanHook::hookPluginActivate', 50, 2);
         add_action('add_attachment', 'SucuriScanHook::hookAttachmentAdd', 50, 5);
         add_action('add_link', 'SucuriScanHook::hookLinkAdd', 50, 5);
-        add_action('add_user_to_blog', 'SuciriScanHook::hookAddUserToBlog', 50, 4);
+        add_action('add_user_to_blog', 'SucuriScanHook::hookAddUserToBlog', 50, 4);
         add_action('before_delete_post', 'SucuriScanHook::hookPostBeforeDelete', 50, 5);
         add_action('create_category', 'SucuriScanHook::hookCategoryCreate', 50, 5);
         add_action('deactivated_plugin', 'SucuriScanHook::hookPluginDeactivate', 50, 2);
@@ -155,7 +155,7 @@ if (defined('SUCURISCAN')) {
         add_action('publish_page', 'SucuriScanHook::hookPublishPage', 50, 5);
         add_action('publish_phone', 'SucuriScanHook::hookPublishPhone', 50, 5);
         add_action('publish_post', 'SucuriScanHook::hookPublishPost', 50, 5);
-        add_action('remove_user_from_blog', 'SuciriScanHook::hookRemoveUserFromBlog', 50, 2);
+        add_action('remove_user_from_blog', 'SucuriScanHook::hookRemoveUserFromBlog', 50, 2);
         add_action('retrieve_password', 'SucuriScanHook::hookRetrievePassword', 50, 5);
         add_action('switch_theme', 'SucuriScanHook::hookThemeSwitch', 50, 5);
         add_action('transition_post_status', 'SucuriScanHook::hookPostStatus', 50, 3);

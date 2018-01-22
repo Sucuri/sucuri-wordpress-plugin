@@ -88,7 +88,7 @@ class SucuriScanHook extends SucuriScanEvent
             $email = $data->user_email;
         }
 
-        $message = sprintf('User added to blog; user_id: %s; role: %s; blog_id: %s; name: %s; email: %s',
+        $message = sprintf('User added to website; user_id: %s; role: %s; blog_id: %s; name: %s; email: %s',
             $user_id, 
             $role, 
             $blog_id,
@@ -114,7 +114,7 @@ class SucuriScanHook extends SucuriScanEvent
             $email = $data->user_email;
         }
         
-        $message = sprintf('User removed from blog; user_id: %s; blog_id: %s; name: %s; email: %s',
+        $message = sprintf('User removed from website; user_id: %s; blog_id: %s; name: %s; email: %s',
             $user_id, 
             $blog_id,
             $title,
