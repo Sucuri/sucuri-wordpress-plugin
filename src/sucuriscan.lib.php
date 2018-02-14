@@ -770,15 +770,15 @@ class SucuriScan
      */
     public static function isValidCIDR($remote_addr = '')
     {
-        $status = false;
-
-        if (preg_match('/^([0-9\.]{7,15})\/(8|16|24)$/', $remote_addr, $match)) {
-            if (self::isValidIP($match[1])) {
-                $status = true;
-            }
+        if (!is_string($remote_addr)) {
+            return false;
         }
 
-        return $status;
+        if (preg_match('/^([0-9\.]{7,15})\/(8|16|24)$/', $remote_addr, $match)) {
+            return self::isValidIP($match[1]);
+        }
+
+        return false;
     }
 
     /**
@@ -905,5 +905,16 @@ class SucuriScan
     public static function isIISServer()
     {
         return (bool) (stripos(@$_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS') !== false);
+    }
+
+    /**
+     * Returns the md5 hash representing the content of a file.
+     *
+     * @param  string $file Relative path to the file.
+     * @return string       Seven first characters in the hash of the file.
+     */
+    public static function fileVersion($file = '')
+    {
+        return substr(md5_file(SUCURISCAN_PLUGIN_PATH . '/' . $file), 0, 7);
     }
 }

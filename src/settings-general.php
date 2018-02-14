@@ -476,7 +476,6 @@ function sucuriscan_settings_general_importexport($nonce)
     $params = array();
     $allowed = array(
         ':addr_header',
-        ':api_key',
         ':api_protocol',
         ':api_service',
         ':cloudproxy_apikey',
@@ -549,6 +548,26 @@ function sucuriscan_settings_general_importexport($nonce)
                     $count++;
                 }
 
+                /* import trusted ip addresses */
+                if (array_key_exists('trusted_ips', $data) && is_array($data)) {
+                    $cache = new SucuriScanCache('trustip');
+
+                    foreach ($data['trusted_ips'] as $trustedIP) {
+                        $trustedIP = str_replace('\/', '/', $trustedIP);
+                        $trustedIP = str_replace('/32', '', $trustedIP);
+
+                        if (SucuriScan::isValidIP($trustedIP) || SucuriScan::isValidCIDR($trustedIP)) {
+                            $ipInfo = SucuriScan::getIPInfo($trustedIP);
+                            $cacheKey = md5($ipInfo['remote_addr']);
+                            $ipInfo['added_at'] = time();
+
+                            if (!$cache->exists($cacheKey)) {
+                                $cache->add($cacheKey, $ipInfo);
+                            }
+                        }
+                    }
+                }
+
                 SucuriScanInterface::info(
                     sprintf(
                         '%d out of %d option have been successfully imported',
@@ -567,6 +586,14 @@ function sucuriscan_settings_general_importexport($nonce)
     foreach ($allowed as $option) {
         $option_name = SucuriScan::varPrefix($option);
         $settings[$option_name] = SucuriScanOption::getOption($option);
+    }
+
+    /* include the trusted IP address list */
+    $settings['trusted_ips'] = array();
+    $cache = new SucuriScanCache('trustip');
+    $trusted = $cache->getAll();
+    foreach ($trusted as $trustedIP) {
+        $settings['trusted_ips'][] = $trustedIP->cidr_format;
     }
 
     $params['Export'] = @json_encode($settings);

@@ -139,8 +139,8 @@ function sucuriscan_settings_alerts_trustedips()
         if ($trust_ip) {
             if (SucuriScan::isValidIP($trust_ip) || SucuriScan::isValidCIDR($trust_ip)) {
                 $ip_info = SucuriScan::getIPInfo($trust_ip);
-                $ip_info['added_at'] = time();
                 $cache_key = md5($ip_info['remote_addr']);
+                $ip_info['added_at'] = time();
 
                 if ($cache->exists($cache_key)) {
                     SucuriScanInterface::error('The IP specified address was already added.');
@@ -405,7 +405,6 @@ function sucuriscan_settings_alerts_events($nonce)
         'sucuriscan_notify_user_registration' => 'user:' . 'Receive email alerts for new user registration',
         'sucuriscan_notify_success_login' => 'user:' . 'Receive email alerts for successful login attempts',
         'sucuriscan_notify_failed_login' => 'user:' . 'Receive email alerts for failed login attempts <em>(you may receive tons of emails)</em>',
-        'sucuriscan_notify_failed_password' => 'user:' . 'Receive email alerts for failed login attempts including the submitted password',
         'sucuriscan_notify_bruteforce_attack' => 'user:' . 'Receive email alerts for password guessing attacks <em>(summary of failed logins per hour)</em>',
         'sucuriscan_notify_post_publication' => 'setting:' . 'Receive email alerts for changes in the post status <em>(configure from Ignore Posts Changes)</em>',
         'sucuriscan_notify_website_updated' => 'setting:' . 'Receive email alerts when the WordPress version is updated',
@@ -441,7 +440,6 @@ function sucuriscan_settings_alerts_events($nonce)
         $params['Alerts.NoAlertsVisibility'] = 'visible';
         unset($notify_options['sucuriscan_notify_success_login']);
         unset($notify_options['sucuriscan_notify_failed_login']);
-        unset($notify_options['sucuriscan_notify_failed_password']);
     }
 
     // Process form submission to change the alert settings.
@@ -449,11 +447,6 @@ function sucuriscan_settings_alerts_events($nonce)
         // Update the notification settings.
         if (SucuriScanRequest::post(':save_alert_events') !== false) {
             $ucounter = 0;
-
-            /* disable password tracker for failed logins as well */
-            if (SucuriScanRequest::post(':notify_failed_login') === '0') {
-                $_POST['sucuriscan_notify_failed_password'] = '0';
-            }
 
             foreach ($notify_options as $alert_type => $alert_label) {
                 $option_value = SucuriScanRequest::post($alert_type, '(1|0)');

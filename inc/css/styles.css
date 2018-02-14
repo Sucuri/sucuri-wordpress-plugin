@@ -46,7 +46,7 @@ body.sucuri-security_page_sucuriscan_hardening {
     height: 30px;
     line-height: normal;
 }
-.sucuriscan-container input[type=text] {
+.sucuriscan-container input[type='text'] {
     margin: 0;
     padding: 0 7px;
     line-height: 28px;
@@ -62,6 +62,7 @@ body.sucuri-security_page_sucuriscan_hardening {
     text-transform: uppercase;
     line-height: 30px;
     font-weight: 700;
+    cursor: initial;
 }
 .sucuriscan-container fieldset span {
     line-height: 30px;
@@ -71,8 +72,8 @@ body.sucuri-security_page_sucuriscan_hardening {
 .sucuriscan-container fieldset label,
 .sucuriscan-container fieldset select,
 .sucuriscan-container fieldset button,
-.sucuriscan-container fieldset input[type=text],
-.sucuriscan-container fieldset input[type=checkbox],
+.sucuriscan-container fieldset input[type='text'],
+.sucuriscan-container fieldset input[type='checkbox'],
 .wp-core-ui .sucuriscan-container fieldset .button,
 .wp-core-ui .sucuriscan-container fieldset .button-primary,
 .wp-core-ui .sucuriscan-container fieldset .button-secondary {
@@ -83,13 +84,13 @@ body.sucuri-security_page_sucuriscan_hardening {
 .sucuriscan-container fieldset label {
     margin-left: 0;
 }
-.sucuriscan-container fieldset input[type=checkbox] {
+.sucuriscan-container fieldset input[type='checkbox'] {
     margin-top: 7px;
     margin-bottom: 7px;
 }
 .sucuriscan-container .sucuriscan-full-textarea {
     width: 100%;
-    min-height: 300px;
+    min-height: 400px;
     background: #efefef;
     word-break: break-all;
     padding: 20px;
@@ -898,8 +899,8 @@ body.sucuri-security_page_sucuriscan_hardening {
 .rtl .sucuriscan-container fieldset label,
 .rtl .sucuriscan-container fieldset select,
 .rtl .sucuriscan-container fieldset button,
-.rtl .sucuriscan-container fieldset input[type=text],
-.rtl .sucuriscan-container fieldset input[type=checkbox],
+.rtl .sucuriscan-container fieldset input[type='text'],
+.rtl .sucuriscan-container fieldset input[type='checkbox'],
 .rtl .wp-core-ui .sucuriscan-container fieldset .button,
 .rtl .wp-core-ui .sucuriscan-container fieldset .button-primary,
 .rtl .wp-core-ui .sucuriscan-container fieldset .button-secondary {

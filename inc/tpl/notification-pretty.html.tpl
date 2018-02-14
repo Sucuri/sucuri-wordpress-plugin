@@ -18,6 +18,7 @@
                 <p style="margin:0 0 10px 0">
                     Website: <a href="http://%%SUCURI.Website%%">%%SUCURI.Website%%</a><br>
                     IP Address: %%SUCURI.RemoteAddress%%<br>
+                    Reverse IP: %%SUCURI.ReverseAddress%%<br>
                     Date/Time: %%SUCURI.Time%%<br>
                     %%SUCURI.User%%
                 </p>

@@ -16,7 +16,6 @@
                             <input id="cb-select-all-1" type="checkbox">
                         </td>
                         <th class="manage-column">Username</th>
-                        <th class="manage-column">Password</th>
                         <th class="manage-column">IP Address</th>
                         <th class="manage-column">Date/Time</th>
                         <th class="manage-column" width="300">Web Browser</th>
@@ -27,13 +26,13 @@
                     %%%SUCURI.FailedLogins.List%%%
 
                     <tr class="sucuriscan-%%SUCURI.FailedLogins.NoItemsVisibility%%">
-                        <td colspan="6">
+                        <td colspan="5">
                             <em>no data available</em>
                         </td>
                     </tr>
 
                     <tr class="sucuriscan-%%SUCURI.FailedLogins.PaginationVisibility%%">
-                        <td colspan="6">
+                        <td colspan="5">
                             <ul class="sucuriscan-pagination">
                                 %%%SUCURI.FailedLogins.PaginationLinks%%%
                             </ul>

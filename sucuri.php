@@ -234,7 +234,7 @@ require_once 'src/globals.php';
 
 /* Load WP-CLI command */
 if (defined('WP_CLI') && WP_CLI) {
-    require_once('src/cli.lib.php');
+    include_once 'src/cli.lib.php';
 }
 
 /**
