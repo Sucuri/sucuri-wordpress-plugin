@@ -69,6 +69,59 @@ class SucuriScanHook extends SucuriScanEvent
         self::reportNoticeEvent($message);
         self::notifyEvent('post_publication', $message);
     }
+    
+    /**
+     * Send and alert notifying that a user was added to a blog.
+     *
+     * @param int    $user_id User ID.
+     * @param string $role    User role.
+     * @param int    $blog_id Blog ID.
+     */
+    public static function hookAddUserToBlog($user_id, $role, $blog_id)
+    {
+        $title = 'unknown';
+        $email = 'user@domain.com';
+        $data = get_userdata($user_id);
+
+        if ($data) {
+            $title = $data->user_login;
+            $email = $data->user_email;
+        }
+
+        $message = sprintf('User added to website; user_id: %s; role: %s; blog_id: %s; name: %s; email: %s',
+            $user_id, 
+            $role, 
+            $blog_id,
+            $title,
+            $email
+        );
+        self::reportWarningEvent($message);
+    }
+
+    /**
+     * Send and alert notifying that a user was removed from a blog.
+     *
+     * @param int    $user_id User ID.
+     * @param int    $blog_id Blog ID.
+     */
+    public static function hookRemoveUserFromBlog($user_id, $blog_id) {
+        $title = 'unknown';
+        $email = 'user@domain.com';
+        $data = get_userdata($user_id);
+
+        if ($data) {
+            $title = $data->user_login;
+            $email = $data->user_email;
+        }
+        
+        $message = sprintf('User removed from website; user_id: %s; blog_id: %s; name: %s; email: %s',
+            $user_id, 
+            $blog_id,
+            $title,
+            $email
+        );
+        self::reportWarningEvent($message);
+    }
 
     /**
      * Send an alert notifying that a category was created.
@@ -936,6 +989,46 @@ class SucuriScanHook extends SucuriScanEvent
     public static function hookUserDelete($id = 0)
     {
         self::reportWarningEvent('User account deleted; ID: ' . $id);
+    }
+
+    /**
+     * Send an alert notifying that a user was edited.
+     * @param int $id The identifier of the edited user account
+     * @param object $old_user_data Object containing user's data prior to update.
+     */
+    public static function hookProfileUpdate($id = 0, $old_user_data)
+    {
+        $title = 'unknown';
+        $email = 'user@domain.com';
+        $roles = 'none';
+        $data = get_userdata($id);
+
+        if ($data) {
+            $title = $data->user_login;
+            $email = $data->user_email;
+            $roles = @implode(', ', $data->roles);
+        }
+
+        $old_title = 'unknown';
+        $old_email = 'user@domain.com';
+        $old_roles = 'none';
+
+        if($old_user_data) {
+            $old_title = $old_user_data->user_login;
+            $old_email = $old_user_data->user_email;
+            $old_roles = @implode(', ', $old_user_data->roles);
+        }
+
+        $message = sprintf('User account edited; ID: %s; name: %s; old_name: %s; email: %s; old_email: %s; roles: %s; old_roles: %s',
+            $id,
+            $title,
+            $old_title,
+            $email,
+            $old_email,
+            $roles,
+            $old_roles
+        );
+        self::reportWarningEvent($message);
     }
 
     /**
