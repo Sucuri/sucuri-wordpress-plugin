@@ -5,7 +5,6 @@
         <li><a href="%%SUCURI.URL.Lastlogins%%#admins">Admins</a></li>
         <li><a href="%%SUCURI.URL.Lastlogins%%#loggedin">Logged-in Users</a></li>
         <li><a href="%%SUCURI.URL.Lastlogins%%#failed">Failed logins</a></li>
-        <li><a href="%%SUCURI.URL.Lastlogins%%#blocked">Blocked Users</a></li>
     </ul>
 
     <div class="sucuriscan-tabs-containers">
@@ -23,10 +22,6 @@
 
         <div id="sucuriscan-tabs-failed">
             %%%SUCURI.FailedLogins%%%
-        </div>
-
-        <div id="sucuriscan-tabs-blocked">
-            %%%SUCURI.BlockedUsers%%%
         </div>
     </div>
 </div>

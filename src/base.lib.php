@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Code related to the sucuriscan.lib.php interface.
+ * Code related to the base.lib.php interface.
  *
  * PHP version 5
  *
@@ -259,7 +259,10 @@ class SucuriScan
      */
     public static function fixPath($path = '')
     {
-        return rtrim(str_replace(DIRECTORY_SEPARATOR, '/', $path), '/');
+        $new = str_replace(DIRECTORY_SEPARATOR, '/', $path);
+        $new = rtrim($new, '/'); /* purge right side. */
+
+        return empty($new) ? '/' : $new;
     }
 
     /**

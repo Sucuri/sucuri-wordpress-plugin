@@ -39,15 +39,6 @@ function sucuriscan_failed_logins_panel()
         'FailedLogins.PaginationVisibility' => 'hidden',
     );
 
-    if (SucuriScanInterface::checkNonce()) {
-        $blockUsers = SucuriScanRequest::post(':block_user', '_array');
-
-        if (is_array($blockUsers) && !empty($blockUsers)) {
-            SucuriScanBlockedUsers::block($blockUsers);
-            SucuriScanInterface::info('Selected user accounts were blocked');
-        }
-    }
-
     // Define variables for the pagination.
     $page_number = SucuriScanTemplate::pageNumber();
     $max_per_page = SUCURISCAN_MAX_PAGINATION_BUTTONS;

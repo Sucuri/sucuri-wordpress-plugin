@@ -6,7 +6,7 @@
  * Plugin URI: https://wordpress.sucuri.net/
  * Author URI: https://sucuri.net/
  * Author: Sucuri Inc.
- * Version: 1.8.11
+ * Version: 1.8.12
  *
  * PHP version 5
  *
@@ -83,7 +83,12 @@ define('SUCURISCAN', 'sucuriscan');
 /**
  * Current version of the plugin's code.
  */
-define('SUCURISCAN_VERSION', '1.8.11');
+define('SUCURISCAN_VERSION', '1.8.12');
+
+/**
+ * Defines the human readable name of the plugin.
+ */
+define('SUCURISCAN_PLUGIN_NAME', 'Sucuri Security - Auditing, Malware Scanner and Hardening');
 
 /**
  * The name of the folder where the plugin's files will be located.
@@ -189,7 +194,7 @@ if (!array_key_exists('SERVER_NAME', $_SERVER)) {
 }
 
 /* Load all classes before anything else. */
-require_once 'src/sucuriscan.lib.php';
+require_once 'src/base.lib.php';
 require_once 'src/request.lib.php';
 require_once 'src/fileinfo.lib.php';
 require_once 'src/cache.lib.php';
@@ -216,7 +221,6 @@ require_once 'src/pagehandler.php';
 require_once 'src/lastlogins.php';
 require_once 'src/lastlogins-loggedin.php';
 require_once 'src/lastlogins-failed.php';
-require_once 'src/lastlogins-blocked.php';
 
 /* Load handlers for main pages (settings). */
 require_once 'src/settings.php';

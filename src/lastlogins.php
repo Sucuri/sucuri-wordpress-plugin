@@ -240,7 +240,7 @@ function sucuriscan_lastlogins_datastore_is_readable()
     return false;
 }
 
-if (!function_exists('sucuri_set_lastlogin')) {
+if (!function_exists('sucuriscan_set_lastlogin')) {
     /**
      * Add a new user session to the list of last user logins.
      *
@@ -398,7 +398,7 @@ function sucuriscan_get_logins($limit = 10, $offset = 0, $user_id = 0)
     return $last_logins;
 }
 
-if (!function_exists('sucuri_login_redirect')) {
+if (!function_exists('sucuriscan_login_redirect')) {
     /**
      * Hook for the wp-login action to redirect the user to a specific URL after
      * his successfully login to the administrator interface.
@@ -427,7 +427,7 @@ if (!function_exists('sucuri_login_redirect')) {
     }
 }
 
-if (!function_exists('sucuri_get_user_lastlogin')) {
+if (!function_exists('sucuriscan_get_user_lastlogin')) {
     /**
      * Display the last user login at the top of the admin interface.
      *

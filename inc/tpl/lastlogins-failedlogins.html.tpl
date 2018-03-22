@@ -11,10 +11,6 @@
             <table class="wp-list-table widefat sucuriscan-table sucuriscan-lastlogins-failed">
                 <thead>
                     <tr>
-                        <td id="cb" class="manage-column column-cb check-column">
-                            <label class="screen-reader-text" for="cb-select-all-1">Select All</label>
-                            <input id="cb-select-all-1" type="checkbox">
-                        </td>
                         <th class="manage-column">Username</th>
                         <th class="manage-column">IP Address</th>
                         <th class="manage-column">Date/Time</th>
@@ -26,13 +22,13 @@
                     %%%SUCURI.FailedLogins.List%%%
 
                     <tr class="sucuriscan-%%SUCURI.FailedLogins.NoItemsVisibility%%">
-                        <td colspan="5">
+                        <td colspan="4">
                             <em>no data available</em>
                         </td>
                     </tr>
 
                     <tr class="sucuriscan-%%SUCURI.FailedLogins.PaginationVisibility%%">
-                        <td colspan="5">
+                        <td colspan="4">
                             <ul class="sucuriscan-pagination">
                                 %%%SUCURI.FailedLogins.PaginationLinks%%%
                             </ul>

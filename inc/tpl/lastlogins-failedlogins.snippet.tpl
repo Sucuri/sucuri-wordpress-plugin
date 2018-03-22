@@ -1,9 +1,5 @@
 
 <tr>
-    <th class="check-column">
-        <input type="checkbox" name="sucuriscan_block_user[]" value="%%SUCURI.FailedLogins.Username%%">
-    </th>
-
     <td><span class="sucuriscan-monospace">%%SUCURI.FailedLogins.Username%%</span></td>
 
     <td><span class="sucuriscan-monospace">%%SUCURI.FailedLogins.RemoteAddr%%</span></td>

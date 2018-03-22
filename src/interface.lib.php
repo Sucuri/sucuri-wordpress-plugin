@@ -64,68 +64,74 @@ class SucuriScanInterface
     public static function enqueueScripts()
     {
         wp_register_style(
-            'sucuriscan1',
+            'sucuriscan',
             SUCURISCAN_URL . '/inc/css/styles.css',
             array(/* empty */),
             SucuriScan::fileVersion('inc/css/styles.css')
         );
-        wp_enqueue_style('sucuriscan1');
+        wp_enqueue_style('sucuriscan');
 
         wp_register_script(
-            'sucuriscan1',
+            'sucuriscan',
             SUCURISCAN_URL . '/inc/js/scripts.js',
             array(/* empty */),
             SucuriScan::fileVersion('inc/js/scripts.js')
         );
-        wp_enqueue_script('sucuriscan1');
+        wp_enqueue_script('sucuriscan');
 
         if (SucuriScanRequest::get('page', 'sucuriscan_firewall') !== false) {
             wp_register_style(
-                'sucuriscan3',
+                'sucuriscan2',
                 SUCURISCAN_URL . '/inc/css/flags.min.css',
                 array(/* empty */),
                 SucuriScan::fileVersion('inc/css/flags.min.css')
             );
-            wp_enqueue_style('sucuriscan3');
+            wp_enqueue_style('sucuriscan2');
         }
     }
 
     /**
-     * Remove the old Sucuri plugins considering that with the new version (after
-     * 1.6.0) all the functionality of the others will be merged here, this will
-     * remove duplicated functionality, duplicated bugs and/or duplicated
-     * maintenance reports allowing us to focus in one unique project.
+     * Remove the old Sucuri plugins.
+     *
+     * Considering that in the new version (after 1.6.0) all the functionality
+     * of the others will be merged here, this will remove duplicated code,
+     * duplicated bugs and/or duplicated maintenance reports allowing us to
+     * focus in one unique project.
      *
      * @return void
      */
     public static function handleOldPlugins()
     {
-        if (class_exists('SucuriScanFileInfo')) {
-            $finfo = new SucuriScanFileInfo();
-            $finfo->ignore_files = false;
-            $finfo->ignore_directories = false;
-            $finfo->skip_directories = false;
-            $finfo->run_recursively = true;
+        // @codeCoverageIgnoreStart
+        if (!class_exists('SucuriScanFileInfo')) {
+            return;
+        }
+        // @codeCoverageIgnoreEnd
 
-            $plugins = array(
-                'c3VjdXJpLXdwLXBsdWdpbi9zdWN1cmkucGhw',
-                'c3VjdXJpLWNsb3VkcHJveHktd2FmL2Nsb3VkcHJveHkucGhw',
-                'ZGVzc2t5LXNlY3VyaXR5L2Rlc3NreS1zZWN1cml0eS5waHA=',
-            );
+        $finfo = new SucuriScanFileInfo();
+        $finfo->ignore_files = false;
+        $finfo->ignore_directories = false;
+        $finfo->skip_directories = false;
+        $finfo->run_recursively = true;
 
-            foreach ($plugins as $plugin) {
-                $plugin = base64_decode($plugin);
-                $plugin_directory = dirname(WP_PLUGIN_DIR . '/' . $plugin);
+        $plugins = array(
+            'c3VjdXJpLXdwLXBsdWdpbi9zdWN1cmkucGhw',
+            'c3VjdXJpLWNsb3VkcHJveHktd2FmL2Nsb3VkcHJveHkucGhw',
+            'ZGVzc2t5LXNlY3VyaXR5L2Rlc3NreS1zZWN1cml0eS5waHA=',
+        );
 
-                if (file_exists($plugin_directory)) {
-                    if (is_plugin_active($plugin)) {
-                        // @codeCoverageIgnoreStart
-                        deactivate_plugins($plugin);
-                        // @codeCoverageIgnoreEnd
-                    }
+        foreach ($plugins as $plugin) {
+            $plugin = base64_decode($plugin);
+            $plugin_directory = dirname(WP_PLUGIN_DIR . '/' . $plugin);
 
-                    $finfo->removeDirectoryTree($plugin_directory);
+            if (file_exists($plugin_directory)) {
+                if (is_plugin_active($plugin)) {
+                    // @codeCoverageIgnoreStart
+                    deactivate_plugins($plugin);
+                    // @codeCoverageIgnoreEnd
                 }
+
+                $finfo->removeDirectoryTree($plugin_directory);
             }
         }
     }
@@ -258,7 +264,7 @@ class SucuriScanInterface
     {
         if (!function_exists('current_user_can') || !current_user_can('manage_options')) {
             SucuriScan::throwException('Access denied; cannot manage options');
-            wp_die('Access denied by Sucuri Inc.');
+            wp_die('Access denied by ' . SUCURISCAN_PLUGIN_NAME);
         }
     }
 
@@ -279,17 +285,7 @@ class SucuriScanInterface
 
             if (!$nonce_value || !wp_verify_nonce($nonce_value, $nonce_name)) {
                 SucuriScan::throwException('Nonce is invalid');
-                self::error(
-                    'WordPress CSRF verification failed. The submitted form is'
-                    . ' missing an important unique code that prevents automat'
-                    . 'ed unwated access, go back and try again. If you did no'
-                    . 't submit a form, this error message could be an indicat'
-                    . 'ion of an incompatibility between this plugin and anoth'
-                    . 'er add-on; one of them is inserting data into the globa'
-                    . 'l POST variable when the HTTP request is coming via GET'
-                    . '. Disable them one by one (while reloading this page) t'
-                    . 'o find the culprit.'
-                );
+                self::error('WordPress CSRF verification failed. The submitted form is missing an important unique code that prevents the execution of automated malicious scanners. Go back and try again. If you did not submit a form, this error message could be an indication of an incompatibility between this plugin and another add-on; one of them is inserting data into the global POST variable when the HTTP request is coming via GET. Disable them one by one (while reloading this page) to find the culprit.');
                 return false;
             }
         }

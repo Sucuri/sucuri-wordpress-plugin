@@ -2,7 +2,7 @@
 <tr>
     <td class="sucuriscan-firewall-accesslog sucuriscan-monospace">
         <div class="sucuriscan-accesslog-origin">
-            <img src="%%SUCURI.SucuriURL%%/inc/images/blank.png"
+            <img src="%%SUCURI.PluginURL%%/inc/images/blank.png"
             class="sucuriscan-flag sucuriscan-flag-%%SUCURI.AccessLog.RequestCountryCode%%" />
             <span>%%SUCURI.AccessLog.RemoteAddr%%</span>
             <span>(%%SUCURI.AccessLog.RequestCountryName%%)</span>

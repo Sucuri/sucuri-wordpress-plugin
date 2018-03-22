@@ -210,6 +210,7 @@ function sucuriscan_settings_alerts_subject($nonce)
         'Sucuri Alert, :domain, :event, :username',
         'Sucuri Alert, :domain, :event, :email',
         'Sucuri Alert, :event, :remoteaddr',
+        'Sucuri Alert, :event, :hostname',
         'Sucuri Alert, :event',
     );
 
@@ -396,7 +397,7 @@ function sucuriscan_settings_alerts_events($nonce)
     $params['Alerts.NoAlertsVisibility'] = 'hidden';
 
     $notify_options = array(
-        'sucuriscan_notify_plugin_change' => 'setting:' . 'Receive email alerts for changes in the settings of the Sucuri plugin',
+        'sucuriscan_notify_plugin_change' => 'setting:' . 'Receive email alerts for changes in the settings of the plugin',
         'sucuriscan_prettify_mails' => 'setting:' . 'Receive email alerts in HTML <em>(there may be issues with some mail services)</em>',
         'sucuriscan_use_wpmail' => 'setting:' . 'Use WordPress functions to send mails <em>(uncheck to use native PHP functions)</em>',
         'sucuriscan_lastlogin_redirection' => 'setting:' . 'Allow redirection after login to report the last-login information',

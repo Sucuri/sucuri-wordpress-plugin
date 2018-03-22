@@ -586,6 +586,10 @@ class SucuriScanIntegrity
             }
         }
 
+        sort($output['added']);
+        sort($output['removed']);
+        sort($output['modified']);
+
         return $output;
     }
 

@@ -97,12 +97,12 @@ class SucuriScanFSScanner extends SucuriScan
     /**
      * Returns a list of ignored directories.
      *
-     * The method returns an array with the following keys:
-     *
-     * - raw:             Contains the raw data from the local cache.
-     * - checksums:       Contains the md5 of all the directories.
-     * - directories:     Contains a list of directories.
-     * - ignored_at_list: Contains a list of timestamps.
+     * <ul>
+     * <li><b>raw:</b> Contains the raw data from the local cache.</li>
+     * <li><b>checksums:</b> Contains the md5 of all the directories.</li>
+     * <li><b>directories:</b> Contains a list of directories.</li>
+     * <li><b>ignored_at_list:</b> Contains a list of timestamps.</li>
+     * </ul>
      *
      * @return array List of ignored directories.
      */

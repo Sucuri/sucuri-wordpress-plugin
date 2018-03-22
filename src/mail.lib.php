@@ -122,9 +122,16 @@ class SucuriScanMail extends SucuriScanOption
     {
         $subject = self::getOption(':email_subject');
         $subject = strip_tags((string) $subject);
+        $ip = self::getRemoteAddr();
+
         $subject = str_replace(':event', $event, $subject);
         $subject = str_replace(':domain', self::getDomain(), $subject);
-        $subject = str_replace(':remoteaddr', self::getRemoteAddr(), $subject);
+        $subject = str_replace(':remoteaddr', $ip, $subject);
+
+        if (strpos($subject, ':hostname') !== false) {
+            /* expensive operation; reverse user ip address if requested */
+            $subject = str_replace(':hostname', gethostbyaddr($ip), $subject);
+        }
 
         /* include data from the user in session, if necessary */
         if (strpos($subject, ':username') !== false

@@ -9,7 +9,7 @@
     <div class="sucuriscan-header sucuriscan-clearfix">
         <div class="sucuriscan-pull-left">
             <a href="https://sucuri.net/signup" target="_blank" title="Sucuri Security" class="sucuriscan-logo">
-                <img src="%%SUCURI.SucuriURL%%/inc/images/pluginlogo.png" alt="Sucuri Inc." />
+                <img src="%%SUCURI.PluginURL%%/inc/images/pluginlogo.png" alt="Sucuri Inc." />
             </a>
             <span class="sucuriscan-subtitle">WP Plugin</span>
             <span class="sucuriscan-version">v%%SUCURI.PluginVersion%%</span>
