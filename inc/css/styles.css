@@ -63,6 +63,7 @@ body.sucuri-security_page_sucuriscan_hardening {
     line-height: 30px;
     font-weight: 700;
     cursor: initial;
+    margin-left: 0;
 }
 .sucuriscan-container fieldset span {
     line-height: 30px;
@@ -81,9 +82,6 @@ body.sucuri-security_page_sucuriscan_hardening {
     float: left;
     margin-left: 5px;
 }
-.sucuriscan-container fieldset label {
-    margin-left: 0;
-}
 .sucuriscan-container fieldset input[type='checkbox'] {
     margin-top: 7px;
     margin-bottom: 7px;
@@ -96,6 +94,10 @@ body.sucuri-security_page_sucuriscan_hardening {
     padding: 20px;
     margin: 0;
 }
+#adminmenu li.toplevel_page_sucuriscan .wp-menu-image img {
+    width: 18px;
+    height: 18px;
+}
 .sucuriscan-header {
     margin-top: 4px;
 }
@@ -105,6 +107,9 @@ body.sucuri-security_page_sucuriscan_hardening {
     margin-left: 10px;
     margin-right: 8px;
     text-decoration: none;
+}
+.sucuriscan-header .sucuriscan-logo img {
+    height: 33px;
 }
 .sucuriscan-header .sucuriscan-subtitle {
     color: #727376;
@@ -497,7 +502,8 @@ body.sucuri-security_page_sucuriscan_hardening {
     border-color: #ebccd1;
     color: #a94442;
 }
-.sucuriscan-hstatus-0 .button-primary {
+.sucuriscan-hstatus-0 .button-primary,
+.wp-core-ui .sucuriscan-container .sucuriscan-hstatus-0 .button-primary:visited {
     background: #9b2b27;
     border-color: #9b2b27;
 }
@@ -611,9 +617,11 @@ body.sucuri-security_page_sucuriscan_hardening {
 }
 .sucuriscan-integrity-correct .sucuriscan-integrity-right {
     background: url('../images/checkmark.png') no-repeat 25px 30px;
+    background-size: 62px 62px;
 }
 .sucuriscan-integrity-incorrect .sucuriscan-integrity-right {
     background: url('../images/checkcross.png') no-repeat 25px 30px;
+    background-size: 62px 62px;
 }
 .sucuriscan-integrity-loading .sucuriscan-integrity-missing {
     height: 147px;
@@ -710,12 +718,15 @@ body.sucuri-security_page_sucuriscan_hardening {
 }
 .sucuriscan-sitecheck-list-INFO {
     background: url('../images/checkinfo.png') no-repeat;
+    background-size: 18px 18px;
 }
 .sucuriscan-sitecheck-list-WARN {
     background: url('../images/checkwarn.png') no-repeat;
+    background-size: 18px 18px;
 }
 .sucuriscan-sitecheck-list-NOTICE {
     background: url('../images/checknotice.png') no-repeat;
+    background-size: 18px 18px;
 }
 .sucuriscan-sitecheck-list-INFO a,
 .sucuriscan-sitecheck-list-NOTICE a {
