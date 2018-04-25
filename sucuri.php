@@ -6,7 +6,7 @@
  * Plugin URI: https://wordpress.sucuri.net/
  * Author URI: https://sucuri.net/
  * Author: Sucuri Inc.
- * Version: 1.8.14
+ * Version: 1.8.15
  *
  * PHP version 5
  *
@@ -83,7 +83,7 @@ define('SUCURISCAN', 'sucuriscan');
 /**
  * Current version of the plugin's code.
  */
-define('SUCURISCAN_VERSION', '1.8.14');
+define('SUCURISCAN_VERSION', '1.8.15');
 
 /**
  * Defines the human readable name of the plugin.
