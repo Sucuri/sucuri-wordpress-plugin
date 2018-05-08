@@ -9,7 +9,7 @@
  * @package    Sucuri
  * @subpackage SucuriScanner
  * @author     Daniel Cid <dcid@sucuri.net>
- * @copyright  2010-2017 Sucuri Inc.
+ * @copyright  2010-2018 Sucuri Inc.
  * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
  * @link       https://wordpress.org/plugins/sucuri-scanner
  */
@@ -95,14 +95,19 @@ function sucuriscan_settings_general_apikey($nonce)
             $user_obj = SucuriScan::getUserByID($user_id);
 
             if ($user_obj && user_can($user_obj, 'administrator')) {
-                // Send request to generate new API key or display form to set manually.
-                if (SucuriScanAPI::registerSite($user_obj->user_email)) {
-                    $api_registered_modal = SucuriScanTemplate::getModal(
-                        'settings-apiregistered',
-                        array('Title' => 'Site registered successfully')
-                    );
+                // Check consent
+                if (SucuriScanRequest::post(':consent_tos') != 1 || SucuriScanRequest::post(':consent_storage') != 1) {
+                    SucuriScanInterface::error('You must accept the Terms of Service in order to get an API key.');
                 } else {
-                    $display_manual_key_form = true;
+                    // Send request to generate new API key or display form to set manually.
+                    if (SucuriScanAPI::registerSite($user_obj->user_email)) {
+                        $api_registered_modal = SucuriScanTemplate::getModal(
+                            'settings-apiregistered',
+                            array('Title' => 'Site registered successfully')
+                        );
+                    } else {
+                        $display_manual_key_form = true;
+                    }
                 }
             }
         }
