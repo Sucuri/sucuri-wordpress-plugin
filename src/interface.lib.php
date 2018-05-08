@@ -9,7 +9,7 @@
  * @package    Sucuri
  * @subpackage SucuriScanner
  * @author     Daniel Cid <dcid@sucuri.net>
- * @copyright  2010-2017 Sucuri Inc.
+ * @copyright  2010-2018 Sucuri Inc.
  * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
  * @link       https://wordpress.org/plugins/sucuri-scanner
  */
@@ -34,7 +34,7 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  * @package    Sucuri
  * @subpackage SucuriScanner
  * @author     Daniel Cid <dcid@sucuri.net>
- * @copyright  2010-2017 Sucuri Inc.
+ * @copyright  2010-2018 Sucuri Inc.
  * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
  * @link       https://wordpress.org/plugins/sucuri-scanner
  */
@@ -248,7 +248,7 @@ class SucuriScanInterface
          * security related newsletter where they can learn about better security
          * practices and get alerts from public vulnerabilities disclosures.
          *
-         * @date Featured added at - May 01, 2017
+         * @date Featured added at - May 01, 2018
          */
         self::info('Do you want to get vulnerability disclosures? Subscribe to our newsletter <a href="http://sucuri.hs-sites.com/subscribe-to-security" target="_blank" rel="noopener">here</a>');
     }

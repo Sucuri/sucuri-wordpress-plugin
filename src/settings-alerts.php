@@ -9,7 +9,7 @@
  * @package    Sucuri
  * @subpackage SucuriScanner
  * @author     Daniel Cid <dcid@sucuri.net>
- * @copyright  2010-2017 Sucuri Inc.
+ * @copyright  2010-2018 Sucuri Inc.
  * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
  * @link       https://wordpress.org/plugins/sucuri-scanner
  */
@@ -433,7 +433,7 @@ function sucuriscan_settings_alerts_events($nonce)
      * in the posts and the other plugin creates temporary post objects to track
      * the emails.
      *
-     * @date 30 June, 2017
+     * @date 30 June, 2018
      * @see https://wordpress.org/plugins/postman-smtp/
      * @see https://wordpress.org/support/topic/unable-to-access-wordpress-dashboard-after-update-to-1-8-7/
      */

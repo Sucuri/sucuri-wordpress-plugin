@@ -4,7 +4,7 @@ Donate Link: https://sucuri.net/
 Tags: malware, security, firewall, scan, spam, virus, sucuri, protection, blacklist, detection, hardening, file integrity
 Requires at least: 3.6
 Tested up to: 4.9.4
-Stable tag: 1.8.15
+Stable tag: 1.8.16
 
 The Sucuri WordPress Security plugin is a security toolset for security integrity monitoring, malware detection and security hardening.
 
@@ -12,7 +12,7 @@ The Sucuri WordPress Security plugin is a security toolset for security integrit
 
 Sucuri Inc. is a globally recognized authority in all matters related to website security, with specialization in WordPress Security.
 
-The Sucuri Security WordPress plugin is free to all WordPress users. It is a security suite meant to complement your existing security posture. It offers its users a set of security features for their website, each designed to have a positive affect on their security posture:
+The Sucuri Security WordPress plugin is free to all WordPress users. It is a security suite meant to complement your existing security posture. It offers its users a set of security features for their website, each designed to have a positive effect on their security posture:
 
 * Security Activity Auditing
 * File Integrity Monitoring
@@ -25,7 +25,7 @@ The Sucuri Security WordPress plugin is free to all WordPress users. It is a sec
 
 == Installation  ==
 
-The installation of the Sucuri Security WordPress Security plugin is very simple and straight forward. A detailed breakdown of the process is available [here](https://sucuri.net/wordpress-security-plugin-installation) (including images), however, below we outline the bare minimum steps.
+The installation of the Sucuri WordPress Security plugin is very simple and straight forward. A detailed breakdown of the process is available [here](https://sucuri.net/wordpress-security-plugin-installation) (including images), however, below we outline the bare minimum steps.
 
 To install Sucuri Security and complement your Security posture:
 
@@ -33,18 +33,18 @@ To install Sucuri Security and complement your Security posture:
 2. In the sidebar, choose "Plugins" and then "Add New",
 3. Type "sucuri" or "sucuri-scanner" in the search box,
 4. Install the option with the "By Sucuri Inc." at the foot,
-5. Once activated, you will find a new icon in the sidebar with the Sucuri logo, go to the plugin's dashboard and click the button that says "Generate API Key" to activate the event monitoring, this will generate an unique key to authenticate your website against the remote Sucuri WordPress API service,
-6. Feel free to visit the plugin' settings page to configure other options including the security alerts, hardening options, file system scanner paths, API service communication, among other things.
+5. Once activated, you will find a new icon in the sidebar with the Sucuri logo. Go to the plugin's dashboard and click the button that says "Generate API Key" to activate the event monitoring, this will generate a unique key to authenticate your website against the remote Sucuri WordPress API service,
+6. Feel free to visit the plugin' settings page to configure other options including the security alerts, hardening options, file system scanner paths and API service communication.
 
-Visit the [Support Forum](https://wordpress.org/support/plugin/sucuri-scanner) to ask questions, suggest new features, or report bugs. And recommend the plugin to your friends and colleagues if you think it can help other people.
+Visit the [Support Forum](https://wordpress.org/support/plugin/sucuri-scanner) to ask questions, suggest new features, or report bugs. And recommend the plugin to your friends and colleagues if you think it can help them.
 
 == Frequently Asked Questions ==
 
-More information can be found on the the Sucuri Security WordPress Security plugin via our free [Knowledge Base](https://kb.sucuri.net/plugins/WordPress+Plugin).
+More information on the Sucuri Security WordPress plugin can be found in our [Knowledge Base](https://kb.sucuri.net/plugins/WordPress+Plugin).
 
 = What is the security activity auditing? =
 
-This is perhaps the most underutilized security function. It’s the act of monitoring all security related events within your WordPress install. The challenge is, what makes up a security event. In the eyes of Sucuri, any change that occurs within the application could be categorized as a security event, as such we try to record it.
+This is perhaps the most underutilized security function. It’s the act of monitoring all security related events within your WordPress install. The challenge is, what makes up a security event. In the eyes of Sucuri, any change that occurs within the application could be categorized as a security event, and as such we try to record it.
 
 This is important because it gives you, the website owner, the ability to keep a good eye on the various changes occurring within your environment. Who is logging in? What changes are being made?
 
@@ -64,7 +64,7 @@ This feature is powered by our scanning engine, found on our free security scann
 
 = What is the blacklist monitoring? =
 
-Another very interesting feature of the Security Malware Scanner is that it incorporates various blacklist engines. Security blacklist engines include the following:
+Another very interesting feature of the Security Malware Scanner is that it checks various blacklist engines, including the following:
 
 * Sucuri Labs
 * Google Safe Browsing
@@ -77,9 +77,9 @@ Another very interesting feature of the Security Malware Scanner is that it inco
 * SpamHaus
 * Bitdefender
 
-These are some of the largest blacklisting entities, each having the ability to directly impact your brands online reputation. By synchronize with their environments we’re able to tell you, upon scan, whether any of them are negatively flagging your website with a security related issue. If they do, then via our website security product, we’re able to help you get off the their security blacklist.
+These are some of the largest blacklisting entities, each having the ability to directly impact your brand's online reputation. By synchronizing with their environments we’re able to tell you, upon scan, whether any of them are negatively flagging your website with a security related issue. If they do, then via our website security product, we’re able to help you get off of the security blacklist.
 
-= What is the effective security hardening =
+= What is effective security hardening =
 
 It’s easy to get lost in the world of security hardening. At Sucuri we clean hundreds of websites a day, many with the various security hardening configurations you find in various WordPress Security presentations. In this section, we add those that we feel to be most effective, and that complement the entire Sucuri suite of products.
 
@@ -93,7 +93,7 @@ Having all these security features would be useless unless you were notified of 
 
 = What is the website firewall (premium) =
 
-This is by far the coolest security feature Sucuri has to offer everyday website owners. It’s an enterprise grade Website Firewall designed to give you the best security protection any website can hope for. It protects your website from a variety of website attacks and security events to include:
+This is by far the coolest security feature Sucuri has to offer everyday website owners. It’s an enterprise grade Website Firewall designed to give you the best security protection any website can hope for. It protects your website from a variety of website attacks, including:
 
 * Denial of Service (DOS / DDOS) Attacks
 * Exploitation of Software Vulnerabilities
@@ -106,13 +106,13 @@ This is coupled with a number of features like:
 * Advanced Access Control Features
 * Failover and Redundancy
 
-This is **not included as a free** option to the plugin, but is integrated so that if purchased you are able to activate.  If you prefer to leverage the Sucuri Firewall product by itself, you have the option to operate the [Website Firewall WordPress Security](https://wordpress.org/plugins/sucuri-cloudproxy-waf/) plugin in standalone mode.
+This is **not included as a free** option of the plugin, but is integrated so that if purchased you are able to activate.  If you prefer to leverage the Sucuri Firewall product by itself, you have the option to operate the [Website Firewall WordPress Security](https://wordpress.org/plugins/sucuri-cloudproxy-waf/) plugin in standalone mode.
 
-The Sucuri Security WordPress Security plugin is built by the team that is known for their proactive approach to security. It is built using intelligence gathered from thousands upon thousands of remediation cases, millions of unique domain scans and 10’s of millions of website security attack blocks.
+The Sucuri WordPress Security plugin is built by the team that is known for their proactive approach to security. It is built using intelligence gathered from thousands upon thousands of remediation cases, millions of unique domain scans and 10’s of millions of website security attack blocks.
 
 = What does this plugin do that other security plugins don't do? =
 
-A few other security plugins provide activity monitoring features, but few do them well. The activity monitoring in this plugin is second to none, tying the activity into the Sucuri Security Operations Center (SOC) ensuring it's safe keeping.
+A few other security plugins provide activity monitoring features, but few do them well. The activity monitoring in this plugin is second to none, tying the activity into the Sucuri Security Operations Center (SOC) ensuring its safe keeping.
 
 This security plugin also takes a different approach to security plugins, stripping it of what we categorize as unnecessary features for a basic website end-user. We've narrowed the key features we felt were most pertinent to any website owner and integrated them into this plugin.
 
@@ -120,9 +120,9 @@ This security plugin also takes a different approach to security plugins, stripp
 
 No, this is a free plugin that we offer at no charge. It does not mean you get a free account.
 
-= If I have the premium plugin, do I need the Free plugin? =
+= If I have the premium plugin, do I need the free plugin? =
 
-The premium plugin was deprecated back in 2014. All the major features were merged into the free plugin. If you are still using the (old) premium plugin please consider to delete it and install the (new) free plugin from the WordPress plugin market. Notice that you will need to generate a new API key as the new API service does not supports the old one.
+The premium plugin was deprecated back in 2014. All the major features were merged into the free plugin. If you are still using the (old) premium plugin please consider deleting it and installing the (new) free plugin from the WordPress plugin market. Notice that you will need to generate a new API key as the new API service does not supports the old one.
 
 = Do I still need Sucuri’s products if I have this plugin? =
 
@@ -134,7 +134,7 @@ The best place is to engage us via the [Support Forum](https://wordpress.org/sup
 
 = Does your plugin conflict with WordFence? =
 
-The plugin does not, but there might be issues with our scanners. If you get an “Unable to Properly Scan Your Site” It’s likely because the WordFence plugin is blocking our scanner as an invalid crawler. You would have to white list our IP address on the WordFence dashboard.
+The plugin does not, but there might be issues with our scanners. If you get an “Unable to Properly Scan Your Site” error, it’s likely because the WordFence plugin is blocking our scanner as an invalid crawler. You would have to white list our IP address on the WordFence dashboard.
 
 = What are the Remote Malware Scanner limitations? =
 
@@ -158,7 +158,7 @@ We improve the performance of the code with every release. However, due to diffe
 
 = Do the logs get stored to my database? =
 
-No, it does not.
+No, they do not.
 
 = Are there any issues installing your plugin with any hosts? =
 
@@ -185,6 +185,9 @@ No, it is not required. The Website Firewall runs in the cloud without the need 
 This version adds support for the latest version of WordPress. Introduces new features and fixes some bugs reported by the WordPress community as well as bugs found by our automated testing system.
 
 == Changelog ==
+
+= 1.8.16 =
+* Update Terms of Service for GDPR compliancy
 
 = 1.8.15 =
 * Make default plugin options filterable
@@ -300,7 +303,7 @@ This version adds support for the latest version of WordPress. Introduces new fe
 * Add full support for internationalization with es_ES locale
 
 = 1.8.4 =
-* Modify the entire interface to offer a fresh desigh
+* Modify the entire interface to offer a fresh design
 * Add support for internationalization via gettext
 * Modify the structure of the project for maintainability
 * Remove minified files to facilitate future contributions
