@@ -101,7 +101,7 @@ class SucuriScanSettingsIntegrity extends SucuriScanSettings
             $deletedFiles = array();
             $files = SucuriScanRequest::post(':corefile_path', '_array');
 
-            foreach ($files as $path) {
+            foreach ((array) $files as $path) {
                 if ($cache->delete(md5($path))) {
                     $deletedFiles[] = $path;
                 }
