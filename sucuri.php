@@ -6,7 +6,7 @@
  * Plugin URI: https://wordpress.sucuri.net/
  * Author URI: https://sucuri.net/
  * Author: Sucuri Inc.
- * Version: 1.8.15
+ * Version: 1.8.16
  *
  * PHP version 5
  *
@@ -14,7 +14,7 @@
  * @package    Sucuri
  * @subpackage SucuriScanner
  * @author     Daniel Cid <dcid@sucuri.net>
- * @copyright  2010-2017 Sucuri Inc.
+ * @copyright  2010-2018 Sucuri Inc.
  * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
  * @link       https://wordpress.org/plugins/sucuri-scanner
  */
@@ -83,7 +83,7 @@ define('SUCURISCAN', 'sucuriscan');
 /**
  * Current version of the plugin's code.
  */
-define('SUCURISCAN_VERSION', '1.8.15');
+define('SUCURISCAN_VERSION', '1.8.16');
 
 /**
  * Defines the human readable name of the plugin.
