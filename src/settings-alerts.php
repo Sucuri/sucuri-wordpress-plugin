@@ -433,7 +433,7 @@ function sucuriscan_settings_alerts_events($nonce)
      * in the posts and the other plugin creates temporary post objects to track
      * the emails.
      *
-     * @date 30 June, 2018
+     * @date 30 June, 2017
      * @see https://wordpress.org/plugins/postman-smtp/
      * @see https://wordpress.org/support/topic/unable-to-access-wordpress-dashboard-after-update-to-1-8-7/
      */
