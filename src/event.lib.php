@@ -355,6 +355,8 @@ class SucuriScanEvent extends SucuriScan
      */
     private static function reportEvent($severity = 0, $message = '')
     {
+        if (!function_exists('wp_get_current_user')) return;
+
         $user = wp_get_current_user();
         $remote_ip = self::getRemoteAddr();
         $username = false;
