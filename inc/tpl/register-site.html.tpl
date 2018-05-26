@@ -38,9 +38,9 @@
 
     <p>
         <label>
-            <input type="hidden" name="sucuriscan_consent_storage" value="0" />
-            <input type="checkbox" name="sucuriscan_consent_storage" value="1" />
-            <span>I agree to have my email address and audit logs stored. This written consent can be requested to be revoked at any time by sending an email to <a href="mailto:gdpr@sucuri.net">gdpr@sucuri.net</a>.</span>
+            <input type="hidden" name="sucuriscan_consent_priv" value="0" />
+            <input type="checkbox" name="sucuriscan_consent_priv" value="1" />
+            <span>I have read and understand the <a target="_blank" href="https://sucuri.net/privacy">Privacy Policy</a>.</span>
         </label>
     </p>
 

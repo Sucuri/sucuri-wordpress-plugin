@@ -96,8 +96,8 @@ function sucuriscan_settings_general_apikey($nonce)
 
             if ($user_obj && user_can($user_obj, 'administrator')) {
                 // Check consent
-                if (SucuriScanRequest::post(':consent_tos') != 1 || SucuriScanRequest::post(':consent_storage') != 1) {
-                    SucuriScanInterface::error('You must accept the Terms of Service in order to request an API key.');
+                if (SucuriScanRequest::post(':consent_tos') != 1 || SucuriScanRequest::post(':consent_priv') != 1) {
+                    SucuriScanInterface::error('You must accept the Terms of Service and Privacy Policy in order to request an API key.');
 					unset($_POST['sucuriscan_dns_lookups']);
                 } else {
                     // Send request to generate new API key or display form to set manually.
