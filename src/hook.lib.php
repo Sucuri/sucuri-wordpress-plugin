@@ -696,7 +696,7 @@ class SucuriScanHook extends SucuriScanEvent
              * that must be reported, so after the first execution the operation
              * falls into an infinite loop.
              *
-             * @date 30 June, 2018
+             * @date 30 June, 2017
              * @see https://wordpress.org/plugins/postman-smtp/
              * @see https://wordpress.org/support/topic/unable-to-access-wordpress-dashboard-after-update-to-1-8-7/
              */

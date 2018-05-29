@@ -248,7 +248,7 @@ class SucuriScanInterface
          * security related newsletter where they can learn about better security
          * practices and get alerts from public vulnerabilities disclosures.
          *
-         * @date Featured added at - May 01, 2018
+         * @date Featured added at - May 01, 2017
          */
         self::info('Do you want to get vulnerability disclosures? Subscribe to our newsletter <a href="http://sucuri.hs-sites.com/subscribe-to-security" target="_blank" rel="noopener">here</a>');
     }
