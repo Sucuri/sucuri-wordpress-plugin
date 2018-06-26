@@ -112,6 +112,12 @@ class SucuriScanSiteCheck extends SucuriScanAPI
     public static function scanAndCollectData()
     {
         $cache = new SucuriScanCache('sitecheck');
+
+        if (SucuriScanRequest::post(':sitecheck_refresh') === 'true') {
+            /* user requested to reset the sitecheck cache */
+            $cache->delete('scan_results');
+        }
+
         $results = $cache->get('scan_results', SUCURISCAN_SITECHECK_LIFETIME, 'array');
 
         /* return cached malware scan results. */
@@ -141,6 +147,21 @@ class SucuriScanSiteCheck extends SucuriScanAPI
     }
 
     /**
+     * Returns the amount of time left before the SiteCheck cache expires.
+     *
+     * @return string Time left before the SiteCheck cache expires.
+     */
+    private static function cacheLifetime()
+    {
+        $current = time();
+        $cache = new SucuriScanCache('sitecheck');
+        $timeDiff = $current - $cache->updatedAt();
+        $timeLeft = SUCURISCAN_SITECHECK_LIFETIME - $timeDiff;
+
+        return self::humanTime($current + $timeLeft);
+    }
+
+    /**
      * Generates the HTML section for the SiteCheck details.
      *
      * @return string HTML code to render the details section.
@@ -152,6 +173,8 @@ class SucuriScanSiteCheck extends SucuriScanAPI
         $data['details'] = array();
 
         $params['SiteCheck.Metadata'] = '';
+        $params['SiteCheck.Lifetime'] = self::cacheLifetime();
+
         $data['details'][] = 'PHP Version: ' . phpversion();
         $data['details'][] = 'Version: ' . SucuriScan::siteVersion();
 
