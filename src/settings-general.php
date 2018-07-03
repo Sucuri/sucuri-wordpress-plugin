@@ -161,20 +161,20 @@ function sucuriscan_settings_general_datastorage($nonce)
 {
     $params = array();
     $files = array(
-        '', /* <root> */
-        'auditlogs',
-        'auditqueue',
-        'blockedusers', /* TODO: deprecated on 1.8.12 */
-        'failedlogins',
-        'hookdata',
-        'ignorescanning',
-        'integrity',
-        'lastlogins',
-        'oldfailedlogins',
-        'plugindata',
-        'settings',
-        'sitecheck',
-        'trustip',
+        '<root>' => 'Directory used to store the plugin settings, cache and system logs',
+        'auditlogs' => 'Cache to store the system logs obtained from the API service; expires after ' . SUCURISCAN_AUDITLOGS_LIFETIME . ' seconds.',
+        'auditqueue' => 'Local queue to store the most recent logs before they are sent to the remote API service.',
+        'blockedusers' => 'Deprecated on 1.8.12; it was used to store a list of blocked user names.', /* TODO: deprecated on 1.8.12 */
+        'failedlogins' => 'Stores the data for every failed login attempt. The data is moved to "oldfailedlogins" every hour during a brute force password attack.',
+        'hookdata' => 'Temporarily stores data to complement the logs during destructive operations like deleting a post, page, comment, etc.',
+        'ignorescanning' => 'Stores a list of files and folders chosen by the user to be ignored by the file system scanner.',
+        'integrity' => 'Stores a list of files marked as fixed by the user via the WordPress Integrity tool.',
+        'lastlogins' => 'Stores the data associated to every successful user login. The data never expires; manually delete if the file is too large.',
+        'oldfailedlogins' => 'Stores the data for every failed login attempt after the plugin sends a report about a brute force password attack via email.',
+        'plugindata' => 'Cache to store the data associated to the installed plugins listed in the Post-Hack page. Expires after ' . SUCURISCAN_GET_PLUGINS_LIFETIME . ' seconds.',
+        'settings' => 'Stores all the options used to configure the functionality and behavior of the plugin.',
+        'sitecheck' => 'Cache to store the result of the malware scanner. Expires after ' . SUCURISCAN_SITECHECK_LIFETIME . ' seconds, reset at any time to force a re-scan.',
+        'trustip' => 'Stores a list of IP addresses trusted by the plugin, events triggered by one of these IPs will not be reported to the remote monitoring API service.',
     );
 
     $params['Storage.Files'] = '';
@@ -190,7 +190,7 @@ function sucuriscan_settings_general_datastorage($nonce)
                 $short = substr($filename, 7); /* drop directroy path */
                 $short = substr($short, 0, -4); /* drop file extension */
 
-                if (!$short || empty($short) || !in_array($short, $files)) {
+                if (!$short || empty($short) || !array_key_exists($short, $files)) {
                     continue; /* prevent path traversal */
                 }
 
@@ -216,7 +216,12 @@ function sucuriscan_settings_general_datastorage($nonce)
         }
     }
 
-    foreach ($files as $name) {
+    foreach ($files as $name => $desc) {
+        if ($name === '<root>') {
+            /* convert to folder */
+            $name = '';
+        }
+
         $fsize = 0;
         $fname = ($name ? sprintf('sucuri-%s.php', $name) : '');
         $fpath = SucuriScan::dataStorePath($fname);
@@ -247,6 +252,7 @@ function sucuriscan_settings_general_datastorage($nonce)
         $params['Storage.DisabledInput'] = $disabled;
         $params['Storage.Existence'] = $labelExistence;
         $params['Storage.Writability'] = $labelWritability;
+        $params['Storage.Description'] = $desc;
 
         if (is_dir($fpath)) {
             $params['Storage.Filesize'] = '';
