@@ -72,7 +72,7 @@ class SucuriScanCommand extends SucuriScan
         }
 
         if ($err !== 0) {
-            return self::throwException('Command ' . $cmd . ' does not exists');
+            return self::throwException('Command ' . $cmd . ' does not exist');
         }
 
         return true;
