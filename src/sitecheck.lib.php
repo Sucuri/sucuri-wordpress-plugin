@@ -355,14 +355,9 @@ class SucuriScanSiteCheck extends SucuriScanAPI
     {
         $params = array();
         $data = self::scanAndCollectData();
-        $sechead = array(
-            'x-content-type-options' => 'X-Content-Type-Options Header',
-            'x-frame-options' => 'X-Frame-Options Security Header',
-            'x-xss-protection' => 'X-XSS-Protection Security Header',
-        );
 
         $params['Recommendations.Content'] = '';
-        $params['Recommendations.Color'] = 'green';
+        $params['Recommendations.Visibility'] = 'hidden';
 
         if (isset($data['RECOMMENDATIONS'])) {
             foreach ($data['RECOMMENDATIONS'] as $recommendation) {
@@ -370,19 +365,7 @@ class SucuriScanSiteCheck extends SucuriScanAPI
                     continue;
                 }
 
-                if (stripos($recommendation[0], 'x-content-type')) {
-                    unset($sechead['x-content-type-options']);
-                }
-
-                if (stripos($recommendation[0], 'x-frame-options')) {
-                    unset($sechead['x-frame-options']);
-                }
-
-                if (stripos($recommendation[0], 'x-xss-protection')) {
-                    unset($sechead['x-xss-protection']);
-                }
-
-                $params['Recommendations.Color'] = 'blue';
+                $params['Recommendations.Visibility'] = 'visible';
                 $params['Recommendations.Content'] .= SucuriScanTemplate::getSnippet(
                     'sitecheck-recommendations',
                     array(
@@ -392,12 +375,6 @@ class SucuriScanSiteCheck extends SucuriScanAPI
                     )
                 );
             }
-        }
-
-        foreach ($sechead as $header => $message) {
-            $params['Recommendations.Content'] .=
-                '<li class="sucuriscan-sitecheck-list-INFO">'
-                . $message . '</li>';
         }
 
         return SucuriScanTemplate::getSection('sitecheck-recommendations', $params);
