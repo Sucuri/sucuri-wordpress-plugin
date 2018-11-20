@@ -88,6 +88,62 @@ class SucuriScanCLI extends WP_CLI_Command
 
         WP_CLI::success($message);
     }
+
+    /**
+     * Manage which files are included in Sucuri integrity checks.
+     *
+     * ## OPTIONS
+     *
+     * <action>
+     * : The action to be taken (ignore or unignore).
+     *
+     * <file_path>
+     * : Relative path to a file.
+     *
+     * ## EXAMPLES
+     *
+     *     # Ignore a file
+     *     wp sucuri integrity ignore wp-content/foo.php
+     *     Success: 'wp-content/foo.php' file successfully ignored.
+     *
+     *     # Unignore a file
+     *     wp sucuri integrity unignore wp-content/foo.php
+     *     Success: 'wp-content/foo.php' file successfully unignored.
+     *
+     * @param  array $args Arguments from the command line interface.
+     * @return void
+     */
+    public function integrity($args)
+    {
+        list($action, $file_path) = $args;
+
+        $allowed = array('ignore', 'unignore');
+
+        if (! in_array($action, $allowed, true)) {
+            WP_CLI::error("Requested action '{$action}' is not supported.");
+        }
+
+        $cache = new SucuriScanCache('integrity');
+
+        $cache_key = md5($file_path);
+
+        if ('ignore' === $action) {
+            $cache->add(
+                $cache_key,
+                array(
+                    'file_path' => $file_path,
+                    'file_status' => 'added',
+                    'ignored_at' => time(),
+                )
+            );
+            WP_CLI::success("'{$file_path}' file successfully ignored.");
+        }
+
+        if ('unignore' === $action) {
+            $cache->delete($cache_key);
+            WP_CLI::success("'{$file_path}' file successfully unignored.");
+        }
+    }
 }
 
 WP_CLI::add_command('sucuri', 'SucuriScanCLI');
