@@ -100,27 +100,46 @@ class SucuriScanCLI extends WP_CLI_Command
      * <file_path>
      * : Relative path to a file.
      *
+     * [--reason=<reason>]
+     * : Why the file should be ignored from integrity checks.
+     * ---
+     * default: added
+     * options:
+     *   - added
+     *   - modified
+     *   - removed
+     * ---
+     *
      * ## EXAMPLES
      *
      *     # Ignore a file
-     *     wp sucuri integrity ignore wp-content/foo.php
-     *     Success: 'wp-content/foo.php' file successfully ignored.
+     *     wp sucuri integrity ignore wp-admin/install.php --reason=removed
+     *     Success: 'wp-admin/install.php' file successfully ignored.
      *
      *     # Unignore a file
-     *     wp sucuri integrity unignore wp-content/foo.php
-     *     Success: 'wp-content/foo.php' file successfully unignored.
+     *     wp sucuri integrity unignore foo.php
+     *     Success: 'foo.php' file successfully unignored.
      *
      * @param  array $args Arguments from the command line interface.
+     * @param  array $assoc_args Associative arguments from the command line interface.
      * @return void
      */
-    public function integrity($args)
+    public function integrity($args, $assoc_args)
     {
         list($action, $file_path) = $args;
 
-        $allowed = array('ignore', 'unignore');
+        $allowed_actions = array('ignore', 'unignore');
 
-        if (! in_array($action, $allowed, true)) {
+        if (! in_array($action, $allowed_actions, true)) {
             WP_CLI::error("Requested action '{$action}' is not supported.");
+        }
+
+        $allowed_reasons = array('added', 'modified', 'removed');
+
+        $file_status = WP_CLI\Utils\get_flag_value( $assoc_args, 'reason', $default = 'added' );
+
+        if (! in_array($file_status, $allowed_reasons, true)) {
+            WP_CLI::error("Specified reason '{$file_status}' is not supported.");
         }
 
         $cache = new SucuriScanCache('integrity');
@@ -132,7 +151,7 @@ class SucuriScanCLI extends WP_CLI_Command
                 $cache_key,
                 array(
                     'file_path' => $file_path,
-                    'file_status' => 'added',
+                    'file_status' => $file_status,
                     'ignored_at' => time(),
                 )
             );
