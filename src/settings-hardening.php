@@ -669,12 +669,15 @@ class SucuriScanHardeningPage extends SucuriScan
     {
         $params = array(
             'HardeningWhitelist.List' => '',
+            'HardeningWhitelist.AllowedFolders' => '',
             'HardeningWhitelist.NoItemsVisibility' => 'visible',
         );
+
+        $upload_dir = wp_upload_dir();
         $allowed_folders = array(
-            'wp-includes',
-            'wp-content',
-            'wp-content/uploads',
+            rtrim(ABSPATH, '/') . '/' . WPINC,
+            WP_CONTENT_DIR,
+            $upload_dir['basedir']
         );
 
         if (SucuriScanInterface::checkNonce()) {
@@ -713,6 +716,12 @@ class SucuriScanHardeningPage extends SucuriScan
         // Read the access control file and retrieve the whitelisted files.
         foreach ($allowed_folders as $folder) {
             $files = SucuriScanHardening::getWhitelisted($folder);
+
+            $params['HardeningWhitelist.AllowedFolders'] .= sprintf(
+                '<option value="%s">%s</option>',
+                SucuriScan::escape($folder),
+                SucuriScan::escape($folder)
+            );
 
             if (is_array($files) && !empty($files)) {
                 $params['HardeningWhitelist.NoItemsVisibility'] = 'hidden';
