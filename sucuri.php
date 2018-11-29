@@ -59,7 +59,7 @@ foreach ($sucuriscan_dependencies as $dependency) {
 }
 
 /* check if installation path is available */
-if (!defined('ABSPATH')) {
+if (!defined('ABSPATH') || !defined('WP_CONTENT_DIR')) {
     /* Report invalid access if possible. */
     header('HTTP/1.1 403 Forbidden');
     exit(0);

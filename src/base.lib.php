@@ -273,13 +273,7 @@ class SucuriScan
      */
     public static function dataStorePath($path = '')
     {
-        if (defined('WP_CONTENT_DIR')) {
-            $content_dir = rtrim(WP_CONTENT_DIR, '/');
-        } else {
-            $content_dir = ABSPATH . '/wp-content';
-        }
-
-        $folder = $content_dir . '/uploads/sucuri';
+        $folder = WP_CONTENT_DIR . '/uploads/sucuri';
 
         /* custom path no matter its existence */
         if (defined('SUCURI_DATA_STORAGE')) {
