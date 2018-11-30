@@ -149,14 +149,16 @@ class SucuriScanFileInfo extends SucuriScan
      */
     private function ignoreFolder($path)
     {
+        $content = basename(WP_CONTENT_DIR);
+
         return (bool) ($this->ignore_directories && (
             strpos($path, '/.hg') !== false
             || strpos($path, '/.git') !== false
             || strpos($path, '/.svn') !== false
-            || strpos($path, 'wp-content/backup') !== false
-            || strpos($path, 'wp-content/cache') !== false
-            || strpos($path, 'wp-content/uploads') !== false
-            || strpos($path, 'wp-content/w3tc') !== false
+            || strpos($path, $content . '/backup') !== false
+            || strpos($path, $content . '/cache') !== false
+            || strpos($path, $content . '/uploads') !== false
+            || strpos($path, $content . '/w3tc') !== false
         ));
     }
 
@@ -347,11 +349,13 @@ class SucuriScanFileInfo extends SucuriScan
             return self::throwException('Directory does not exists');
         }
 
-        if ($directory === ABSPATH . 'wp-content') {
+        if ($directory === WP_CONTENT_DIR) {
             return self::throwException('Cannot delete content directory');
         }
 
-        if ($directory === ABSPATH . 'wp-content/uploads') {
+        $upload_dir = wp_upload_dir();
+
+        if ($directory === $upload_dir['basedir']) {
             return self::throwException('Cannot delete uploads directory');
         }
 
