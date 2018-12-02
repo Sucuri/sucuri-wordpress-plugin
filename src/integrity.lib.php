@@ -668,6 +668,7 @@ class SucuriScanIntegrity
             '^pinterest-[0-9a-z]{5}\.html$',
             '^wp-content\/languages\/.+\.mo$',
             '^wp-content\/languages\/.+\.po$',
+            '^wp-content\/languages\/.+\.json$',
             '\.ico$',
         );
 
