@@ -88,6 +88,81 @@ class SucuriScanCLI extends WP_CLI_Command
 
         WP_CLI::success($message);
     }
+
+    /**
+     * Manage which files are included in Sucuri integrity checks.
+     *
+     * ## OPTIONS
+     *
+     * <action>
+     * : The action to be taken (ignore or unignore).
+     *
+     * <file_path>
+     * : Relative path to a file.
+     *
+     * [--reason=<reason>]
+     * : Why the file should be ignored from integrity checks.
+     * ---
+     * default: added
+     * options:
+     *   - added
+     *   - modified
+     *   - removed
+     * ---
+     *
+     * ## EXAMPLES
+     *
+     *     # Ignore a file
+     *     wp sucuri integrity ignore wp-admin/install.php --reason=removed
+     *     Success: 'wp-admin/install.php' file successfully ignored.
+     *
+     *     # Unignore a file
+     *     wp sucuri integrity unignore foo.php
+     *     Success: 'foo.php' file successfully unignored.
+     *
+     * @param  array $args Arguments from the command line interface.
+     * @param  array $assoc_args Associative arguments from the command line interface.
+     * @return void
+     */
+    public function integrity($args, $assoc_args)
+    {
+        list($action, $file_path) = $args;
+
+        $allowed_actions = array('ignore', 'unignore');
+
+        if (! in_array($action, $allowed_actions, true)) {
+            WP_CLI::error("Requested action '{$action}' is not supported.");
+        }
+
+        $allowed_reasons = array('added', 'modified', 'removed');
+
+        $file_status = WP_CLI\Utils\get_flag_value( $assoc_args, 'reason', $default = 'added' );
+
+        if (! in_array($file_status, $allowed_reasons, true)) {
+            WP_CLI::error("Specified reason '{$file_status}' is not supported.");
+        }
+
+        $cache = new SucuriScanCache('integrity');
+
+        $cache_key = md5($file_path);
+
+        if ('ignore' === $action) {
+            $cache->add(
+                $cache_key,
+                array(
+                    'file_path' => $file_path,
+                    'file_status' => $file_status,
+                    'ignored_at' => time(),
+                )
+            );
+            WP_CLI::success("'{$file_path}' file successfully ignored.");
+        }
+
+        if ('unignore' === $action) {
+            $cache->delete($cache_key);
+            WP_CLI::success("'{$file_path}' file successfully unignored.");
+        }
+    }
 }
 
 WP_CLI::add_command('sucuri', 'SucuriScanCLI');
