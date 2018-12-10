@@ -877,6 +877,10 @@ class SucuriScan
      */
     public static function implode($separator = '', $list = array())
     {
+        if (!is_array($list)) {
+            return 'INVALID_ARGS';
+        }
+
         if (self::isMultiList($list)) {
             $pieces = array();
 
