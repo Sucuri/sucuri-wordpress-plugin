@@ -288,7 +288,37 @@ class SucuriScanCache extends SucuriScan
 
         $finfo['info']['fpath'] = $this->datastore_path;
 
+        if (!isset($finfo['info']['created_on'])) {
+            $finfo['info']['created_on'] = time();
+        }
+
+        if (!isset($finfo['info']['updated_on'])) {
+            $finfo['info']['updated_on'] = time();
+        }
+
         return $finfo['info'];
+    }
+
+    /**
+     * Returns the Unix timestamp when the cache was created.
+     *
+     * @return int Unix timestamp when the cache was created.
+     */
+    public function createdAt()
+    {
+        $info = $this->getDatastoreInfo();
+        return (int) $info['created_on'];
+    }
+
+    /**
+     * Returns the Unix timestamp when the cache was updated.
+     *
+     * @return int Unix timestamp when the cache was updated.
+     */
+    public function updatedAt()
+    {
+        $info = $this->getDatastoreInfo();
+        return (int) $info['updated_on'];
     }
 
     /**

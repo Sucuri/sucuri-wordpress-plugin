@@ -40,6 +40,7 @@ function sucuriscan_page()
     $params['AuditLogs'] = SucuriScanAuditLogs::pageAuditLogs();
 
     /* load data for the SiteCheck section */
+    $params['SiteCheck.Refresh'] = 'false';
     $params['SiteCheck.iFramesTitle'] = 'iFrames';
     $params['SiteCheck.LinksTitle'] = 'Links';
     $params['SiteCheck.ScriptsTitle'] = 'Scripts';
@@ -49,6 +50,10 @@ function sucuriscan_page()
     $params['SiteCheck.Malware'] = '<div id="sucuriscan-malware"></div>';
     $params['SiteCheck.Blacklist'] = '<div id="sucuriscan-blacklist"></div>';
     $params['SiteCheck.Recommendations'] = '<div id="sucuriscan-recommendations"></div>';
+
+    if (SucuriScanRequest::get(':sitecheck_refresh') !== false) {
+        $params['SiteCheck.Refresh'] = 'true';
+    }
 
     echo SucuriScanTemplate::getTemplate('dashboard', $params);
 }

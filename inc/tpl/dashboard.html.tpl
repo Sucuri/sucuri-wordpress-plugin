@@ -28,6 +28,7 @@ jQuery(document).ready(function ($) {
     $.post('%%SUCURI.AjaxURL.Dashboard%%', {
         action: 'sucuriscan_ajax',
         sucuriscan_page_nonce: '%%SUCURI.PageNonce%%',
+        sucuriscan_sitecheck_refresh: '%%SUCURI.SiteCheck.Refresh%%',
         form_action: 'malware_scan',
     }, function (data) {
         $('#sucuriscan-title-iframes').html(data.iframes.title);
