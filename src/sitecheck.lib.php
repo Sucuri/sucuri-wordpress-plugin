@@ -474,7 +474,7 @@ class SucuriScanSiteCheck extends SucuriScanAPI
         }
 
         // Extract the information from the malware message.
-        $malware_parts = explode("\n", $malware[1]);
+        $malware_parts = explode("\n", $malware[1], 2);
 
         if (isset($malware_parts[1])) {
             $pattern = ".\x20Details:\x20";
