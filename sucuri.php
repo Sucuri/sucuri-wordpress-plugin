@@ -252,6 +252,7 @@ function sucuriscanResetAndDeactivate()
 {
     /* Delete scheduled task from the system */
     wp_clear_scheduled_hook('sucuriscan_scheduled_scan');
+    SucuriScanEvent::reportDebugEvent('Sucuri plugin has been deactivated');
 }
 
 /**
@@ -303,6 +304,8 @@ function sucuriscanUninstall()
     $fifo->run_recursively = false;
     $directory = SucuriScan::dataStorePath();
     $fifo->removeDirectoryTree($directory);
+
+    SucuriScanEvent::reportDebugEvent('Sucuri plugin has been uninstalled');
 }
 
 register_deactivation_hook(__FILE__, 'sucuriscanResetAndDeactivate');
