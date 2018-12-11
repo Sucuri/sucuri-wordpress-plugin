@@ -144,7 +144,7 @@ class SucuriScanHardeningPage extends SucuriScan
 
         $params['URL.Settings'] = admin_url('update-core.php');
         $params['Hardening.Status'] = 0;
-        $params['Hardening.FieldText'] = 'Apply Hardening';
+        $params['Hardening.FieldText'] = 'Check Updates Now';
         $params['Hardening.Title'] = 'Verify WordPress Version';
         $params['Hardening.Description'] = 'Why keep your site updated? WordPr'
         . 'ess is an open-source project which means that with every update th'
@@ -154,7 +154,7 @@ class SucuriScanHardeningPage extends SucuriScan
 
         if (isset($updates[0]) && $updates[0] instanceof stdClass) {
             if ($updates[0]->response == 'latest' || $updates[0]->response == 'development') {
-                $params['Hardening.FieldText'] = 'Revert Hardening';
+                $params['Hardening.FieldText'] = 'WordPress Update Available';
                 $params['Hardening.FieldAttrs'] = 'disabled';
                 $params['Hardening.Status'] = 1;
             }
