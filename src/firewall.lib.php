@@ -382,7 +382,7 @@ class SucuriScanFirewall extends SucuriScanAPI
             $response = self::auditlogsEntries($auditlogs['access_logs']);
 
             if (empty($response)) {
-                $response = sprintf('<tr><td>%s</td></tr>', __('no data available.', 'sucuri-scanner')));
+                $response = '<tr><td>' . __('no data available.', 'sucuri-scanner') . '</td></tr>';
             }
         }
 
