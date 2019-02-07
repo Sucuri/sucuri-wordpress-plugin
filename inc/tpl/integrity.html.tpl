@@ -20,9 +20,9 @@ jQuery(document).ready(function ($) {
     <div class="sucuriscan-panel sucuriscan-integrity sucuriscan-integrity-loading">
         <div class="sucuriscan-clearfix">
             <div class="sucuriscan-pull-left sucuriscan-integrity-left">
-                <h2 class="sucuriscan-title">WordPress Integrity</h2>
+                <h2 class="sucuriscan-title">{{WordPress Integrity}}</h2>
 
-                <p>We inspect your WordPress installation and look for modifications on the core files as provided by WordPress.org. Files located in the root directory, wp-admin and wp-includes will be compared against the files distributed with v%%SUCURI.WordPressVersion%%; all files with inconsistencies will be listed here. Any changes might indicate a hack.</p>
+                <p>{{We inspect your WordPress installation and look for modifications on the core files as provided by WordPress.org. Files located in the root directory, wp-admin and wp-includes will be compared against the files distributed with v%%SUCURI.WordPressVersion%%; all files with inconsistencies will be listed here. Any changes might indicate a hack.}}</p>
             </div>
 
             <div class="sucuriscan-pull-right sucuriscan-integrity-right">
@@ -32,6 +32,6 @@ jQuery(document).ready(function ($) {
             </div>
         </div>
 
-        <p>Loading...</p>
+        <p>{{Loading...}}</p>
     </div>
 </div>
