@@ -258,15 +258,12 @@ __('<strong>Are you a developer?</strong> You may be interested in our API. Feel
 
 // settings-general-apikey.html.tpl
 __('API Key', 'sucuri-scanner');
-__('', 'sucuri-scanner');
-__('', 'sucuri-scanner');
-__('', 'sucuri-scanner');
-__('', 'sucuri-scanner');
-__('', 'sucuri-scanner');
-__('', 'sucuri-scanner');
-__('', 'sucuri-scanner');
-__('', 'sucuri-scanner');
-__('', 'sucuri-scanner');
+__('An API key is required to prevent attackers from deleting audit logs that can help you investigate and recover after a hack, and allows the plugin to display statistics. By generating an API key, you agree that Sucuri will collect and store anonymous data about your website. We take your privacy seriously.', 'sucuri-scanner');
+__('Your domain <code>%%SUCURI.CleanDomain%%</code> does not seems to have a DNS <code>A</code> record so it will be considered as <em>invalid</em> by the API interface when you request the generation of a new key. Adding <code>www</code> at the beginning of the domain name may fix this issue. If you do not understand what is this then send an email to our support team requesting the key.', 'sucuri-scanner');
+__('Recover Via E-mail', 'sucuri-scanner');
+__('Manual Activation', 'sucuri-scanner');
+__('If you do not have access to the administrator email, you can reinstall the plugin. The API key is generated using an administrator email and the domain of the website. Click the "Manual Activation" button if you already have a valid API key to authenticate this website with the remote API web service.', 'sucuri-scanner');
+__('Delete', 'sucuri-scanner');
 
 // settings.html.tpl
 __('General', 'sucuri-scanner');
