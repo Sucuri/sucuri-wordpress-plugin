@@ -45,7 +45,6 @@ __('Sucuri Inc. All Rights Reserved.', 'sucuri-scanner');
 // dashboard.html.tpl
 __('no data available', 'sucuri-scanner');
 __('Audit Logs', 'sucuri-scanner');
-__('', 'sucuri-scanner');
 
 // firewall-auditlogs.html.tpl
 __('Firewall Audit Logs', 'sucuri-scanner');
