@@ -305,7 +305,7 @@ function sucuriscanUninstall()
     $directory = SucuriScan::dataStorePath();
     $fifo->removeDirectoryTree($directory);
 
-    SucuriScanEvent::reportDebugEvent('Sucuri plugin has been uninstalled');
+    SucuriScanEvent::reportDebugEvent(__('Sucuri plugin has been uninstalled', 'sucuri-scanner'));
 }
 
 register_deactivation_hook(__FILE__, 'sucuriscanResetAndDeactivate');

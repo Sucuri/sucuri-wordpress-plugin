@@ -67,13 +67,13 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
                         /* Force execution of the selected scheduled tasks. */
                         SucuriScanInterface::info(
                             sprintf(
-                                '%d tasks has been scheduled to run in the next ten seconds.',
+                                __('%d tasks has been scheduled to run in the next ten seconds.', 'sucuri-scanner'),
                                 $total_tasks /* some cronjobs will be ignored */
                             )
                         );
                         SucuriScanEvent::reportNoticeEvent(
                             sprintf(
-                                'Force execution of scheduled tasks: (multiple entries): %s',
+                                __('Force execution of scheduled tasks: (multiple entries): %s', 'sucuri-scanner'),
                                 @implode(',', $cronjobs)
                             )
                         );
@@ -85,13 +85,13 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
                         /* Force deletion of the selected scheduled tasks. */
                         SucuriScanInterface::info(
                             sprintf(
-                                '%d scheduled tasks have been removed.',
+                                __('%d scheduled tasks have been removed.', 'sucuri-scanner'),
                                 $total_tasks /* some cronjobs will be ignored */
                             )
                         );
                         SucuriScanEvent::reportNoticeEvent(
                             sprintf(
-                                'Delete scheduled tasks: (multiple entries): %s',
+                                __('Delete scheduled tasks: (multiple entries): %s', 'sucuri-scanner'),
                                 @implode(',', $cronjobs)
                             )
                         );
@@ -102,14 +102,14 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
                     } else {
                         SucuriScanInterface::info(
                             sprintf(
-                                '%d tasks has been re-scheduled to run <code>%s</code>.',
+                                __('%d tasks has been re-scheduled to run <code>%s</code>.', 'sucuri-scanner'),
                                 $total_tasks, /* some cronjobs will be ignored */
                                 $cronjob_action /* frequency to run cronjob */
                             )
                         );
                         SucuriScanEvent::reportNoticeEvent(
                             sprintf(
-                                'Re-configure scheduled tasks %s: (multiple entries): %s',
+                                __('Re-configure scheduled tasks %s: (multiple entries): %s', 'sucuri-scanner'),
                                 $cronjob_action,
                                 @implode(',', $cronjobs)
                             )
@@ -121,7 +121,7 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
                         }
                     }
                 } else {
-                    SucuriScanInterface::error('No scheduled tasks were selected from the list.');
+                    SucuriScanInterface::error(__('No scheduled tasks were selected from the list.', 'sucuri-scanner'));
                 }
             }
         }
@@ -131,7 +131,7 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
 
         /* Hardcode the first one to allow the immediate execution of the cronjob(s) */
         $params['Cronjob.Schedules'] .= '<option value="runnow">'
-        . 'Execute Now (in +10 seconds)' . '</option>';
+        . __('Execute Now (in +10 seconds)', 'sucuri-scanner') . '</option>';
 
         foreach ($available as $freq => $name) {
             $params['Cronjob.Schedules'] .= sprintf('<option value="%s">%s</option>', $freq, $name);
@@ -187,8 +187,8 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
             $ign_dirs = SucuriScanRequest::post(':unignorefolders', '_array');
 
             if ($ign_ress !== false && SucuriScanFSScanner::ignoreDirectory($ign_ress)) {
-                SucuriScanInterface::info('Selected files have been successfully processed.');
-                SucuriScanEvent::reportWarningEvent('This directory will not be scanned: ' . $ign_ress);
+                SucuriScanInterface::info(__('Selected files have been successfully processed.', 'sucuri-scanner'));
+                SucuriScanEvent::reportWarningEvent(sprintf(__('This directory will not be scanned: %s', 'sucuri-scanner'), $ign_ress));
             }
 
             if ($ign_dirs !== false && is_array($ign_dirs) && !empty($ign_dirs)) {
@@ -196,9 +196,9 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
                     SucuriScanFSScanner::unignoreDirectory($dir);
                 }
 
-                SucuriScanInterface::info('Selected files have been successfully processed.');
+                SucuriScanInterface::info(__('Selected files have been successfully processed.', 'sucuri-scanner'));
                 SucuriScanEvent::reportNoticeEvent(
-                    'Directories will be scanned: (multiple entries): '
+                    __('Directories will be scanned: (multiple entries): ', 'sucuri-scanner')
                     . @implode(',', $ign_dirs) /* all directories */
                 );
             }
@@ -219,7 +219,7 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
         }
 
         if (empty($ignored_dirs['directories'])) {
-            $params['IgnoreScan.List'] .= '<tr><td colspan="3">no data available</td></tr>';
+            $params['IgnoreScan.List'] .= '<tr><td colspan="3">' . __('no data available', 'sucuri-scanner') . '</td></tr>';
         }
 
         return SucuriScanTemplate::getSection('settings-scanner-ignore-folders', $params);

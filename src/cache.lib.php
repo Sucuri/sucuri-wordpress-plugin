@@ -389,7 +389,7 @@ class SucuriScanCache extends SucuriScan
     public function set($key = '', $data = '')
     {
         if (!$this->validKeyName($key)) {
-            return self::throwException('Invalid cache key name');
+            return self::throwException(__('Invalid cache key name', 'sucuri-scanner'));
         }
 
         $finfo = $this->getDatastoreInfo();
@@ -409,7 +409,7 @@ class SucuriScanCache extends SucuriScan
     public function get($key = '', $lifetime = 0, $assoc = '')
     {
         if (!$this->validKeyName($key)) {
-            return self::throwException('Invalid cache key name');
+            return self::throwException(__('Invalid cache key name', 'sucuri-scanner'));
         }
 
         $finfo = $this->getDatastoreContent($assoc === 'array');
@@ -450,7 +450,7 @@ class SucuriScanCache extends SucuriScan
     public function exists($key = '')
     {
         if (!$this->validKeyName($key)) {
-            return self::throwException('Invalid cache key name');
+            return self::throwException(__('Invalid cache key name', 'sucuri-scanner'));
         }
 
         $finfo = $this->getDatastoreContent(true);
@@ -467,7 +467,7 @@ class SucuriScanCache extends SucuriScan
     public function delete($key = '')
     {
         if (!$this->validKeyName($key)) {
-            return self::throwException('Invalid cache key name');
+            return self::throwException(__('Invalid cache key name', 'sucuri-scanner'));
         }
 
         $finfo = $this->getDatastoreContent(true);

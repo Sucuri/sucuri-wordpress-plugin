@@ -110,12 +110,12 @@ class SucuriScanIntegrity
 
         /* skip if the user didn't confirm the operation */
         if (SucuriScanRequest::post(':process_form') != 1) {
-            return SucuriScanInterface::error('You need to confirm that you understand the risk of this operation.');
+            return SucuriScanInterface::error(__('You need to confirm that you understand the risk of this operation.', 'sucuri-scanner'));
         }
 
         /* skip if the requested action is not currently supported */
         if ($action !== 'fixed' && $action !== 'delete' && $action !== 'restore') {
-            return SucuriScanInterface::error('Requested action is not supported.');
+            return SucuriScanInterface::error(__('Requested action is not supported.', 'sucuri-scanner'));
         }
 
         /* process the HTTP request */
@@ -125,14 +125,14 @@ class SucuriScanIntegrity
         $files_affected = array();
         $files_processed = 0;
         $action_titles = array(
-            'restore' => 'Core file restored',
-            'delete' => 'Non-core file deleted',
-            'fixed' => 'Core file marked as fixed',
+            'restore' => __('Core file restored', 'sucuri-scanner'),
+            'delete' => __('Non-core file deleted', 'sucuri-scanner'),
+            'fixed' => __('Core file marked as fixed', 'sucuri-scanner'),
         );
 
         /* skip if no files were selected */
         if (!$core_files) {
-            return SucuriScanInterface::error('Nothing was selected from the list.');
+            return SucuriScanInterface::error(__('Nothing was selected from the list.', 'sucuri-scanner'));
         }
 
         /* process files until the maximum execution time is reached */
@@ -225,13 +225,13 @@ class SucuriScanIntegrity
         }
 
         if ($displayTimeoutAlert) {
-            SucuriScanInterface::error('Server is not fast enough to process this action; maximum execution time reached');
+            SucuriScanInterface::error(__('Server is not fast enough to process this action; maximum execution time reached', 'sucuri-scanner'));
         }
 
         if ($files_processed != $files_selected) {
             return SucuriScanInterface::error(
                 sprintf(
-                    'Only <b>%d</b> out of <b>%d</b> files were processed.',
+                    __('Only <b>%d</b> out of <b>%d</b> files were processed.', 'sucuri-scanner'),
                     $files_processed,
                     $files_selected
                 )
@@ -240,7 +240,7 @@ class SucuriScanIntegrity
 
         return SucuriScanInterface::info(
             sprintf(
-                '<b>%d</b> out of <b>%d</b> files were successfully processed.',
+                __('<b>%d</b> out of <b>%d</b> files were successfully processed.', 'sucuri-scanner'),
                 $files_processed,
                 $files_selected
             )
@@ -318,11 +318,11 @@ class SucuriScanIntegrity
                         $visibility = 'visible';
 
                         if ($list_type === 'added') {
-                            $error = 'The plugin has no permission to delete this file because it was created by a different system user who has more privileges than your account. Please use FTP to delete it.';
+                            $error = __('The plugin has no permission to delete this file because it was created by a different system user who has more privileges than your account. Please use FTP to delete it.', 'sucuri-scanner');
                         } elseif ($list_type === 'modified') {
-                            $error = 'The plugin has no permission to restore this file because it was modified by a different system user who has more privileges than your account. Please use FTP to restore it.';
+                            $error = __('The plugin has no permission to restore this file because it was modified by a different system user who has more privileges than your account. Please use FTP to restore it.', 'sucuri-scanner');
                         } elseif ($list_type === 'removed') {
-                            $error = 'The plugin has no permission to restore this file because its directory is owned by a different system user who has more privileges than your account. Please use FTP to restore it.';
+                            $error = __('The plugin has no permission to restore this file because its directory is owned by a different system user who has more privileges than your account. Please use FTP to restore it.', 'sucuri-scanner');
                         }
                     }
 
@@ -402,7 +402,7 @@ class SucuriScanIntegrity
         $params['DiffUtility.Modal'] = SucuriScanTemplate::getModal(
             'none',
             array(
-                'Title' => 'WordPress Integrity Diff Utility',
+                'Title' => __('WordPress Integrity Diff Utility', 'sucuri-scanner'),
                 'Content' => '' /* empty */,
                 'Identifier' => 'diff-utility',
                 'Visibility' => 'hidden',

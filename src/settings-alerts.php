@@ -53,14 +53,14 @@ function sucuriscan_settings_alerts_recipients($nonce)
 
             if (SucuriScan::isValidEmail($new_email)) {
                 $emails[] = $new_email;
-                $message = sprintf('The email alerts will be sent to: <code>%s</code>', $new_email);
+                $message = sprintf(__('The email alerts will be sent to: <code>%s</code>', 'sucuri-scanner'), $new_email);
 
                 SucuriScanOption::updateOption(':notify_to', implode(',', $emails));
-                SucuriScanEvent::reportInfoEvent('The email alerts will be sent to: ' . $new_email);
+                SucuriScanEvent::reportInfoEvent(sprintf(__('The email alerts will be sent to: %s', 'sucuri-scanner'), $new_email));
                 SucuriScanEvent::notifyEvent('plugin_change', $message);
                 SucuriScanInterface::info($message);
             } else {
-                SucuriScanInterface::error('Email format not supported.');
+                SucuriScanInterface::error(__('Email format not supported.', 'sucuri-scanner'));
             }
         }
 
@@ -79,10 +79,10 @@ function sucuriscan_settings_alerts_recipients($nonce)
 
             if (!empty($deleted_emails)) {
                 $deleted_emails_str = implode(",\x20", $deleted_emails);
-                $message = sprintf('These emails will stop receiving alerts: <code>%s</code>', $deleted_emails_str);
+                $message = sprintf(__('These emails will stop receiving alerts: <code>%s</code>', 'sucuri-scanner'), $deleted_emails_str);
 
                 SucuriScanOption::updateOption(':notify_to', implode(',', $emails));
-                SucuriScanEvent::reportInfoEvent('These emails will stop receiving alerts: ' . $deleted_emails_str);
+                SucuriScanEvent::reportInfoEvent(sprintf(__('These emails will stop receiving alerts: %s', 'sucuri-scanner'), $deleted_emails_str));
                 SucuriScanEvent::notifyEvent('plugin_change', $message);
                 SucuriScanInterface::info($message);
             }
@@ -93,12 +93,12 @@ function sucuriscan_settings_alerts_recipients($nonce)
             $recipients = SucuriScanOption::getOption(':notify_to');
             SucuriScanMail::sendMail(
                 $recipients,
-                'Test Email Alert',
-                sprintf('Test email alert sent at %s', SucuriScan::datetime()),
+                __('Test Email Alert', 'sucuri-scanner'),
+                sprintf(__('Test email alert sent at %s', 'sucuri-scanner'), SucuriScan::datetime()),
                 array('Force' => true)
             );
 
-            SucuriScanInterface::info('A test alert was sent to your email, check your inbox');
+            SucuriScanInterface::info(__('A test alert was sent to your email, check your inbox', 'sucuri-scanner'));
         }
     }
 
@@ -143,12 +143,12 @@ function sucuriscan_settings_alerts_trustedips()
                 $ip_info['added_at'] = time();
 
                 if ($cache->exists($cache_key)) {
-                    SucuriScanInterface::error('The IP specified address was already added.');
+                    SucuriScanInterface::error(__('The IP specified address was already added.', 'sucuri-scanner'));
                 } elseif ($cache->add($cache_key, $ip_info)) {
-                    SucuriScanEvent::reportWarningEvent('IP has been trusted: ' . $trust_ip);
-                    SucuriScanInterface::info(sprintf('Events generated from this IP will be ignored: <code>%s</code>', $trust_ip));
+                    SucuriScanEvent::reportWarningEvent(sprintf(__('IP has been trusted: %s', 'sucuri-scanner'), $trust_ip));
+                    SucuriScanInterface::info(sprintf(__('Events generated from this IP will be ignored: <code>%s</code>', 'sucuri-scanner'), $trust_ip));
                 } else {
-                    SucuriScanInterface::error('The IP address could not be added to the trusted list');
+                    SucuriScanInterface::error(__('The IP address could not be added to the trusted list', 'sucuri-scanner'));
                 }
             }
         }
@@ -161,7 +161,7 @@ function sucuriscan_settings_alerts_trustedips()
                 $cache->delete($cache_key);
             }
 
-            SucuriScanInterface::info('The selected IP addresses were successfully deleted.');
+            SucuriScanInterface::info(__('The selected IP addresses were successfully deleted.', 'sucuri-scanner'));
         }
     }
 
@@ -170,7 +170,7 @@ function sucuriscan_settings_alerts_trustedips()
     if ($trusted_ips) {
         foreach ($trusted_ips as $cache_key => $ip_info) {
             if ($ip_info->cidr_range == 32) {
-                $ip_info->cidr_format = 'n/a';
+                $ip_info->cidr_format = __('n/a', 'sucuri-scanner');
             }
 
             $params['TrustedIPs.List'] .= SucuriScanTemplate::getSnippet(
@@ -205,13 +205,13 @@ function sucuriscan_settings_alerts_subject($nonce)
     );
 
     $subjects = array(
-        'Sucuri Alert, :domain, :event',
-        'Sucuri Alert, :domain, :event, :remoteaddr',
-        'Sucuri Alert, :domain, :event, :username',
-        'Sucuri Alert, :domain, :event, :email',
-        'Sucuri Alert, :event, :remoteaddr',
-        'Sucuri Alert, :event, :hostname',
-        'Sucuri Alert, :event',
+        sprintf(__('Sucuri Alert, %s, %s', 'sucuri-scanner'), ':domain', ':event'),
+        sprintf(__('Sucuri Alert, %s, %s, %s', 'sucuri-scanner'), ':domain', ':event', ':remoteaddr'),
+        sprintf(__('Sucuri Alert, %s, %s, %s', 'sucuri-scanner'), ':domain', ':event', ':username'),
+        sprintf(__('Sucuri Alert, %s, %s, %s', 'sucuri-scanner'), ':domain', ':event', ':email'),
+        sprintf(__('Sucuri Alert, %s, %s', 'sucuri-scanner'), ':event', ':remoteaddr'),
+        sprintf(__('Sucuri Alert, %s, %s', 'sucuri-scanner'), ':event', ':hostname'),
+        sprintf(__('Sucuri Alert, %s', 'sucuri-scanner'), ':event'),
     );
 
     // Process form submission to change the alert settings.
@@ -239,7 +239,7 @@ function sucuriscan_settings_alerts_subject($nonce)
                 ) {
                     $new_subject = trim($custom_subject);
                 } else {
-                    SucuriScanInterface::error('Invalid characters in the email subject.');
+                    SucuriScanInterface::error(__('Invalid characters in the email subject.', 'sucuri-scanner'));
                 }
             } elseif (is_array($subjects) && in_array($email_subject, $subjects)) {
                 $new_subject = trim($email_subject);
@@ -247,12 +247,12 @@ function sucuriscan_settings_alerts_subject($nonce)
 
             // Proceed with the operation saving the new subject.
             if ($new_subject !== false && $current_value !== $new_subject) {
-                $message = 'Email subject set to <code>' . $new_subject . '</code>';
+                $message = sprintf(__('Email subject set to <code>%s</code>', 'sucuri-scanner'), $new_subject);
 
                 SucuriScanOption::updateOption(':email_subject', $new_subject);
                 SucuriScanEvent::reportInfoEvent($message);
                 SucuriScanEvent::notifyEvent('plugin_change', $message);
-                SucuriScanInterface::info('The email subject has been successfully updated');
+                SucuriScanInterface::info(__('The email subject has been successfully updated', 'sucuri-scanner'));
             }
         }
     }
@@ -301,13 +301,13 @@ function sucuriscan_settings_alerts_perhour($nonce)
     $params['Alerts.PerHour'] = '';
 
     $emails_per_hour = array(
-        '5' => 'Maximum 5 per hour',
-        '10' => 'Maximum 10 per hour',
-        '20' => 'Maximum 20 per hour',
-        '40' => 'Maximum 40 per hour',
-        '80' => 'Maximum 80 per hour',
-        '160' => 'Maximum 160 per hour',
-        'unlimited' => 'Unlimited alerts per hour',
+        '5' => __('Maximum 5 per hour', 'sucuri-scanner'),
+        '10' => __('Maximum 10 per hour', 'sucuri-scanner'),
+        '20' => __('Maximum 20 per hour', 'sucuri-scanner'),
+        '40' => __('Maximum 40 per hour', 'sucuri-scanner'),
+        '80' => __('Maximum 80 per hour', 'sucuri-scanner'),
+        '160' => __('Maximum 160 per hour', 'sucuri-scanner'),
+        'unlimited' => __('Unlimited alerts per hour', 'sucuri-scanner'),
     );
 
     if ($nonce) {
@@ -317,14 +317,14 @@ function sucuriscan_settings_alerts_perhour($nonce)
         if ($per_hour) {
             if (array_key_exists($per_hour, $emails_per_hour)) {
                 $per_hour_label = strtolower($emails_per_hour[$per_hour]);
-                $message = 'Maximum alerts per hour set to <code>' . $per_hour_label . '</code>';
+                $message = sprintf(__('Maximum alerts per hour set to <code>%s</code>', 'sucuri-scanner'), $per_hour_label);
 
                 SucuriScanOption::updateOption(':emails_per_hour', $per_hour);
                 SucuriScanEvent::reportInfoEvent($message);
                 SucuriScanEvent::notifyEvent('plugin_change', $message);
-                SucuriScanInterface::info('The maximum number of alerts per hour has been updated');
+                SucuriScanInterface::info(__('The maximum number of alerts per hour has been updated', 'sucuri-scanner'));
             } else {
-                SucuriScanInterface::error('Error updating the maximum number of alerts per hour');
+                SucuriScanInterface::error(__('Error updating the maximum number of alerts per hour', 'sucuri-scanner'));
             }
         }
     }
@@ -348,11 +348,11 @@ function sucuriscan_settings_alerts_bruteforce($nonce)
     $params['Alerts.BruteForce'] = '';
 
     $max_failed_logins = array(
-        '30' => '30 failed logins per hour',
-        '60' => '60 failed logins per hour',
-        '120' => '120 failed logins per hour',
-        '240' => '240 failed logins per hour',
-        '480' => '480 failed logins per hour',
+        '30' => __('30 failed logins per hour', 'sucuri-scanner'),
+        '60' => __('60 failed logins per hour', 'sucuri-scanner'),
+        '120' => __('120 failed logins per hour', 'sucuri-scanner'),
+        '240' => __('240 failed logins per hour', 'sucuri-scanner'),
+        '480' => __('480 failed logins per hour', 'sucuri-scanner'),
     );
 
     if ($nonce) {
@@ -361,18 +361,14 @@ function sucuriscan_settings_alerts_bruteforce($nonce)
 
         if ($maximum) {
             if (array_key_exists($maximum, $max_failed_logins)) {
-                $message = 'Consider brute-force attack after <code>' . $maximum . '</code> failed logins per hour';
+                $message = sprintf(__('Consider brute-force attack after <code>%s</code> failed logins per hour', 'sucuri-scanner'), $maximum);
 
                 SucuriScanOption::updateOption(':maximum_failed_logins', $maximum);
                 SucuriScanEvent::reportInfoEvent($message);
                 SucuriScanEvent::notifyEvent('plugin_change', $message);
-                SucuriScanInterface::info(
-                    'The plugin will assume that your website is under a brute'
-                    . '-force attack after ' . $maximum . ' failed logins are '
-                    . 'detected during the same hour'
-                );
+                SucuriScanInterface::info(sprintf(__('The plugin will assume that your website is under a brute-force attack after %s failed logins are detected during the same hour', 'sucuri-scanner'), $maximum));
             } else {
-                SucuriScanInterface::error('Invalid number of failed logins per hour');
+                SucuriScanInterface::error(__('Invalid number of failed logins per hour', 'sucuri-scanner'));
             }
         }
     }
@@ -397,31 +393,31 @@ function sucuriscan_settings_alerts_events($nonce)
     $params['Alerts.NoAlertsVisibility'] = 'hidden';
 
     $notify_options = array(
-        'sucuriscan_notify_plugin_change' => 'setting:' . 'Receive email alerts for changes in the settings of the plugin',
-        'sucuriscan_prettify_mails' => 'setting:' . 'Receive email alerts in HTML <em>(there may be issues with some mail services)</em>',
-        'sucuriscan_use_wpmail' => 'setting:' . 'Use WordPress functions to send mails <em>(uncheck to use native PHP functions)</em>',
-        'sucuriscan_lastlogin_redirection' => 'setting:' . 'Allow redirection after login to report the last-login information',
-        'sucuriscan_notify_scan_checksums' => 'setting:' . 'Receive email alerts for core integrity checks',
-        'sucuriscan_notify_available_updates' => 'setting:' . 'Receive email alerts for available updates',
-        'sucuriscan_notify_user_registration' => 'user:' . 'Receive email alerts for new user registration',
-        'sucuriscan_notify_success_login' => 'user:' . 'Receive email alerts for successful login attempts',
-        'sucuriscan_notify_failed_login' => 'user:' . 'Receive email alerts for failed login attempts <em>(you may receive tons of emails)</em>',
-        'sucuriscan_notify_bruteforce_attack' => 'user:' . 'Receive email alerts for password guessing attacks <em>(summary of failed logins per hour)</em>',
-        'sucuriscan_notify_post_publication' => 'setting:' . 'Receive email alerts for changes in the post status <em>(configure from Ignore Posts Changes)</em>',
-        'sucuriscan_notify_website_updated' => 'setting:' . 'Receive email alerts when the WordPress version is updated',
-        'sucuriscan_notify_settings_updated' => 'setting:' . 'Receive email alerts when your website settings are updated',
-        'sucuriscan_notify_theme_editor' => 'setting:' . 'Receive email alerts when a file is modified with theme/plugin editor',
-        'sucuriscan_notify_plugin_installed' => 'plugin:' . 'Receive email alerts when a <b>plugin is installed</b>',
-        'sucuriscan_notify_plugin_activated' => 'plugin:' . 'Receive email alerts when a <b>plugin is activated</b>',
-        'sucuriscan_notify_plugin_deactivated' => 'plugin:' . 'Receive email alerts when a <b>plugin is deactivated</b>',
-        'sucuriscan_notify_plugin_updated' => 'plugin:' . 'Receive email alerts when a <b>plugin is updated</b>',
-        'sucuriscan_notify_plugin_deleted' => 'plugin:' . 'Receive email alerts when a <b>plugin is deleted</b>',
-        'sucuriscan_notify_widget_added' => 'widget:' . 'Receive email alerts when a <b>widget is added</b> to a sidebar',
-        'sucuriscan_notify_widget_deleted' => 'widget:' . 'Receive email alerts when a <b>widget is deleted</b> from a sidebar',
-        'sucuriscan_notify_theme_installed' => 'theme:' . 'Receive email alerts when a <b>theme is installed</b>',
-        'sucuriscan_notify_theme_activated' => 'theme:' . 'Receive email alerts when a <b>theme is activated</b>',
-        'sucuriscan_notify_theme_updated' => 'theme:' . 'Receive email alerts when a <b>theme is updated</b>',
-        'sucuriscan_notify_theme_deleted' => 'theme:' . 'Receive email alerts when a <b>theme is deleted</b>',
+        'sucuriscan_notify_plugin_change' => 'setting:' . __('Receive email alerts for changes in the settings of the plugin', 'sucuri-scanner'),
+        'sucuriscan_prettify_mails' => 'setting:' . __('Receive email alerts in HTML <em>(there may be issues with some mail services)</em>', 'sucuri-scanner'),
+        'sucuriscan_use_wpmail' => 'setting:' . __('Use WordPress functions to send mails <em>(uncheck to use native PHP functions)</em>', 'sucuri-scanner'),
+        'sucuriscan_lastlogin_redirection' => 'setting:' . __('Allow redirection after login to report the last-login information', 'sucuri-scanner'),
+        'sucuriscan_notify_scan_checksums' => 'setting:' . __('Receive email alerts for core integrity checks', 'sucuri-scanner'),
+        'sucuriscan_notify_available_updates' => 'setting:' . __('Receive email alerts for available updates', 'sucuri-scanner'),
+        'sucuriscan_notify_user_registration' => 'user:' . __('Receive email alerts for new user registration', 'sucuri-scanner'),
+        'sucuriscan_notify_success_login' => 'user:' . __('Receive email alerts for successful login attempts', 'sucuri-scanner'),
+        'sucuriscan_notify_failed_login' => 'user:' . __('Receive email alerts for failed login attempts <em>(you may receive tons of emails)</em>', 'sucuri-scanner'),
+        'sucuriscan_notify_bruteforce_attack' => 'user:' . __('Receive email alerts for password guessing attacks <em>(summary of failed logins per hour)</em>', 'sucuri-scanner'),
+        'sucuriscan_notify_post_publication' => 'setting:' . __('Receive email alerts for changes in the post status <em>(configure from Ignore Posts Changes)</em>', 'sucuri-scanner'),
+        'sucuriscan_notify_website_updated' => 'setting:' . __('Receive email alerts when the WordPress version is updated', 'sucuri-scanner'),
+        'sucuriscan_notify_settings_updated' => 'setting:' . __('Receive email alerts when your website settings are updated', 'sucuri-scanner'),
+        'sucuriscan_notify_theme_editor' => 'setting:' . __('Receive email alerts when a file is modified with theme/plugin editor', 'sucuri-scanner'),
+        'sucuriscan_notify_plugin_installed' => 'plugin:' . __('Receive email alerts when a <b>plugin is installed</b>', 'sucuri-scanner'),
+        'sucuriscan_notify_plugin_activated' => 'plugin:' . __('Receive email alerts when a <b>plugin is activated</b>', 'sucuri-scanner'),
+        'sucuriscan_notify_plugin_deactivated' => 'plugin:' . __('Receive email alerts when a <b>plugin is deactivated</b>', 'sucuri-scanner'),
+        'sucuriscan_notify_plugin_updated' => 'plugin:' . __('Receive email alerts when a <b>plugin is updated</b>', 'sucuri-scanner'),
+        'sucuriscan_notify_plugin_deleted' => 'plugin:' . __('Receive email alerts when a <b>plugin is deleted</b>', 'sucuri-scanner'),
+        'sucuriscan_notify_widget_added' => 'widget:' . __('Receive email alerts when a <b>widget is added</b> to a sidebar', 'sucuri-scanner'),
+        'sucuriscan_notify_widget_deleted' => 'widget:' . __('Receive email alerts when a <b>widget is deleted</b> from a sidebar', 'sucuri-scanner'),
+        'sucuriscan_notify_theme_installed' => 'theme:' . __('Receive email alerts when a <b>theme is installed</b>', 'sucuri-scanner'),
+        'sucuriscan_notify_theme_activated' => 'theme:' . __('Receive email alerts when a <b>theme is activated</b>', 'sucuri-scanner'),
+        'sucuriscan_notify_theme_updated' => 'theme:' . __('Receive email alerts when a <b>theme is updated</b>', 'sucuri-scanner'),
+        'sucuriscan_notify_theme_deleted' => 'theme:' . __('Receive email alerts when a <b>theme is deleted</b>', 'sucuri-scanner'),
     );
 
     /**
@@ -465,11 +461,11 @@ function sucuriscan_settings_alerts_events($nonce)
             }
 
             if ($ucounter > 0) {
-                $message = 'A total of ' . $ucounter . ' alert events were changed';
+                $message = sprintf(__('A total of %s alert events were changed', 'sucuri-scanner'), $ucounter );
 
                 SucuriScanEvent::reportInfoEvent($message);
                 SucuriScanEvent::notifyEvent('plugin_change', $message);
-                SucuriScanInterface::info('The alert settings have been updated');
+                SucuriScanInterface::info(__('The alert settings have been updated', 'sucuri-scanner'));
             }
         }
     }
@@ -543,15 +539,15 @@ function sucuriscan_settings_alerts_ignore_posts()
 
         if ($action === 'add') {
             if (!preg_match('/^[a-z_\-]+$/', $ignore_rule)) {
-                SucuriScanInterface::error('Only lowercase letters, underscores and hyphens are allowed.');
+                SucuriScanInterface::error(__('Only lowercase letters, underscores and hyphens are allowed.', 'sucuri-scanner'));
             } elseif (array_key_exists($ignore_rule, $ignored_events)) {
-                SucuriScanInterface::error('The post-type is already being ignored (duplicate).');
+                SucuriScanInterface::error(__('The post-type is already being ignored (duplicate).', 'sucuri-scanner'));
             } else {
                 $ignored_events[$ignore_rule] = time();
 
-                SucuriScanInterface::info('Post-type has been successfully ignored.');
+                SucuriScanInterface::info(__('Post-type has been successfully ignored.', 'sucuri-scanner'));
                 SucuriScanOption::updateOption(':ignored_events', $ignored_events);
-                SucuriScanEvent::reportWarningEvent('Changes in <code>' . $ignore_rule . '</code> post-type will be ignored');
+                SucuriScanEvent::reportWarningEvent(sprintf(__('Changes in <code>%s</code> post-type will be ignored', 'sucuri-scanner'), $ignore_rule));
             }
         }
 
@@ -566,16 +562,16 @@ function sucuriscan_settings_alerts_ignore_posts()
                 }
             }
 
-            SucuriScanInterface::info('List of monitored post-types has been updated.');
+            SucuriScanInterface::info(__('List of monitored post-types has been updated.', 'sucuri-scanner'));
             SucuriScanOption::updateOption(':ignored_events', $ignored_events);
-            SucuriScanEvent::reportWarningEvent('List of monitored post-types has been updated');
+            SucuriScanEvent::reportWarningEvent(__('List of monitored post-types has been updated', 'sucuri-scanner'));
         }
     }
 
     /* notifications are post updates are disabled; print error */
     if (SucuriScanOption::isDisabled(':notify_post_publication')) {
         $params['PostTypes.ErrorVisibility'] = 'visible';
-        $params['PostTypes.List'] = '<tr><td colspan="4">no data available</td></tr>';
+        $params['PostTypes.List'] = sprintf('<tr><td colspan="4">%s</td></tr>', __('no data available', 'sucuri-scanner'));
 
         return SucuriScanTemplate::getSection('settings-alerts-ignore-posts', $params);
     }

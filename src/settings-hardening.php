@@ -99,27 +99,21 @@ class SucuriScanHardeningPage extends SucuriScan
 
         if (self::processRequest(__FUNCTION__)) {
             SucuriScanInterface::error(
-                'The firewall is a premium service that you need purchase at -'
-                . ' <a href="https://goo.gl/qfNkMq" target="_blank">Sucuri Fir'
-                . 'ewall</a>'
+                __('The firewall is a premium service that you need purchase at - <a href="https://goo.gl/qfNkMq" target="_blank">Sucuri Firewall</a>', 'sucuri-scanner')
             );
         }
 
         $params['Hardening.FieldName'] = __FUNCTION__;
-        $params['Hardening.Title'] = 'Website Firewall Protection';
-        $params['Hardening.Description'] = 'A WAF is a protection layer for yo'
-        . 'ur web site, blocking all sort of attacks (brute force attempts, DD'
-        . 'oS, SQL injections, etc) and helping it remain malware and blacklis'
-        . 't free. This test checks if your site is using Sucuri Firewall to p'
-        . 'rotect your site.';
+        $params['Hardening.Title'] = __('Website Firewall Protection', 'sucuri-scanner');
+        $params['Hardening.Description'] = __('A WAF is a protection layer for your web site, blocking all sort of attacks (brute force attempts, DDoS, SQL injections, etc) and helping it remain malware and blacklist free. This test checks if your site is using Sucuri Firewall to protect your site.', 'sucuri-scanner');
 
         if (!SucuriScan::isBehindFirewall()) {
             $params['Hardening.Status'] = 0;
-            $params['Hardening.FieldText'] = 'Apply Hardening';
+            $params['Hardening.FieldText'] = __('Apply Hardening', 'sucuri-scanner');
         } else {
             $params['Hardening.Status'] = 1;
             $params['Hardening.FieldAttrs'] = 'disabled';
-            $params['Hardening.FieldText'] = 'Revert Hardening';
+            $params['Hardening.FieldText'] = __('Revert Hardening', 'sucuri-scanner');
         }
 
         return self::drawSection($params);
@@ -144,17 +138,13 @@ class SucuriScanHardeningPage extends SucuriScan
 
         $params['URL.Settings'] = admin_url('update-core.php');
         $params['Hardening.Status'] = 0;
-        $params['Hardening.FieldText'] = 'Check Updates Now';
-        $params['Hardening.Title'] = 'Verify WordPress Version';
-        $params['Hardening.Description'] = 'Why keep your site updated? WordPr'
-        . 'ess is an open-source project which means that with every update th'
-        . 'e details of the changes made to the source code are made public, i'
-        . 'f there were security fixes then someone with malicious intent can '
-        . 'use this information to attack any site that has not been upgraded.';
+        $params['Hardening.FieldText'] = __('Check Updates Now', 'sucuri-scanner');
+        $params['Hardening.Title'] = __('Verify WordPress Version', 'sucuri-scanner');
+        $params['Hardening.Description'] = __('Why keep your site updated? WordPress is an open-source project which means that with every update the details of the changes made to the source code are made public, if there were security fixes then someone with malicious intent can use this information to attack any site that has not been upgraded.', 'sucuri-scanner');
 
         if (isset($updates[0]) && $updates[0] instanceof stdClass) {
             if ($updates[0]->response == 'latest' || $updates[0]->response == 'development') {
-                $params['Hardening.FieldText'] = 'WordPress Update Available';
+                $params['Hardening.FieldText'] = __('WordPress Update Available', 'sucuri-scanner');
                 $params['Hardening.FieldAttrs'] = 'disabled';
                 $params['Hardening.Status'] = 1;
             }
@@ -186,23 +176,21 @@ class SucuriScanHardeningPage extends SucuriScan
 
         if (self::processRequest(__FUNCTION__)) {
             SucuriScanInterface::error(
-                'Ask your hosting provider to install an updated version of PH'
-                . 'P - <a href="http://php.net/supported-versions.php" target='
-                . '"_blank" rel="noopener">List of PHP Supported Versions</a>'
+                __('Ask your hosting provider to install an updated version of PHP - <a href="http://php.net/supported-versions.php" target="_blank" rel="noopener">List of PHP Supported Versions</a>', 'sucuri-scanner')
             );
         }
 
         $params['Hardening.FieldName'] = __FUNCTION__;
-        $params['Hardening.Title'] = 'Verify PHP Version';
-        $params['Hardening.Description'] = sprintf('PHP %s is installed.', PHP_VERSION);
+        $params['Hardening.Title'] = __('Verify PHP Version', 'sucuri-scanner');
+        $params['Hardening.Description'] = sprintf(__('PHP %s is installed.', 'sucuri-scanner'), PHP_VERSION);
 
         if (intval(version_compare(PHP_VERSION, '5.6.0') >= 0)) {
             $params['Hardening.Status'] = 1;
             $params['Hardening.FieldAttrs'] = 'disabled';
-            $params['Hardening.FieldText'] = 'Revert Hardening';
+            $params['Hardening.FieldText'] = __('Revert Hardening', 'sucuri-scanner');
         } else {
             $params['Hardening.Status'] = 0;
-            $params['Hardening.FieldText'] = 'Apply Hardening';
+            $params['Hardening.FieldText'] = __('Apply Hardening', 'sucuri-scanner');
         }
 
         return self::drawSection($params);
@@ -219,17 +207,11 @@ class SucuriScanHardeningPage extends SucuriScan
     {
         $params = array();
 
-        $params['Hardening.Title'] = 'Remove WordPress Version';
+        $params['Hardening.Title'] = __('Remove WordPress Version', 'sucuri-scanner');
         $params['Hardening.Status'] = 1;
-        $params['Hardening.FieldText'] = 'Revert Hardening';
+        $params['Hardening.FieldText'] = __('Revert Hardening', 'sucuri-scanner');
         $params['Hardening.FieldAttrs'] = 'disabled';
-        $params['Hardening.Description'] = 'It checks if your WordPress versio'
-        . 'n is being leaked to the public via a HTML meta-tag. Many web vulne'
-        . 'rability scanners use this to determine which version of the code i'
-        . 's running in your website. They use this to find disclosed vulnerab'
-        . 'ilities associated to this version number. A vulnerability scanner '
-        . 'can still guess which version of WordPress is installed by comparin'
-        . 'g the checksum of some static files.';
+        $params['Hardening.Description'] = __('It checks if your WordPress version is being leaked to the public via a HTML meta-tag. Many web vulnerability scanners use this to determine which version of the code is running in your website. They use this to find disclosed vulnerabilities associated to this version number. A vulnerability scanner can still guess which version of WordPress is installed by comparing the checksum of some static files.', 'sucuri-scanner');
 
         return self::drawSection($params);
     }
@@ -249,24 +231,15 @@ class SucuriScanHardeningPage extends SucuriScan
 
         if (self::processRequest(__FUNCTION__)) {
             SucuriScanInterface::error(
-                'Read the official WordPress guidelines to learn how to restri'
-                . 'ct access to PHP files in sensitive directories - <a href="'
-                . 'https://codex.wordpress.org/Nginx#Global_restrictions_file"'
-                . ' target="_blank" rel="noopener">Nginx Global Restrictions F'
-                . 'or WordPress</a>'
+                __('Read the official WordPress guidelines to learn how to restrict access to PHP files in sensitive directories - <a href="https://codex.wordpress.org/Nginx#Global_restrictions_file" target="_blank" rel="noopener">Nginx Global Restrictions For WordPress</a>', 'sucuri-scanner')
             );
         }
 
-        $params['Hardening.Title'] = 'Block of Certain PHP Files';
+        $params['Hardening.Title'] = __('Block of Certain PHP Files', 'sucuri-scanner');
         $params['Hardening.Status'] = 2;
         $params['Hardening.FieldName'] = __FUNCTION__;
-        $params['Hardening.FieldText'] = 'Check Hardening';
-        $params['Hardening.Description'] = 'Block the execution of PHP files i'
-        . 'n sensitive directories. Be careful while applying this hardening o'
-        . 'ption as there are many plugins and theme which rely on the ability'
-        . ' to execute PHP files in the content directory to generate images o'
-        . 'r save temporary data. Use the "Whitelist PHP Files" tool to add ex'
-        . 'ceptions to individual files.';
+        $params['Hardening.FieldText'] = __('Check Hardening', 'sucuri-scanner');
+        $params['Hardening.Description'] = __('Block the execution of PHP files in sensitive directories. Be careful while applying this hardening option as there are many plugins and theme which rely on the ability to execute PHP files in the content directory to generate images or save temporary data. Use the "Whitelist PHP Files" tool to add exceptions to individual files.', 'sucuri-scanner');
 
         return self::drawSection($params);
     }
@@ -293,10 +266,10 @@ class SucuriScanHardeningPage extends SucuriScan
             $result = SucuriScanHardening::hardenDirectory($folder);
 
             if ($result === true) {
-                SucuriScanEvent::reportNoticeEvent('Hardening applied to the uploads directory');
-                SucuriScanInterface::info('Hardening applied to the uploads directory');
+                SucuriScanEvent::reportNoticeEvent(__('Hardening applied to the uploads directory', 'sucuri-scanner'));
+                SucuriScanInterface::info(__('Hardening applied to the uploads directory', 'sucuri-scanner'));
             } else {
-                SucuriScanInterface::error('Error hardening directory, check the permissions.');
+                SucuriScanInterface::error(__('Error hardening directory, check the permissions.', 'sucuri-scanner'));
             }
         }
 
@@ -304,33 +277,28 @@ class SucuriScanHardeningPage extends SucuriScan
             $result = SucuriScanHardening::unhardenDirectory($folder);
 
             if ($result === true) {
-                SucuriScanEvent::reportErrorEvent('Hardening reverted in the uploads directory');
-                SucuriScanInterface::info('Hardening reverted in the uploads directory');
+                SucuriScanEvent::reportErrorEvent(__('Hardening reverted in the uploads directory', 'sucuri-scanner'));
+                SucuriScanInterface::info(__('Hardening reverted in the uploads directory', 'sucuri-scanner'));
             } else {
-                SucuriScanInterface::error('Access file is not writable, check the permissions.');
+                SucuriScanInterface::error(__('Access file is not writable, check the permissions.', 'sucuri-scanner'));
             }
         }
 
-        $params['Hardening.Title'] = 'Block PHP Files in Uploads Directory';
-        $params['Hardening.Description'] = 'Block the execution of PHP files i'
-        . 'n sensitive directories. Be careful while applying this hardening o'
-        . 'ption as there are many plugins and theme which rely on the ability'
-        . ' to execute PHP files in the content directory to generate images o'
-        . 'r save temporary data. Use the "Whitelist PHP Files" tool to add ex'
-        . 'ceptions to individual files.';
+        $params['Hardening.Title'] = __('Block PHP Files in Uploads Directory', 'sucuri-scanner');
+        $params['Hardening.Description'] = __('Block the execution of PHP files in sensitive directories. Be careful while applying this hardening option as there are many plugins and theme which rely on the ability to execute PHP files in the content directory to generate images or save temporary data. Use the "Whitelist PHP Files" tool to add exceptions to individual files.', 'sucuri-scanner');
 
         if (SucuriScan::isBehindFirewall()) {
             $params['Hardening.Status'] = 1;
             $params['Hardening.FieldAttrs'] = 'disabled';
-            $params['Hardening.FieldText'] = 'Revert Hardening';
+            $params['Hardening.FieldText'] = __('Revert Hardening', 'sucuri-scanner');
         } elseif (SucuriScanHardening::isHardened($folder)) {
             $params['Hardening.Status'] = 1;
             $params['Hardening.FieldName'] = __FUNCTION__ . '_revert';
-            $params['Hardening.FieldText'] = 'Revert Hardening';
+            $params['Hardening.FieldText'] = __('Revert Hardening', 'sucuri-scanner');
         } else {
             $params['Hardening.Status'] = 0;
             $params['Hardening.FieldName'] = __FUNCTION__;
-            $params['Hardening.FieldText'] = 'Apply Hardening';
+            $params['Hardening.FieldText'] = __('Apply Hardening', 'sucuri-scanner');
         }
 
         return self::drawSection($params);
@@ -357,10 +325,10 @@ class SucuriScanHardeningPage extends SucuriScan
             $result = SucuriScanHardening::hardenDirectory(WP_CONTENT_DIR);
 
             if ($result === true) {
-                SucuriScanEvent::reportNoticeEvent('Hardening applied to the content directory');
-                SucuriScanInterface::info('Hardening applied to the content directory');
+                SucuriScanEvent::reportNoticeEvent(__('Hardening applied to the content directory', 'sucuri-scanner'));
+                SucuriScanInterface::info(__('Hardening applied to the content directory', 'sucuri-scanner'));
             } else {
-                SucuriScanInterface::error('Error hardening directory, check the permissions.');
+                SucuriScanInterface::error(__('Error hardening directory, check the permissions.', 'sucuri-scanner'));
             }
         }
 
@@ -368,33 +336,28 @@ class SucuriScanHardeningPage extends SucuriScan
             $result = SucuriScanHardening::unhardenDirectory(WP_CONTENT_DIR);
 
             if ($result === true) {
-                SucuriScanEvent::reportErrorEvent('Hardening reverted in the content directory');
-                SucuriScanInterface::info('Hardening reverted in the content directory');
+                SucuriScanEvent::reportErrorEvent(__('Hardening reverted in the content directory', 'sucuri-scanner'));
+                SucuriScanInterface::info(__('Hardening reverted in the content directory', 'sucuri-scanner'));
             } else {
-                SucuriScanInterface::error('Access file is not writable, check the permissions.');
+                SucuriScanInterface::error(__('Access file is not writable, check the permissions.', 'sucuri-scanner'));
             }
         }
 
-        $params['Hardening.Title'] = 'Block PHP Files in WP-CONTENT Directory';
-        $params['Hardening.Description'] = 'Block the execution of PHP files i'
-        . 'n sensitive directories. Be careful while applying this hardening o'
-        . 'ption as there are many plugins and theme which rely on the ability'
-        . ' to execute PHP files in the content directory to generate images o'
-        . 'r save temporary data. Use the "Whitelist PHP Files" tool to add ex'
-        . 'ceptions to individual files.';
+        $params['Hardening.Title'] = __('Block PHP Files in WP-CONTENT Directory', 'sucuri-scanner');
+        $params['Hardening.Description'] = __('Block the execution of PHP files in sensitive directories. Be careful while applying this hardening option as there are many plugins and theme which rely on the ability to execute PHP files in the content directory to generate images or save temporary data. Use the "Whitelist PHP Files" tool to add exceptions to individual files.', 'sucuri-scanner');
 
         if (SucuriScan::isBehindFirewall()) {
             $params['Hardening.Status'] = 1;
             $params['Hardening.FieldAttrs'] = 'disabled';
-            $params['Hardening.FieldText'] = 'Revert Hardening';
+            $params['Hardening.FieldText'] = __('Revert Hardening', 'sucuri-scanner');
         } elseif (SucuriScanHardening::isHardened(WP_CONTENT_DIR)) {
             $params['Hardening.Status'] = 1;
             $params['Hardening.FieldName'] = __FUNCTION__ . '_revert';
-            $params['Hardening.FieldText'] = 'Revert Hardening';
+            $params['Hardening.FieldText'] = __('Revert Hardening', 'sucuri-scanner');
         } else {
             $params['Hardening.Status'] = 0;
             $params['Hardening.FieldName'] = __FUNCTION__;
-            $params['Hardening.FieldText'] = 'Apply Hardening';
+            $params['Hardening.FieldText'] = __('Apply Hardening', 'sucuri-scanner');
         }
 
         return self::drawSection($params);
@@ -426,13 +389,13 @@ class SucuriScanHardeningPage extends SucuriScan
                 try {
                     SucuriScanHardening::whitelist('wp-tinymce.php', 'wp-includes');
                     SucuriScanHardening::whitelist('ms-files.php', 'wp-includes');
-                    SucuriScanEvent::reportNoticeEvent('Hardening applied to the library directory');
-                    SucuriScanInterface::info('Hardening applied to the library directory');
+                    SucuriScanEvent::reportNoticeEvent(__('Hardening applied to the library directory', 'sucuri-scanner'));
+                    SucuriScanInterface::info(__('Hardening applied to the library directory', 'sucuri-scanner'));
                 } catch (Exception $e) {
                     SucuriScanInterface::error($e->getMessage());
                 }
             } else {
-                SucuriScanInterface::error('Error hardening directory, check the permissions.');
+                SucuriScanInterface::error(__('Error hardening directory, check the permissions.', 'sucuri-scanner'));
             }
         }
 
@@ -442,33 +405,28 @@ class SucuriScanHardeningPage extends SucuriScan
             if ($result === true) {
                 SucuriScanHardening::dewhitelist('wp-tinymce.php', 'wp-includes');
                 SucuriScanHardening::dewhitelist('ms-files.php', 'wp-includes');
-                SucuriScanEvent::reportErrorEvent('Hardening reverted in the library directory');
-                SucuriScanInterface::info('Hardening reverted in the library directory');
+                SucuriScanEvent::reportErrorEvent(__('Hardening reverted in the library directory', 'sucuri-scanner'));
+                SucuriScanInterface::info(__('Hardening reverted in the library directory', 'sucuri-scanner'));
             } else {
-                SucuriScanInterface::error('Access file is not writable, check the permissions.');
+                SucuriScanInterface::error(__('Access file is not writable, check the permissions.', 'sucuri-scanner'));
             }
         }
 
-        $params['Hardening.Title'] = 'Block PHP Files in WP-INCLUDES Directory';
-        $params['Hardening.Description'] = 'Block the execution of PHP files i'
-        . 'n sensitive directories. Be careful while applying this hardening o'
-        . 'ption as there are many plugins and theme which rely on the ability'
-        . ' to execute PHP files in the content directory to generate images o'
-        . 'r save temporary data. Use the "Whitelist PHP Files" tool to add ex'
-        . 'ceptions to individual files.';
+        $params['Hardening.Title'] = __('Block PHP Files in WP-INCLUDES Directory', 'sucuri-scanner');
+        $params['Hardening.Description'] = __('Block the execution of PHP files in sensitive directories. Be careful while applying this hardening option as there are many plugins and theme which rely on the ability to execute PHP files in the content directory to generate images or save temporary data. Use the "Whitelist PHP Files" tool to add exceptions to individual files.', 'sucuri-scanner');
 
         if (SucuriScan::isBehindFirewall()) {
             $params['Hardening.Status'] = 1;
             $params['Hardening.FieldAttrs'] = 'disabled';
-            $params['Hardening.FieldText'] = 'Revert Hardening';
+            $params['Hardening.FieldText'] = __('Revert Hardening', 'sucuri-scanner');
         } elseif (SucuriScanHardening::isHardened($folder)) {
             $params['Hardening.Status'] = 1;
             $params['Hardening.FieldName'] = __FUNCTION__ . '_revert';
-            $params['Hardening.FieldText'] = 'Revert Hardening';
+            $params['Hardening.FieldText'] = __('Revert Hardening', 'sucuri-scanner');
         } else {
             $params['Hardening.Status'] = 0;
             $params['Hardening.FieldName'] = __FUNCTION__;
-            $params['Hardening.FieldText'] = 'Apply Hardening';
+            $params['Hardening.FieldText'] = __('Apply Hardening', 'sucuri-scanner');
         }
 
         return self::drawSection($params);
@@ -487,27 +445,23 @@ class SucuriScanHardeningPage extends SucuriScan
 
         if (self::processRequest(__FUNCTION__)) {
             if (@unlink(ABSPATH . '/readme.html') === false) {
-                SucuriScanInterface::error('Cannot delete <code>' . ABSPATH . '/readme.html</code>');
+                SucuriScanInterface::error(sprintf(__('Cannot delete <code>%s/readme.html</code>', 'sucuri-scanner'), ABSPATH));
             } else {
-                SucuriScanEvent::reportNoticeEvent('Hardening applied to the <code>readme.html</code> file');
-                SucuriScanInterface::info('Hardening applied to the <code>readme.html</code> file');
+                SucuriScanEvent::reportNoticeEvent(__('Hardening applied to the <code>readme.html</code> file', 'sucuri-scanner'));
+                SucuriScanInterface::info(__('Hardening applied to the <code>readme.html</code> file', 'sucuri-scanner'));
             }
         }
 
-        $params['Hardening.Title'] = 'Information Leakage';
-        $params['Hardening.Description'] = 'Checks if the WordPress README fil'
-        . 'e still exists in the website. The information in this file can be '
-        . 'used by malicious users to pin-point which disclosed vulnerabilitie'
-        . 's are associated to the website. Be aware that WordPress recreates '
-        . 'this file automatically with every update.';
+        $params['Hardening.Title'] = __('Information Leakage', 'sucuri-scanner');
+        $params['Hardening.Description'] = __('Checks if the WordPress README file still exists in the website. The information in this file can be used by malicious users to pin-point which disclosed vulnerabilities are associated to the website. Be aware that WordPress recreates this file automatically with every update.', 'sucuri-scanner');
 
         if (file_exists(ABSPATH . '/readme.html')) {
             $params['Hardening.Status'] = 0;
             $params['Hardening.FieldName'] = __FUNCTION__;
-            $params['Hardening.FieldText'] = 'Apply Hardening';
+            $params['Hardening.FieldText'] = __('Apply Hardening', 'sucuri-scanner');
         } else {
             $params['Hardening.Status'] = 1;
-            $params['Hardening.FieldText'] = 'Revert Hardening';
+            $params['Hardening.FieldText'] = __('Revert Hardening', 'sucuri-scanner');
             $params['Hardening.FieldAttrs'] = 'disabled';
         }
 
@@ -534,20 +488,17 @@ class SucuriScanHardeningPage extends SucuriScan
         $results = $user_query->get_results();
 
         $params['URL.Settings'] = admin_url('users.php?role=administrator');
-        $params['Hardening.Title'] = 'Default Admin Account';
-        $params['Hardening.Description'] = 'Check if the primary user account '
-        . 'still uses the name "admin". This allows malicious users to easily '
-        . 'identify which account has the highest privileges to target an atta'
-        . 'ck.';
+        $params['Hardening.Title'] = __('Default Admin Account', 'sucuri-scanner');
+        $params['Hardening.Description'] = __('Check if the primary user account still uses the name "admin". This allows malicious users to easily identify which account has the highest privileges to target an attack.', 'sucuri-scanner');
 
         if (count($results) === 0) {
             $params['Hardening.Status'] = 1;
             $params['Hardening.FieldAttrs'] = 'disabled';
-            $params['Hardening.FieldText'] = 'Revert Hardening';
+            $params['Hardening.FieldText'] = __('Revert Hardening', 'sucuri-scanner');
         } else {
             $params['Hardening.Status'] = 0;
             $params['Hardening.FieldName'] = __FUNCTION__;
-            $params['Hardening.FieldText'] = 'Apply Hardening';
+            $params['Hardening.FieldText'] = __('Apply Hardening', 'sucuri-scanner');
         }
 
         return self::drawSection($params);
@@ -567,9 +518,9 @@ class SucuriScanHardeningPage extends SucuriScan
             $config = SucuriScan::getConfigPath();
 
             if (!$config) {
-                SucuriScanInterface::error('WordPress configuration file was not found.');
+                SucuriScanInterface::error(__('WordPress configuration file was not found.', 'sucuri-scanner'));
             } elseif (!is_writable($config)) {
-                SucuriScanInterface::error('WordPress configuration file is not writable.');
+                SucuriScanInterface::error(__('WordPress configuration file is not writable.', 'sucuri-scanner'));
             } else {
                 $content = SucuriScanFileInfo::fileContent($config);
                 $lines = explode("\n", $content);
@@ -589,8 +540,8 @@ class SucuriScanHardeningPage extends SucuriScan
                 $fileEditorWasDisabled = true;
                 $content = implode("\n", $newlines);
                 @file_put_contents($config, $content, LOCK_EX);
-                SucuriScanEvent::reportNoticeEvent('Hardening applied to the plugin and theme editor');
-                SucuriScanInterface::info('Hardening applied to the plugin and theme editor');
+                SucuriScanEvent::reportNoticeEvent(__('Hardening applied to the plugin and theme editor', 'sucuri-scanner'));
+                SucuriScanInterface::info(__('Hardening applied to the plugin and theme editor', 'sucuri-scanner'));
             }
         }
 
@@ -598,9 +549,9 @@ class SucuriScanHardeningPage extends SucuriScan
             $config = SucuriScan::getConfigPath();
 
             if (!$config) {
-                SucuriScanInterface::error('WordPress configuration file was not found.');
+                SucuriScanInterface::error(__('WordPress configuration file was not found.', 'sucuri-scanner'));
             } elseif (!is_writable($config)) {
-                SucuriScanInterface::error('WordPress configuration file is not writable.');
+                SucuriScanInterface::error(__('WordPress configuration file is not writable.', 'sucuri-scanner'));
             } else {
                 $content = SucuriScanFileInfo::fileContent($config);
                 $lines = explode("\n", $content);
@@ -618,37 +569,29 @@ class SucuriScanHardeningPage extends SucuriScan
 
                 if (!$hardeningWasReverted) {
                     SucuriScanInterface::error(
-                        'File Editor was not disabled using this tool. You mus'
-                        . 't scan your project for a constant defined as DISAL'
-                        . 'LOW_FILE_EDIT, then either delete it or set its val'
-                        . 'ue to False. Any plugin/theme can disable the file '
-                        . 'editor, so it is impossible to determine the origin'
-                        . ' of the constant.'
+                        __('File Editor was not disabled using this tool. You must scan your project for a constant defined as DISALLOW_FILE_EDIT, then either delete it or set its value to False. Any plugin/theme can disable the file editor, so it is impossible to determine the origin of the constant.', 'sucuri-scanner')
                     );
                 } else {
                     $fileEditorWasDisabled = false;
                     $content = implode("\n", $newlines);
                     @file_put_contents($config, $content, LOCK_EX);
-                    SucuriScanEvent::reportErrorEvent('Hardening reverted in the plugin and theme editor');
-                    SucuriScanInterface::info('Hardening reverted in the plugin and theme editor');
+                    SucuriScanEvent::reportErrorEvent(__('Hardening reverted in the plugin and theme editor', 'sucuri-scanner'));
+                    SucuriScanInterface::info(__('Hardening reverted in the plugin and theme editor', 'sucuri-scanner'));
                 }
             }
         }
 
-        $params['Hardening.Title'] = 'Plugin and Theme Editor';
-        $params['Hardening.Description'] = 'Disables the theme and plugin edit'
-        . 'ors to prevent unwanted modifications to the code. If you are havin'
-        . 'g problems reverting this please open the wp-config.php file and de'
-        . 'lete the line with the constant DISALLOW_FILE_EDIT.';
+        $params['Hardening.Title'] = __('Plugin and Theme Editor', 'sucuri-scanner');
+        $params['Hardening.Description'] = __('Disables the theme and plugin editors to prevent unwanted modifications to the code. If you are having problems reverting this please open the wp-config.php file and delete the line with the constant DISALLOW_FILE_EDIT.', 'sucuri-scanner');
 
         if ($fileEditorWasDisabled) {
             $params['Hardening.Status'] = 1;
             $params['Hardening.FieldName'] = __FUNCTION__ . '_revert';
-            $params['Hardening.FieldText'] = 'Revert Hardening';
+            $params['Hardening.FieldText'] = __('Revert Hardening', 'sucuri-scanner');
         } else {
             $params['Hardening.Status'] = 0;
             $params['Hardening.FieldName'] = __FUNCTION__;
-            $params['Hardening.FieldText'] = 'Apply Hardening';
+            $params['Hardening.FieldText'] = __('Apply Hardening', 'sucuri-scanner');
         }
 
         return self::drawSection($params);
@@ -687,12 +630,12 @@ class SucuriScanHardeningPage extends SucuriScan
                 if (in_array($folder, $allowed_folders)) {
                     try {
                         SucuriScanHardening::whitelist($fwhite, $folder);
-                        SucuriScanInterface::info('The file has been whitelisted from the hardening');
+                        SucuriScanInterface::info(__('The file has been whitelisted from the hardening', 'sucuri-scanner'));
                     } catch (Exception $e) {
                         SucuriScanInterface::error($e->getMessage());
                     }
                 } else {
-                    SucuriScanInterface::error('Specified folder is not hardened by this plugin');
+                    SucuriScanInterface::error(__('Specified folder is not hardened by this plugin', 'sucuri-scanner'));
                 }
             }
 
@@ -706,7 +649,7 @@ class SucuriScanHardeningPage extends SucuriScan
                     SucuriScanHardening::dewhitelist($parts[1], $parts[0]);
                 }
 
-                SucuriScanInterface::info('Selected files have been removed');
+                SucuriScanInterface::info(__('Selected files have been removed', 'sucuri-scanner'));
             }
         }
 

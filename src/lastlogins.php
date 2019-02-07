@@ -121,7 +121,7 @@ function sucuriscan_lastlogins_all()
 
     if (!sucuriscan_lastlogins_datastore_is_writable()) {
         $fpath = SucuriScan::escape(sucuriscan_lastlogins_datastore_filepath());
-        SucuriScanInterface::error(sprintf('Last-logins data file is not writable: <code>%s</code>', $fpath));
+        SucuriScanInterface::error(sprintf(__('Last-logins data file is not writable: <code>%s</code>', 'sucuri-scanner'), $fpath));
     }
 
     $last_logins = sucuriscan_get_logins($max_per_page, $offset);
@@ -297,14 +297,14 @@ function sucuriscan_get_logins($limit = 10, $offset = 0, $user_id = 0)
     );
 
     if (!$datastore_filepath) {
-        return SucuriScan::throwException('Invalid last-logins storage file');
+        return SucuriScan::throwException(__('Invalid last-logins storage file', 'sucuri-scanner'));
     }
 
     $parsed_lines = 0;
     $data_lines = SucuriScanFileInfo::fileLines($datastore_filepath);
 
     if (!$data_lines) {
-        return SucuriScan::throwException('No last-logins data is available');
+        return SucuriScan::throwException(__('No last-logins data is available', 'sucuri-scanner'));
     }
 
     /**
@@ -448,8 +448,7 @@ if (!function_exists('sucuriscan_get_user_lastlogin')) {
                 $row = $last_logins['entries'][1];
                 $page_url = SucuriScanTemplate::getUrl('lastlogins');
                 $message = sprintf(
-                    'Last login was at <b>%s</b> from <b>%s</b> <em>(%s)</em> '
-                    . '<a href="%s" target="_self">view all logs</a>',
+                    __('Last login was at <b>%s</b> from <b>%s</b> <em>(%s)</em> <a href="%s" target="_self">view all logs</a>', 'sucuri-scanner'),
                     SucuriScan::datetime($row['user_lastlogin_timestamp']),
                     SucuriScan::escape($row['user_remoteaddr']),
                     SucuriScan::escape($row['user_hostname']),

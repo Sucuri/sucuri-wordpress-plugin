@@ -41,12 +41,12 @@ function sucuriscan_page()
 
     /* load data for the SiteCheck section */
     $params['SiteCheck.Refresh'] = 'false';
-    $params['SiteCheck.iFramesTitle'] = 'iFrames';
-    $params['SiteCheck.LinksTitle'] = 'Links';
-    $params['SiteCheck.ScriptsTitle'] = 'Scripts';
-    $params['SiteCheck.iFramesContent'] = 'Loading...';
-    $params['SiteCheck.LinksContent'] = 'Loading...';
-    $params['SiteCheck.ScriptsContent'] = 'Loading...';
+    $params['SiteCheck.iFramesTitle'] = __('iFrames', 'sucuri-scanner');
+    $params['SiteCheck.LinksTitle'] = __('Links', 'sucuri-scanner');
+    $params['SiteCheck.ScriptsTitle'] = __('Scripts', 'sucuri-scanner');
+    $params['SiteCheck.iFramesContent'] = __('Loading...', 'sucuri-scanner');
+    $params['SiteCheck.LinksContent'] = __('Loading...', 'sucuri-scanner');
+    $params['SiteCheck.ScriptsContent'] = __('Loading...', 'sucuri-scanner');
     $params['SiteCheck.Malware'] = '<div id="sucuriscan-malware"></div>';
     $params['SiteCheck.Blacklist'] = '<div id="sucuriscan-blacklist"></div>';
     $params['SiteCheck.Recommendations'] = '<div id="sucuriscan-recommendations"></div>';
@@ -94,9 +94,9 @@ function sucuriscan_lastlogins_page()
 
         if (@unlink($file_path)) {
             sucuriscan_lastlogins_datastore_exists();
-            SucuriScanInterface::info('Last-Logins logs were successfully reset.');
+            SucuriScanInterface::info(__('Last-Logins logs were successfully reset.', 'sucuri-scanner'));
         } else {
-            SucuriScanInterface::error('Could not reset the last-logins data file.');
+            SucuriScanInterface::error(__('Could not reset the last-logins data file.', 'sucuri-scanner'));
         }
     }
 
