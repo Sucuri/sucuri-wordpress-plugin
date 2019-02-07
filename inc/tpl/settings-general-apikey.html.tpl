@@ -4,7 +4,7 @@
 %%%SUCURI.ModalForApiKeyRecovery%%%
 
 <div class="sucuriscan-panel">
-    <h3 class="sucuriscan-title">API Key</h3>
+    <h3 class="sucuriscan-title">{{API Key}}</h3>
 
     <div class="inside">
         <p>An API key is required to prevent attackers from deleting audit logs that can help you investigate and recover after a hack, and allows the plugin to display statistics. By generating an API key, you agree that Sucuri will collect and store anonymous data about your website. We take your privacy seriously.</p>

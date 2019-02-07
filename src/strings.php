@@ -160,6 +160,114 @@ __('I agree to the <a target="_blank" href="https://sucuri.net/terms">Terms of S
 __('I have read and understand the <a target="_blank" href="https://sucuri.net/privacy">Privacy Policy</a>.', 'sucuri-scanner');
 __('Submit', 'sucuri-scanner');
 
+// settings-alerts-bruteforce.html.tpl
+__('Password Guessing Brute Force Attacks', 'sucuri-scanner');
+__('<a href="https://kb.sucuri.net/definitions/attacks/brute-force/password-guessing" target="_blank" rel="noopener">Password guessing brute force attacks</a> are very common against web sites and web servers. They are one of the most common vectors used to compromise web sites. The process is very simple and the attackers basically try multiple combinations of usernames and passwords until they find one that works. Once they get in, they can compromise the web site with malware, spam , phishing or anything else they want.', 'sucuri-scanner');
+__('Consider Brute-Force Attack After:', 'sucuri-scanner');
+__('Submit', 'sucuri-scanner');
+
+// settings-alerts-events.html.tpl
+__('Security Alerts', 'sucuri-scanner');
+__('You have installed a plugin or theme that is not fully compatible with our plugin, some of the security alerts (like the successful and failed logins) will not be sent to you. To prevent an infinite loop while detecting these changes in the website and sending the email alerts via a custom SMTP plugin, we have decided to stop any attempt to send the emails to prevent fatal errors.', 'sucuri-scanner');
+__('Select All', 'sucuri-scanner');
+__('Event', 'sucuri-scanner');
+__('Submit', 'sucuri-scanner');
+
+// settings-alerts-ignore-posts.html.tpl
+__('Post-Type Alerts', 'sucuri-scanner');
+__('It seems that you disabled the email alerts for <b>new site content</b>, this panel is intended to provide a way to ignore specific events in your site and with that the alerts reported to your email. Since you have deactivated the <b>new site content</b> alerts, this panel will be disabled too.', 'sucuri-scanner');
+__('This is a list of registered <a href="https://codex.wordpress.org/Post_Types" target="_blank" rel="noopener">Post Types</a>. You will receive an email alert when a custom page or post associated to any of these types is created or updated. If you don’t want to receive one or more of these alerts, feel free to uncheck the boxes in the table below. If you are receiving alerts for post types that are not listed in this table, it may be because there is an add-on that that is generating a custom post-type on runtime, you will have to find out by yourself what is the unique ID of that post-type and type it in the form below. The plugin will do its best to ignore these alerts as long as the unique ID is valid.', 'sucuri-scanner');
+__('Stop Alerts For This Post-Type:', 'sucuri-scanner');
+__('e.g. unique_post_type_id', 'sucuri-scanner');
+__('Submit', 'sucuri-scanner');
+__('Show Post-Types Table', 'sucuri-scanner');
+__('Hide Post-Types Table', 'sucuri-scanner');
+__('Select All', 'sucuri-scanner');
+__('Post Type', 'sucuri-scanner');
+__('Post Type ID', 'sucuri-scanner');
+__('Ignored At (optional)', 'sucuri-scanner');
+
+// settings-alerts-perhour.html.tpl
+__('Alerts Per Hour', 'sucuri-scanner');
+__('Configure the maximum number of email alerts per hour. If the number is exceeded and the plugin detects more events during the same hour, it will still log the events into the audit logs but will not send the email alerts. Be careful with this as you will miss important information.', 'sucuri-scanner');
+__('Maximum Alerts Per Hour:', 'sucuri-scanner');
+__('Submit', 'sucuri-scanner');
+
+// settings-alerts-recipients.html.tpl
+__('Alerts Recipient', 'sucuri-scanner');
+__('By default, the plugin will send the email alerts to the primary admin account, the same account created during the installation of WordPress in your web server. You can add more people to the list, they will receive a copy of the same security alerts.', 'sucuri-scanner');
+__('E-mail:', 'sucuri-scanner');
+__('e.g. user@example.com', 'sucuri-scanner');
+__('Submit', 'sucuri-scanner');
+__('Select All', 'sucuri-scanner');
+__('E-mail', 'sucuri-scanner');
+__('Delete', 'sucuri-scanner');
+__('Test Alerts', 'sucuri-scanner');
+
+// settings-alerts-subject.html.tpl
+__('Alert Subject', 'sucuri-scanner');
+__('Format of the subject for the email alerts, by default the plugin will use the website name and the event identifier that is being reported, you can use this panel to include the IP address of the user that triggered the event and some additional data. You can create filters in your email client creating a custom email subject using the pseudo-tags shown below.', 'sucuri-scanner');
+__('Custom Format', 'sucuri-scanner');
+__('Submit', 'sucuri-scanner');
+
+// settings-alerts-trustedips.html.tpl
+__('Trusted IP Addresses', 'sucuri-scanner');
+__('If you are working in a LAN <em>(Local Area Network)</em> you may want to include the IP addresses of all the nodes in the subnet, this will force the plugin to stop sending email alerts about actions executed from trusted IP addresses. Use the CIDR <em>(Classless Inter Domain Routing)</em> format to specify ranges of IP addresses <em>(only 8, 16, and 24)</em>.', 'sucuri-scanner');
+__('IP Address:', 'sucuri-scanner');
+__('e.g. 182.120.56.0/24', 'sucuri-scanner');
+__('Submit', 'sucuri-scanner');
+__('Select All', 'sucuri-scanner');
+__('IP Address', 'sucuri-scanner');
+__('CIDR Format', 'sucuri-scanner');
+__('IP Added At', 'sucuri-scanner');
+__('no data available', 'sucuri-scanner');
+__('Delete', 'sucuri-scanner');
+
+// settings-apirecovery.html.tpl
+__('If this operation was successful you will receive a message in the email used during the registration of the API key <em>(usually the email of the main admin user)</em>. This message contains the key in plain text, copy and paste the key in the form field below. The plugin will verify the authenticity of the key sending an initial HTTP request to the API service, if this fails the key will be removed automatically and you will have to start the process all over again.', 'sucuri-scanner');
+__('There are cases where this operation may fail, an example would be when the email address is not associated with the domain anymore, this happens when the base URL changes <em>(from www to none or viceversa)</em>. If you are having issues recovering the key please send an email explaining the situation to <a href="mailto:info@sucuri.net">info@sucuri.net</a>', 'sucuri-scanner');
+__('API Key:', 'sucuri-scanner');
+__('Submit', 'sucuri-scanner');
+
+// settings-apiregistered.html.tpl
+__('Congratulations! The rest of the features available in the plugin have been enabled. This product is designed to supplement existing security products. It’s not a silver bullet for your security needs, but it’ll give you greater security awareness and better posture, all with the intent of reducing risk.', 'sucuri-scanner');
+__('Your website has been granted a new API key and it was associated to the email address that you chose during the registration process. You can use the same email to recover the key if you happen to lose it sometime. We encourage you to check the rest of the settings page and configure the plugin to your own needs.', 'sucuri-scanner');
+__('Dashboard', 'sucuri-scanner');
+__('Settings', 'sucuri-scanner');
+
+// settings-apiservice-checksums.html.tpl
+__('WordPress Checksums API', 'sucuri-scanner');
+__('The WordPress integrity tool uses a remote API service maintained by the WordPress organization to determine which files in the installation were added, removed or modified. The API returns a list of files with their respective checksums, this information guarantees that the installation is not corrupt. You can, however, point the integrity tool to a GitHub repository in case that you are using a custom version of WordPress like the <a href="https://github.com/WordPress/WordPress" target="_blank" rel="noopener">development version of the code</a>.', 'sucuri-scanner');
+__('WordPress Checksums API', 'sucuri-scanner');
+__('e.g. URL — or — user/repo', 'sucuri-scanner');
+__('Submit', 'sucuri-scanner');
+
+// settings-apiservice-proxy.html.tpl
+__('API Communication via Proxy', 'sucuri-scanner');
+__('All the HTTP requests used to communicate with the API service are being sent using the WordPress built-in functions, so (almost) all its official features are inherited, this is useful if you need to pass these HTTP requests through a proxy. According to the <a href="https://developer.wordpress.org/reference/classes/wp_http_proxy/" target="_blank" rel="noopener">official documentation</a> you have to add some constants to the main configuration file: <em>WP_PROXY_HOST, WP_PROXY_PORT, WP_PROXY_USERNAME, WP_PROXY_PASSWORD</em>.', 'sucuri-scanner');
+__('HTTP Proxy Hostname', 'sucuri-scanner');
+__('HTTP Proxy Port num', 'sucuri-scanner');
+__('HTTP Proxy Username', 'sucuri-scanner');
+__('HTTP Proxy Password', 'sucuri-scanner');
+
+// settings-apiservice-status.html.tpl
+__('API Service Communication', 'sucuri-scanner');
+__('Once the API key is generate the plugin will communicate with a remote API service that will act as a safe data storage for the audit logs generated when the website triggers certain events that the plugin monitors. If the website is hacked the attacker will not have access to these logs and that way you can investigate what was modified <em>(for malware infaction)</em> and/or how the malicious person was able to gain access to the website.', 'sucuri-scanner');
+__('Disabling the API service communication will stop the event monitoring, consider to enable the <a href="%%SUCURI.URL.Settings%%#general">Log Exporter</a> to keep the monitoring working while the HTTP requests are ignored, otherwise an attacker may execute an action that will not be registered in the security logs and you will not have a way to investigate the attack in the future.', 'sucuri-scanner');
+__('<strong>Are you a developer?</strong> You may be interested in our API. Feel free to use the URL shown below to access the latest 50 entries in your security log, change the value for the parameter <code>l=N</code> if you need more. Be aware that the API doesn’t provides an offset parameter, so if you have the intension to query specific sections of the log you will need to wrap the HTTP request around your own cache mechanism. We <strong>DO NOT</strong> take feature requests for the API, this is a semi-private service tailored for the specific needs of the plugin and not intended to be used by 3rd-party apps, we may change the behavior of each API endpoint without previous notice, use it at your own risk.', 'sucuri-scanner');
+
+// settings-general-apikey.html.tpl
+__('API Key', 'sucuri-scanner');
+__('', 'sucuri-scanner');
+__('', 'sucuri-scanner');
+__('', 'sucuri-scanner');
+__('', 'sucuri-scanner');
+__('', 'sucuri-scanner');
+__('', 'sucuri-scanner');
+__('', 'sucuri-scanner');
+__('', 'sucuri-scanner');
+__('', 'sucuri-scanner');
+
 // settings.html.tpl
 __('General', 'sucuri-scanner');
 __('Scanner', 'sucuri-scanner');
