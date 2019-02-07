@@ -187,7 +187,7 @@ class SucuriScanSiteCheck extends SucuriScanAPI
         }
 
         if (isset($data['SCAN']['HOSTING'])) {
-            $data['details'][] = 'Hosting: ' . $data['SCAN']['HOSTING'][0];
+            $data['details'][] = 'Hosting: ' . apply_filters( 'sucuriscan_sitecheck_details_hosting', $data['SCAN']['HOSTING'][0] );
         }
 
         if (isset($data['SCAN']['CMS'])) {
