@@ -6,6 +6,8 @@
  * Plugin URI: https://wordpress.sucuri.net/
  * Author URI: https://sucuri.net/
  * Author: Sucuri Inc.
+ * Text Domain: sucuri-scanner
+ * Domain Path: /lang
  * Version: 1.8.19
  *
  * PHP version 5
@@ -192,6 +194,12 @@ define('SUCURISCAN_ADMIN_NOTICE_PREFIX', '<b>SUCURI:</b>');
 if (!array_key_exists('SERVER_NAME', $_SERVER)) {
     $_SERVER['SERVER_NAME'] = 'localhost';
 }
+
+/* Load plugin translations */
+function sucuriscan_load_plugin_textdomain() {
+    load_plugin_textdomain( 'sucuri-scanner', false, basename( dirname( __FILE__ ) ) . '/lang/' );
+}
+add_action('plugins_loaded', 'sucuriscan_load_plugin_textdomain');
 
 /* Load all classes before anything else. */
 require_once 'src/base.lib.php';
