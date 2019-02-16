@@ -83,17 +83,15 @@ class SucuriScanTemplate extends SucuriScanRequest
 
         global $locale;
 
-        if ( $locale !== 'en_US' ) {
-            require_once __DIR__ . '/strings.php';
+        require_once __DIR__ . '/strings.php';
 
-            preg_match_all('~{{(.+)}}~', $content, $matches);
+        preg_match_all('~{{(.+)}}~', $content, $matches);
 
-            if ( ! empty( $matches[1] ) ) {
-                foreach($matches[1] as $string) {
-                    $pattern = sprintf('~{{%s}}~', preg_quote($string));
-                    $replacement = translate($string, 'sucuri-scanner');
-                    $content = preg_replace($pattern, $replacement, $content);
-                }
+        if ( ! empty( $matches[1] ) ) {
+            foreach($matches[1] as $string) {
+                $pattern = sprintf('~{{%s}}~', preg_quote($string, '~'));
+                $replacement = ('en_US' !== $locale) ? translate($string, 'sucuri-scanner') : $string;
+                $content = preg_replace($pattern, $replacement, $content);
             }
         }
 
