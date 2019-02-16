@@ -4,7 +4,7 @@ msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "Project-Id-Version: Sucuri Security - Auditing, Malware Scanner and "
 "Hardening\n"
-"POT-Creation-Date: 2019-02-07 02:39-0600\n"
+"POT-Creation-Date: 2019-02-16 15:51-0700\n"
 "PO-Revision-Date: 2019-02-07 02:39-0600\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -299,7 +299,7 @@ msgstr ""
 msgid "IP has been unblacklisted: %s"
 msgstr ""
 
-#: src/globals.php:80 src/strings.php:39
+#: src/globals.php:80 src/strings.php:39 src/strings.php:235
 msgid "Dashboard"
 msgstr ""
 
@@ -311,7 +311,7 @@ msgstr ""
 msgid "Last Logins"
 msgstr ""
 
-#: src/globals.php:83 src/strings.php:41 src/strings.php:95
+#: src/globals.php:83 src/strings.php:41 src/strings.php:95 src/strings.php:236
 msgid "Settings"
 msgstr ""
 
@@ -714,7 +714,7 @@ msgid "Password"
 msgstr ""
 
 #: src/lastlogins-failed.php:346 src/lastlogins-failed.php:370
-#: src/strings.php:81
+#: src/strings.php:81 src/strings.php:220
 msgid "IP Address"
 msgstr ""
 
@@ -1101,6 +1101,7 @@ msgid "List of monitored post-types has been updated"
 msgstr ""
 
 #: src/settings-alerts.php:574 src/settings-scanner.php:222 src/strings.php:46
+#: src/strings.php:223
 msgid "no data available"
 msgstr ""
 
@@ -1827,7 +1828,7 @@ msgstr ""
 msgid "Review"
 msgstr ""
 
-#: src/strings.php:38 src/template.lib.php:140
+#: src/strings.php:38 src/template.lib.php:138
 msgid "Generate API Key"
 msgstr ""
 
@@ -1864,7 +1865,10 @@ msgid "Non-blocked requests are hidden from the logs, this is intentional."
 msgstr ""
 
 #: src/strings.php:54 src/strings.php:75 src/strings.php:128
-#: src/strings.php:161 src/strings.php:196
+#: src/strings.php:161 src/strings.php:167 src/strings.php:174
+#: src/strings.php:182 src/strings.php:194 src/strings.php:201
+#: src/strings.php:211 src/strings.php:218 src/strings.php:230
+#: src/strings.php:243 src/strings.php:301
 msgid "Submit"
 msgstr ""
 
@@ -1943,7 +1947,8 @@ msgid ""
 "\">WikiPedia - Web Cache</a>"
 msgstr ""
 
-#: src/strings.php:74 src/strings.php:88
+#: src/strings.php:74 src/strings.php:88 src/strings.php:204
+#: src/strings.php:224 src/strings.php:266
 msgid "Delete"
 msgstr ""
 
@@ -2089,7 +2094,8 @@ msgid ""
 "restore the original content immediately."
 msgstr ""
 
-#: src/strings.php:119
+#: src/strings.php:119 src/strings.php:172 src/strings.php:185
+#: src/strings.php:202 src/strings.php:219
 msgid "Select All"
 msgstr ""
 
@@ -2177,7 +2183,7 @@ msgstr ""
 msgid "Website:"
 msgstr ""
 
-#: src/strings.php:155
+#: src/strings.php:155 src/strings.php:199
 msgid "E-mail:"
 msgstr ""
 
@@ -2209,67 +2215,414 @@ msgid ""
 msgstr ""
 
 #: src/strings.php:164
-msgid "General"
+msgid "Password Guessing Brute Force Attacks"
 msgstr ""
 
 #: src/strings.php:165
-msgid "Scanner"
+msgid ""
+"<a href=\"https://kb.sucuri.net/definitions/attacks/brute-force/password-"
+"guessing\" target=\"_blank\" rel=\"noopener\">Password guessing brute force "
+"attacks</a> are very common against web sites and web servers. They are one "
+"of the most common vectors used to compromise web sites. The process is very "
+"simple and the attackers basically try multiple combinations of usernames "
+"and passwords until they find one that works. Once they get in, they can "
+"compromise the web site with malware, spam , phishing or anything else they "
+"want."
 msgstr ""
 
 #: src/strings.php:166
-msgid "Hardening"
-msgstr ""
-
-#: src/strings.php:167
-msgid "Post-Hack"
-msgstr ""
-
-#: src/strings.php:168
-msgid "Alerts"
-msgstr ""
-
-#: src/strings.php:169
-msgid "API Service Communication"
+msgid "Consider Brute-Force Attack After:"
 msgstr ""
 
 #: src/strings.php:170
-msgid "Website Info"
+msgid "Security Alerts"
 msgstr ""
 
 #: src/strings.php:171
+msgid ""
+"You have installed a plugin or theme that is not fully compatible with our "
+"plugin, some of the security alerts (like the successful and failed logins) "
+"will not be sent to you. To prevent an infinite loop while detecting these "
+"changes in the website and sending the email alerts via a custom SMTP "
+"plugin, we have decided to stop any attempt to send the emails to prevent "
+"fatal errors."
+msgstr ""
+
+#: src/strings.php:173
+msgid "Event"
+msgstr ""
+
+#: src/strings.php:177
+msgid "Post-Type Alerts"
+msgstr ""
+
+#: src/strings.php:178
+msgid ""
+"It seems that you disabled the email alerts for <b>new site content</b>, "
+"this panel is intended to provide a way to ignore specific events in your "
+"site and with that the alerts reported to your email. Since you have "
+"deactivated the <b>new site content</b> alerts, this panel will be disabled "
+"too."
+msgstr ""
+
+#: src/strings.php:179
+msgid ""
+"This is a list of registered <a href=\"https://codex.wordpress.org/Post_Types"
+"\" target=\"_blank\" rel=\"noopener\">Post Types</a>. You will receive an "
+"email alert when a custom page or post associated to any of these types is "
+"created or updated. If you don’t want to receive one or more of these "
+"alerts, feel free to uncheck the boxes in the table below. If you are "
+"receiving alerts for post types that are not listed in this table, it may be "
+"because there is an add-on that that is generating a custom post-type on "
+"runtime, you will have to find out by yourself what is the unique ID of that "
+"post-type and type it in the form below. The plugin will do its best to "
+"ignore these alerts as long as the unique ID is valid."
+msgstr ""
+
+#: src/strings.php:180
+msgid "Stop Alerts For This Post-Type:"
+msgstr ""
+
+#: src/strings.php:181
+msgid "e.g. unique_post_type_id"
+msgstr ""
+
+#: src/strings.php:183
+msgid "Show Post-Types Table"
+msgstr ""
+
+#: src/strings.php:184
+msgid "Hide Post-Types Table"
+msgstr ""
+
+#: src/strings.php:186
+msgid "Post Type"
+msgstr ""
+
+#: src/strings.php:187
+msgid "Post Type ID"
+msgstr ""
+
+#: src/strings.php:188
+msgid "Ignored At (optional)"
+msgstr ""
+
+#: src/strings.php:191
+msgid "Alerts Per Hour"
+msgstr ""
+
+#: src/strings.php:192
+msgid ""
+"Configure the maximum number of email alerts per hour. If the number is "
+"exceeded and the plugin detects more events during the same hour, it will "
+"still log the events into the audit logs but will not send the email alerts. "
+"Be careful with this as you will miss important information."
+msgstr ""
+
+#: src/strings.php:193
+msgid "Maximum Alerts Per Hour:"
+msgstr ""
+
+#: src/strings.php:197
+msgid "Alerts Recipient"
+msgstr ""
+
+#: src/strings.php:198
+msgid ""
+"By default, the plugin will send the email alerts to the primary admin "
+"account, the same account created during the installation of WordPress in "
+"your web server. You can add more people to the list, they will receive a "
+"copy of the same security alerts."
+msgstr ""
+
+#: src/strings.php:200
+msgid "e.g. user@example.com"
+msgstr ""
+
+#: src/strings.php:203
+msgid "E-mail"
+msgstr ""
+
+#: src/strings.php:205
+msgid "Test Alerts"
+msgstr ""
+
+#: src/strings.php:208
+msgid "Alert Subject"
+msgstr ""
+
+#: src/strings.php:209
+msgid ""
+"Format of the subject for the email alerts, by default the plugin will use "
+"the website name and the event identifier that is being reported, you can "
+"use this panel to include the IP address of the user that triggered the "
+"event and some additional data. You can create filters in your email client "
+"creating a custom email subject using the pseudo-tags shown below."
+msgstr ""
+
+#: src/strings.php:210
+msgid "Custom Format"
+msgstr ""
+
+#: src/strings.php:214
+msgid "Trusted IP Addresses"
+msgstr ""
+
+#: src/strings.php:215
+msgid ""
+"If you are working in a LAN <em>(Local Area Network)</em> you may want to "
+"include the IP addresses of all the nodes in the subnet, this will force the "
+"plugin to stop sending email alerts about actions executed from trusted IP "
+"addresses. Use the CIDR <em>(Classless Inter Domain Routing)</em> format to "
+"specify ranges of IP addresses <em>(only 8, 16, and 24)</em>."
+msgstr ""
+
+#: src/strings.php:216
+msgid "IP Address:"
+msgstr ""
+
+#: src/strings.php:217
+msgid "e.g. 182.120.56.0/24"
+msgstr ""
+
+#: src/strings.php:221
+msgid "CIDR Format"
+msgstr ""
+
+#: src/strings.php:222
+msgid "IP Added At"
+msgstr ""
+
+#: src/strings.php:227
+msgid ""
+"If this operation was successful you will receive a message in the email "
+"used during the registration of the API key <em>(usually the email of the "
+"main admin user)</em>. This message contains the key in plain text, copy and "
+"paste the key in the form field below. The plugin will verify the "
+"authenticity of the key sending an initial HTTP request to the API service, "
+"if this fails the key will be removed automatically and you will have to "
+"start the process all over again."
+msgstr ""
+
+#: src/strings.php:228
+msgid ""
+"There are cases where this operation may fail, an example would be when the "
+"email address is not associated with the domain anymore, this happens when "
+"the base URL changes <em>(from www to none or viceversa)</em>. If you are "
+"having issues recovering the key please send an email explaining the "
+"situation to <a href=\"mailto:info@sucuri.net\">info@sucuri.net</a>"
+msgstr ""
+
+#: src/strings.php:229
+msgid "API Key:"
+msgstr ""
+
+#: src/strings.php:233
+msgid ""
+"Congratulations! The rest of the features available in the plugin have been "
+"enabled. This product is designed to supplement existing security products. "
+"It’s not a silver bullet for your security needs, but it’ll give you greater "
+"security awareness and better posture, all with the intent of reducing risk."
+msgstr ""
+
+#: src/strings.php:234
+msgid ""
+"Your website has been granted a new API key and it was associated to the "
+"email address that you chose during the registration process. You can use "
+"the same email to recover the key if you happen to lose it sometime. We "
+"encourage you to check the rest of the settings page and configure the "
+"plugin to your own needs."
+msgstr ""
+
+#: src/strings.php:239 src/strings.php:241
+msgid "WordPress Checksums API"
+msgstr ""
+
+#: src/strings.php:240
+msgid ""
+"The WordPress integrity tool uses a remote API service maintained by the "
+"WordPress organization to determine which files in the installation were "
+"added, removed or modified. The API returns a list of files with their "
+"respective checksums, this information guarantees that the installation is "
+"not corrupt. You can, however, point the integrity tool to a GitHub "
+"repository in case that you are using a custom version of WordPress like the "
+"<a href=\"https://github.com/WordPress/WordPress\" target=\"_blank\" rel="
+"\"noopener\">development version of the code</a>."
+msgstr ""
+
+#: src/strings.php:242
+msgid "e.g. URL — or — user/repo"
+msgstr ""
+
+#: src/strings.php:246
+msgid "API Communication via Proxy"
+msgstr ""
+
+#: src/strings.php:247
+msgid ""
+"All the HTTP requests used to communicate with the API service are being "
+"sent using the WordPress built-in functions, so (almost) all its official "
+"features are inherited, this is useful if you need to pass these HTTP "
+"requests through a proxy. According to the <a href=\"https://developer."
+"wordpress.org/reference/classes/wp_http_proxy/\" target=\"_blank\" rel="
+"\"noopener\">official documentation</a> you have to add some constants to "
+"the main configuration file: <em>WP_PROXY_HOST, WP_PROXY_PORT, "
+"WP_PROXY_USERNAME, WP_PROXY_PASSWORD</em>."
+msgstr ""
+
+#: src/strings.php:248
+msgid "HTTP Proxy Hostname"
+msgstr ""
+
+#: src/strings.php:249
+msgid "HTTP Proxy Port num"
+msgstr ""
+
+#: src/strings.php:250
+msgid "HTTP Proxy Username"
+msgstr ""
+
+#: src/strings.php:251
+msgid "HTTP Proxy Password"
+msgstr ""
+
+#: src/strings.php:254 src/strings.php:274
+msgid "API Service Communication"
+msgstr ""
+
+#: src/strings.php:255
+msgid ""
+"Once the API key is generate the plugin will communicate with a remote API "
+"service that will act as a safe data storage for the audit logs generated "
+"when the website triggers certain events that the plugin monitors. If the "
+"website is hacked the attacker will not have access to these logs and that "
+"way you can investigate what was modified <em>(for malware infaction)</em> "
+"and/or how the malicious person was able to gain access to the website."
+msgstr ""
+
+#: src/strings.php:256
+#, php-format
+msgid ""
+"Disabling the API service communication will stop the event monitoring, "
+"consider to enable the <a href=\"%%SUCURI.URL.Settings%%#general\">Log "
+"Exporter</a> to keep the monitoring working while the HTTP requests are "
+"ignored, otherwise an attacker may execute an action that will not be "
+"registered in the security logs and you will not have a way to investigate "
+"the attack in the future."
+msgstr ""
+
+#: src/strings.php:257
+msgid ""
+"<strong>Are you a developer?</strong> You may be interested in our API. Feel "
+"free to use the URL shown below to access the latest 50 entries in your "
+"security log, change the value for the parameter <code>l=N</code> if you "
+"need more. Be aware that the API doesn’t provides an offset parameter, so if "
+"you have the intension to query specific sections of the log you will need "
+"to wrap the HTTP request around your own cache mechanism. We <strong>DO NOT</"
+"strong> take feature requests for the API, this is a semi-private service "
+"tailored for the specific needs of the plugin and not intended to be used by "
+"3rd-party apps, we may change the behavior of each API endpoint without "
+"previous notice, use it at your own risk."
+msgstr ""
+
+#: src/strings.php:260
+msgid "API Key"
+msgstr ""
+
+#: src/strings.php:261
+msgid ""
+"An API key is required to prevent attackers from deleting audit logs that "
+"can help you investigate and recover after a hack, and allows the plugin to "
+"display statistics. By generating an API key, you agree that Sucuri will "
+"collect and store anonymous data about your website. We take your privacy "
+"seriously."
+msgstr ""
+
+#: src/strings.php:262
+#, php-format
+msgid ""
+"Your domain <code>%%SUCURI.CleanDomain%%</code> does not seems to have a DNS "
+"<code>A</code> record so it will be considered as <em>invalid</em> by the "
+"API interface when you request the generation of a new key. Adding "
+"<code>www</code> at the beginning of the domain name may fix this issue. If "
+"you do not understand what is this then send an email to our support team "
+"requesting the key."
+msgstr ""
+
+#: src/strings.php:263
+msgid "Recover Via E-mail"
+msgstr ""
+
+#: src/strings.php:264
+msgid "Manual Activation"
+msgstr ""
+
+#: src/strings.php:265
+msgid ""
+"If you do not have access to the administrator email, you can reinstall the "
+"plugin. The API key is generated using an administrator email and the domain "
+"of the website. Click the \"Manual Activation\" button if you already have a "
+"valid API key to authenticate this website with the remote API web service."
+msgstr ""
+
+#: src/strings.php:269
+msgid "General"
+msgstr ""
+
+#: src/strings.php:270
+msgid "Scanner"
+msgstr ""
+
+#: src/strings.php:271
+msgid "Hardening"
+msgstr ""
+
+#: src/strings.php:272
+msgid "Post-Hack"
+msgstr ""
+
+#: src/strings.php:273
+msgid "Alerts"
+msgstr ""
+
+#: src/strings.php:275
+msgid "Website Info"
+msgstr ""
+
+#: src/strings.php:276
 msgid "Hardening Options"
 msgstr ""
 
-#: src/strings.php:174
+#: src/strings.php:279
 #, php-format
 msgid "This information will be updated %%SUCURI.SiteCheck.Lifetime%%"
 msgstr ""
 
-#: src/strings.php:175
+#: src/strings.php:280
 msgid "Refresh Malware Scan"
 msgstr ""
 
-#: src/strings.php:178
+#: src/strings.php:283
 msgid "No malicious JavaScript"
 msgstr ""
 
-#: src/strings.php:179
+#: src/strings.php:284
 msgid "No malicious iFrames"
 msgstr ""
 
-#: src/strings.php:180
+#: src/strings.php:285
 msgid "No suspicious redirections"
 msgstr ""
 
-#: src/strings.php:181
+#: src/strings.php:286
 msgid "No blackhat SEO spam"
 msgstr ""
 
-#: src/strings.php:182
+#: src/strings.php:287
 msgid "No anomaly detection"
 msgstr ""
 
-#: src/strings.php:183
+#: src/strings.php:288
 msgid ""
 "If our free scanner did not detect any issue, you may have a more "
 "complicated and hidden problem. You can <a href=\"https://sucuri.net/website-"
@@ -2278,19 +2631,19 @@ msgid ""
 "free checks)."
 msgstr ""
 
-#: src/strings.php:186
+#: src/strings.php:291
 msgid "Hover to see the Payload"
 msgstr ""
 
-#: src/strings.php:189
+#: src/strings.php:294
 msgid "Recomendations"
 msgstr ""
 
-#: src/strings.php:192 src/strings.php:194
+#: src/strings.php:297 src/strings.php:299
 msgid "Malware Scan Target"
 msgstr ""
 
-#: src/strings.php:193
+#: src/strings.php:298
 msgid ""
 "The remote malware scanner provided by the plugin is powered by <a href="
 "\"https://sitecheck.sucuri.net/\" target=\"_blank\" rel=\"noopener\">Sucuri "
@@ -2303,11 +2656,11 @@ msgid ""
 "be scanned."
 msgstr ""
 
-#: src/strings.php:195
+#: src/strings.php:300
 msgid "Malware Scan Target:"
 msgstr ""
 
-#: src/template.lib.php:281
+#: src/template.lib.php:279
 msgid "Invalid template type"
 msgstr ""
 
