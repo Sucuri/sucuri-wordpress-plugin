@@ -205,6 +205,7 @@ function sucuriscan_ajax()
         SucuriScanFirewall::getSettingsAjax();
         SucuriScanFirewall::clearCacheAjax();
         SucuriScanFirewall::clearAutoCacheAjax();
+        SucuriScanSettingsScanner::cronjobsAjax();
         SucuriScanSettingsPosthack::availableUpdatesAjax();
         SucuriScanSettingsPosthack::getPluginsAjax();
         SucuriScanSettingsPosthack::resetPasswordAjax();
