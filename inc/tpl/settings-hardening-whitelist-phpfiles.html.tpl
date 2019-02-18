@@ -11,9 +11,7 @@
                 <label>File Path:</label>
                 <input type="text" name="sucuriscan_hardening_whitelist" placeholder="e.g. wp-tinymce.php" />
                 <select name="sucuriscan_hardening_folder">
-                    <option value="wp-includes">wp-includes</option>
-                    <option value="wp-content">wp-content</option>
-                    <option value="wp-content/uploads">wp-content/uploads</option>
+                    %%%SUCURI.HardeningWhitelist.AllowedFolders%%%
                 </select>
                 <button type="submit" class="button button-primary">Submit</button>
             </fieldset>

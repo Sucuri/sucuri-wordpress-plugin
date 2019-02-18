@@ -44,8 +44,6 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
     public static function cronjobs($nonce)
     {
         $params = array(
-            'Cronjobs.List' => '',
-            'Cronjobs.Total' => 0,
             'Cronjob.Schedules' => '',
         );
 
@@ -126,7 +124,6 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
             }
         }
 
-        $cronjobs = _get_cron_array();
         $available = SucuriScanEvent::availableSchedules();
 
         /* Hardcode the first one to allow the immediate execution of the cronjob(s) */
@@ -137,6 +134,26 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
             $params['Cronjob.Schedules'] .= sprintf('<option value="%s">%s</option>', $freq, $name);
         }
 
+        $hasSPL = SucuriScanFileInfo::isSplAvailable();
+        $params['NoSPL.Visibility'] = SucuriScanTemplate::visibility(!$hasSPL);
+
+        return SucuriScanTemplate::getSection('settings-scanner-cronjobs', $params);
+    }
+
+    /**
+     * Process the Ajax request to retrieve the list of cronjobs.
+     *
+     * @return void
+     */
+    public static function cronjobsAjax()
+    {
+        if (SucuriScanRequest::post('form_action') !== 'get_cronjobs') {
+            return;
+        }
+
+        $response = '';
+        $cronjobs = _get_cron_array();
+
         foreach ($cronjobs as $timestamp => $cronhooks) {
             foreach ((array) $cronhooks as $hook => $events) {
                 foreach ((array) $events as $key => $event) {
@@ -144,8 +161,7 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
                         $event['args'] = array('[]');
                     }
 
-                    $params['Cronjobs.Total'] += 1;
-                    $params['Cronjobs.List'] .= SucuriScanTemplate::getSnippet(
+                    $response .= SucuriScanTemplate::getSnippet(
                         'settings-scanner-cronjobs',
                         array(
                             'Cronjob.Hook' => $hook,
@@ -159,10 +175,11 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
             }
         }
 
-        $hasSPL = SucuriScanFileInfo::isSplAvailable();
-        $params['NoSPL.Visibility'] = SucuriScanTemplate::visibility(!$hasSPL);
+        if (!$response) {
+            $response = '<tr><td colspan="5">There is no data.</td></tr>';
+        }
 
-        return SucuriScanTemplate::getSection('settings-scanner-cronjobs', $params);
+        wp_send_json($response, 200);
     }
 
     /**

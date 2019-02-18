@@ -2,6 +2,20 @@
 <div class="sucuriscan-panel">
     <h3 class="sucuriscan-title">Scheduled Tasks</h3>
 
+    <script type="text/javascript">
+    /* global jQuery */
+    /* jshint camelcase: false */
+    jQuery(document).ready(function ($) {
+        $.post('%%SUCURI.AjaxURL.Dashboard%%', {
+            action: 'sucuriscan_ajax',
+            sucuriscan_page_nonce: '%%SUCURI.PageNonce%%',
+            form_action: 'get_cronjobs',
+        }, function (data) {
+            $('.sucuriscan-wpcron-list tbody').html(data);
+        });
+    });
+    </script>
+
     <div class="inside">
         <p>The plugin scans your entire website looking for changes which are later reported via the API in the audit logs page. This scanner runs daily but you can change the frequency to meet your own requirements. Notice that scanning your project files too frequently will affect the performance of your website. Be sure to have enough server resources before changing this option. The memory limit and maximum execution time are two of the PHP options that your server will set to stop your website from consuming too much resources.</p>
 
@@ -29,7 +43,11 @@
                 </thead>
 
                 <tbody>
-                    %%%SUCURI.Cronjobs.List%%%
+                    <tr>
+                        <td colspan="5">
+                            <span>Loading...</span>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
 
