@@ -29,7 +29,7 @@
                     <th colspan="5">
                         <span>{{WordPress Integrity (%%SUCURI.Integrity.ListCount%%)}}</span>
 
-                        <span class="sucuriscan-tooltip sucuriscan-hidden" content="{{The Unix Diff Utility is enabled. You can click the files in the table to see the differences detected by the scanner. If you consider the differences to be harmless you can mark the file as fixed, otherwise it is adviced to restore the original content immediately.}}">
+                        <span class="sucuriscan-tooltip sucuriscan-hidden" content="{{The Unix Diff Utility is enabled. You can click the files in the table to see the differences detected by the scanner. If you consider the differences to be harmless you can mark the file as fixed, otherwise it is advised to restore the original content immediately.}}">
                             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="14" height="14">
                                 <path fill="#000000" d="m6.998315,0.033333c-3.846307,0 -6.964982,
                                 3.118675 -6.964982,6.964982s3.118675,6.965574 6.964982,6.965574s6.965574,
@@ -86,7 +86,7 @@
             <label>
                 <input type="hidden" name="sucuriscan_process_form" value="0" />
                 <input type="checkbox" name="sucuriscan_process_form" value="1" />
-                <span>{{I understand that this operation can not be reverted.}}</span>
+                <span>{{I understand that this operation cannot be reverted.}}</span>
             </label>
         </p>
 

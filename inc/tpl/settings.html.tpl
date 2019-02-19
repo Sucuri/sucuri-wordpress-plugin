@@ -1,7 +1,7 @@
 
 <div class="sucuriscan-tabs">
     <ul class="sucuriscan-clearfix sucuriscan-tabs-buttons">
-        <li><a href="%%SUCURI.URL.Settings%%#general">{{Settings}}</a></li>
+        <li><a href="%%SUCURI.URL.Settings%%#general">{{General Settings}}</a></li>
         <li><a href="%%SUCURI.URL.Settings%%#scanner">{{Scanner}}</a></li>
         <li><a href="%%SUCURI.URL.Settings%%#hardening">{{Hardening}}</a></li>
         <li><a href="%%SUCURI.URL.Settings%%#posthack">{{Post-Hack}}</a></li>

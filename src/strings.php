@@ -75,7 +75,7 @@ __('Delete', 'sucuri-scanner');
 __('Submit', 'sucuri-scanner');
 __('Loading...', 'sucuri-scanner');
 __('IP Address Access', 'sucuri-scanner');
-__('This tool allows you to whitleist and blacklist one or more IP addresses from accessing your website. You can also configure the plugin to automatically blacklist any IP address involved in a password guessing brute-force attack. If a legitimate user fails to submit the correct credentials of their account they will have to log into the Firewall dashboard in order to delete their IP address from the blacklist, or try to login once again through a VPN.', 'sucuri-scanner');
+__('This tool allows you to whitelist and blacklist one or more IP addresses from accessing your website. You can also configure the plugin to automatically blacklist any IP address involved in a password guessing brute-force attack. If a legitimate user fails to submit the correct credentials of their account they will have to log into the Firewall dashboard in order to delete their IP address from the blacklist, or try to login once again through a VPN.', 'sucuri-scanner');
 __('Blacklist IP:', 'sucuri-scanner');
 __('e.g. 192.168.1.54', 'sucuri-scanner');
 __('IP Address', 'sucuri-scanner');
@@ -115,12 +115,12 @@ __('Core WordPress Files Were Modified', 'sucuri-scanner');
 __('We identified that some of your WordPress core files were modified. That might indicate a hack or a broken file on your installation. If you are experiencing other malware issues, please use a <a href="https://sucuri.net/website-security/malware-removal" target="_blank" rel="noopener">Server Side Scanner</a>.', 'sucuri-scanner');
 __('Review False Positives', 'sucuri-scanner');
 __('WordPress Integrity (%%SUCURI.Integrity.ListCount%%)', 'sucuri-scanner');
-__('The Unix Diff Utility is enabled. You can click the files in the table to see the differences detected by the scanner. If you consider the differences to be harmless you can mark the file as fixed, otherwise it is adviced to restore the original content immediately.', 'sucuri-scanner');
+__('The Unix Diff Utility is enabled. You can click the files in the table to see the differences detected by the scanner. If you consider the differences to be harmless you can mark the file as fixed, otherwise it is advised to restore the original content immediately.', 'sucuri-scanner');
 __('Select All', 'sucuri-scanner');
 __('File Size', 'sucuri-scanner');
 __('Modified At', 'sucuri-scanner');
 __('File Path', 'sucuri-scanner');
-__('I understand that this operation can not be reverted.', 'sucuri-scanner');
+__('I understand that this operation cannot be reverted.', 'sucuri-scanner');
 __('Action:', 'sucuri-scanner');
 __('Mark as Fixed', 'sucuri-scanner');
 __('Restore File', 'sucuri-scanner');
@@ -147,6 +147,58 @@ __('All Users', 'sucuri-scanner');
 __('Admins', 'sucuri-scanner');
 __('Logged-in Users', 'sucuri-scanner');
 __('Failed logins', 'sucuri-scanner');
+
+// lastlogins-admins.html.tpl
+__('Successful Logins (admins)', 'sucuri-scanner');
+__('Here you can see a list of all the successful logins of accounts with admin privileges.', 'sucuri-scanner');
+__('Username', 'sucuri-scanner');
+__('Registration', 'sucuri-scanner');
+__('Newest To Oldest', 'sucuri-scanner');
+
+// lastlogins-admins.snippet.tpl
+__('no data available', 'sucuri-scanner');
+__('IP Address', 'sucuri-scanner');
+__('Date/Time', 'sucuri-scanner');
+__('Edit', 'sucuri-scanner');
+
+// lastlogins-all.html.tpl
+__('Successful Logins (all)', 'sucuri-scanner');
+__('Here you can see a list of all the successful user logins.', 'sucuri-scanner');
+__('Username', 'sucuri-scanner');
+__('IP Address', 'sucuri-scanner');
+__('Hostname', 'sucuri-scanner');
+__('Date/Time', 'sucuri-scanner');
+__('no data available', 'sucuri-scanner');
+
+// lastlogins-all.snippet.tpl
+__('Edit', 'sucuri-scanner');
+
+// lastlogins-failedlogins.html.tpl
+__('Failed logins', 'sucuri-scanner');
+__('This information will be used to determine if your site is being victim of <a href="https://kb.sucuri.net/definitions/attacks/brute-force/password-guessing" target="_blank" rel="noopener">Password Guessing Brute Force Attacks</a>. These logs will be accumulated and the plugin will send a report via email if there are more than <code>%%SUCURI.FailedLogins.MaxFailedLogins%%</code> failed login attempts during the same hour, you can change this number from <a href="%%SUCURI.URL.Settings%%#alerts">here</a>. <b>NOTE:</b> Some <em>"Two-Factor Authentication"</em> plugins do not follow the same rules that WordPress have to report failed login attempts, so you may not see all the attempts in this panel if you have one of these plugins installed.', 'sucuri-scanner');
+__('Username', 'sucuri-scanner');
+__('IP Address', 'sucuri-scanner');
+__('Date/Time', 'sucuri-scanner');
+__('Web Browser', 'sucuri-scanner');
+__('no data available', 'sucuri-scanner');
+__('Block', 'sucuri-scanner');
+
+// lastlogins-loggedin.html.tpl
+__('Logged-in Users}', 'sucuri-scanner');
+__('Here you can see a list of the users that are currently logged-in.', 'sucuri-scanner');
+__('ID', 'sucuri-scanner');
+__('Username', 'sucuri-scanner');
+__('Last Activity', 'sucuri-scanner');
+__('Registered', 'sucuri-scanner');
+__('IP Address', 'sucuri-scanner');
+
+// lastlogins-loggedin.snippet.tpl
+__('Edit', 'sucuri-scanner');
+__('Website:', 'sucuri-scanner');
+__('IP Address:', 'sucuri-scanner');
+__('Reverse IP:', 'sucuri-scanner');
+__('Date/Time:', 'sucuri-scanner');
+__('Message:', 'sucuri-scanner');
 
 // register-site.html.tpl
 __('An API key is required to activate some additional tools available in this plugin. The keys are free and you can virtually generate an unlimited number of them as long as the domain name and email address are unique. The key is used to authenticate the HTTP requests sent by the plugin to an API service managed by Sucuri Inc.', 'sucuri-scanner');
@@ -264,9 +316,179 @@ __('Recover Via E-mail', 'sucuri-scanner');
 __('Manual Activation', 'sucuri-scanner');
 __('If you do not have access to the administrator email, you can reinstall the plugin. The API key is generated using an administrator email and the domain of the website. Click the "Manual Activation" button if you already have a valid API key to authenticate this website with the remote API web service.', 'sucuri-scanner');
 __('Delete', 'sucuri-scanner');
+__('API Key:', 'sucuri-scanner');
+
+// settings-general-datastorage.html.tpl
+__('Data Storage', 'sucuri-scanner');
+__('This is the directory where the plugin will store the security logs, the list of files marked as fixed in the core integrity tool, the cache for the malware scanner and 3rd-party plugin metadata. The plugin requires write permissions in this directory as well as the files contained in it. If you prefer to keep these files in a non-public directory <em>(one level up the document root)</em> please define a constant in the <em>"wp-config.php"</em> file named <em>"SUCURI_DATA_STORAGE"</em> with the absolute path to the new directory.', 'sucuri-scanner');
+__('Select All', 'sucuri-scanner');
+__('File Path', 'sucuri-scanner');
+__('File Size', 'sucuri-scanner');
+__('Status', 'sucuri-scanner');
+__('Writable', 'sucuri-scanner');
+__('Delete', 'sucuri-scanner');
+
+// settings-general-importexport.html.tpl
+__('Import &amp; Export Settings', 'sucuri-scanner');
+__('Copy the JSON-encoded data from the box below, go to your other websites and click the <em>"Import"</em> button in the settings page. The plugin will start using the same settings from this website. Notice that some options are omitted as they contain values specific to this website. To import the settings from another website into this one, replace the JSON-encoded data in the box below with the JSON-encoded data exported from the other website, then click the button <em>"Import"</em>. Notice that some options will not be imported to reduce the security risk of writing arbitrary data into the disk.', 'sucuri-scanner');
+__('I understand that this operation cannot be reverted.', 'sucuri-scanner');
+__('Submit', 'sucuri-scanner');
+
+// settings-general-ipdiscoverer.html.tpl
+__('IP Address Discoverer', 'sucuri-scanner');
+__('IP address discoverer will use DNS lookups to automatically detect if the website is behind the <a href="https://sucuri.net/website-firewall/" target="_blank" rel="noopener">Sucuri Firewall</a>, in which case it will modify the global server variable <em>Remote-Addr</em> to set the real IP of the website’s visitors. This check runs on every WordPress init action and that is why it may slow down your website as some hosting providers rely on slow DNS servers which makes the operation take more time than it should.', 'sucuri-scanner');
+__('HTTP Header:', 'sucuri-scanner');
+__('Proceed', 'sucuri-scanner');
+__('Sucuri Firewall', 'sucuri-scanner');
+__('Website:', 'sucuri-scanner');
+__('Top Level Domain:', 'sucuri-scanner');
+__('Hostname:', 'sucuri-scanner');
+__('IP Address (Hostname):', 'sucuri-scanner');
+__('IP Address (Username):', 'sucuri-scanner');
+
+// settings-general-resetoptions.html.tpl
+__('Reset Security Logs, Hardening and Settings', 'sucuri-scanner');
+__('This action will trigger the deactivation / uninstallation process of the plugin. All local security logs, hardening and settings will be deleted. Notice that the security logs stored in the API service will not be deleted, this is to prevent tampering from a malicious user. You can request a new API key if you want to start from scratch.', 'sucuri-scanner');
+__('I understand that this operation cannot be reverted.', 'sucuri-scanner');
+__('Submit', 'sucuri-scanner');
+
+// settings-general-reverseproxy.html.tpl
+__('Reverse Proxy', 'sucuri-scanner');
+__('The event monitor uses the API address of the origin of the request to track the actions. The plugin uses two methods to retrieve this: the main method uses the global server variable <em>Remote-Addr</em> available in most modern web servers, and an alternative method uses custom HTTP headers <em>(which are unsafe by default)</em>. You should not worry about this option unless you know what a reverse proxy is. Services like the <a href="https://sucuri.net/website-firewall/" target="_blank" rel="noopener">Sucuri Firewall</a> &mdash; once active &mdash; force the network traffic to pass through them to filter any security threat that may affect the original server. A side effect of this is that the real IP address is no longer available in the global server variable <em>Remote-Addr</em> but in a custom HTTP header with a name provided by the service.', 'sucuri-scanner');
+
+// settings-general-selfhosting.html.tpl
+__('Log Exporter', 'sucuri-scanner');
+__('This option allows you to export the WordPress audit logs to a local log file that can be read by a SIEM or any log analysis software <em>(we recommend OSSEC)</em>. That will give visibility from within WordPress to complement your log monitoring infrastructure. <b>NOTE:</b> Do not use a publicly accessible file, you must use a file at least one level up the document root to prevent leaks of information.', 'sucuri-scanner');
+__('File Path:', 'sucuri-scanner');
+__('Submit', 'sucuri-scanner');
+
+// settings-general-timezone.html.tpl
+__('Timezone', 'sucuri-scanner');
+__('This option defines the timezone that will be used through out the entire plugin to print the dates and times whenever is necessary. This option also affects the date and time of the logs visible in the audit logs panel which is data that comes from a remote server configured to use Eastern Daylight Time (EDT). WordPress offers an option in the general settings page to allow you to configure the timezone for the entire website, however, if you are experiencing problems with the time in the audit logs, this option will help you fix them.', 'sucuri-scanner');
+__('Timezone:', 'sucuri-scanner');
+__('Submit', 'sucuri-scanner');
+
+// settings-hardening-whitelist-phpfiles.html.tpl
+__('Whitelist Blocked PHP Files', 'sucuri-scanner');
+__('After you apply the hardening in either the includes, content, and/or uploads directories, the plugin will add a rule in the access control file to deny access to any PHP file located in these folders. This is a good precaution in case an attacker is able to upload a shell script. With a few exceptions the <em>"index.php"</em> file is the only one that should be publicly accessible, however many theme/plugin developers decide to use these folders to process some operations. In this case applying the hardening <strong>may break</strong> their functionality.', 'sucuri-scanner');
+__('File Path:', 'sucuri-scanner');
+__('Submit', 'sucuri-scanner');
+__('Select All', 'sucuri-scanner');
+__('File Path', 'sucuri-scanner');
+__('Directory', 'sucuri-scanner');
+__('Pattern', 'sucuri-scanner');
+__('no data available', 'sucuri-scanner');
+__('Delete', 'sucuri-scanner');
+
+// settings-posthack-available-updates-alert.html.tpl
+__('WordPress has a big user base in the public Internet, which brings interest to attackers to find vulnerabilities in the code, 3rd-party extensions, and themes that other companies develop. You should keep every piece of code installed in your website updated to prevent attacks as soon as disclosed vulnerabilities are patched.', 'sucuri-scanner');
+__('Name', 'sucuri-scanner');
+__('Version', 'sucuri-scanner');
+__('Update', 'sucuri-scanner');
+__('Tested With', 'sucuri-scanner');
+
+// settings-posthack-available-updates.html.tpl
+__('Available Plugin and Theme Updates', 'sucuri-scanner');
+__('WordPress has a big user base in the public Internet, which brings interest to attackers to find vulnerabilities in the code, 3rd-party extensions, and themes that other companies develop. You should keep every piece of code installed in your website updated to prevent attacks as soon as disclosed vulnerabilities are patched.', 'sucuri-scanner');
+__('Name', 'sucuri-scanner');
+__('Version', 'sucuri-scanner');
+__('Update', 'sucuri-scanner');
+__('Tested With', 'sucuri-scanner');
+__('Loading...', 'sucuri-scanner');
+
+// settings-posthack-available-updates.snippet.tpl
+__('Download', 'sucuri-scanner');
+
+// settings-posthack-reset-password-alert.html.tpl
+__('WordPress has generated a new (random) password for your account <b>%%SUCURI.ResetPassword.UserName%%</b> at <a target="_blank" href="http://%%SUCURI.ResetPassword.Website%%" rel="noopener">%%SUCURI.ResetPassword.Website%%</a>. The change has been requested by one of the admins in this website for security reasons. Your new password is &mdash; <span style="font-family:Menlo, Monaco, monospace, serif;font-weight:700">%%%SUCURI.ResetPassword.Password%%%</span> &mdash; please change it as soon as possible.', 'sucuri-scanner');
+
+// settings-posthack-reset-password.html.tpl
+__('Reset User Password', 'sucuri-scanner');
+__('Loading...', 'sucuri-scanner');
+__('You can generate a new random password for the user accounts that you select from the list. An email with the new password will be sent to the email address of each chosen user. If you choose to change the password of your own user, then your current session will expire immediately. You will need to log back into the admin panel with the new password that will be sent to your email.', 'sucuri-scanner');
+__('Select All', 'sucuri-scanner');
+__('Username', 'sucuri-scanner');
+__('E-mail', 'sucuri-scanner');
+__('Registered', 'sucuri-scanner');
+__('Roles', 'sucuri-scanner');
+__('Submit', 'sucuri-scanner');
+
+// settings-posthack-reset-plugins.html.tpl
+__('Reset Installed Plugins', 'sucuri-scanner');
+__('Loading...', 'sucuri-scanner');
+__('In case you suspect having an infection in your site, or after you got rid of a malicious code, it’s recommended to reinstall all the plugins installed in your site, including the ones you are not using. Notice that premium plugins will not be automatically reinstalled to prevent backward compatibility issues and problems with licenses.', 'sucuri-scanner');
+__('The information shown here is cached for %%SUCURI.ResetPlugin.CacheLifeTime%% seconds. This is necessary to reduce the quantity of HTTP requests sent to the WordPress servers and the bandwidth of your site. Currently there is no option to recreate this cache.', 'sucuri-scanner');
+__('<b>WARNING!</b> This procedure can break your website. The reset will not affect the database nor the settings of each plugin, but depending on how they were written the reset action might break them. Be sure to create a backup of the plugins directory before the execution of this tool.', 'sucuri-scanner');
+__('Select All', 'sucuri-scanner');
+__('Name', 'sucuri-scanner');
+__('Version', 'sucuri-scanner');
+__('Type', 'sucuri-scanner');
+__('Status', 'sucuri-scanner');
+__('Submit', 'sucuri-scanner');
+
+// settings-posthack-security-keys.html.tpl
+__('Update Secret Keys', 'sucuri-scanner');
+__('The secret or security keys are a list of constants added to your site to ensure better encryption of information stored in the user’s cookies. A secret key makes your site harder to hack by adding random elements to the password. You do not have to remember the keys, just write a random, complicated, and long string in the <code>wp-config.php</code> file. You can change these keys at any point in time. Changing them will invalidate all existing cookies, forcing all logged in users to login again.', 'sucuri-scanner');
+__('Your current session will expire once the form is submitted.', 'sucuri-scanner');
+__('Status', 'sucuri-scanner');
+__('Name', 'sucuri-scanner');
+__('Value', 'sucuri-scanner');
+__('I understand that this operation cannot be reverted.', 'sucuri-scanner');
+__('Generate New Security Keys', 'sucuri-scanner');
+
+// settings-scanner-cronjobs.html.tpl
+__('Scheduled Tasks', 'sucuri-scanner');
+__('The plugin scans your entire website looking for changes which are later reported via the API in the audit logs page. By default the scanner runs daily but you can change the frequency to meet your requirements. Notice that scanning your project files too frequently may affect the performance of your website. Be sure to have enough server resources before changing this option. The memory limit and maximum execution time are two of the PHP options that your server will set to stop your website from consuming too much resources.', 'sucuri-scanner');
+__('The scanner uses the <a href="http://php.net/manual/en/class.splfileobject.php" target="_blank" rel="noopener">PHP SPL library</a> and the <a target="_blank" href="http://php.net/manual/en/class.filesystemiterator.php" rel="noopener">Filesystem Iterator</a> class to scan the directory tree where your website is located in the server. This library is only available on PHP 5 >= 5.3.0 &mdash; OR &mdash; PHP 7; if you have an older version of PHP the plugin will not work as expected. Please ask your hosting provider to advise you on this matter.', 'sucuri-scanner');
+__('Scheduled tasks are rules registered in your database by a plugin, theme, or the base system itself; they are used to automatically execute actions defined in the code every certain amount of time. A good use of these rules is to generate backup files of your site, execute a security scanner, or remove unused elements like drafts. <b>Note:</b> Scheduled tasks can be re-installed by any plugin/theme automatically.', 'sucuri-scanner');
+__('Select All', 'sucuri-scanner');
+__('Name', 'sucuri-scanner');
+__('Schedule', 'sucuri-scanner');
+__('Next Due', 'sucuri-scanner');
+__('Arguments', 'sucuri-scanner');
+__('Loading...', 'sucuri-scanner');
+__('Action:', 'sucuri-scanner');
+__('Submit', 'sucuri-scanner');
+
+// settings-scanner-ignore-folders.html.tpl
+__('Ignore Files And Folders During The Scans', 'sucuri-scanner');
+__('Use this tool to select the files and/or folders that are too heavy for the scanner to process. These are usually folders with images, media files like videos and audios, backups and &mdash; in general &mdash; anything that is not code-related. Ignoring these files or folders will reduce the memory consumption of the PHP script.', 'sucuri-scanner');
+__('Ignore a file or directory:', 'sucuri-scanner');
+__('e.g. /private/directory/', 'sucuri-scanner');
+__('Submit', 'sucuri-scanner');
+__('Select All', 'sucuri-scanner');
+__('File Path', 'sucuri-scanner');
+__('Status', 'sucuri-scanner');
+__('Unignore Selected Directories', 'sucuri-scanner');
+
+// settings-scanner-integrity-cache.html.tpl
+__('WordPress Integrity (False Positives)', 'sucuri-scanner');
+__('Since the scanner doesn’t read the files during the execution of the integrity check, it is possible to find false positives. Files listed here have been marked as false positives and will be ignored by the scanner in subsequent scans.', 'sucuri-scanner');
+__('Select All', 'sucuri-scanner');
+__('Reason', 'sucuri-scanner');
+__('Ignored At', 'sucuri-scanner');
+__('File Path', 'sucuri-scanner');
+__('no data available', 'sucuri-scanner');
+__('Stop Ignoring the Selected Files', 'sucuri-scanner');
+
+// settings-scanner-integrity-diff-utility.html.tpl
+__('WordPress Integrity Diff Utility', 'sucuri-scanner');
+__('If your server allows the execution of system commands, you can configure the plugin to use the <a href="https://en.wikipedia.org/wiki/Diff_utility" target="_blank" rel="noopener">Unix Diff Utility</a> to compare the actual content of the file installed in the website and the original file provided by WordPress. This will show the differences between both files and then you can act upon the information provided.', 'sucuri-scanner');
+__('WordPress Integrity Diff Utility', 'sucuri-scanner');
+
+// settings-webinfo-details.html.tpl
+__('Environment Variables', 'sucuri-scanner');
+
+// settings-webinfo-htaccess.html.tpl
+__('Access File Integrity', 'sucuri-scanner');
+__('The <code>.htaccess</code> file is a distributed configuration file, and is how the Apache web server handles configuration changes on a per-directory basis. WordPress uses this file to manipulate how Apache serves files from its root directory and subdirectories thereof; most notably, it modifies this file to be able to handle pretty permalinks.', 'sucuri-scanner');
+__('Htaccess file found in', 'sucuri-scanner');
+__('Your website has no <code>.htaccess</code> file or it was not found in the default location.', 'sucuri-scanner');
+__('The main <code>.htaccess</code> file in your site has the standard rules for a WordPress installation. You can customize it to improve the performance and change the behaviour of the redirections for pages and posts in your site. To get more information visit the official documentation at <a target="_blank" rel="noopener" href="https://codex.wordpress.org/Using_Permalinks#Creating_and_editing_.28.htaccess.29"> Codex WordPress - Creating and editing (.htaccess)</a>', 'sucuri-scanner');
+__('Codex WordPress HTAccess', 'sucuri-scanner');
 
 // settings.html.tpl
-__('General', 'sucuri-scanner');
+__('General Settings', 'sucuri-scanner');
 __('Scanner', 'sucuri-scanner');
 __('Hardening', 'sucuri-scanner');
 __('Post-Hack', 'sucuri-scanner');
@@ -285,13 +507,13 @@ __('No malicious iFrames', 'sucuri-scanner');
 __('No suspicious redirections', 'sucuri-scanner');
 __('No blackhat SEO spam', 'sucuri-scanner');
 __('No anomaly detection', 'sucuri-scanner');
-__('If our free scanner did not detect any issue, you may have a more complicated and hidden problem. You can <a href="https://sucuri.net/website-security-platform/signup" target="_blank" rel="noopener">sign up with Sucuri</a> for a complete and in-depth scan + cleanup (not included in the free checks).', 'sucuri-scanner');
+__('Some types of problems cannot be detected by this scanner. If this scanner did not detect any issue and you still suspect a problem exists, you can <a href="https://sucuri.net/website-security-platform/signup" target="_blank" rel="noopener">sign up with Sucuri</a> for a complete and in-depth scan + cleanup (not included in the free checks).', 'sucuri-scanner');
 
 // sitecheck-malware.snippet.tpl
 __('Hover to see the Payload', 'sucuri-scanner');
 
 // sitecheck-recommendations.html.tpl
-__('Recomendations', 'sucuri-scanner');
+__('Recommendations', 'sucuri-scanner');
 
 // sitecheck-target.html.tpl
 __('Malware Scan Target', 'sucuri-scanner');

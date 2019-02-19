@@ -27,7 +27,7 @@
         </div>
 
         <div class="sucuriscan-hstatus sucuriscan-hstatus-1 sucuriscan-%%SUCURI.APIKey.RemoveVisibility%%">
-            <div class="sucuriscan-monospace">API Key: %%SUCURI.APIKey%%</div>
+            <div class="sucuriscan-monospace">{{API Key:}} %%SUCURI.APIKey%%</div>
             <form action="%%SUCURI.URL.Settings%%#general" method="post">
                 <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
                 <button type="submit" name="sucuriscan_remove_api_key" class="button button-primary">{{Delete}}</button>

@@ -89,7 +89,7 @@ jQuery(document).ready(function ($) {
     <h3 class="sucuriscan-title">{{IP Address Access}}</h3>
 
     <div class="inside">
-        <p>{{This tool allows you to whitleist and blacklist one or more IP addresses from accessing your website. You can also configure the plugin to automatically blacklist any IP address involved in a password guessing brute-force attack. If a legitimate user fails to submit the correct credentials of their account they will have to log into the Firewall dashboard in order to delete their IP address from the blacklist, or try to login once again through a VPN.}}</p>
+        <p>{{This tool allows you to whitelist and blacklist one or more IP addresses from accessing your website. You can also configure the plugin to automatically blacklist any IP address involved in a password guessing brute-force attack. If a legitimate user fails to submit the correct credentials of their account they will have to log into the Firewall dashboard in order to delete their IP address from the blacklist, or try to login once again through a VPN.}}</p>
 
         <div id="sucuriscan-ipaccess-response"></div>
 
