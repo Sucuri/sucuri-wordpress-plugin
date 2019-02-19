@@ -83,8 +83,6 @@ class SucuriScanTemplate extends SucuriScanRequest
 
         global $locale;
 
-        require_once __DIR__ . '/strings.php';
-
         preg_match_all('~{{(.+)}}~', $content, $matches);
 
         if ( ! empty( $matches[1] ) ) {
