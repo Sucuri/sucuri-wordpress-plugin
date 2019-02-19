@@ -21,9 +21,9 @@ jQuery(document).ready(function ($) {
             url += '&paged=' + page;
         }
 
-        $('.sucuriscan-auditlog-response').html('<em>Loading...</em>');
-        $('.sucuriscan-auditlog-status').html('Loading...');
-        $('.sucuriscan-pagination-loading').html('Loading...');
+        $('.sucuriscan-auditlog-response').html('<em>{{Loading...}}</em>');
+        $('.sucuriscan-auditlog-status').html('{{Loading...}}');
+        $('.sucuriscan-pagination-loading').html('{{Loading...}}');
         $('.sucuriscan-pagination-panel').addClass('sucuriscan-hidden');
         $('.sucuriscan-auditlog-footer').addClass('sucuriscan-hidden');
 
@@ -72,7 +72,7 @@ jQuery(document).ready(function ($) {
         event.preventDefault();
 
         $('.sucuriscan-sendlogs-panel').attr('content', '');
-        $('.sucuriscan-auditlogs-sendlogs-response').html('Loading...');
+        $('.sucuriscan-auditlogs-sendlogs-response').html('{{Loading...}}');
 
         $.post('%%SUCURI.AjaxURL.Dashboard%%', {
             action: 'sucuriscan_ajax',
@@ -83,11 +83,11 @@ jQuery(document).ready(function ($) {
 
             setTimeout(function (){
                 var tooltipContent =
-                    'Total logs in the queue: {TTLLOGS}<br>' +
-                    'Maximum execution time: {MAXTIME}<br>' +
-                    'Successfully sent to the API: {SUCCESS}<br>' +
-                    'Total request timeouts (failures): {FAILURE}<br>' +
-                    'Total execution time: {ELAPSED} secs';
+                    '{{Total logs in the queue:}} {TTLLOGS}<br>' +
+                    '{{Maximum execution time:}} {MAXTIME}<br>' +
+                    '{{Successfully sent to the API:}} {SUCCESS}<br>' +
+                    '{{Total request timeouts (failures):}} {FAILURE}<br>' +
+                    '{{Total execution time:}} {ELAPSED} secs';
                 $('.sucuriscan-sendlogs-panel')
                     .attr('content', tooltipContent
                     .replace('{MAXTIME}', data.maxtime)
@@ -104,7 +104,7 @@ jQuery(document).ready(function ($) {
 
 <div class="sucuriscan-auditlog-table">
     <div class="sucuriscan-auditlog-response">
-        <em>Loading...</em>
+        <em>{{Loading...}}</em>
     </div>
 
     <div class="sucuriscan-clearfix sucuriscan-pagination-panel">
@@ -121,7 +121,7 @@ jQuery(document).ready(function ($) {
         <div class="sucuriscan-pull-left sucuriscan-hidden sucuriscan-tooltip
             sucuriscan-sendlogs-panel" tooltip-width="250" tooltip-html="true">
             <small class="sucuriscan-auditlogs-sendlogs-response"></small>
-            <small><a href="#" class="sucuriscan-auditlogs-sendlogs">Send Logs</a></small>
+            <small><a href="#" class="sucuriscan-auditlogs-sendlogs">{{Send Logs}}</a></small>
         </div>
 
         <div class="sucuriscan-pull-right">

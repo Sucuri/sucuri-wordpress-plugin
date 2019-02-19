@@ -158,7 +158,7 @@ class SucuriScanFirewall extends SucuriScanAPI
 
                 if (self::isValidKey($api_key)) {
                     SucuriScanOption::updateOption($option_name, $api_key);
-                    SucuriScanInterface::info('Firewall API key was successfully saved');
+                    SucuriScanInterface::info(__('Firewall API key was successfully saved', 'sucuri-scanner'));
                     SucuriScanOption::setRevProxy('enable');
                     SucuriScanOption::setAddrHeader('HTTP_X_SUCURI_CLIENTIP');
                 } else {
@@ -169,7 +169,7 @@ class SucuriScanFirewall extends SucuriScanAPI
             // Delete the firewall API key from the plugin.
             if (SucuriScanRequest::post(':delete_wafkey') !== false) {
                 SucuriScanOption::deleteOption($option_name);
-                SucuriScanInterface::info('Firewall API key was successfully removed');
+                SucuriScanInterface::info(__('Firewall API key was successfully removed', 'sucuri-scanner'));
                 SucuriScanOption::setRevProxy('disable');
                 SucuriScanOption::setAddrHeader('REMOTE_ADDR');
             }
@@ -201,10 +201,10 @@ class SucuriScanFirewall extends SucuriScanAPI
         }
 
         $cache_modes = array(
-            'docache' => 'enabled (recommended)',
-            'sitecache' => 'site caching (using your site headers)',
-            'nocache' => 'minimal (only for a few minutes)',
-            'nocacheatall' => 'caching disabled (use with caution)',
+            'docache' => __('enabled (recommended)', 'sucuri-scanner'),
+            'sitecache' => __('site caching (using your site headers)', 'sucuri-scanner'),
+            'nocache' => __('minimal (only for a few minutes)', 'sucuri-scanner'),
+            'nocacheatall' => __('caching disabled (use with caution)', 'sucuri-scanner'),
         );
 
         foreach ($settings as $keyname => $value) {
@@ -250,7 +250,7 @@ class SucuriScanFirewall extends SucuriScanAPI
         if (!$settings) {
             if (empty($error)) {
                 ob_start();
-                SucuriScanInterface::error('Firewall API key was not found.');
+                SucuriScanInterface::error(__('Firewall API key was not found.', 'sucuri-scanner'));
                 $response['error'] = ob_get_clean();
             } else {
                 $response['error'] = $error;
@@ -346,7 +346,7 @@ class SucuriScanFirewall extends SucuriScanAPI
 
         if (!$api_key) {
             ob_start();
-            SucuriScanInterface::error('Firewall API key was not found.');
+            SucuriScanInterface::error(__('Firewall API key was not found.', 'sucuri-scanner'));
             $response = ob_get_clean();
             wp_send_json($response, 200);
         }
@@ -382,7 +382,7 @@ class SucuriScanFirewall extends SucuriScanAPI
             $response = self::auditlogsEntries($auditlogs['access_logs']);
 
             if (empty($response)) {
-                $response = '<tr><td>no data available.</td></tr>';
+                $response = '<tr><td>' . __('no data available.', 'sucuri-scanner') . '</td></tr>';
             }
         }
 
@@ -440,7 +440,7 @@ class SucuriScanFirewall extends SucuriScanAPI
                     } elseif ($attr == 'http_referer' && $data_set[$keyname] == '-') {
                         $data_set[$keyname] = '- (no referer)';
                     } elseif ($attr == 'request_country_name' && $data_set[$keyname] == '') {
-                        $data_set[$keyname] = 'Anonymous';
+                        $data_set[$keyname] = __('Anonymous', 'sucuri-scanner');
                     }
                 }
 
@@ -485,18 +485,18 @@ class SucuriScanFirewall extends SucuriScanAPI
             case 'months':
                 $selected = $s_month;
                 $options = array(
-                    '01' => 'January',
-                    '02' => 'February',
-                    '03' => 'March',
-                    '04' => 'April',
-                    '05' => 'May',
-                    '06' => 'June',
-                    '07' => 'July',
-                    '08' => 'August',
-                    '09' => 'September',
-                    '10' => 'October',
-                    '11' => 'November',
-                    '12' => 'December',
+                    '01' => __('January', 'sucuri-scanner'),
+                    '02' => __('February', 'sucuri-scanner'),
+                    '03' => __('March', 'sucuri-scanner'),
+                    '04' => __('April', 'sucuri-scanner'),
+                    '05' => __('May', 'sucuri-scanner'),
+                    '06' => __('June', 'sucuri-scanner'),
+                    '07' => __('July', 'sucuri-scanner'),
+                    '08' => __('August', 'sucuri-scanner'),
+                    '09' => __('September', 'sucuri-scanner'),
+                    '10' => __('October', 'sucuri-scanner'),
+                    '11' => __('November', 'sucuri-scanner'),
+                    '12' => __('December', 'sucuri-scanner'),
                 );
                 break;
 
@@ -564,7 +564,7 @@ class SucuriScanFirewall extends SucuriScanAPI
         if (!$settings) {
             if (empty($error)) {
                 ob_start();
-                SucuriScanInterface::error('Firewall API key was not found.');
+                SucuriScanInterface::error(__('Firewall API key was not found.', 'sucuri-scanner'));
                 $response['error'] = ob_get_clean();
             } else {
                 $response['error'] = $error;
@@ -599,7 +599,7 @@ class SucuriScanFirewall extends SucuriScanAPI
 
         if (!$params) {
             ob_start();
-            SucuriScanInterface::error('Firewall API key was not found.');
+            SucuriScanInterface::error(__('Firewall API key was not found.', 'sucuri-scanner'));
             $response['msg'] = ob_get_clean();
             wp_send_json($response, 200);
         }
@@ -607,14 +607,14 @@ class SucuriScanFirewall extends SucuriScanAPI
         $params['a'] = 'blacklist_ip';
         $params['ip'] = SucuriScanRequest::post('ip');
         $out = self::apiCallFirewall('POST', $params);
-        $response['msg'] = 'Failure connecting to the API service; try again.';
+        $response['msg'] = __('Failure connecting to the API service; try again.', 'sucuri-scanner');
 
         if ($out && !empty($out['messages'])) {
             $response['ok'] = (bool) ($out['status'] == 1);
             $response['msg'] = implode(";\x20", $out['messages']);
 
             if ($out['status'] == 1) {
-                SucuriScanEvent::reportInfoEvent('IP has been blacklisted: ' . $params['ip']);
+                SucuriScanEvent::reportInfoEvent(sprintf(__('IP has been blacklisted: %s', 'sucuri-scanner'), $params['ip']));
             }
         }
 
@@ -640,7 +640,7 @@ class SucuriScanFirewall extends SucuriScanAPI
         if (!$params) {
             ob_start();
             $response['ok'] = false;
-            SucuriScanInterface::error('Firewall API key was not found.');
+            SucuriScanInterface::error(__('Firewall API key was not found.', 'sucuri-scanner'));
             $response['error'] = ob_get_clean();
             wp_send_json($response, 200);
         }
@@ -653,7 +653,7 @@ class SucuriScanFirewall extends SucuriScanAPI
         $response['msg'] = implode(";\x20", $out['messages']);
 
         if ($out['status'] == 1) {
-            SucuriScanEvent::reportInfoEvent('IP has been unblacklisted: ' . $params['ip']);
+            SucuriScanEvent::reportInfoEvent(sprintf(__('IP has been unblacklisted: %s', 'sucuri-scanner'), $params['ip']));
         }
 
         wp_send_json($response, 200);
@@ -732,7 +732,7 @@ class SucuriScanFirewall extends SucuriScanAPI
         }
 
         ob_start();
-        SucuriScanInterface::error('Firewall API key was not found.');
+        SucuriScanInterface::error(__('Firewall API key was not found.', 'sucuri-scanner'));
         $response = ob_get_clean();
         $api_key = self::getKey();
 

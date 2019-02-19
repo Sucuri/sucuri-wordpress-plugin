@@ -88,11 +88,11 @@ class SucuriScanAPI extends SucuriScanOption
     public static function apiCall($url = '', $method = 'GET', $params = array(), $args = array())
     {
         if (!$url) {
-            return self::throwException('URL is invalid');
+            return self::throwException(__('URL is invalid', 'sucuri-scanner'));
         }
 
         if ($method !== 'GET' && $method !== 'POST') {
-            return self::throwException('Only GET and POST methods allowed');
+            return self::throwException(__('Only GET and POST methods allowed', 'sucuri-scanner'));
         }
 
         $res = null;
@@ -179,11 +179,11 @@ class SucuriScanAPI extends SucuriScanOption
     public static function setPluginKey($api_key = '', $validate = false)
     {
         if ($validate && !self::isValidKey($api_key)) {
-            return SucuriScanInterface::error('Invalid API key format');
+            return SucuriScanInterface::error(__('Invalid API key format', 'sucuri-scanner'));
         }
 
         if (!empty($api_key)) {
-            SucuriScanEvent::notifyEvent('plugin_change', 'API key was successfully set: ' . $api_key);
+            SucuriScanEvent::notifyEvent('plugin_change', sprintf(__('API key was successfully set: %s', 'sucuri-scanner'), $api_key));
         }
 
         return self::updateOption(':api_key', $api_key);
@@ -274,7 +274,7 @@ class SucuriScanAPI extends SucuriScanOption
             || !isset($res['messages'])
             || empty($res['messages'])
         ) {
-            return SucuriScanInterface::error('Unknown error, there is no information');
+            return SucuriScanInterface::error(__('Unknown error, there is no information', 'sucuri-scanner'));
         }
 
         $msg = implode(".\x20", $res['messages']);
@@ -314,7 +314,7 @@ class SucuriScanAPI extends SucuriScanOption
 
         // Check if the MX records as missing for API registration.
         if (strpos($raw, 'Invalid email') !== false) {
-            $msg = 'Invalid email format or the host is missing MX records.';
+            $msg = __('Invalid email format or the host is missing MX records.', 'sucuri-scanner');
         }
 
         return SucuriScanInterface::error($msg);
@@ -349,9 +349,9 @@ class SucuriScanAPI extends SucuriScanOption
         self::setPluginKey($res['output']['api_key']);
 
         SucuriScanEvent::installScheduledTask();
-        SucuriScanEvent::notifyEvent('plugin_change', 'API key was generated and set');
+        SucuriScanEvent::notifyEvent('plugin_change', __('API key was generated and set', 'sucuri-scanner'));
 
-        return SucuriScanInterface::info('API key successfully generated and saved.');
+        return SucuriScanInterface::info(__('API key successfully generated and saved.', 'sucuri-scanner'));
     }
 
     /**
@@ -377,7 +377,7 @@ class SucuriScanAPI extends SucuriScanOption
             return false;
         }
 
-        SucuriScanEvent::notifyEvent('plugin_change', 'API key recovery for domain: ' . $domain);
+        SucuriScanEvent::notifyEvent('plugin_change', sprintf(__('API key recovery for domain: %s', 'sucuri-scanner'), $domain));
 
         return SucuriScanInterface::info($res['output']['message']);
     }
@@ -606,7 +606,7 @@ class SucuriScanAPI extends SucuriScanOption
             $name = substr($data['message'], $offset + 6);
 
             $data['message'] = sprintf(
-                'WP Engine PHP Compatibility Checker: %s (created post #%d as cache)',
+                __('WP Engine PHP Compatibility Checker: %s (created post #%d as cache)', 'sucuri-scanner'),
                 $name, /* plugin or theme name */
                 $id /* unique post or page identifier */
             );
@@ -949,12 +949,12 @@ class SucuriScanAPI extends SucuriScanOption
 
         if (strpos($resp, '404 Not Found') !== false) {
             /* not found comes from the official WordPress API */
-            return self::throwException('WordPress version is not supported anymore');
+            return self::throwException(__('WordPress version is not supported anymore', 'sucuri-scanner'));
         }
 
         if (strpos($resp, '400: Invalid request') !== false) {
             /* invalid request comes from the unofficial GitHub API */
-            return self::throwException('WordPress version is not supported anymore');
+            return self::throwException(__('WordPress version is not supported anymore', 'sucuri-scanner'));
         }
 
         return $resp ? $resp : false;

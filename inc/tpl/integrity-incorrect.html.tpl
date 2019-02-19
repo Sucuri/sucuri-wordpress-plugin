@@ -2,17 +2,17 @@
 <div class="sucuriscan-panel sucuriscan-integrity sucuriscan-integrity-incorrect">
     <div class="sucuriscan-clearfix">
         <div class="sucuriscan-pull-left sucuriscan-integrity-left">
-            <h2 class="sucuriscan-title">WordPress Integrity</h2>
+            <h2 class="sucuriscan-title">{{WordPress Integrity}}</h2>
 
-            <p>We inspect your WordPress installation and look for modifications on the core files as provided by WordPress.org. Files located in the root directory, wp-admin and wp-includes will be compared against the files distributed with v%%SUCURI.WordPressVersion%%; all files with inconsistencies will be listed here. Any changes might indicate a hack.</p>
+            <p>{{We inspect your WordPress installation and look for modifications on the core files as provided by WordPress.org. Files located in the root directory, wp-admin and wp-includes will be compared against the files distributed with v%%SUCURI.WordPressVersion%%; all files with inconsistencies will be listed here. Any changes might indicate a hack.}}</p>
         </div>
 
         <div class="sucuriscan-pull-right sucuriscan-integrity-right">
-            <h2 class="sucuriscan-subtitle">Core WordPress Files Were Modified</h2>
+            <h2 class="sucuriscan-subtitle">{{Core WordPress Files Were Modified}}</h2>
 
-            <p>We identified that some of your WordPress core files were modified. That might indicate a hack or a broken file on your installation. If you are experiencing other malware issues, please use a <a href="https://sucuri.net/website-security/malware-removal" target="_blank" rel="noopener">Server Side Scanner</a>.</p>
+            <p>{{We identified that some of your WordPress core files were modified. That might indicate a hack or a broken file on your installation. If you are experiencing other malware issues, please use a <a href="https://sucuri.net/website-security/malware-removal" target="_blank" rel="noopener">Server Side Scanner</a>.}}</p>
 
-            <p><a href="%%SUCURI.URL.Settings%%#scanner">Review False Positives</a></p>
+            <p><a href="%%SUCURI.URL.Settings%%#scanner">{{Review False Positives}}</a></p>
         </div>
     </div>
 
@@ -27,9 +27,9 @@
             <thead>
                 <tr>
                     <th colspan="5">
-                        <span>WordPress Integrity (%%SUCURI.Integrity.ListCount%%)</span>
+                        <span>{{WordPress Integrity (%%SUCURI.Integrity.ListCount%%)}}</span>
 
-                        <span class="sucuriscan-tooltip sucuriscan-hidden" content="The Unix Diff Utility is enabled. You can click the files in the table to see the differences detected by the scanner. If you consider the differences to be harmless you can mark the file as fixed, otherwise it is adviced to restore the original content immediately.">
+                        <span class="sucuriscan-tooltip sucuriscan-hidden" content="{{The Unix Diff Utility is enabled. You can click the files in the table to see the differences detected by the scanner. If you consider the differences to be harmless you can mark the file as fixed, otherwise it is advised to restore the original content immediately.}}">
                             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="14" height="14">
                                 <path fill="#000000" d="m6.998315,0.033333c-3.846307,0 -6.964982,
                                 3.118675 -6.964982,6.964982s3.118675,6.965574 6.964982,6.965574s6.965574,
@@ -67,13 +67,13 @@
 
                 <tr>
                     <td id="cb" class="manage-column column-cb check-column">
-                        <label class="screen-reader-text" for="cb-select-all-1">Select All</label>
+                        <label class="screen-reader-text" for="cb-select-all-1">{{Select All}}</label>
                         <input id="cb-select-all-1" type="checkbox">
                     </td>
                     <th width="20" class="manage-column">&nbsp;</th>
-                    <th width="100" class="manage-column">File Size</th>
-                    <th width="200" class="manage-column">Modified At</th>
-                    <th class="manage-column">File Path</th>
+                    <th width="100" class="manage-column">{{File Size}}</th>
+                    <th width="200" class="manage-column">{{Modified At}}</th>
+                    <th class="manage-column">{{File Path}}</th>
                 </tr>
             </thead>
 
@@ -86,22 +86,22 @@
             <label>
                 <input type="hidden" name="sucuriscan_process_form" value="0" />
                 <input type="checkbox" name="sucuriscan_process_form" value="1" />
-                <span>I understand that this operation can not be reverted.</span>
+                <span>{{I understand that this operation cannot be reverted.}}</span>
             </label>
         </p>
 
         <fieldset class="sucuriscan-clearfix">
-            <label>Action:</label>
+            <label>{{Action:}}</label>
 
             <select name="sucuriscan_integrity_action">
-                <option value="fixed">Mark as Fixed</option>
-                <option value="restore">Restore File</option>
-                <option value="delete">Delete File</option>
+                <option value="fixed">{{Mark as Fixed}}</option>
+                <option value="restore">{{Restore File}}</option>
+                <option value="delete">{{Delete File}}</option>
             </select>
 
-            <button type="submit" class="button button-primary">Submit</button>
+            <button type="submit" class="button button-primary">{{Submit}}</button>
 
-            <span class="sucuriscan-tooltip" content="Marking one or more files as fixed will force the plugin to ignore them during the next scan, very useful when you find false positives. Additionally you can restore the original content of the core files that appear as modified or deleted, this will tell the plugin to download a copy of the original files from the official WordPress repository. Deleting a file is an irreversible action, be careful.">
+            <span class="sucuriscan-tooltip" content="{{Marking one or more files as fixed will force the plugin to ignore them during the next scan, very useful when you find false positives. Additionally you can restore the original content of the core files that appear as modified or deleted, this will tell the plugin to download a copy of the original files from the official WordPress repository. Deleting a file is an irreversible action, be careful.}}">
                 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="14" height="14">
                     <path fill="#000000" d="m6.998315,0.033333c-3.846307,0 -6.964982,
                     3.118675 -6.964982,6.964982s3.118675,6.965574 6.964982,6.965574s6.965574,

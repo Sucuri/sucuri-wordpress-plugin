@@ -57,7 +57,7 @@ class SucuriScan
             $code = ($type === 'error' ? 157 : 333);
             $message = str_replace(
                 SUCURISCAN_ADMIN_NOTICE_PREFIX,
-                ($type === 'error' ? 'Error:' : 'Info:'),
+                ($type === 'error' ? __('Error:', 'sucuri-scanner') : __('Info:', 'sucuri-scanner')),
                 $message
             );
 

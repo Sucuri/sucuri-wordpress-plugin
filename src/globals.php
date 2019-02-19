@@ -77,10 +77,10 @@ if (defined('SUCURISCAN')) {
     function sucuriscanMainPages()
     {
         return array(
-            'sucuriscan' => 'Dashboard',
-            'sucuriscan_firewall' => 'Firewall (WAF)',
-            'sucuriscan_lastlogins' => 'Last Logins',
-            'sucuriscan_settings' => 'Settings',
+            'sucuriscan' => __('Dashboard', 'sucuri-scanner'),
+            'sucuriscan_firewall' => __('Firewall (WAF)', 'sucuri-scanner'),
+            'sucuriscan_lastlogins' => __('Last Logins', 'sucuri-scanner'),
+            'sucuriscan_settings' => __('Settings', 'sucuri-scanner'),
         );
     }
 
@@ -101,8 +101,8 @@ if (defined('SUCURISCAN')) {
             $pages = sucuriscanMainPages();
 
             add_menu_page(
-                'Sucuri Security',
-                'Sucuri Security',
+                __('Sucuri Security', 'sucuri-scanner'),
+                __('Sucuri Security', 'sucuri-scanner'),
                 'manage_options',
                 'sucuriscan',
                 'sucuriscan_page',

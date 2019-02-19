@@ -81,6 +81,18 @@ class SucuriScanTemplate extends SucuriScanRequest
             }
         }
 
+        global $locale;
+
+        preg_match_all('~{{(.+)}}~', $content, $matches);
+
+        if ( ! empty( $matches[1] ) ) {
+            foreach($matches[1] as $string) {
+                $pattern = sprintf('~{{%s}}~', preg_quote($string, '~'));
+                $replacement = ('en_US' !== $locale) ? translate($string, 'sucuri-scanner') : $string;
+                $content = preg_replace($pattern, $replacement, $content);
+            }
+        }
+
         return $content;
     }
 
@@ -121,7 +133,7 @@ class SucuriScanTemplate extends SucuriScanRequest
             SucuriScanTemplate::getModal(
                 'register-site',
                 array(
-                    'Title' => 'Generate API Key',
+                    'Title' => __('Generate API Key', 'sucuri-scanner'),
                     'Identifier' => 'register-site',
                     'Visibility' => 'hidden',
                 )
@@ -262,7 +274,7 @@ class SucuriScanTemplate extends SucuriScanRequest
         );
 
         if (!array_key_exists($type, $filenames)) {
-            return (string) SucuriScan::throwException('Invalid template type');
+            return (string) SucuriScan::throwException(__('Invalid template type', 'sucuri-scanner'));
         }
 
         $output = ''; /* initialize response */

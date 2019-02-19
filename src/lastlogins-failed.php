@@ -243,7 +243,7 @@ function sucuriscan_get_failed_logins($get_old_logs = false, $offset = 0, $limit
             $login_data['attempt_count'] = ( $key + 1 );
 
             if (!$login_data['user_agent']) {
-                $login_data['user_agent'] = 'Unknown';
+                $login_data['user_agent'] = __('Unknown', 'sucuri-scanner');
             }
 
             if (!isset($login_data['user_password'])) {
@@ -341,11 +341,11 @@ function sucuriscan_report_failed_logins($failed_logins = array())
         // Add the table headers.
         $table_html .= '<thead>';
         $table_html .= '<tr>';
-        $table_html .= '<th>' . 'Username' . '</th>';
-        $table_html .= '<th>' . 'Password' . '</th>';
-        $table_html .= '<th>' . 'IP Address' . '</th>';
-        $table_html .= '<th>' . 'Attempt Timestamp' . '</th>';
-        $table_html .= '<th>' . 'Attempt Date/Time' . '</th>';
+        $table_html .= '<th>' . __('Username', 'sucuri-scanner') . '</th>';
+        $table_html .= '<th>' . __('Password', 'sucuri-scanner') . '</th>';
+        $table_html .= '<th>' . __('IP Address', 'sucuri-scanner') . '</th>';
+        $table_html .= '<th>' . __('Attempt Timestamp', 'sucuri-scanner') . '</th>';
+        $table_html .= '<th>' . __('Attempt Date/Time', 'sucuri-scanner') . '</th>';
         $table_html .= '</tr>';
         $table_html .= '</thead>';
 
@@ -365,11 +365,11 @@ function sucuriscan_report_failed_logins($failed_logins = array())
             $table_html .= '</tr>';
         } else {
             $mail_content .= "\n";
-            $mail_content .= 'Username' . ":\x20" . $login_data['user_login'] . "\n";
-            $mail_content .= 'Password' . ":\x20" . $login_data['user_password'] . "\n";
-            $mail_content .= 'IP Address' . ":\x20" . $login_data['remote_addr'] . "\n";
-            $mail_content .= 'Attempt Timestamp' . ":\x20" . $login_data['attempt_time'] . "\n";
-            $mail_content .= 'Attempt Date/Time' . ":\x20" . $login_data['attempt_date'] . "\n";
+            $mail_content .= __('Username', 'sucuri-scanner') . ":\x20" . $login_data['user_login'] . "\n";
+            $mail_content .= __('Password', 'sucuri-scanner') . ":\x20" . $login_data['user_password'] . "\n";
+            $mail_content .= __('IP Address', 'sucuri-scanner') . ":\x20" . $login_data['remote_addr'] . "\n";
+            $mail_content .= __('Attempt Timestamp', 'sucuri-scanner') . ":\x20" . $login_data['attempt_time'] . "\n";
+            $mail_content .= __('Attempt Date/Time', 'sucuri-scanner') . ":\x20" . $login_data['attempt_date'] . "\n";
         }
     }
 

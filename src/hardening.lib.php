@@ -85,7 +85,7 @@ class SucuriScanHardening extends SucuriScan
     public static function hardenDirectory($directory = '')
     {
         if (!is_dir($directory) || !is_writable($directory)) {
-            return self::throwException('Directory is not usable');
+            return self::throwException(__('Directory is not usable', 'sucuri-scanner'));
         }
 
         $fhandle = false;
@@ -121,7 +121,7 @@ class SucuriScanHardening extends SucuriScan
     public static function unhardenDirectory($directory = '')
     {
         if (!self::isHardened($directory)) {
-            return self::throwException('Directory is not hardened');
+            return self::throwException(__('Directory is not hardened', 'sucuri-scanner'));
         }
 
         $fpath = self::htaccess($directory);
@@ -244,11 +244,11 @@ class SucuriScanHardening extends SucuriScan
         $htaccess = self::htaccess($folder);
 
         if (!file_exists($htaccess)) {
-            throw new Exception('Access control file does not exists');
+            throw new Exception(__('Access control file does not exists', 'sucuri-scanner'));
         }
 
         if (!is_writable($htaccess)) {
-            throw new Exception('Access control file is not writable');
+            throw new Exception(__('Access control file is not writable', 'sucuri-scanner'));
         }
 
         return (bool) @file_put_contents(
@@ -278,7 +278,7 @@ class SucuriScanHardening extends SucuriScan
         $content = SucuriScanFileInfo::fileContent($htaccess);
 
         if (!$content || !is_writable($htaccess)) {
-            return self::throwException('Cannot dewhitelist file; no permissions.');
+            return self::throwException(__('Cannot remove file from whitelist; no permissions.', 'sucuri-scanner'));
         }
 
         $rules = self::whitelistRule($file);

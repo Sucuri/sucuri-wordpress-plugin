@@ -16,7 +16,7 @@
             window.scrollTo(0, 0);
             var filepath = $(this).attr('data-filepath');
             $('.sucuriscan-diff-utility-modal').removeClass('sucuriscan-hidden');
-            $('.sucuriscan-diff-utility-modal .sucuriscan-modal-inside').html('Loading...');
+            $('.sucuriscan-diff-utility-modal .sucuriscan-modal-inside').html('{{Loading...}}');
 
             $.post('%%SUCURI.AjaxURL.Dashboard%%', {
                 action: 'sucuriscan_ajax',
@@ -25,13 +25,7 @@
                 filepath: filepath,
             }, function (data) {
                 $('.sucuriscan-diff-utility-modal .sucuriscan-modal-inside').html(data);
-                $('.sucuriscan-diff-content').before('<p>Lines with a <b>minus' +
-            	'</b> sign as the prefix <em>(here in red)</em> show the origi' +
-            	'nal code. Lines with a <b>plus</b> sign as the prefix <em>(he' +
-            	're in green)</em> show the modified code. You can read more a' +
-            	'bout the DIFF format from the WikiPedia article about the <a ' +
-            	'target="_blank" href="https://en.wikipedia.org/wiki/Diff_util' +
-            	'ity" rel="noopener">Unix Diff Utility</a>.</p>');
+                $('.sucuriscan-diff-content').before('<p>{{Lines with a <b>minus</b> sign as the prefix <em>(here in red)</em> show the original code. Lines with a <b>plus</b> sign as the prefix <em>(here in green)</em> show the modified code. You can read more about the DIFF format from the WikiPedia article about the <a target="_blank" href="https://en.wikipedia.org/wiki/Diff_utility" rel="noopener">Unix Diff Utility</a>.}}</p>');
             });
         });
     });

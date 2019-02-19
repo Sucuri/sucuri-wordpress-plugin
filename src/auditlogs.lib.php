@@ -109,15 +109,15 @@ class SucuriScanAuditLogs
 
             /* report latency in the API calls */
             if (!is_array($auditlogs)) {
-                $response['status'] = 'API is not available; using local queue';
+                $response['status'] = __('API is not available; using local queue', 'sucuri-scanner');
             } else {
-                $response['status'] = sprintf('API %s secs', round($duration, 4));
+                $response['status'] = sprintf(__('API %s secs', 'sucuri-scanner'), round($duration, 4));
             }
         }
 
         /* explain missing API key */
         if (!SucuriScanAPI::getPluginKey()) {
-            $response['status'] = 'API key is missing';
+            $response['status'] = __('API key is missing', 'sucuri-scanner');
         }
 
         /* stop everything and report errors */
@@ -160,7 +160,7 @@ class SucuriScanAuditLogs
             || !is_array($auditlogs['output_data'])
             || !is_numeric($auditlogs['total_entries'])
         ) {
-            $response['content'] = 'There are no logs.';
+            $response['content'] = __('There are no logs.', 'sucuri-scanner');
             wp_send_json($response, 200);
             return;
         }
@@ -205,7 +205,7 @@ class SucuriScanAuditLogs
                 $snippet_data['AuditLog.Date'] = '';
             } elseif ($snippet_data['AuditLog.Date'] === $todaysDate) {
                 $previousDate = $snippet_data['AuditLog.Date'];
-                $snippet_data['AuditLog.Date'] = 'Today';
+                $snippet_data['AuditLog.Date'] = __('Today', 'sucuri-scanner');
             } else {
                 $previousDate = $snippet_data['AuditLog.Date'];
             }
@@ -228,7 +228,7 @@ class SucuriScanAuditLogs
             }
 
             /* simplify the details of events with low metadata */
-            if (strpos($audit_log['message'], 'status has been changed')) {
+            if (strpos($audit_log['message'], __('status has been changed', 'sucuri-scanner'))) {
                 $snippet_data['AuditLog.Extra'] = implode(",\x20", $audit_log['file_list']);
             }
 

@@ -77,7 +77,7 @@ class SucuriScanMail extends SucuriScanOption
         }
 
         if (self::emailsPerHourReached() && !$force) {
-            return self::throwException('Maximum number of emails per hour reached');
+            return self::throwException(__('Maximum number of emails per hour reached', 'sucuri-scanner'));
         }
 
         /* check if we need to load a template file to wrap the message */
@@ -181,7 +181,7 @@ class SucuriScanMail extends SucuriScanOption
             && !empty($user->user_login)
         ) {
             $display_name = sprintf(
-                'User: %s (%s)',
+                __('User: %s (%s)', 'sucuri-scanner'),
                 $user->display_name,
                 $user->user_login
             );
@@ -207,7 +207,7 @@ class SucuriScanMail extends SucuriScanOption
             }
         }
 
-        $params['TemplateTitle'] = 'Sucuri Alert';
+        $params['TemplateTitle'] = __('Sucuri Alert', 'sucuri-scanner');
         $params['Subject'] = $subject;
         $params['Website'] = $website;
         $params['RemoteAddress'] = self::getRemoteAddr();

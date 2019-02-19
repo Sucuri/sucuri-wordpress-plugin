@@ -288,7 +288,7 @@ class SucuriScanFileInfo extends SucuriScan
         }
 
         if (!$files) {
-            return self::throwException('No files were found');
+            return self::throwException(__('No files were found', 'sucuri-scanner'));
         }
 
         sort($files); /* sort file list alphabetically */
@@ -346,17 +346,17 @@ class SucuriScanFileInfo extends SucuriScan
         $directory = realpath($directory);
 
         if (!is_dir($directory)) {
-            return self::throwException('Directory does not exists');
+            return self::throwException(__('Directory does not exists', 'sucuri-scanner'));
         }
 
         if ($directory === WP_CONTENT_DIR) {
-            return self::throwException('Cannot delete content directory');
+            return self::throwException(__('Cannot delete content directory', 'sucuri-scanner'));
         }
 
         $upload_dir = wp_upload_dir();
 
         if ($directory === $upload_dir['basedir']) {
-            return self::throwException('Cannot delete uploads directory');
+            return self::throwException(__('Cannot delete uploads directory', 'sucuri-scanner'));
         }
 
         /* force complete scan */

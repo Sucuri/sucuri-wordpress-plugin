@@ -55,25 +55,25 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
         // Update all WordPress secret keys.
         if (SucuriScanInterface::checkNonce() && SucuriScanRequest::post(':update_wpconfig')) {
             if (SucuriScanRequest::post(':process_form') != 1) {
-                SucuriScanInterface::error('You need to confirm that you understand the risk of this operation.');
+                SucuriScanInterface::error(__('You need to confirm that you understand the risk of this operation.', 'sucuri-scanner'));
             } else {
                 $wpconfig_process = SucuriScanEvent::setNewConfigKeys();
 
                 if (!$wpconfig_process) {
-                    SucuriScanInterface::error('WordPress configuration file was not found.');
+                    SucuriScanInterface::error(__('WordPress configuration file was not found.', 'sucuri-scanner'));
                 } elseif ($wpconfig_process['updated']) {
-                    SucuriScanEvent::reportNoticeEvent('Generate new security keys (success)');
-                    SucuriScanInterface::info('Secret keys updated successfully (summary of the operation bellow).');
+                    SucuriScanEvent::reportNoticeEvent(__('Generate new security keys (success)', 'sucuri-scanner'));
+                    SucuriScanInterface::info(__('Secret keys updated successfully (summary of the operation bellow).', 'sucuri-scanner'));
 
                     $params['WPConfigUpdate.Visibility'] = 'visible';
-                    $params['WPConfigUpdate.NewConfig'] .= "/* Old Security Keys */\n";
+                    $params['WPConfigUpdate.NewConfig'] .= sprintf("/* %s */\n", __('Old Security Keys', 'sucuri-scanner'));
                     $params['WPConfigUpdate.NewConfig'] .= $wpconfig_process['old_keys_string'];
                     $params['WPConfigUpdate.NewConfig'] .= "\n";
-                    $params['WPConfigUpdate.NewConfig'] .= "/* New Security Keys */\n";
+                    $params['WPConfigUpdate.NewConfig'] .= sprintf("/* %s */\n", __('New Security Keys', 'sucuri-scanner'));
                     $params['WPConfigUpdate.NewConfig'] .= $wpconfig_process['new_keys_string'];
                 } else {
-                    SucuriScanEvent::reportNoticeEvent('Generate new security keys (failure)');
-                    SucuriScanInterface::error('WordPress configuration file is not writable.');
+                    SucuriScanEvent::reportNoticeEvent(__('Generate new security keys (failure)', 'sucuri-scanner'));
+                    SucuriScanInterface::error(__('WordPress configuration file is not writable.', 'sucuri-scanner'));
 
                     $params['WPConfigUpdate.Visibility'] = 'visible';
                     $params['WPConfigUpdate.NewConfig'] = $wpconfig_process['new_wpconfig'];
@@ -200,7 +200,7 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
 
         if (SucuriScanEvent::setNewPassword($user_id)) {
             $response = 'Done';
-            SucuriScanEvent::reportNoticeEvent('Password changed for user #' . $user_id);
+            SucuriScanEvent::reportNoticeEvent(sprintf(__('Password changed for user #%d', 'sucuri-scanner'), $user_id));
         }
 
         wp_send_json($response, 200);
@@ -295,20 +295,20 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
         /* Check if the plugin actually exists */
         if (!array_key_exists($plugin, $allPlugins)) {
             $response = '<span class="sucuriscan-label-default">'
-            . 'not installed' . '</span>';
+            . __('not installed', 'sucuri-scanner') . '</span>';
         } elseif ($allPlugins[$plugin]['IsFreePlugin'] !== true) {
             // Ignore plugins not listed in the WordPress repository.
             // This usually applies to premium plugins. They cannot be downloaded from
             // a reliable source because we can't check the checksum of the files nor
             // we can verify if the installation of the new code will work or not.
             $response = '<span class="sucuriscan-label-danger">'
-            . 'Plugin is Premium' . '</span>';
+            . __('Plugin is Premium', 'sucuri-scanner') . '</span>';
         } elseif (!is_writable($allPlugins[$plugin]['InstallationPath'])) {
             $response = '<span class="sucuriscan-label-danger">'
-            . 'Not Writable' . '</span>';
+            . __('Not Writable', 'sucuri-scanner') . '</span>';
         } elseif (!class_exists('SucuriScanPluginInstallerSkin')) {
             $response = '<span class="sucuriscan-label-danger">'
-            . 'Missing Library' . '</span>';
+            . __('Missing Library', 'sucuri-scanner') . '</span>';
         } else {
             // Get data associated to the plugin.
             $data = $allPlugins[$plugin];
@@ -318,10 +318,10 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
 
             if (!$info) {
                 $response = '<span class="sucuriscan-label-danger">'
-                . 'Cannot Download' . '</span>';
+                . __('Cannot Download', 'sucuri-scanner') . '</span>';
             } elseif (!rename($data['InstallationPath'], $newpath)) {
                 $response = '<span class="sucuriscan-label-danger">'
-                . 'Cannot Backup' . '</span>';
+                . __('Cannot Backup', 'sucuri-scanner') . '</span>';
             } else {
                 ob_start();
                 $upgrader_skin = new SucuriScanPluginInstallerSkin();
@@ -334,7 +334,7 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
                     /* Revert backup to its original location */
                     @rename($newpath, $data['InstallationPath']);
                     $response = '<span class="sucuriscan-label-danger">'
-                    . 'Cannot Install' . '</span>';
+                    . __('Cannot Install', 'sucuri-scanner') . '</span>';
                 } else {
                     /* Destroy the backup of the plugin */
                     $fifo = new SucuriScanFileInfo();
@@ -343,7 +343,7 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
                     $fifo->skip_directories = false;
                     $fifo->removeDirectoryTree($newpath);
 
-                    $installed = 'Installed v' . SucuriScan::escape($info['version']);
+                    $installed = sprintf(__('Installed v%s', 'sucuri-scanner'), SucuriScan::escape($info['version']));
                     $response = '<span class="sucuriscan-label-success">' . $installed . '</span>';
                 }
             }
@@ -417,7 +417,7 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
                         'Update.Extension' => SucuriScan::excerpt($data->Name, 35),
                         'Update.Version' => $data->Version,
                         'Update.NewVersion' => $data->update['new_version'],
-                        'Update.TestedWith' => 'Newest WordPress',
+                        'Update.TestedWith' => __('Newest WordPress', 'sucuri-scanner'),
                         'Update.ArchiveUrl' => $data->update['package'],
                         'Update.MarketUrl' => $data->update['url'],
                     )
@@ -455,7 +455,7 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
         $response = SucuriScanSettingsPosthack::availableUpdatesContent();
 
         if (!$response) {
-            $response = '<tr><td colspan="5">' . 'There are no updates available.' . '</td></tr>';
+            $response = '<tr><td colspan="5">' . __('There are no updates available.', 'sucuri-scanner') . '</td></tr>';
         }
 
         wp_send_json($response, 200);

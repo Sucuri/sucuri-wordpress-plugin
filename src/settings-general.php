@@ -35,15 +35,15 @@ function sucuriscan_settings_general_resetoptions($nonce)
         $process = SucuriScanRequest::post(':process_form');
 
         if (intval($process) === 1) {
-            $message = 'Local security logs, hardening and settings were deleted';
+            $message = __('Local security logs, hardening and settings were deleted', 'sucuri-scanner');
 
             sucuriscanResetAndDeactivate(); /* simulate plugin deactivation */
 
             SucuriScanEvent::reportCriticalEvent($message);
             SucuriScanEvent::notifyEvent('plugin_change', $message);
-            SucuriScanInterface::info('Local security logs, hardening and settings were deleted');
+            SucuriScanInterface::info(__('Local security logs, hardening and settings were deleted', 'sucuri-scanner'));
         } else {
-            SucuriScanInterface::error('You need to confirm that you understand the risk of this operation.');
+            SucuriScanInterface::error(__('You need to confirm that you understand the risk of this operation.', 'sucuri-scanner'));
         }
     }
 
@@ -75,9 +75,9 @@ function sucuriscan_settings_general_apikey($nonce)
             wp_clear_scheduled_hook('sucuriscan_scheduled_scan');
 
             $api_key = SucuriScan::escape($api_key);
-            SucuriScanEvent::reportCriticalEvent('Sucuri API key has been deleted.');
-            SucuriScanEvent::notifyEvent('plugin_change', 'Sucuri API key removed');
-            SucuriScanInterface::info('Sucuri API key has been deleted <code>' . $api_key . '</code>');
+            SucuriScanEvent::reportCriticalEvent(__('Sucuri API key has been deleted.', 'sucuri-scanner'));
+            SucuriScanEvent::notifyEvent('plugin_change', __('Sucuri API key removed', 'sucuri-scanner'));
+            SucuriScanInterface::info(sprintf(__('Sucuri API key has been deleted <code>%s</code>', 'sucuri-scanner'), $api_key));
         }
 
         // Save API key after it was recovered by the administrator.
@@ -86,7 +86,7 @@ function sucuriscan_settings_general_apikey($nonce)
         if ($api_key) {
             SucuriScanAPI::setPluginKey($api_key, true);
             SucuriScanEvent::installScheduledTask();
-            SucuriScanEvent::reportInfoEvent('Sucuri API key was added manually.');
+            SucuriScanEvent::reportInfoEvent(__('Sucuri API key was added manually.', 'sucuri-scanner'));
         }
 
         // Generate new API key from the API service.
@@ -97,14 +97,14 @@ function sucuriscan_settings_general_apikey($nonce)
             if ($user_obj && user_can($user_obj, 'administrator')) {
                 // Check consent
                 if (SucuriScanRequest::post(':consent_tos') != 1 || SucuriScanRequest::post(':consent_priv') != 1) {
-                    SucuriScanInterface::error('You must accept the Terms of Service and Privacy Policy in order to request an API key.');
+                    SucuriScanInterface::error(__('You must accept the Terms of Service and Privacy Policy in order to request an API key.', 'sucuri-scanner'));
 					unset($_POST['sucuriscan_dns_lookups']);
                 } else {
                     // Send request to generate new API key or display form to set manually.
                     if (SucuriScanAPI::registerSite($user_obj->user_email)) {
                         $api_registered_modal = SucuriScanTemplate::getModal(
                             'settings-apiregistered',
-                            array('Title' => 'Site registered successfully')
+                            array('Title' => __('Site registered successfully', 'sucuri-scanner'))
                         );
                     } else {
                         $display_manual_key_form = true;
@@ -117,9 +117,9 @@ function sucuriscan_settings_general_apikey($nonce)
         if (SucuriScanRequest::post(':recover_key') !== false) {
             if (SucuriScanAPI::recoverKey()) {
                 $_GET['recover'] = 'true'; /* display modal window */
-                SucuriScanEvent::reportInfoEvent('API key recovery (email sent)');
+                SucuriScanEvent::reportInfoEvent(__('API key recovery (email sent)', 'sucuri-scanner'));
             } else {
-                SucuriScanEvent::reportInfoEvent('API key recovery (failure)');
+                SucuriScanEvent::reportInfoEvent(__('API key recovery (failure)', 'sucuri-scanner'));
             }
         }
     }
@@ -129,7 +129,7 @@ function sucuriscan_settings_general_apikey($nonce)
     if (SucuriScanRequest::get('recover') !== false) {
         $api_recovery_modal = SucuriScanTemplate::getModal(
             'settings-apirecovery',
-            array('Title' => 'Plugin API Key Recovery')
+            array('Title' => __('Plugin API Key Recovery', 'sucuri-scanner'))
         );
     }
 
@@ -140,7 +140,7 @@ function sucuriscan_settings_general_apikey($nonce)
         $invalid_domain = (bool) ($domain_address === $clean_domain);
     }
 
-    $params['APIKey'] = (!$api_key ? '(not set)' : $api_key);
+    $params['APIKey'] = (!$api_key ? __('(not set)', 'sucuri-scanner') : $api_key);
     $params['APIKey.RecoverVisibility'] = SucuriScanTemplate::visibility(!$api_key);
     $params['APIKey.ManualKeyFormVisibility'] = SucuriScanTemplate::visibility($display_manual_key_form);
     $params['APIKey.RemoveVisibility'] = SucuriScanTemplate::visibility((bool) $api_key);
@@ -161,20 +161,20 @@ function sucuriscan_settings_general_datastorage($nonce)
 {
     $params = array();
     $files = array(
-        '<root>' => 'Directory used to store the plugin settings, cache and system logs',
-        'auditlogs' => 'Cache to store the system logs obtained from the API service; expires after ' . SUCURISCAN_AUDITLOGS_LIFETIME . ' seconds.',
-        'auditqueue' => 'Local queue to store the most recent logs before they are sent to the remote API service.',
-        'blockedusers' => 'Deprecated on 1.8.12; it was used to store a list of blocked user names.', /* TODO: deprecated on 1.8.12 */
-        'failedlogins' => 'Stores the data for every failed login attempt. The data is moved to "oldfailedlogins" every hour during a brute force password attack.',
-        'hookdata' => 'Temporarily stores data to complement the logs during destructive operations like deleting a post, page, comment, etc.',
-        'ignorescanning' => 'Stores a list of files and folders chosen by the user to be ignored by the file system scanner.',
-        'integrity' => 'Stores a list of files marked as fixed by the user via the WordPress Integrity tool.',
-        'lastlogins' => 'Stores the data associated to every successful user login. The data never expires; manually delete if the file is too large.',
-        'oldfailedlogins' => 'Stores the data for every failed login attempt after the plugin sends a report about a brute force password attack via email.',
-        'plugindata' => 'Cache to store the data associated to the installed plugins listed in the Post-Hack page. Expires after ' . SUCURISCAN_GET_PLUGINS_LIFETIME . ' seconds.',
-        'settings' => 'Stores all the options used to configure the functionality and behavior of the plugin.',
-        'sitecheck' => 'Cache to store the result of the malware scanner. Expires after ' . SUCURISCAN_SITECHECK_LIFETIME . ' seconds, reset at any time to force a re-scan.',
-        'trustip' => 'Stores a list of IP addresses trusted by the plugin, events triggered by one of these IPs will not be reported to the remote monitoring API service.',
+        '<root>' => __('Directory used to store the plugin settings, cache and system logs', 'sucuri-scanner'),
+        'auditlogs' => sprintf(__('Cache to store the system logs obtained from the API service; expires after %s seconds.', 'sucuri-scanner'), SUCURISCAN_AUDITLOGS_LIFETIME),
+        'auditqueue' => __('Local queue to store the most recent logs before they are sent to the remote API service.', 'sucuri-scanner'),
+        'blockedusers' => __('Deprecated on 1.8.12; it was used to store a list of blocked user names.', 'sucuri-scanner'), /* TODO: deprecated on 1.8.12 */
+        'failedlogins' => __('Stores the data for every failed login attempt. The data is moved to "oldfailedlogins" every hour during a brute force password attack.', 'sucuri-scanner'),
+        'hookdata' => __('Temporarily stores data to complement the logs during destructive operations like deleting a post, page, comment, etc.', 'sucuri-scanner'),
+        'ignorescanning' => __('Stores a list of files and folders chosen by the user to be ignored by the file system scanner.', 'sucuri-scanner'),
+        'integrity' => __('Stores a list of files marked as fixed by the user via the WordPress Integrity tool.', 'sucuri-scanner'),
+        'lastlogins' => __('Stores the data associated to every successful user login. The data never expires; manually delete if the file is too large.', 'sucuri-scanner'),
+        'oldfailedlogins' => __('Stores the data for every failed login attempt after the plugin sends a report about a brute force password attack via email.', 'sucuri-scanner'),
+        'plugindata' => sprintf(__('Cache to store the data associated to the installed plugins listed in the Post-Hack page. Expires after %s seconds.', 'sucuri-scanner'), SUCURISCAN_GET_PLUGINS_LIFETIME),
+        'settings' => __('Stores all the options used to configure the functionality and behavior of the plugin.', 'sucuri-scanner'),
+        'sitecheck' => sprintf(__('Cache to store the result of the malware scanner. Expires after %s seconds, reset at any time to force a re-scan.', 'sucuri-scanner'), SUCURISCAN_SITECHECK_LIFETIME),
+        'trustip' => __('Stores a list of IP addresses trusted by the plugin, events triggered by one of these IPs will not be reported to the remote monitoring API service.', 'sucuri-scanner'),
     );
 
     $params['Storage.Files'] = '';
@@ -208,7 +208,7 @@ function sucuriscan_settings_general_datastorage($nonce)
 
             SucuriScanInterface::info(
                 sprintf(
-                    '%d out of %d files has been deleted',
+                    __('%d out of %d files has been deleted', 'sucuri-scanner'),
                     $deleted,
                     count($filenames)
                 )
@@ -226,20 +226,20 @@ function sucuriscan_settings_general_datastorage($nonce)
         $fname = ($name ? sprintf('sucuri-%s.php', $name) : '');
         $fpath = SucuriScan::dataStorePath($fname);
         $disabled = 'disabled="disabled"';
-        $iswritable = 'Not Writable';
-        $exists = 'Does Not Exist';
+        $iswritable = __('Not Writable', 'sucuri-scanner');
+        $exists = __('Does Not Exist', 'sucuri-scanner');
         $labelExistence = 'danger';
         $labelWritability = 'default';
 
         if (file_exists($fpath)) {
             $fsize = @filesize($fpath);
-            $exists = 'Exists';
+            $exists = __('Exists', 'sucuri-scanner');
             $labelExistence = 'success';
             $labelWritability = 'danger';
 
             if (is_writable($fpath)) {
                 $disabled = ''; /* Allow file deletion */
-                $iswritable = 'Writable';
+                $iswritable = __('Writable', 'sucuri-scanner');
                 $labelWritability = 'success';
             }
         }
@@ -301,8 +301,8 @@ function sucuriscan_settings_general_selfhosting($nonce)
     $params = array();
 
     $params['SelfHosting.DisabledVisibility'] = 'visible';
-    $params['SelfHosting.Status'] = 'Enabled';
-    $params['SelfHosting.SwitchText'] = 'Disable';
+    $params['SelfHosting.Status'] = __('Enabled', 'sucuri-scanner');
+    $params['SelfHosting.SwitchText'] = __('Disable', 'sucuri-scanner');
     $params['SelfHosting.SwitchValue'] = 'disable';
     $params['SelfHosting.FpathVisibility'] = 'hidden';
     $params['SelfHosting.Fpath'] = '';
@@ -313,29 +313,29 @@ function sucuriscan_settings_general_selfhosting($nonce)
 
         if ($monitor_fpath !== false) {
             if (empty($monitor_fpath)) {
-                $message = 'Log exporter was disabled';
+                $message = __('Log exporter was disabled', 'sucuri-scanner');
 
                 SucuriScanEvent::reportInfoEvent($message);
                 SucuriScanOption::deleteOption(':selfhosting_fpath');
                 SucuriScanOption::updateOption(':selfhosting_monitor', 'disabled');
                 SucuriScanEvent::notifyEvent('plugin_change', $message);
-                SucuriScanInterface::info('The log exporter feature has been disabled');
+                SucuriScanInterface::info(__('The log exporter feature has been disabled', 'sucuri-scanner'));
             } elseif (strpos($monitor_fpath, $_SERVER['DOCUMENT_ROOT']) !== false) {
-                SucuriScanInterface::error('File should not be publicly accessible.');
+                SucuriScanInterface::error(__('File should not be publicly accessible.', 'sucuri-scanner'));
             } elseif (file_exists($monitor_fpath)) {
-                SucuriScanInterface::error('File already exists and will not be overwritten.');
+                SucuriScanInterface::error(__('File already exists and will not be overwritten.', 'sucuri-scanner'));
             } elseif (!is_writable(dirname($monitor_fpath))) {
-                SucuriScanInterface::error('File parent directory is not writable.');
+                SucuriScanInterface::error(__('File parent directory is not writable.', 'sucuri-scanner'));
             } else {
                 @file_put_contents($monitor_fpath, '', LOCK_EX);
 
-                $message = 'Log exporter file path was correctly set';
+                $message = __('Log exporter file path was correctly set', 'sucuri-scanner');
 
                 SucuriScanEvent::reportInfoEvent($message);
                 SucuriScanOption::updateOption(':selfhosting_monitor', 'enabled');
                 SucuriScanOption::updateOption(':selfhosting_fpath', $monitor_fpath);
                 SucuriScanEvent::notifyEvent('plugin_change', $message);
-                SucuriScanInterface::info('The log exporter feature has been enabled and the data file was successfully set.');
+                SucuriScanInterface::info(__('The log exporter feature has been enabled and the data file was successfully set.', 'sucuri-scanner'));
             }
         }
     }
@@ -344,8 +344,8 @@ function sucuriscan_settings_general_selfhosting($nonce)
     $monitor_fpath = SucuriScanOption::getOption(':selfhosting_fpath');
 
     if ($monitor === 'disabled') {
-        $params['SelfHosting.Status'] = 'Disabled';
-        $params['SelfHosting.SwitchText'] = 'Enable';
+        $params['SelfHosting.Status'] = __('Disabled', 'sucuri-scanner');
+        $params['SelfHosting.SwitchText'] = __('Enable', 'sucuri-scanner');
         $params['SelfHosting.SwitchValue'] = 'enable';
     }
 
@@ -367,8 +367,8 @@ function sucuriscan_settings_general_selfhosting($nonce)
 function sucuriscan_settings_general_reverseproxy($nonce)
 {
     $params = array(
-        'ReverseProxyStatus' => 'Enabled',
-        'ReverseProxySwitchText' => 'Disable',
+        'ReverseProxyStatus' => __('Enabled', 'sucuri-scanner'),
+        'ReverseProxySwitchText' => __('Disable', 'sucuri-scanner'),
         'ReverseProxySwitchValue' => 'disable',
     );
 
@@ -388,8 +388,8 @@ function sucuriscan_settings_general_reverseproxy($nonce)
     }
 
     if (SucuriScanOption::isDisabled(':revproxy')) {
-        $params['ReverseProxyStatus'] = 'Disabled';
-        $params['ReverseProxySwitchText'] = 'Enable';
+        $params['ReverseProxyStatus'] = __('Disabled', 'sucuri-scanner');
+        $params['ReverseProxySwitchText'] = __('Enable', 'sucuri-scanner');
         $params['ReverseProxySwitchValue'] = 'enable';
     }
 
@@ -405,17 +405,17 @@ function sucuriscan_settings_general_reverseproxy($nonce)
 function sucuriscan_settings_general_ipdiscoverer($nonce)
 {
     $params = array(
-        'TopLevelDomain' => 'unknown',
-        'WebsiteHostName' => 'unknown',
-        'WebsiteHostAddress' => 'unknown',
-        'IsUsingFirewall' => 'unknown',
-        'WebsiteURL' => 'unknown',
+        'TopLevelDomain' => __('unknown', 'sucuri-scanner'),
+        'WebsiteHostName' => __('unknown', 'sucuri-scanner'),
+        'WebsiteHostAddress' => __('unknown', 'sucuri-scanner'),
+        'IsUsingFirewall' => __('unknown', 'sucuri-scanner'),
+        'WebsiteURL' => __('unknown', 'sucuri-scanner'),
         'RemoteAddress' => '127.0.0.1',
-        'RemoteAddressHeader' => 'INVALID',
+        'RemoteAddressHeader' => __('INVALID', 'sucuri-scanner'),
         'AddrHeaderOptions' => '',
         /* Switch form information. */
-        'DnsLookupsStatus' => 'Enabled',
-        'DnsLookupsSwitchText' => 'Disable',
+        'DnsLookupsStatus' => __('Enabled', 'sucuri-scanner'),
+        'DnsLookupsSwitchText' => __('Disable', 'sucuri-scanner'),
         'DnsLookupsSwitchValue' => 'disable',
     );
 
@@ -429,12 +429,12 @@ function sucuriscan_settings_general_ipdiscoverer($nonce)
 
         if ($dns_lookups) {
             $action_d = $dns_lookups . 'd';
-            $message = 'DNS lookups for reverse proxy detection <code>' . $action_d . '</code>';
+            $message = sprintf(__('DNS lookups for reverse proxy detection <code>%s</code>', 'sucuri-scanner'), $action_d);
 
             SucuriScanOption::updateOption(':dns_lookups', $action_d);
             SucuriScanEvent::reportInfoEvent($message);
             SucuriScanEvent::notifyEvent('plugin_change', $message);
-            SucuriScanInterface::info('The status of the DNS lookups for the reverse proxy detection has been changed');
+            SucuriScanInterface::info(__('The status of the DNS lookups for the reverse proxy detection has been changed', 'sucuri-scanner'));
         }
 
         if ($addr_header) {
@@ -449,8 +449,8 @@ function sucuriscan_settings_general_ipdiscoverer($nonce)
     }
 
     if (SucuriScanOption::isDisabled(':dns_lookups')) {
-        $params['DnsLookupsStatus'] = 'Disabled';
-        $params['DnsLookupsSwitchText'] = 'Enable';
+        $params['DnsLookupsStatus'] = __('Disabled', 'sucuri-scanner');
+        $params['DnsLookupsSwitchText'] = __('Enable', 'sucuri-scanner');
         $params['DnsLookupsSwitchValue'] = 'enable';
     }
 
@@ -582,16 +582,16 @@ function sucuriscan_settings_general_importexport($nonce)
 
                 SucuriScanInterface::info(
                     sprintf(
-                        '%d out of %d option have been successfully imported',
+                        __('%d out of %d option have been successfully imported', 'sucuri-scanner'),
                         $count,
                         $total
                     )
                 );
             } else {
-                SucuriScanInterface::error('Data is incorrectly encoded');
+                SucuriScanInterface::error(__('Data is incorrectly encoded', 'sucuri-scanner'));
             }
         } else {
-            SucuriScanInterface::error('You need to confirm that you understand the risk of this operation.');
+            SucuriScanInterface::error(__('You need to confirm that you understand the risk of this operation.', 'sucuri-scanner'));
         }
     }
 
@@ -646,12 +646,12 @@ function sucuriscan_settings_general_timezone($nonce)
         $timezone = SucuriScanRequest::post(':timezone', $pattern);
 
         if ($timezone) {
-            $message = 'Timezone override will use ' . $timezone;
+            $message = sprintf(__('Timezone override will use %s', 'sucuri-scanner'), $timezone);
 
             SucuriScanOption::updateOption(':timezone', $timezone);
             SucuriScanEvent::reportInfoEvent($message);
             SucuriScanEvent::notifyEvent('plugin_change', $message);
-            SucuriScanInterface::info('The timezone for the date and time in the audit logs has been changed');
+            SucuriScanInterface::info(__('The timezone for the date and time in the audit logs has been changed', 'sucuri-scanner'));
         }
     }
 

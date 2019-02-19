@@ -86,13 +86,13 @@ class SucuriScanEvent extends SucuriScan
 
         foreach ($jobs as $unique => $info) {
             $schedules[$unique] = sprintf(
-                '%s (every %d seconds)',
+                __('%s (every %d seconds)', 'sucuri-scanner'),
                 $info['display'],
                 $info['interval']
             );
         }
 
-        $schedules['_oneoff'] = 'Never (no execution)';
+        $schedules['_oneoff'] = __('Never (no execution)', 'sucuri-scanner');
 
         return $schedules;
     }
@@ -105,7 +105,7 @@ class SucuriScanEvent extends SucuriScan
     public static function reportSiteVersion()
     {
         if (!SucuriScanAPI::getPluginKey()) {
-            return self::throwException('API key is not available');
+            return self::throwException(__('API key is not available', 'sucuri-scanner'));
         }
 
         $wp_version = self::siteVersion();
@@ -113,10 +113,10 @@ class SucuriScanEvent extends SucuriScan
 
         /* use simple comparison to leverage casting */
         if ($reported_version == $wp_version) {
-            return self::throwException('WordPress version was already reported');
+            return self::throwException(__('WordPress version was already reported', 'sucuri-scanner'));
         }
 
-        SucuriScanEvent::reportInfoEvent('WordPress version detected ' . $wp_version);
+        SucuriScanEvent::reportInfoEvent(sprintf(__('WordPress version detected %s', 'sucuri-scanner'), $wp_version));
 
         return SucuriScanOption::updateOption(':site_version', $wp_version);
     }
@@ -155,11 +155,11 @@ class SucuriScanEvent extends SucuriScan
     public static function filesystemScan($force_scan = false)
     {
         if (!SucuriScanAPI::getPluginKey()) {
-            return self::throwException('API key is not available');
+            return self::throwException(__('API key is not available', 'sucuri-scanner'));
         }
 
         if (!self::runFileScanner($force_scan)) {
-            return self::throwException('Scanner ran a couple of minutes ago');
+            return self::throwException(__('Scanner ran a couple of minutes ago', 'sucuri-scanner'));
         }
 
         $fifo = new SucuriScanFileInfo();
@@ -191,7 +191,7 @@ class SucuriScanEvent extends SucuriScan
     private static function sendLogToAPI($message = '', $timestamp = '', $timeout = 1)
     {
         if (empty($message)) {
-            return self::throwException('Event identifier cannot be empty');
+            return self::throwException(__('Event identifier cannot be empty', 'sucuri-scanner'));
         }
 
         $params = array();
@@ -370,14 +370,14 @@ class SucuriScanEvent extends SucuriScan
         }
 
         $severity = intval($severity);
-        $severity_name = 'Info';
+        $severity_name = __('Info', 'sucuri-scanner');
         $severities = array(
-            /* 0 */ 'Debug',
-            /* 1 */ 'Notice',
-            /* 2 */ 'Info',
-            /* 3 */ 'Warning',
-            /* 4 */ 'Error',
-            /* 5 */ 'Critical',
+            /* 0 */ __('Debug', 'sucuri-scanner'),
+            /* 1 */ __('Notice', 'sucuri-scanner'),
+            /* 2 */ __('Info', 'sucuri-scanner'),
+            /* 3 */ __('Warning', 'sucuri-scanner'),
+            /* 4 */ __('Error', 'sucuri-scanner'),
+            /* 5 */ __('Critical', 'sucuri-scanner'),
         );
 
         if (isset($severities[$severity])) {
@@ -507,20 +507,7 @@ class SucuriScanEvent extends SucuriScan
             case 'failed_login':
                 $settings_url = SucuriScanTemplate::getUrl('settings');
                 $content .= "\n" . sprintf(
-                    "<br><br>\n\n<em>Explanation: Someone failed to login to y"
-                    . "our site. If you are getting too many of these messages"
-                    . ", it is likely your site is under a password guessing b"
-                    . "rute-force attack [1]. You can disable the failed login"
-                    . " alerts from here [2]. Alternatively, you can consider "
-                    . "to install a firewall between your website and your vis"
-                    . "itors to filter out these and other attacks, take a loo"
-                    . "k at Sucuri Firewall [3].</em><br><br>\n\n[1] <a href='"
-                    . "https://kb.sucuri.net/definitions/attacks/brute-force/p"
-                    . "assword-guessing'>https://kb.sucuri.net/definitions/att"
-                    . "acks/brute-force/password-guessing</a><br>\n[2] <a href"
-                    . "='%s'>%s</a> <br>\n[3] <a href='https://sucuri.net/webs"
-                    . "ite-firewall/?wpalert'>https://sucuri.net/website-firew"
-                    . "all/</a><br>\n",
+                    __("<br><br>\n\n<em>Explanation: Someone failed to login to your site. If you are getting too many of these messages, it is likely your site is under a password guessing brute-force attack [1]. You can disable the failed login alerts from here [2]. Alternatively, you can consider to install a firewall between your website and your visitors to filter out these and other attacks, take a look at Sucuri Firewall [3].</em><br><br>\n\n[1] <a href='https://kb.sucuri.net/definitions/attacks/brute-force/password-guessing'>https://kb.sucuri.net/definitions/attacks/brute-force/password-guessing</a><br>\n[2] <a href='%s'>%s</a> <br>\n[3] <a href='https://sucuri.net/website-firewall/?wpalert'>https://sucuri.net/website-firewall/</a><br>\n", 'sucuri-scanner'),
                     $settings_url,
                     $settings_url
                 );
@@ -652,7 +639,7 @@ class SucuriScanEvent extends SucuriScan
 
         $sent = SucuriScanMail::sendMail(
             $user->user_email,
-            'Password Change',
+            __('Password Change', 'sucuri-scanner'),
             $message,
             $data_set
         );

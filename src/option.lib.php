@@ -145,7 +145,7 @@ class SucuriScanOption extends SucuriScanRequest
             $admin_email = get_option('admin_email');
             $default['sucuriscan_account'] = $admin_email;
             $default['sucuriscan_notify_to'] = $admin_email;
-            $default['sucuriscan_email_subject'] = 'Sucuri Alert, :domain, :event, :remoteaddr';
+            $default['sucuriscan_email_subject'] = sprintf(__('Sucuri Alert, %s, %s, %s', 'sucuri-scanner'), ':domain', ':event', ':remoteaddr');
         }
 
         return @$default[$option];
