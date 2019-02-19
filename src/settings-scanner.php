@@ -176,7 +176,7 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
         }
 
         if (!$response) {
-            $response = '<tr><td colspan="5">There is no data.</td></tr>';
+            $response = '<tr><td colspan="5">' . __('no data available', 'sucuri-scanner') . '</td></tr>';
         }
 
         wp_send_json($response, 200);

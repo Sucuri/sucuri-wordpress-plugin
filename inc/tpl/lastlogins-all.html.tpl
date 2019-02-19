@@ -8,14 +8,14 @@
         <table class="wp-list-table widefat sucuriscan-table sucuriscan-table-double-title sucuriscan-last-logins">
             <thead>
                 <tr>
-                    <th colspan="5">{{Successful Logins (all)}</th>
+                    <th colspan="5">{{Successful Logins (all)}}</th>
                 </tr>
 
                 <tr>
                     <th class="manage-column">{{Username}}</th>
                     <th class="manage-column">{{IP Address}}</th>
                     <th class="manage-column">{{Hostname}}</th>
-                    <th class="manage-column">{{Date/Time}</th>
+                    <th class="manage-column">{{Date/Time}}</th>
                     <th class="manage-column">&nbsp;</th>
                 </tr>
             </thead>
