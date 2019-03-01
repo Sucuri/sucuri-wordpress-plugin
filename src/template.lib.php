@@ -86,10 +86,10 @@ class SucuriScanTemplate extends SucuriScanRequest
         preg_match_all('~{{(.+?)}}~', $content, $matches);
 
         if ( ! empty( $matches[1] ) ) {
-            foreach($matches[1] as $string) {
-                $pattern = sprintf('~{{%s}}~', preg_quote($string, '~'));
-                $replacement = ('en_US' !== $locale) ? translate($string, 'sucuri-scanner') : $string;
-                $content = preg_replace($pattern, $replacement, $content);
+            foreach($matches[1] as $index => $string) {
+                $search  = $matches[0][$index];
+                $replace = ('en_US' !== $locale) ? translate($string, 'sucuri-scanner') : $string;
+                $content = str_replace($search, $replace, $content);
             }
         }
 
