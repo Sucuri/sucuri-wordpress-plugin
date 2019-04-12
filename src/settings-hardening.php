@@ -99,7 +99,7 @@ class SucuriScanHardeningPage extends SucuriScan
 
         if (self::processRequest(__FUNCTION__)) {
             SucuriScanInterface::error(
-                __('The firewall is a premium service that you need purchase at - <a href="https://goo.gl/qfNkMq" target="_blank">Sucuri Firewall</a>', 'sucuri-scanner')
+                __('The firewall is a premium service that you need purchase at - <a href="https://sucuri.net/website-firewall/signup" target="_blank">Sucuri Firewall</a>', 'sucuri-scanner')
             );
         }
 

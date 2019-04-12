@@ -1373,7 +1373,7 @@ msgstr ""
 #: src/settings-hardening.php:102
 msgid ""
 "The firewall is a premium service that you need purchase at - <a href="
-"\"https://goo.gl/qfNkMq\" target=\"_blank\">Sucuri Firewall</a>"
+"\"https://sucuri.net/website-firewall/signup\" target=\"_blank\">Sucuri Firewall</a>"
 msgstr ""
 
 #: src/settings-hardening.php:107
