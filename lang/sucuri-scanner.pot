@@ -1080,7 +1080,7 @@ msgid "The alert settings have been updated"
 msgstr ""
 
 #: src/settings-alerts.php:542
-msgid "Only lowercase letters, underscores and hyphens are allowed."
+msgid "Only lowercase letters, numbers, underscores and hyphens are allowed. Post Types cannot exceed 20 characters as well."
 msgstr ""
 
 #: src/settings-alerts.php:544
