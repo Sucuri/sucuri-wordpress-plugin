@@ -2799,7 +2799,7 @@ msgid "File Path:"
 msgstr ""
 
 #: src/strings.php:366
-msgid "Timezone"
+msgid "Timezone Override"
 msgstr ""
 
 #: src/strings.php:367

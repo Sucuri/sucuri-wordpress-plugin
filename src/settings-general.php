@@ -638,7 +638,7 @@ function sucuriscan_settings_general_timezone($nonce)
         $fill = (abs($hour) < 10) ? '0' : '';
         $keyname = sprintf('UTC%s%s%.2f', $sign, $fill, abs($hour));
         $label = date('d M, Y H:i:s', $current + ($hour * 3600));
-        $options[$keyname] = $label;
+        $options[$keyname] = $keyname . ' (' . $label . ')';
     }
 
     if ($nonce) {
