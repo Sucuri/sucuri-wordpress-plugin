@@ -521,3 +521,6 @@ __('The remote malware scanner provided by the plugin is powered by <a href="htt
 __('Malware Scan Target', 'sucuri-scanner');
 __('Malware Scan Target:', 'sucuri-scanner');
 __('Submit', 'sucuri-scanner');
+
+// wordpress-recommendations.html.tpl
+__('WordPress Security Recommendations', 'sucuri-scanner');

@@ -190,6 +190,15 @@ This version adds an option to refresh the malware scan results on demand, as we
 
 == Changelog ==
 
+= 1.8.21 =
+* Replace goo.gl links
+* Fix post_type pattern match
+* Removed block button from failed logins page
+* Fixed Audit Logs queue timezone issue
+* Added WordPress security recommendations library
+* Added php version check
+* Updated translation file to match the changes
+
 = 1.8.20 =
 * Add dynamic core directories in the hardening whitelist options
 * Modify scheduled tasks panel to load the table via Ajax

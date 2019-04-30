@@ -50,6 +50,9 @@ function sucuriscan_page()
     $params['SiteCheck.Malware'] = '<div id="sucuriscan-malware"></div>';
     $params['SiteCheck.Blacklist'] = '<div id="sucuriscan-blacklist"></div>';
     $params['SiteCheck.Recommendations'] = '<div id="sucuriscan-recommendations"></div>';
+    
+    /* load data for the WordPress best practices section */
+    $params['WordPress.Recommendations'] = SucuriWordPressRecomendations::pageWordPressRecommendations();
 
     if (SucuriScanRequest::get(':sitecheck_refresh') !== false) {
         $params['SiteCheck.Refresh'] = 'true';

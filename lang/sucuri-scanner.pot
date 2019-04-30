@@ -59,12 +59,12 @@ msgstr ""
 msgid "API key recovery for domain: %s"
 msgstr ""
 
-#: src/api.lib.php:609
+#: src/api.lib.php:648
 #, php-format
 msgid "WP Engine PHP Compatibility Checker: %s (created post #%d as cache)"
 msgstr ""
 
-#: src/api.lib.php:952 src/api.lib.php:957
+#: src/api.lib.php:991 src/api.lib.php:994
 msgid "WordPress version is not supported anymore"
 msgstr ""
 
@@ -3203,8 +3203,26 @@ msgstr ""
 msgid "Malware Scan Target:"
 msgstr ""
 
+#: src/strings.php:526
+msgid "WordPress Security Recommendations"
+msgstr ""
+
 #: src/template.lib.php:277
 msgid "Invalid template type"
+msgstr ""
+
+#: src/wordpress-recommendations.php:62
+msgid "Upgrade PHP to a supported version"
+msgstr ""
+
+#: src/wordpress-recommendations.php:63
+msgid "The PHP version you are using no longer receives security support and could be exposed to unpatched security vulnerabilities."
+msgstr ""
+
+#: src/wordpress-recommendations.php:76
+msgid ""
+"Your WordPress install is following <a href=\"https://sucuri.net/guides/wordpress-security\" target=\"_blank\" rel=\"noopener\">"
+"the security best practices</a>."
 msgstr ""
 
 #: sucuri.php:316
