@@ -538,8 +538,8 @@ function sucuriscan_settings_alerts_ignore_posts()
         $selected = SucuriScanRequest::post(':posttypes', '_array');
 
         if ($action === 'add') {
-            if (!preg_match('/^[a-z_\-]+$/', $ignore_rule)) {
-                SucuriScanInterface::error(__('Only lowercase letters, underscores and hyphens are allowed.', 'sucuri-scanner'));
+            if (!preg_match('/^[a-z0-9_\-]{1,20}+$/', $ignore_rule)) {
+                SucuriScanInterface::error(__('Only lowercase letters, numbers, underscores and hyphens are allowed. Post Types cannot exceed 20 characters as well.', 'sucuri-scanner'));
             } elseif (array_key_exists($ignore_rule, $ignored_events)) {
                 SucuriScanInterface::error(__('The post-type is already being ignored (duplicate).', 'sucuri-scanner'));
             } else {

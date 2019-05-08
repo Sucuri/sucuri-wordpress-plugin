@@ -8,7 +8,7 @@
  * Author: Sucuri Inc.
  * Text Domain: sucuri-scanner
  * Domain Path: /lang
- * Version: 1.8.20
+ * Version: 1.8.21
  *
  * PHP version 5
  *
@@ -85,7 +85,7 @@ define('SUCURISCAN', 'sucuriscan');
 /**
  * Current version of the plugin's code.
  */
-define('SUCURISCAN_VERSION', '1.8.20');
+define('SUCURISCAN_VERSION', '1.8.21');
 
 /**
  * Defines the human readable name of the plugin.
@@ -218,6 +218,7 @@ require_once 'src/hardening.lib.php';
 require_once 'src/interface.lib.php';
 require_once 'src/auditlogs.lib.php';
 require_once 'src/sitecheck.lib.php';
+require_once 'src/wordpress-recommendations.lib.php';
 require_once 'src/integrity.lib.php';
 require_once 'src/firewall.lib.php';
 require_once 'src/installer-skin.lib.php';

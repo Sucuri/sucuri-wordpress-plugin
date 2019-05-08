@@ -36,8 +36,7 @@
                     </tr>
                 </tbody>
             </table>
-
-            <button type="submit" class="button button-primary">{{Block}}</button>
+            
         </form>
     </div>
 </div>
