@@ -77,10 +77,8 @@ class SucuriScanHardeningPage extends SucuriScan
      */
     private static function processRequest($function)
     {
-        return (bool) (
-            SucuriScanInterface::checkNonce() /* CSRF protection */
-            && SucuriScanRequest::post(':hardening_' . $function)
-        );
+        return (bool)(SucuriScanInterface::checkNonce() /* CSRF protection */
+            && SucuriScanRequest::post(':hardening_' . $function));
     }
 
     /**
@@ -99,7 +97,7 @@ class SucuriScanHardeningPage extends SucuriScan
 
         if (self::processRequest(__FUNCTION__)) {
             SucuriScanInterface::error(
-                __('The firewall is a premium service that you need purchase at - <a href="https://goo.gl/qfNkMq" target="_blank">Sucuri Firewall</a>', 'sucuri-scanner')
+                __('The firewall is a premium service that you need purchase at - <a href="https://sucuri.net/website-firewall/signup" target="_blank">Sucuri Firewall</a>', 'sucuri-scanner')
             );
         }
 
@@ -184,7 +182,7 @@ class SucuriScanHardeningPage extends SucuriScan
         $params['Hardening.Title'] = __('Verify PHP Version', 'sucuri-scanner');
         $params['Hardening.Description'] = sprintf(__('PHP %s is installed.', 'sucuri-scanner'), PHP_VERSION);
 
-        if (intval(version_compare(PHP_VERSION, '5.6.0') >= 0)) {
+        if (intval(version_compare(PHP_VERSION, '7.1.0') >= 0)) {
             $params['Hardening.Status'] = 1;
             $params['Hardening.FieldAttrs'] = 'disabled';
             $params['Hardening.FieldText'] = __('Revert Hardening', 'sucuri-scanner');
@@ -512,7 +510,7 @@ class SucuriScanHardeningPage extends SucuriScan
     public static function fileeditor()
     {
         $params = array();
-        $fileEditorWasDisabled = (bool) (defined('DISALLOW_FILE_EDIT') && DISALLOW_FILE_EDIT);
+        $fileEditorWasDisabled = (bool)(defined('DISALLOW_FILE_EDIT') && DISALLOW_FILE_EDIT);
 
         if (self::processRequest(__FUNCTION__)) {
             $config = SucuriScan::getConfigPath();

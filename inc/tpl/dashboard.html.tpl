@@ -84,5 +84,7 @@ jQuery(document).ready(function ($) {
         %%%SUCURI.SiteCheck.Blacklist%%%
 
         %%%SUCURI.SiteCheck.Recommendations%%%
+        
+        %%%SUCURI.WordPress.Recommendations%%%
     </div>
 </div>

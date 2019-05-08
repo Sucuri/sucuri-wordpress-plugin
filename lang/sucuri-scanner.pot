@@ -59,12 +59,12 @@ msgstr ""
 msgid "API key recovery for domain: %s"
 msgstr ""
 
-#: src/api.lib.php:609
+#: src/api.lib.php:648
 #, php-format
 msgid "WP Engine PHP Compatibility Checker: %s (created post #%d as cache)"
 msgstr ""
 
-#: src/api.lib.php:952 src/api.lib.php:957
+#: src/api.lib.php:991 src/api.lib.php:994
 msgid "WordPress version is not supported anymore"
 msgstr ""
 
@@ -1080,7 +1080,7 @@ msgid "The alert settings have been updated"
 msgstr ""
 
 #: src/settings-alerts.php:542
-msgid "Only lowercase letters, underscores and hyphens are allowed."
+msgid "Only lowercase letters, numbers, underscores and hyphens are allowed. Post Types cannot exceed 20 characters as well."
 msgstr ""
 
 #: src/settings-alerts.php:544
@@ -1373,7 +1373,7 @@ msgstr ""
 #: src/settings-hardening.php:102
 msgid ""
 "The firewall is a premium service that you need purchase at - <a href="
-"\"https://goo.gl/qfNkMq\" target=\"_blank\">Sucuri Firewall</a>"
+"\"https://sucuri.net/website-firewall/signup\" target=\"_blank\">Sucuri Firewall</a>"
 msgstr ""
 
 #: src/settings-hardening.php:107
@@ -2799,7 +2799,7 @@ msgid "File Path:"
 msgstr ""
 
 #: src/strings.php:366
-msgid "Timezone"
+msgid "Timezone Override"
 msgstr ""
 
 #: src/strings.php:367
@@ -3203,8 +3203,26 @@ msgstr ""
 msgid "Malware Scan Target:"
 msgstr ""
 
+#: src/strings.php:526
+msgid "WordPress Security Recommendations"
+msgstr ""
+
 #: src/template.lib.php:277
 msgid "Invalid template type"
+msgstr ""
+
+#: src/wordpress-recommendations.php:62
+msgid "Upgrade PHP to a supported version"
+msgstr ""
+
+#: src/wordpress-recommendations.php:63
+msgid "The PHP version you are using no longer receives security support and could be exposed to unpatched security vulnerabilities."
+msgstr ""
+
+#: src/wordpress-recommendations.php:76
+msgid ""
+"Your WordPress install is following <a href=\"https://sucuri.net/guides/wordpress-security\" target=\"_blank\" rel=\"noopener\">"
+"the security best practices</a>."
 msgstr ""
 
 #: sucuri.php:316

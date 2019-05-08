@@ -407,7 +407,9 @@ class SucuriScanAPI extends SucuriScanOption
 
     /**
      * Returns the security logs from the system queue.
-     *
+     * In case the logs comes from the queue, set key "from_queue" to true,
+     * as the parse function later will need to prevent timezone conflicts.
+     * 
      * @return array The data structure with the logs.
      */
     public static function getAuditLogsFromQueue()
@@ -443,6 +445,7 @@ class SucuriScanAPI extends SucuriScanOption
             'verbose' => 0,
             'output' => array_reverse($auditlogs),
             'total_entries' => count($auditlogs),
+            'from_queue' => '1',
         );
 
         return self::parseAuditLogs($res);
@@ -489,8 +492,44 @@ class SucuriScanAPI extends SucuriScanOption
             $log_data['message'] = $right;
             $log_data['account'] = $dateAndEmail[2];
 
-            /* extract and fix the date and time using the Eastern time zone */
-            $datetime = sprintf('%s %s EDT', $dateAndEmail[0], $dateAndEmail[1]);
+            /**
+             * When the audit logs comes from the queue, it's necessary to convert
+             * the logs using the correct timezone before parsing to avoid issues.
+             * First, use timezone override feature if set on the plugin settings,
+             * convert it properly as the syntax must be compatible with php strtotime,
+             * otherwise use WordPress timezone or offset with a quick fix only for UTC
+             * as by default it would be set as "0" instead of "UTC".
+             */
+            $tz_override = SucuriScanOption::getOption(':timezone');
+            if (empty($tz_override)) {
+                $wpTimezone = get_option('timezone_string');
+                if (empty($wpTimezone)) {
+                    $wpTimezone = get_option('gmt_offset');
+                }
+                
+                /* set wpTimezone to UTC if was previously unset */
+                if ($wpTimezone == "0") {
+                    $wpTimezone = "UTC";
+                }
+            } else {
+                $tz_override_replace_from = array(".", "UTC");
+                $tz_override_replace_to = array(":", "");
+                $wpTimezone = str_replace($tz_override_replace_from, $tz_override_replace_to, $tz_override);
+            }
+            
+            /**
+             * When the audit logs comes from the audit logs server, it will
+             * be using EDT timezone, however due to the seasonal nature of the
+             * EDT timzeone, here we will be using America/New_York when and only
+             * when the audit logs comes from the audit logs server, cause when
+             * it comes from the queue, wpTimezone var will be used.
+             */
+            if (array_key_exists('from_queue', $res)) {
+                $datetime = sprintf('%s %s %s', $dateAndEmail[0], $dateAndEmail[1], $wpTimezone);
+            } else {
+                $datetime = sprintf('%s %s America/New_York', $dateAndEmail[0], $dateAndEmail[1]);
+            }
+            
             $log_data['timestamp'] = strtotime($datetime);
             $log_data['datetime'] = SucuriScan::datetime($log_data['timestamp'], 'Y-m-d H:i:s');
             $log_data['date'] = SucuriScan::datetime($log_data['timestamp'], 'Y-m-d');
