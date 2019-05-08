@@ -36,7 +36,7 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  */
 class SucuriWordPressRecomendations
 {
-    
+
     /**
      * Generates the HTML section for the WordPress recommendations section.
      *
@@ -44,11 +44,11 @@ class SucuriWordPressRecomendations
      */
     public static function pageWordPressRecommendations()
     {
-        
+
         $params = array();
         $recommendations = array();
         $params['WordPress.Recommendations.Content'] = '';
-        
+
         /**
          * BEGIN security checks.
          * 
@@ -57,24 +57,23 @@ class SucuriWordPressRecomendations
          */
 
         // Check if php version needs to be upgraded.
-        if (defined('PHP_MAJOR_VERSION') && PHP_MAJOR_VERSION <= 5) {
+        if (version_compare(phpversion(), '7.1', '<')) {
             $recommendations['PHPVersionCheck'] = array(
-                __('Upgrade PHP to a supported version', 'sucuri-scanner') => 
+                __('Upgrade PHP to a supported version', 'sucuri-scanner') =>
                 __('The PHP version you are using no longer receives security support and could be exposed to unpatched security vulnerabilities.', 'sucuri-scanner')
             );
         }
-        
+
         /**
          * BEGIN delivery of results.
          * 
          * When recommendations array is empty, delivery an "all is good" message,
          * otherwise display each item that needs fixing individually.
-        */
-        if(count($recommendations) == 0) {
-            
+         */
+        if (count($recommendations) == 0) {
+
             $params['WordPress.Recommendations.Color'] = 'green';
             $params['WordPress.Recommendations.Content'] = __('Your WordPress install is following <a href="https://sucuri.net/guides/wordpress-security" target="_blank" rel="noopener">the security best practices</a>.', 'sucuri-scanner');
-
         } else {
 
             /* set title to blue as not all recommendations have been fullfilled */
@@ -90,17 +89,13 @@ class SucuriWordPressRecomendations
                         'wordpress-recommendations',
                         array(
                             'WordPress.Recommendations.Title' => $title,
-                           'WordPress.Recommendations.Value' => $description
+                            'WordPress.Recommendations.Value' => $description
                         )
                     );
-
                 }
-
             }
-
         }
 
         return SucuriScanTemplate::getSection('wordpress-recommendations', $params);
-
     }
 }
