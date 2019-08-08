@@ -152,49 +152,6 @@ class SucuriScanHardeningPage extends SucuriScan
     }
 
     /**
-     * Checks if the server is using a modern PHP version.
-     *
-     * Each release branch of PHP is fully supported for two years from its
-     * initial stable release. During this period, bugs and security issues that
-     * have been reported are fixed and are released in regular point releases.
-     * After this two year period of active support, each branch is then
-     * supported for an additional year for critical security issues only.
-     * Releases during this period are made on an as-needed basis: there may be
-     * multiple point releases, or none, depending on the number of reports.
-     * Once the three years of support are completed, the branch reaches its end
-     * of life and is no longer supported.
-     *
-     * @see http://php.net/supported-versions.php
-     *
-     * @return HTML with the information about this hardening option.
-     */
-    public static function phpversion()
-    {
-        $params = array();
-
-        if (self::processRequest(__FUNCTION__)) {
-            SucuriScanInterface::error(
-                __('Ask your hosting provider to install an updated version of PHP - <a href="http://php.net/supported-versions.php" target="_blank" rel="noopener">List of PHP Supported Versions</a>', 'sucuri-scanner')
-            );
-        }
-
-        $params['Hardening.FieldName'] = __FUNCTION__;
-        $params['Hardening.Title'] = __('Verify PHP Version', 'sucuri-scanner');
-        $params['Hardening.Description'] = sprintf(__('PHP %s is installed.', 'sucuri-scanner'), PHP_VERSION);
-
-        if (intval(version_compare(PHP_VERSION, '7.1.0') >= 0)) {
-            $params['Hardening.Status'] = 1;
-            $params['Hardening.FieldAttrs'] = 'disabled';
-            $params['Hardening.FieldText'] = __('Revert Hardening', 'sucuri-scanner');
-        } else {
-            $params['Hardening.Status'] = 0;
-            $params['Hardening.FieldText'] = __('Apply Hardening', 'sucuri-scanner');
-        }
-
-        return self::drawSection($params);
-    }
-
-    /**
      * Notify the state of the hardening for the removal of the Generator tag in
      * HTML code printed by WordPress to show the current version number of the
      * installation.

@@ -8,7 +8,7 @@
  * Author: Sucuri Inc.
  * Text Domain: sucuri-scanner
  * Domain Path: /lang
- * Version: 1.8.21
+ * Version: 1.8.22
  *
  * PHP version 5
  *
@@ -85,7 +85,7 @@ define('SUCURISCAN', 'sucuriscan');
 /**
  * Current version of the plugin's code.
  */
-define('SUCURISCAN_VERSION', '1.8.21');
+define('SUCURISCAN_VERSION', '1.8.22');
 
 /**
  * Defines the human readable name of the plugin.
