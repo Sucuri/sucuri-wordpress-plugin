@@ -184,6 +184,21 @@ msgstr ""
 msgid "Password Change"
 msgstr ""
 
+#: src/event.lib.php:752
+#, php-format
+msgid "%s is empty or can not be deleted."
+msgstr ""
+
+#: src/event.lib.php:764
+#, php-format
+msgid "%s was deleted."
+msgstr ""
+
+#: src/event.lib.php:770
+#, php-format
+msgid "%s was deleted. Please refresh this page."
+msgstr ""
+
 #: src/fileinfo.lib.php:291
 msgid "No files were found"
 msgstr ""
@@ -1286,9 +1301,14 @@ msgid ""
 "of these IPs will not be reported to the remote monitoring API service."
 msgstr ""
 
-#: src/settings-general.php:211
+#: src/settings-general.php:212
 #, php-format
-msgid "%d out of %d files has been deleted"
+msgid "%s were deleted."
+msgstr ""
+
+#: src/settings-general.php:219
+#, php-format
+msgid "%d out of %d files has been deleted."
 msgstr ""
 
 #: src/settings-general.php:229 src/settings-posthack.php:308
@@ -1958,7 +1978,7 @@ msgstr ""
 
 #: src/strings.php:74 src/strings.php:88 src/strings.php:256
 #: src/strings.php:276 src/strings.php:318 src/strings.php:329
-#: src/strings.php:381
+#: src/strings.php:381 src/strings.php:172 src/strings.php:186
 msgid "Delete"
 msgstr ""
 

@@ -96,6 +96,11 @@ function sucuriscan_failed_logins_panel()
         $template_variables['FailedLogins.WarningVisibility'] = 'hidden';
     }
 
+    // Clear failed login logins when delete button is pressed.
+    if (SucuriScanInterface::checkNonce() && SucuriScanRequest::post(':delete_failedlogins')) {
+        SucuriScanEvent::clearLastLogs('sucuri-failedlogins.php');
+    }
+
     return SucuriScanTemplate::getSection('lastlogins-failedlogins', $template_variables);
 }
 

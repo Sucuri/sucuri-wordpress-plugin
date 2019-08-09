@@ -170,6 +170,11 @@ function sucuriscan_lastlogins_all()
         );
     }
 
+    // Clear last login logins when delete button is pressed.
+    if (SucuriScanInterface::checkNonce() && SucuriScanRequest::post(':delete_lastlogins')) {
+        SucuriScanEvent::clearLastLogs('sucuri-lastlogins.php');
+    }
+
     return SucuriScanTemplate::getSection('lastlogins-all', $params);
 }
 

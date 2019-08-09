@@ -146,7 +146,7 @@ __('Loading...', 'sucuri-scanner');
 __('All Users', 'sucuri-scanner');
 __('Admins', 'sucuri-scanner');
 __('Logged-in Users', 'sucuri-scanner');
-__('Failed logins', 'sucuri-scanner');
+__('Failed Logins', 'sucuri-scanner');
 
 // lastlogins-admins.html.tpl
 __('Successful Logins (admins)', 'sucuri-scanner');
@@ -169,6 +169,7 @@ __('IP Address', 'sucuri-scanner');
 __('Hostname', 'sucuri-scanner');
 __('Date/Time', 'sucuri-scanner');
 __('no data available', 'sucuri-scanner');
+__('Delete', 'sucuri-scanner');
 
 // lastlogins-all.snippet.tpl
 __('Edit', 'sucuri-scanner');
@@ -182,6 +183,7 @@ __('Date/Time', 'sucuri-scanner');
 __('Web Browser', 'sucuri-scanner');
 __('no data available', 'sucuri-scanner');
 __('Block', 'sucuri-scanner');
+__('Delete', 'sucuri-scanner');
 
 // lastlogins-loggedin.html.tpl
 __('Logged-in Users}', 'sucuri-scanner');

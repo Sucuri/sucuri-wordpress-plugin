@@ -722,4 +722,54 @@ class SucuriScanEvent extends SucuriScan
 
         return $resp;
     }
+
+    /**
+     * Clear last logins or failed login logs.
+     * 
+     * This can also be done via Sucuri Security -> Settings -> Data Storage,
+     * however to improve the user experience, a button on Last Logins  and on
+     * Failed logins sections was added and it triggers the removal of
+     * sucuri/sucuri-lastlogins.php and sucuri/sucuri-failedlogins.php.
+     * 
+     * @param string $filename Name of the file to be deleted.
+     *
+     * @return HTML Message with the delete action outcome.
+     */
+    public static function clearLastLogs($filename)
+    {
+        // Get the complete path of the file.
+        $filepath = SucuriScan::dataStorePath($filename);
+
+        // Do not proceed if not possible.
+        if (
+            !is_writable(dirname($filepath)) ||
+            !file_exists($filepath) ||
+            is_dir($filepath) ||
+            empty($filepath)
+        ) {
+            return SucuriScanInterface::error(
+                sprintf(
+                    __('%s is empty or can not be deleted.', 'sucuri-scanner'),
+                    $filename
+                )
+            );
+        }
+
+        // Delete $filepath.
+        @unlink($filepath);
+        
+        // Register on audit logs and return result.
+        SucuriScanEvent::reportInfoEvent(
+            sprintf(
+                __('%s was deleted.', 'sucuri-scanner'),
+                $filename
+            )
+        );
+        return SucuriScanInterface::info(
+            sprintf(
+                __('%s was deleted. Please refresh this page.', 'sucuri-scanner'),
+                $filename
+            )
+        );
+    }
 }
