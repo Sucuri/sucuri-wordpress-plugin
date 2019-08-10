@@ -201,9 +201,11 @@ This version adds an option to refresh the malware scan results on demand, as we
 * Add "Too much plugin check" to WordPress Security Recommendations
 * Add "File editing check" to WordPress Security Recommendations
 * Add "WordPress debug check" to WordPress Security Recommendations
-* Add "Server Tokens check" to WordPress Security Recommendations
 * Add "Basic hardening check" to WordPress Security Recommendations
-* Update translation file to include new WordPress Security Recommendations checks
+* Add a delete button on Last Logins sections
+* Add register of logs removal on Audit Logs
+* Fix display of Access File Integrity on NGINX/IIS servers
+* Update translation file to include new checks and buttons
 * Remove PHP version check from hardening page
 
 = 1.8.21 =

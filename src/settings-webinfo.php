@@ -117,6 +117,11 @@ function sucuriscan_settings_webinfo_details()
  */
 function sucuriscan_settings_webinfo_htaccess()
 {
+
+    if (SucuriScan::isNginxServer() || SucuriScan::isIISServer()) {
+        return ''; /* empty page */
+    }
+
     $htaccess = SucuriScan::getHtaccessPath();
     $params = array(
         'HTAccess.Content' => '',

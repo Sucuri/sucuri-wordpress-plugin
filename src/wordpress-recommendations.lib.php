@@ -11,7 +11,7 @@
  * @copyright  2010-2019 Sucuri Inc.
  * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
  *
- * @see       https://wordpress.org/plugins/sucuri-scanner
+ * @see        https://wordpress.org/plugins/sucuri-scanner
  */
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     if (!headers_sent()) {
@@ -30,7 +30,7 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  * @copyright  2010-2019 Sucuri Inc.
  * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
  *
- * @see       https://wordpress.org/plugins/sucuri-scanner
+ * @see        https://wordpress.org/plugins/sucuri-scanner
  * @see        https://sucuri.net/guides/wordpress-security/
  */
 class SucuriWordPressRecommendations
@@ -222,22 +222,15 @@ class SucuriWordPressRecommendations
         }
 
         /*
-         * Check if Server Tokens has too much information.
-         * @see https://www.acunetix.com/blog/articles/configure-web-server-disclose-identity/
-         */
-        if (preg_match('/[0-9]\.[0-9]/', $_SERVER['SERVER_SOFTWARE'])) {
-            // phpcs:disable Generic.Files.LineLength
-            $recommendations['serverTokens'] = array(
-                __('Hide server version', 'sucuri-scanner') => __('Displaying the server or OS version on "Server" HTTP header can help hackers exploit known vulnerabilities, ask your hosting provider to trim the Server Tokens.', 'sucuri-scanner'),
-            );
-            // phpcs:enable
-        }
-
-        /*
-         * Check if Hardening was applied.
+         * Check if Hardening was applied as long as this is not a NGINX/IIS server.
          * @see https://sucuri.net/guides/wordpress-security/#harrec
          */
-        if (!SucuriScanHardening::isHardened(WP_CONTENT_DIR) && !SucuriScanHardening::isHardened(ABSPATH.'/wp-includes')) {
+        if (
+            !SucuriScan::isNginxServer() &&
+            !SucuriScan::isIISServer() &&
+            (!SucuriScanHardening::isHardened(WP_CONTENT_DIR) ||
+            !SucuriScanHardening::isHardened(ABSPATH.'/wp-includes'))
+            ) {
             // phpcs:disable Generic.Files.LineLength
             $recommendations['notHardened'] = array(
                 __('Prevent PHP direct execution on sensitive directories', 'sucuri-scanner') => __('Directories such as "wp-content" and "wp-includes" are generally not intended to be accessed by any user, consider hardening them via Sucuri Security -> Settings -> Hardening.', 'sucuri-scanner'),
