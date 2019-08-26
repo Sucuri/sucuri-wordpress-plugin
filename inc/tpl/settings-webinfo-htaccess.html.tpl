@@ -13,6 +13,10 @@
             <p>{{Your website has no <code>.htaccess</code> file or it was not found in the default location.}}</p>
         </div>
 
+        <div class="sucuriscan-inline-alert-info sucuriscan-%%SUCURI.HTAccess.NotApache%%">
+            <p>{{Your web server does not support .htaccess files.}}</p>
+        </div>
+
         <div class="sucuriscan-inline-alert-info sucuriscan-%%SUCURI.HTAccess.StandardVisible%%">
             <p>{{The main <code>.htaccess</code> file in your site has the standard rules for a WordPress installation. You can customize it to improve the performance and change the behaviour of the redirections for pages and posts in your site. To get more information visit the official documentation at <a target="_blank" rel="noopener" href="https://codex.wordpress.org/Using_Permalinks#Creating_and_editing_.28.htaccess.29"> Codex WordPress - Creating and editing (.htaccess)</a>}}</p>
         </div>

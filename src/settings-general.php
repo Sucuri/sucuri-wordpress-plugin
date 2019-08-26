@@ -216,7 +216,7 @@ function sucuriscan_settings_general_datastorage($nonce)
 
             SucuriScanInterface::info(
                 sprintf(
-                    __('%d out of %d files has been deleted.', 'sucuri-scanner'),
+                    __('%d out of %d files have been deleted.', 'sucuri-scanner'),
                     $deleted,
                     count($filenames)
                 )

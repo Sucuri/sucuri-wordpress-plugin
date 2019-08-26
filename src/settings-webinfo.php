@@ -118,16 +118,13 @@ function sucuriscan_settings_webinfo_details()
 function sucuriscan_settings_webinfo_htaccess()
 {
 
-    if (SucuriScan::isNginxServer() || SucuriScan::isIISServer()) {
-        return ''; /* empty page */
-    }
-
     $htaccess = SucuriScan::getHtaccessPath();
     $params = array(
         'HTAccess.Content' => '',
         'HTAccess.TextareaVisible' => 'hidden',
         'HTAccess.StandardVisible' => 'hidden',
         'HTAccess.NotFoundVisible' => 'hidden',
+        'HTAccess.NotApache' => 'hidden',
         'HTAccess.FoundVisible' => 'hidden',
         'HTAccess.Fpath' => 'unknown',
     );
@@ -144,7 +141,11 @@ function sucuriscan_settings_webinfo_htaccess()
             $params['HTAccess.StandardVisible'] = 'visible';
         }
     } else {
-        $params['HTAccess.NotFoundVisible'] = 'visible';
+        if (SucuriScan::isNginxServer() || SucuriScan::isIISServer()) {
+            $params['HTAccess.NotApache'] = 'visible';
+        } else {
+            $params['HTAccess.NotFoundVisible'] = 'visible';
+        }
     }
 
     return SucuriScanTemplate::getSection('settings-webinfo-htaccess', $params);

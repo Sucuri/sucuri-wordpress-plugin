@@ -54,13 +54,13 @@ class SucuriWordPressRecommendations
          */
 
         /*
-         * Check if WordPress is using a SSL certificate.
+         * Check if WordPress is using an SSL certificate.
          * @see https://blog.sucuri.net/2019/03/how-to-add-ssl-move-wordpress-from-http-to-https.html
          */
         if (!is_ssl()) {
             // phpcs:disable Generic.Files.LineLength
             $recommendations['noSSL'] = array(
-                __('Implement a SSL Certificate', 'sucuri-scanner') => __('SSL certificates help protect the integrity of the data in transit between the host (web server or firewall) and the client (web browser).', 'sucuri-scanner'),
+                __('Implement an SSL Certificate', 'sucuri-scanner') => __('SSL certificates help protect the integrity of the data in transit between the host (web server or firewall) and the client (web browser).', 'sucuri-scanner'),
             );
             // phpcs:enable
         }
@@ -89,7 +89,7 @@ class SucuriWordPressRecommendations
             );
         // phpcs:enable
         } elseif (file_exists(ABSPATH.'/wp-config.php')) {
-            if (filemtime(ABSPATH.'/wp-config.php') < strtotime('-6 months')) {
+            if (filemtime(ABSPATH.'/wp-config.php') < strtotime('-12 months')) {
                 // phpcs:disable Generic.Files.LineLength
                 $recommendations['wpSaltAgeDiscriminator'] = array(
                     __('WordPress Salt & Security Keys should be updated', 'sucuri-scanner') => __('Updating WordPress Salt & Security Keys after a compromise and on a regular basis, at least once a year, reduces the risks of session hijacking.', 'sucuri-scanner'),
@@ -102,10 +102,20 @@ class SucuriWordPressRecommendations
          * Check if there is a standard administrator/admin account.
          * @see https://sucuri.net/guides/wordpress-security/#uac
          */
-        if (!empty(get_users(array('role' => 'administrator', 'search' => 'admin*')))) {
+        $usersWithAdminLogin = get_users(array(
+            'role' => 'administrator',
+            'fields' => array( 'user_login' ),
+            'search' => 'admin'
+        ));
+        $usersWithAdminstratorLogin = get_users(array(
+            'role' => 'administrator',
+            'fields' => array( 'user_login' ),
+            'search' => 'administrator'
+        ));
+        if (!empty($usersWithAdminLogin) || !empty($usersWithAdminstratorLogin)) {
             // phpcs:disable Generic.Files.LineLength
             $recommendations['adminBadUsername'] = array(
-                __('Admin/Administrator username still exists', 'sucuri-scanner') => __('Using an unique username and removing the default admin/administrator account make it more difficult for attackers to brute force your WordPress.', 'sucuri-scanner'),
+                __('Admin/Administrator username still exists', 'sucuri-scanner') => __('Using a unique username and removing the default admin/administrator account make it more difficult for attackers to brute force your WordPress.', 'sucuri-scanner'),
             );
             // phpcs:enable
         }
@@ -143,10 +153,10 @@ class SucuriWordPressRecommendations
             }
         }
         // phpcs:disable Generic.Files.LineLength
-        $wp2faPluginsInstalled = preg_grep('/(2FA|2\sFactor|Two\sFactor|Two-Factor|2-Factor|Secure\sLogin|SecSign|Authentication|Wordfence\sSecurity|iThemes\sSecurity\sPro|Limit\sLogin|LDAP)/i', $wpPluginsInstalledName);
+        $wp2faPluginsInstalled = preg_grep('/(2FA|2\sFactor|Two\sFactor|Two-Factor|2-Factor|Secure\sLogin|SecSign|Authentication|Wordfence\sSecurity|iThemes\sSecurity\sPro|Limit\sLogin|LDAP)/i', $wpPluginsActivatedName);
         if (empty($wp2faPluginsInstalled)) {
             $recommendations['loginUnprotected'] = array(
-                __('Install a 2FA plugin', 'sucuri-scanner') => __('2FA protects your account in the event that someone is able to guess/crack your password.', 'sucuri-scanner'),
+                __('Unable to detect a popular 2FA plugin', 'sucuri-scanner') => __('Do you have another 2FA solution in place? If not, it\'s recommended that you add a 2FA plugin to protect your website.', 'sucuri-scanner'),
             );
         }
         // phpcs:enable
@@ -161,7 +171,7 @@ class SucuriWordPressRecommendations
          * NOTE: This check uses $wpPluginsDeactivatedName which is created by
          * the 2FA plugin check.
          */
-        if ((count(wp_get_themes()) > 2) || (count($wpPluginsDeactivatedName) > 5) && !is_multisite()) {
+        if ((count(wp_get_themes()) > 2 || count($wpPluginsDeactivatedName) > 1) && !is_multisite()) {
             // phpcs:disable Generic.Files.LineLength
             $recommendations['forgottenExtensionFestival'] = array(
                 __('Remove unwanted/unused extensions', 'sucuri-scanner') => __('Keeping unwanted themes and plugins increases the chance of a compromise, even if they are disabled.', 'sucuri-scanner'),
@@ -189,10 +199,10 @@ class SucuriWordPressRecommendations
          * the 2FA plugin check.
          */
         // phpcs:disable Generic.Files.LineLength
-        $wpBackupsPluginsInstalled = preg_grep('/(Backup|Back-up|Migration|VaultPress|Duplicator|Snapshot|ManageWP|iControlWP|Staging|Updraft|Backwp|Recovery)/i', $wpPluginsInstalledName);
+        $wpBackupsPluginsInstalled = preg_grep('/(Backup|Back-up|Migration|VaultPress|Duplicator|Snapshot|ManageWP|iControlWP|Staging|Updraft|Backwp|Recovery)/i', $wpPluginsActivatedName);
         if (empty($wpBackupsPluginsInstalled)) {
             $recommendations['lackOfBackupsPlugins'] = array(
-                __('Install a backup plugin', 'sucuri-scanner') => __('A good set of backups can save your website when absolutely everything else has gone wrong.', 'sucuri-scanner'),
+                __('Unable to detect a popular backup plugin', 'sucuri-scanner') => __('Do you have another backup solution in place? If not, it\'s recommended that you add a backup plugin to recover your website when needed.', 'sucuri-scanner'),
             );
         }
         // phpcs:enable
@@ -204,7 +214,7 @@ class SucuriWordPressRecommendations
         if (!defined('DISALLOW_FILE_EDIT')) {
             // phpcs:disable Generic.Files.LineLength
             $recommendations['fileEditStillEnabled'] = array(
-                __('Disable file editing', 'sucuri-scanner') => __('Disabling file editing helps preventing an attacker from changing your files through WordPress backend.', 'sucuri-scanner'),
+                __('Disable file editing', 'sucuri-scanner') => __('Using "DISALLOW_FILE_EDIT" helps prevent an attacker from changing your files through WordPress backend.', 'sucuri-scanner'),
             );
             // phpcs:enable
         }
@@ -213,12 +223,14 @@ class SucuriWordPressRecommendations
          * Check if WordPress Debug Mode is set.
          * @see https://wordpress.org/support/article/debugging-in-wordpress/
          */
-        if (!defined('WP_DEBUG') || WP_DEBUG === true) {
-            // phpcs:disable Generic.Files.LineLength
-            $recommendations['wpDebugOnline'] = array(
-                __('Disable WordPress debug mode', 'sucuri-scanner') => __('The debug mode will cause all PHP errors, notices and warnings to be displayed which can expose sensitive information.', 'sucuri-scanner'),
-            );
-            // phpcs:enable
+        if (defined('WP_DEBUG')) {
+            if (WP_DEBUG) {
+                // phpcs:disable Generic.Files.LineLength
+                $recommendations['wpDebugOnline'] = array(
+                    __('Disable WordPress debug mode', 'sucuri-scanner') => __('When "WP_DEBUG" is set to true, it will cause all PHP errors, notices and warnings to be displayed which can expose sensitive information.', 'sucuri-scanner'),
+                );
+                // phpcs:enable
+            }
         }
 
         /*

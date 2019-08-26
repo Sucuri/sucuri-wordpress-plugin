@@ -741,15 +741,10 @@ class SucuriScanEvent extends SucuriScan
         $filepath = SucuriScan::dataStorePath($filename);
 
         // Do not proceed if not possible.
-        if (
-            !is_writable(dirname($filepath)) ||
-            !file_exists($filepath) ||
-            is_dir($filepath) ||
-            empty($filepath)
-        ) {
+        if (!is_writable(dirname($filepath)) || is_dir($filepath)) {
             return SucuriScanInterface::error(
                 sprintf(
-                    __('%s is empty or can not be deleted.', 'sucuri-scanner'),
+                    __('%s cannot be deleted.', 'sucuri-scanner'),
                     $filename
                 )
             );
@@ -767,7 +762,7 @@ class SucuriScanEvent extends SucuriScan
         );
         return SucuriScanInterface::info(
             sprintf(
-                __('%s was deleted. Please refresh this page.', 'sucuri-scanner'),
+                __('%s was deleted.', 'sucuri-scanner'),
                 $filename
             )
         );
