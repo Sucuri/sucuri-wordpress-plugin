@@ -129,7 +129,10 @@ function sucuriscan_settings_webinfo_htaccess()
         'HTAccess.Fpath' => 'unknown',
     );
 
-    if ($htaccess) {
+    // If it's not Apache, do not based the analysis on htaccess file.
+    if (SucuriScan::isNginxServer() || SucuriScan::isIISServer()) {
+        $params['HTAccess.NotApache'] = 'visible';
+    } elseif ($htaccess) {
         $rules = SucuriScanFileInfo::fileContent($htaccess);
 
         $params['HTAccess.TextareaVisible'] = 'visible';
@@ -141,11 +144,7 @@ function sucuriscan_settings_webinfo_htaccess()
             $params['HTAccess.StandardVisible'] = 'visible';
         }
     } else {
-        if (SucuriScan::isNginxServer() || SucuriScan::isIISServer()) {
-            $params['HTAccess.NotApache'] = 'visible';
-        } else {
-            $params['HTAccess.NotFoundVisible'] = 'visible';
-        }
+        $params['HTAccess.NotFoundVisible'] = 'visible';
     }
 
     return SucuriScanTemplate::getSection('settings-webinfo-htaccess', $params);
