@@ -176,7 +176,7 @@ class SucuriWordPressRecommendations
          * the 2FA plugin check.
          */
         // phpcs:disable Generic.Files.LineLength
-        if ((count(wp_get_themes()) < 2 || count($wpPluginsDeactivatedName) < 1) && !is_multisite() || is_multisite()) {
+        if ((count(wp_get_themes()) < 2 || count($wpPluginsDeactivatedName) < 1) || is_multisite()) {
             unset($recommendations['forgottenExtension']);
         }
         // phpcs:enable
@@ -185,7 +185,7 @@ class SucuriWordPressRecommendations
          * Check for too much plugins.
          * @see https://sucuri.net/guides/wordpress-security/#apt
          */
-        if (count($wpPluginsInstalled) < 50 && !is_multisite() || is_multisite()) {
+        if (count($wpPluginsInstalled) < 50 || is_multisite()) {
             unset($recommendations['tooMuchPlugins']);
         }
 
