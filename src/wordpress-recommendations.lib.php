@@ -153,6 +153,8 @@ class SucuriWordPressRecommendations
          * are created by this feature.
          */
         $wpPluginsInstalled = get_plugins();
+        $wpPluginsActivatedName = array();
+        $wpPluginsDeactivatedName = array();
         foreach ($wpPluginsInstalled as $pluginPath => $pluginDetails) {
             $wpPluginsInstalledName[] = $pluginDetails['Name'];
             if (is_plugin_active($pluginPath)) {
