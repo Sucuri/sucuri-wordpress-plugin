@@ -116,7 +116,7 @@ class SucuriWordPressRecommendations
          * @see https://wordpress.org/support/article/editing-wp-config-php/#security-keys
          * @see https://sucuri.net/guides/wordpress-security/#harrec
          */
-        if (defined('AUTH_KEY') || defined('AUTH_SALT')) {
+        if (defined('AUTH_KEY') && defined('AUTH_SALT')) {
             unset($recommendations['wpSaltExistenceChecker']);
         }
         if (file_exists(ABSPATH.'/wp-config.php') &&
