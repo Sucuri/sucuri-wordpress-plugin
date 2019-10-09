@@ -3,8 +3,8 @@ Contributors: dd@sucuri.net
 Donate Link: https://sucuri.net/
 Tags: malware, security, firewall, scan, spam, virus, sucuri, protection, blacklist, detection, hardening, file integrity
 Requires at least: 3.6
-Tested up to: 5.2
-Stable tag: 1.8.21
+Tested up to: 5.2.3
+Stable tag: 1.8.22
 
 The Sucuri WordPress Security plugin is a security toolset for security integrity monitoring, malware detection and security hardening.
 
@@ -189,6 +189,23 @@ We take your privacy seriously. For free plugin users without an API key, no inf
 This version adds an option to refresh the malware scan results on demand, as well as several small bug fixes and improvements.
 
 == Changelog ==
+
+= 1.8.22 =
+* Add "SSL existence check" to WordPress Security Recommendations
+* Add "Salt & Security Keys existence check" to WordPress Security Recommendations
+* Add "Salt & Security Keys age check" to WordPress Security Recommendations
+* Add "Admin account check" to WordPress Security Recommendations
+* Add "Single super-admin check" to WordPress Security Recommendations
+* Add "Use of 2FA plugin login recommendation" to WordPress Security Recommendations
+* Add "Use of backups plugin recommendation" to WordPress Security Recommendations
+* Add "Too many plugins check" to WordPress Security Recommendations
+* Add "File editing check" to WordPress Security Recommendations
+* Add "WordPress debug check" to WordPress Security Recommendations
+* Add "Basic hardening check" to WordPress Security Recommendations
+* Add a delete button on Last Logins sections
+* Add register of logs removal on Audit Logs
+* Fix display of Access File Integrity on NGINX/IIS servers
+* Remove PHP version check from hardening page
 
 = 1.8.21 =
 * Add WordPress Security Recommendations section in the dashboard

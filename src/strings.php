@@ -146,7 +146,7 @@ __('Loading...', 'sucuri-scanner');
 __('All Users', 'sucuri-scanner');
 __('Admins', 'sucuri-scanner');
 __('Logged-in Users', 'sucuri-scanner');
-__('Failed logins', 'sucuri-scanner');
+__('Failed Logins', 'sucuri-scanner');
 
 // lastlogins-admins.html.tpl
 __('Successful Logins (admins)', 'sucuri-scanner');
@@ -169,6 +169,7 @@ __('IP Address', 'sucuri-scanner');
 __('Hostname', 'sucuri-scanner');
 __('Date/Time', 'sucuri-scanner');
 __('no data available', 'sucuri-scanner');
+__('Delete', 'sucuri-scanner');
 
 // lastlogins-all.snippet.tpl
 __('Edit', 'sucuri-scanner');
@@ -182,6 +183,7 @@ __('Date/Time', 'sucuri-scanner');
 __('Web Browser', 'sucuri-scanner');
 __('no data available', 'sucuri-scanner');
 __('Block', 'sucuri-scanner');
+__('Delete', 'sucuri-scanner');
 
 // lastlogins-loggedin.html.tpl
 __('Logged-in Users}', 'sucuri-scanner');
@@ -484,6 +486,7 @@ __('Access File Integrity', 'sucuri-scanner');
 __('The <code>.htaccess</code> file is a distributed configuration file, and is how the Apache web server handles configuration changes on a per-directory basis. WordPress uses this file to manipulate how Apache serves files from its root directory and subdirectories thereof; most notably, it modifies this file to be able to handle pretty permalinks.', 'sucuri-scanner');
 __('Htaccess file found in', 'sucuri-scanner');
 __('Your website has no <code>.htaccess</code> file or it was not found in the default location.', 'sucuri-scanner');
+__('Your web server does not support .htaccess files.', 'sucuri-scanner');
 __('The main <code>.htaccess</code> file in your site has the standard rules for a WordPress installation. You can customize it to improve the performance and change the behaviour of the redirections for pages and posts in your site. To get more information visit the official documentation at <a target="_blank" rel="noopener" href="https://codex.wordpress.org/Using_Permalinks#Creating_and_editing_.28.htaccess.29"> Codex WordPress - Creating and editing (.htaccess)</a>', 'sucuri-scanner');
 __('Codex WordPress HTAccess', 'sucuri-scanner');
 

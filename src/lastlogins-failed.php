@@ -45,6 +45,11 @@ function sucuriscan_failed_logins_panel()
     $page_offset = ($page_number - 1) * $max_per_page;
     $page_limit = ($page_offset + $max_per_page);
 
+    // Clear failed login logins when delete button is pressed.
+    if (SucuriScanInterface::checkNonce() && SucuriScanRequest::post(':delete_failedlogins')) {
+            SucuriScanEvent::clearLastLogs('sucuri-failedlogins.php');
+    }
+
     $max_failed_logins = SucuriScanOption::getOption(':maximum_failed_logins');
     $notify_bruteforce_attack = SucuriScanOption::getOption(':notify_bruteforce_attack');
     $failed_logins = sucuriscan_get_all_failed_logins($page_offset, $max_per_page);

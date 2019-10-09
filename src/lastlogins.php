@@ -119,6 +119,11 @@ function sucuriscan_lastlogins_all()
         'UserList.NoItemsVisibility' => 'visible',
     );
 
+    // Clear last login logins when delete button is pressed.
+    if (SucuriScanInterface::checkNonce() && SucuriScanRequest::post(':delete_lastlogins')) {
+        SucuriScanEvent::clearLastLogs('sucuri-lastlogins.php');
+    }
+
     if (!sucuriscan_lastlogins_datastore_is_writable()) {
         $fpath = SucuriScan::escape(sucuriscan_lastlogins_datastore_filepath());
         SucuriScanInterface::error(sprintf(__('Last-logins data file is not writable: <code>%s</code>', 'sucuri-scanner'), $fpath));

@@ -52,7 +52,7 @@ function sucuriscan_page()
     $params['SiteCheck.Recommendations'] = '<div id="sucuriscan-recommendations"></div>';
     
     /* load data for the WordPress best practices section */
-    $params['WordPress.Recommendations'] = SucuriWordPressRecomendations::pageWordPressRecommendations();
+    $params['WordPress.Recommendations'] = SucuriWordPressRecommendations::pageWordPressRecommendations();
 
     if (SucuriScanRequest::get(':sitecheck_refresh') !== false) {
         $params['SiteCheck.Refresh'] = 'true';
@@ -147,7 +147,6 @@ function sucuriscan_settings_page()
     /* settings - hardening */
     $params['Settings.Hardening.Firewall'] = SucuriScanHardeningPage::firewall();
     $params['Settings.Hardening.WPVersion'] = SucuriScanHardeningPage::wpversion();
-    $params['Settings.Hardening.PHPVersion'] = SucuriScanHardeningPage::phpversion();
     $params['Settings.Hardening.RemoveGenerator'] = SucuriScanHardeningPage::wpgenerator();
     $params['Settings.Hardening.NginxPHPFPM'] = SucuriScanHardeningPage::nginxphp();
     $params['Settings.Hardening.WPUploads'] = SucuriScanHardeningPage::wpuploads();

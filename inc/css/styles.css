@@ -576,7 +576,10 @@ body.sucuri-security_page_sucuriscan_hardening {
 .sucuriscan-auditlog-critical path {
     fill: #000;
 }
-.sucuriscan-container .sucuriscan-table {
+.sucuriscan-container .sucuriscan-table,
+.sucuriscan-container .sucuriscan-panel table.sucuriscan-last-logins,
+.sucuriscan-container .sucuriscan-panel table.sucuriscan-lastlogins-failed
+{
     margin-bottom: 20px;
 }
 .sucuriscan-container .sucuriscan-table:last-child {

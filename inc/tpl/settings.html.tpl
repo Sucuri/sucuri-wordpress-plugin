@@ -48,8 +48,6 @@
 
                     %%%SUCURI.Settings.Hardening.WPVersion%%%
 
-                    %%%SUCURI.Settings.Hardening.PHPVersion%%%
-
                     %%%SUCURI.Settings.Hardening.RemoveGenerator%%%
 
                     %%%SUCURI.Settings.Hardening.NginxPHPFPM%%%

@@ -38,5 +38,10 @@
             </table>
             
         </form>
+        <form action="%%SUCURI.URL.Lastlogins%%#failed" method="post">
+        <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
+        <input type="hidden" name="sucuriscan_delete_failedlogins" value="1" />
+        <input type="submit" value="{{Delete}}" class="button button-primary" />
+    </form>
     </div>
 </div>

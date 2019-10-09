@@ -117,17 +117,22 @@ function sucuriscan_settings_webinfo_details()
  */
 function sucuriscan_settings_webinfo_htaccess()
 {
+
     $htaccess = SucuriScan::getHtaccessPath();
     $params = array(
         'HTAccess.Content' => '',
         'HTAccess.TextareaVisible' => 'hidden',
         'HTAccess.StandardVisible' => 'hidden',
         'HTAccess.NotFoundVisible' => 'hidden',
+        'HTAccess.NotApache' => 'hidden',
         'HTAccess.FoundVisible' => 'hidden',
         'HTAccess.Fpath' => 'unknown',
     );
 
-    if ($htaccess) {
+    // If it's not Apache, do not based the analysis on htaccess file.
+    if (SucuriScan::isNginxServer() || SucuriScan::isIISServer()) {
+        $params['HTAccess.NotApache'] = 'visible';
+    } elseif ($htaccess) {
         $rules = SucuriScanFileInfo::fileContent($htaccess);
 
         $params['HTAccess.TextareaVisible'] = 'visible';

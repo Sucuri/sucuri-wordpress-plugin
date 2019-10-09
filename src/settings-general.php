@@ -206,9 +206,17 @@ function sucuriscan_settings_general_datastorage($nonce)
                 }
             }
 
+            // Register on audit logs and return result.
+            SucuriScanEvent::reportInfoEvent(
+                sprintf(
+                    __('%s were deleted.', 'sucuri-scanner'),
+                    implode(', ', $filenames)
+                )
+            );
+
             SucuriScanInterface::info(
                 sprintf(
-                    __('%d out of %d files has been deleted', 'sucuri-scanner'),
+                    __('%d out of %d files have been deleted.', 'sucuri-scanner'),
                     $deleted,
                     count($filenames)
                 )
