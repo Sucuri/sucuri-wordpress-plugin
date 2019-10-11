@@ -128,10 +128,27 @@ class SucuriWordPressRecommendations
          * Check for standard administrator/admin account.
          * @see https://sucuri.net/guides/wordpress-security/#uac
          */
-        $usersWithAdminLogin = get_users(array(
-            'role' => 'administrator',
-            'login__in' => array('admin', 'administrator'),
-        ));
+        $usersWithAdminLogin = array();
+        $adminUsernames = array('admin', 'administrator');
+
+        if (version_compare(SucuriScan::siteVersion(), '4.7', '>=')) {
+            $usersWithAdminLogin = get_users(array(
+                'role' => 'administrator',
+                'login__in' => $adminUsernames,
+            ));
+        } else {
+            $allUsers = get_users(array(
+                'role' => 'administrator',
+                'fields' => array('user_login'),
+            ));
+        
+            foreach($allUsers as $user) {
+                if (in_array($user->user_login, $adminUsernames)) {
+                    $usersWithAdminLogin[] = $user->user_login;
+                }
+            }
+        }
+
         if (empty($usersWithAdminLogin)) {
             unset($recommendations['adminBadUsername']);
         }
