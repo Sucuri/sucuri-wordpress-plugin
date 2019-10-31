@@ -196,8 +196,6 @@ This version adds an option to refresh the malware scan results on demand, as we
 * Add "Salt & Security Keys age check" to WordPress Security Recommendations
 * Add "Admin account check" to WordPress Security Recommendations
 * Add "Single super-admin check" to WordPress Security Recommendations
-* Add "Use of 2FA plugin login recommendation" to WordPress Security Recommendations
-* Add "Use of backups plugin recommendation" to WordPress Security Recommendations
 * Add "Too many plugins check" to WordPress Security Recommendations
 * Add "File editing check" to WordPress Security Recommendations
 * Add "WordPress debug check" to WordPress Security Recommendations

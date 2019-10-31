@@ -68,17 +68,11 @@ class SucuriWordPressRecommendations
             'lonelySuperAdmin' => array(
                 __('Use super admin account only when needed', 'sucuri-scanner') => __('Create an Editor account instead of always using the super-admin to reduce the damage in case of session hijacking.', 'sucuri-scanner'),
             ),
-            'loginUnprotected' => array(
-                __('Unable to detect a popular 2FA plugin', 'sucuri-scanner') => __('Do you have another 2FA solution in place? If not, it\'s recommended that you add a 2FA plugin to protect your website.', 'sucuri-scanner'),
-            ),
             'forgottenExtension' => array(
                 __('Remove unwanted/unused extensions', 'sucuri-scanner') => __('Keeping unwanted themes and plugins increases the chance of a compromise, even if they are disabled.', 'sucuri-scanner'),
             ),
             'tooMuchPlugins' => array(
                 __('Decrease the number of plugins', 'sucuri-scanner') => __('The greater the number of plugins installed, the greater the risk of infection and performance issues.', 'sucuri-scanner'),
-            ),
-            'lackOfBackupsPlugins' => array(
-                __('Unable to detect a popular backup plugin', 'sucuri-scanner') => __('Do you have another backup solution in place? If not, it\'s recommended that you add a backup plugin to recover your website when needed.', 'sucuri-scanner'),
             ),
             'fileEditStillEnabled' => array(
                 __('Disable file editing', 'sucuri-scanner') => __('Using "DISALLOW_FILE_EDIT" helps prevent an attacker from changing your files through WordPress backend.', 'sucuri-scanner'),
@@ -163,12 +157,12 @@ class SucuriWordPressRecommendations
         }
 
         /*
-         * Check if 2FA plugin is being used.
-         * @see https://sucuri.net/guides/wordpress-security/#pwd
+         * Check for unwanted extensions.
+         * @see https://sucuri.net/guides/wordpress-security/#apt
          *
          * NOTE: $wpPluginsInstalledName, $wpPluginsActivatedName, $wpPluginsDeactivatedName
          * are created by this feature.
-         */
+        */
         $wpPluginsInstalled = get_plugins();
         $wpPluginsActivatedName = array();
         $wpPluginsDeactivatedName = array();
@@ -180,20 +174,7 @@ class SucuriWordPressRecommendations
                 $wpPluginsDeactivatedName[] = $pluginDetails['Name'];
             }
         }
-        // phpcs:disable Generic.Files.LineLength
-        $wp2faPluginsActive = preg_grep('/(2FA|2\sFactor|Two\sFactor|Two-Factor|2-Factor|Secure\sLogin|SecSign|Authentication|Wordfence\sSecurity|iThemes\sSecurity\sPro|Limit\sLogin|LDAP)/i', $wpPluginsActivatedName);
-        if (!empty($wp2faPluginsActive)) {
-            unset($recommendations['loginUnprotected']);
-        }
-        // phpcs:enable
 
-        /*
-         * Check for unwanted extensions.
-         * @see https://sucuri.net/guides/wordpress-security/#apt
-         *
-         * NOTE: This check uses $wpPluginsDeactivatedName which is created by
-         * the 2FA plugin check.
-         */
         // phpcs:disable Generic.Files.LineLength
         if ((count(wp_get_themes()) < 2 || count($wpPluginsDeactivatedName) < 1) || is_multisite()) {
             unset($recommendations['forgottenExtension']);
@@ -207,20 +188,6 @@ class SucuriWordPressRecommendations
         if (count($wpPluginsInstalled) < 50 || is_multisite()) {
             unset($recommendations['tooMuchPlugins']);
         }
-
-        /*
-         * Check for backup plugins.
-         * @see https://sucuri.net/guides/wordpress-security/#bup
-         *
-         * NOTE: This check uses $wpPluginsInstalledName which is created by
-         * the 2FA plugin check.
-         */
-        // phpcs:disable Generic.Files.LineLength
-        $wpBackupsPluginsActive = preg_grep('/(Backup|Back-up|Migration|VaultPress|Duplicator|Snapshot|ManageWP|iControlWP|Staging|Updraft|Backwp|Recovery)/i', $wpPluginsActivatedName);
-        if (!empty($wpBackupsPluginsActive)) {
-            unset($recommendations['lackOfBackupsPlugins']);
-        }
-        // phpcs:enable
 
         /*
          * Check if File Editing was disabled.
