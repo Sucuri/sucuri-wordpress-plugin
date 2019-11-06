@@ -243,7 +243,7 @@ class SucuriWordPressRecommendations
          * @see https://sucuri.net/guides/wordpress-security/#harrec
          */
         // phpcs:disable Generic.Files.LineLength
-        if (SucuriScan::isNginxServer() || SucuriScan::isIISServer() || (SucuriScanHardening::isHardened(WP_CONTENT_DIR) && SucuriScanHardening::isHardened(ABSPATH.'/wp-includes'))) {
+        if (SucuriScan::isNginxServer() || SucuriScan::isIISServer() || SucuriScan::isBehindFirewall() || (SucuriScanHardening::isHardened(WP_CONTENT_DIR) && SucuriScanHardening::isHardened(ABSPATH.'/wp-includes'))) {
             unset($recommendations['notHardened']);
         }
         // phpcs:enable
