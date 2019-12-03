@@ -63,6 +63,8 @@
                     %%%SUCURI.Settings.Hardening.AdminUser%%%
 
                     %%%SUCURI.Settings.Hardening.FileEditor%%%
+
+                    %%%SUCURI.Settings.Hardening.SecKeyUpdater%%%
                 </div>
             </div>
 

@@ -8,7 +8,7 @@
  * Author: Sucuri Inc.
  * Text Domain: sucuri-scanner
  * Domain Path: /lang
- * Version: 1.8.22
+ * Version: 1.8.23
  *
  * PHP version 5
  *
@@ -196,8 +196,9 @@ if (!array_key_exists('SERVER_NAME', $_SERVER)) {
 }
 
 /* Load plugin translations */
-function sucuriscan_load_plugin_textdomain() {
-    load_plugin_textdomain( 'sucuri-scanner', false, basename( dirname( __FILE__ ) ) . '/lang/' );
+function sucuriscan_load_plugin_textdomain()
+{
+    load_plugin_textdomain('sucuri-scanner', false, basename(dirname(__FILE__)) . '/lang/');
 }
 add_action('plugins_loaded', 'sucuriscan_load_plugin_textdomain');
 
@@ -207,6 +208,7 @@ require_once 'src/request.lib.php';
 require_once 'src/fileinfo.lib.php';
 require_once 'src/cache.lib.php';
 require_once 'src/option.lib.php';
+require_once 'src/cron.lib.php';
 require_once 'src/event.lib.php';
 require_once 'src/hook.lib.php';
 require_once 'src/api.lib.php';

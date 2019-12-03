@@ -437,6 +437,10 @@ __('Name', 'sucuri-scanner');
 __('Value', 'sucuri-scanner');
 __('I understand that this operation cannot be reverted.', 'sucuri-scanner');
 __('Generate New Security Keys', 'sucuri-scanner');
+__('Automatic Secret Keys Updater', 'sucuri-scanner');
+__('Changing the Secret Keys frequently will decrease the chances of misuse of sessions left open on unprotected devices.', 'sucuri-scanner');
+__('Frequency:', 'sucuri-scanner');
+__('Submit', 'sucuri-scanner');
 
 // settings-scanner-cronjobs.html.tpl
 __('Scheduled Tasks', 'sucuri-scanner');

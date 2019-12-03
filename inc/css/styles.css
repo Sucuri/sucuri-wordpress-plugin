@@ -878,6 +878,23 @@ body.sucuri-security_page_sucuriscan_hardening {
 .sucuriscan-firewall-accesslog {
     word-break: break-all;
 }
+.sucuriscan-double-box {
+    margin-top: 20px;
+}
+.sucuriscan-double-box p {
+    display: inline-block;
+    width: 70%;
+    margin: 0;
+}
+.sucuriscan-double-box form {
+    margin-top: 10px;
+    width: 30%;
+    text-align: right;
+}
+.sucuriscan-double-box select {
+    padding: 5px 25px 5px 10px;
+    margin-right: 5px;
+}
 .rtl .sucuriscan-header .sucuriscan-pull-left {
     float: right;
 }
