@@ -123,7 +123,7 @@ msgid "Automatic update of security keys failed. WordPress configuration file wa
 msgstr ""
 
 #: src/cron.lib.php:51
-msgid "Automatic update of security keys successed."
+msgid "Automatic update of security keys succeeded."
 msgstr ""
 
 #: src/cron.lib.php:53
@@ -1524,11 +1524,14 @@ msgstr ""
 msgid "Disables the theme and plugin editors to prevent unwanted modifications to the code. If you are having problems reverting this please open the wp-config.php file and delete the line with the constant DISALLOW_FILE_EDIT."
 msgstr ""
 
-#: src/settings-hardening.php:572
 #: src/settings-hardening.php:573
 #: src/settings-posthack.php:158
 #: src/settings-posthack.php:159
 msgid "Automatic Secret Keys Updater enabled."
+msgstr ""
+
+#: src/settings-hardening.php:572
+msgid "Automatic Secret Keys Updater enabled. The default frequency is \"Weekly\", but you can change the frequency on Settings -> Post-Hack -> Update Secret Keys section."
 msgstr ""
 
 #: src/settings-hardening.php:575
@@ -1546,7 +1549,7 @@ msgid "Automatic Secret Keys Updater disabled."
 msgstr ""
 
 #: src/settings-hardening.php:591
-msgid "Automatic Secret Keys Update"
+msgid "Automatic Secret Keys Updater"
 msgstr ""
 
 #: src/settings-hardening.php:592

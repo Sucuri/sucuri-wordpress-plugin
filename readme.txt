@@ -192,7 +192,6 @@ This version adds an option to refresh the malware scan results on demand, as we
 
 = 1.8.23 =
 * Add Automatic Secret Keys Updater
-* Modify sucuri-scanner.pot to be updated via wp-cli i18n make-pot
 
 = 1.8.22 =
 * Add "SSL existence check" to WordPress Security Recommendations

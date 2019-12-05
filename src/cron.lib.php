@@ -48,7 +48,7 @@ class SucuriScanCrons extends SucuriScan
         if (!$wpconfig_process) {
             SucuriScanEvent::reportNoticeEvent(__('Automatic update of security keys failed. WordPress configuration file was not found.', 'sucuri-scanner'));
         } elseif ($wpconfig_process['updated']) {
-            SucuriScanEvent::reportNoticeEvent(__('Automatic update of security keys successed.', 'sucuri-scanner'));
+            SucuriScanEvent::reportNoticeEvent(__('Automatic update of security keys succeeded.', 'sucuri-scanner'));
         } else {
             SucuriScanEvent::reportNoticeEvent(__('Automatic update of security keys failed. Something went wrong!', 'sucuri-scanner'));
         }

@@ -569,7 +569,7 @@ class SucuriScanHardeningPage extends SucuriScan
         // Activate auto secret key update.
         if (self::processRequest(__FUNCTION__)) {
             if (SucuriScanEvent::addScheduledTask($cronName, $cronFrequency)) {
-                SucuriScanInterface::info(__('Automatic Secret Keys Updater enabled.', 'sucuri-scanner'));
+                SucuriScanInterface::info(__('Automatic Secret Keys Updater enabled. The default frequency is "Weekly", but you can change the frequency on Settings -> Post-Hack -> Update Secret Keys section.', 'sucuri-scanner'));
                 SucuriScanEvent::reportNoticeEvent(__('Automatic Secret Keys Updater enabled.', 'sucuri-scanner'));
             } else {
                 SucuriScanInterface::error(__('Something went wrong.', 'sucuri-scanner'));
@@ -588,7 +588,7 @@ class SucuriScanHardeningPage extends SucuriScan
         
         // Set status of auto secret key update.
         $params = array();
-        $params['Hardening.Title'] = __('Automatic Secret Keys Update', 'sucuri-scanner');
+        $params['Hardening.Title'] = __('Automatic Secret Keys Updater', 'sucuri-scanner');
         $params['Hardening.Description'] = __('Changing the Secret Keys will invalidate all existing cookies, forcing all logged in users to login again. Doing this frequently will decrease the chances of misuse of sessions left open on unprotected devices.', 'sucuri-scanner');
 
         $params['Hardening.Status'] = 0;
