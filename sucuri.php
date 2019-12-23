@@ -85,7 +85,7 @@ define('SUCURISCAN', 'sucuriscan');
 /**
  * Current version of the plugin's code.
  */
-define('SUCURISCAN_VERSION', '1.8.22');
+define('SUCURISCAN_VERSION', '1.8.23');
 
 /**
  * Defines the human readable name of the plugin.
@@ -284,7 +284,7 @@ function sucuriscanUninstall()
         /* Delete all plugin related options from the database */
         $options = $GLOBALS['wpdb']->get_results(
             'SELECT option_id, option_name FROM ' . $GLOBALS['wpdb']->options
-            . ' WHERE option_name LIKE "' . SUCURISCAN . '%"'
+                . ' WHERE option_name LIKE "' . SUCURISCAN . '%"'
         );
 
         foreach ($options as $option) {
