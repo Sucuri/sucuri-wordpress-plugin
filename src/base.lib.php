@@ -581,6 +581,77 @@ class SucuriScan
     }
 
     /**
+     * Checks whether an IPv4 address is in a CIDR range.
+     *
+     * @param string $ip Valid IPv4 address.
+     * @param string $range Valid CIDR range.
+     * @return boolean True if the IP is in the CIDR range.
+     */
+    public static function is_ipv4_addr_in_range($ip = '', $range = '')
+    {
+        if (!self::isValidIP($ip)) {
+            return false;
+        }
+
+        $range_info = self::getIPInfo($range);
+
+        $ip_addr_long = ip2long($ip);
+        $range_addr_long = ip2long($range_info['remote_addr']);
+
+        $mask = - 1 << (32 - $range_info['cidr_range']);
+
+        $range_addr_long &= $mask; /* Re-align subnet. */
+
+        return (bool) (($ip_addr_long & $mask) === $range_addr_long);
+    }
+
+    /**
+     * This function unpacks a space-padded binary string, converts it to bytes
+     * and returns it as a string.
+     *
+     * @param string $inet A binary string
+     * @return string The string representation of $inet in bytes
+     */
+    public static function inet_to_bytes($inet) {
+        $unpacked = unpack('A*', $inet);
+        $unpacked = str_split($unpacked[1]);
+
+        $ip_bits = "";
+
+        foreach ($unpacked as $char) {
+            $ip_bits .= str_pad(decbin(ord($char)), 8, '0', STR_PAD_LEFT);
+        }
+
+        return $ip_bits;
+    }
+
+    /**
+     * Checks whether an IPv6 address is in a CIDR range.
+     *
+     * @param string $ip Valid IPv6 address.
+     * @param string $range Valid CIDR range.
+     * @return boolean True if the IP is in the CIDR range.
+     */
+    public static function is_ipv6_addr_in_range($ip = '', $range = '') {
+        if (!self::isValidIP($ip)) {
+            return false;
+        }
+
+        $range_info = self::getIPInfo($range);
+
+        $ip_binary = inet_pton($ip);
+        $ip_bits = self::inet_to_bytes($ip_binary);
+
+        $range_binary = inet_pton($range_info['remote_addr']);
+        $range_bits = self::inet_to_bytes($range_binary);
+
+        $ip_net_bits = substr($ip_bits, 0, $range_info['cidr_range']);
+        $range_net_bits = substr($range_bits, 0, $range_info['cidr_range']);
+
+        return (bool) ($ip_net_bits === $range_net_bits);
+    }
+
+    /**
      * Checks if the server IP is part of the Firewall network.
      *
      * Assumming that the website is being protected by the Sucuri Firewall, we
@@ -595,11 +666,36 @@ class SucuriScan
             return false;
         }
 
-        if (SucuriScanFirewall::getKey()
-            || preg_match('/^192\.88\.13[45]/', $_SERVER['REMOTE_ADDR'])
-            || preg_match('/^185\.93\.(228|229|230|231)/', $_SERVER['REMOTE_ADDR'])
-        ) {
+        if (SucuriScanFirewall::getKey()) {
             return true;
+        }
+
+        if (!array_key_exists('HTTP_X_REAL_IP', $_SERVER)) {
+            return false;
+        }
+
+        $firewall_ranges = array(
+            '192.88.134.0/23',
+            '185.93.228.0/22',
+            '66.248.200.0/22',
+            '208.109.0.0/22',
+            '2a02:fe80::/29',
+        );
+
+        foreach ($firewall_ranges as $range) {
+            $range_info = self::getIPInfo($range);
+
+            if (@filter_var($range_info['remote_addr'], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+                if (self::is_ipv4_addr_in_range($_SERVER['HTTP_X_REAL_IP'], $range)) {
+                    return true;
+                }
+            }
+
+            if (@filter_var($range_info['remote_addr'], FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+                if (self::is_ipv6_addr_in_range($_SERVER['HTTP_X_REAL_IP'], $range)) {
+                    return true;
+                }
+            }
         }
 
         return false;
