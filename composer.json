@@ -1,0 +1,10 @@
+{
+    "name": "sucuri/sucuri-wordpress-plugin",
+    "description": "The Sucuri WordPress Security plugin is a security toolset for security integrity monitoring, malware detection and security hardening.",
+    "license": "GPLv2",
+    "minimum-stability": "dev",
+    "require": {},
+    "require-dev": {
+        "10up/wpacceptance": "dev-master"
+    }
+}
