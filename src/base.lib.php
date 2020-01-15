@@ -581,32 +581,20 @@ class SucuriScan
     }
 
     /**
-     * Checks if the server IP is part of the Firewall network.
+     * Checks the existence of the HTTP_X_SUCURI_CLIENTIP header in the request headers
      *
-     * Assumming that the website is being protected by the Sucuri Firewall, we
-     * will check if the client IP address is part of the range of addresses
-     * that we know are ours.
+     * Once active, the Sucuri Firewall sends custom headers to the server with information
+     * about the original request.
      *
-     * @return boolean True if the website is using one of our IP addresses.
+     * @return boolean True if the website is being reached with our HTTP_X_SUCURI_CLIENTIP header.
      */
-    private static function isFirewallAddr()
+    private static function hasSucuriClientIPHeader()
     {
-        if (!array_key_exists('HTTP_X_SUCURI_CLIENTIP', $_SERVER)) {
-            return false;
-        }
-
-        if (SucuriScanFirewall::getKey()
-            || preg_match('/^192\.88\.13[45]/', $_SERVER['REMOTE_ADDR'])
-            || preg_match('/^185\.93\.(228|229|230|231)/', $_SERVER['REMOTE_ADDR'])
-        ) {
-            return true;
-        }
-
-        return false;
+        return array_key_exists('HTTP_X_SUCURI_CLIENTIP', $_SERVER);
     }
 
     /**
-     * Check whether the site is behind the firewall network.
+     * Checks whether the site is behind the firewall network.
      *
      * @param  bool $verbose Return array with HTTP and HOST information.
      * @return array|bool    True if the firewall is in use, false otherwise.
@@ -614,7 +602,7 @@ class SucuriScan
     public static function isBehindFirewall($verbose = false)
     {
         if (!$verbose) {
-            return (bool) self::isFirewallAddr();
+            return (bool) self::hasSucuriClientIPHeader();
         }
 
         $http_host = self::getTopLevelDomain();
@@ -622,7 +610,7 @@ class SucuriScan
         $host_by_name = @gethostbyaddr($host_by_addr);
 
         return array(
-            'status' => self::isFirewallAddr(),
+            'status' => self::hasSucuriClientIPHeader(),
             'http_host' => self::getTopLevelDomain(),
             'host_name' => $host_by_name,
             'host_addr' => $host_by_addr,
