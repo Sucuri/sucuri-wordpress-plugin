@@ -41,5 +41,22 @@
 
             <input type="submit" value="{{Generate New Security Keys}}" class="button button-primary" />
         </form>
+
+        <div class="sucuriscan-double-box sucuriscan-hstatus sucuriscan-hstatus-%%SUCURI.SecurityKeys.AutoStatusNum%%">
+            <p>
+                <strong>{{Automatic Secret Keys Updater}}</strong> &mdash; %%SUCURI.SecurityKeys.AutoStatus%%<br />
+                {{Changing the Secret Keys frequently will decrease the chances of misuse of sessions left open on unprotected devices.}}
+            </p>
+
+            <form action="%%SUCURI.URL.Settings%%#posthack" method="post">
+                <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
+                <input type="hidden" name="sucuriscan_autoseckeyupdater" value="1" />
+                <label><strong>{{Frequency:}}</strong></label>
+                <select name="sucuriscan_autoseckeyupdater_frequency">
+                    %%%SUCURI.SecurityKeys.Schedules%%%
+                </select>
+                <input type="submit" value="{{Submit}}" class="button button-primary" />
+            </form>
+        </div>
     </div>
 </div>

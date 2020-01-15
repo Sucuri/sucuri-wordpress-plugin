@@ -155,6 +155,7 @@ function sucuriscan_settings_page()
     $params['Settings.Hardening.Readme'] = SucuriScanHardeningPage::readme();
     $params['Settings.Hardening.AdminUser'] = SucuriScanHardeningPage::adminuser();
     $params['Settings.Hardening.FileEditor'] = SucuriScanHardeningPage::fileeditor();
+    $params['Settings.Hardening.SecKeyUpdater'] = SucuriScanHardeningPage::autoSecretKeyUpdater();
     $params['Settings.Hardening.WhitelistPHPFiles'] = SucuriScanHardeningPage::whitelistPHPFiles();
 
     /* settings - posthack */

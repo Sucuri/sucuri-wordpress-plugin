@@ -70,6 +70,28 @@ if (defined('SUCURISCAN')) {
     }
 
     /**
+     * Add cronjob weekly, monthly and quarterly frequencies.
+     */
+    add_filter('cron_schedules', 'SucuriScanEvent::additionalSchedulesFrequencies');
+
+    /**
+     * Add cronjob hooks methods.
+     *
+     * This is necessary because using add_action inside the feature class/method
+     * will not be persistent. The hooks must be declared on every page load.
+     */
+    foreach (SucuriScanEvent::activeSchedules() as $hook => $details) {
+        if (substr($hook, 0, strlen('sucuriscan_')) === 'sucuriscan_') {
+            if (!has_action($hook)) {
+                $methodLocation = array('SucuriScanCrons', $hook);
+                if (method_exists($methodLocation[0], $methodLocation[1])) {
+                    add_action($hook, $methodLocation);
+                }
+            }
+        }
+    }
+
+    /**
      * List an associative array with the sub-pages of this plugin.
      *
      * @return array List of sub-pages of this plugin.

@@ -114,6 +114,61 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
             }
         }
 
+        // Automatic Secret Keys Updater
+        $cronName = 'sucuriscan_autoseckeyupdater';
+        $params['SecurityKeys.AutoStatusNum'] = 0;
+        $params['SecurityKeys.AutoStatus'] = "Disabled";
+        $params['SecurityKeys.Schedules'] = '';
+        $availableSchedules = array('disabled', 'daily', 'weekly', 'monthly', 'quarterly');
+
+        // Populate frequency selection box
+        foreach ($availableSchedules as $freq) {
+            $params['SecurityKeys.Schedules'] .= sprintf('<option value="%s">%s</option>', $freq, ucfirst($freq));
+        }
+        // Set to enabled if cron is found
+        if (wp_next_scheduled($cronName)) {
+            $params['SecurityKeys.AutoStatusNum'] = 1;
+            $params['SecurityKeys.AutoStatus'] = "Enabled";
+        }
+
+        // Activate/Deactivate the Automatic Secret Keys Updater
+        if (SucuriScanInterface::checkNonce() && SucuriScanRequest::post(':autoseckeyupdater')) {
+            $cronFrequency = SucuriScanRequest::post(':autoseckeyupdater_frequency');
+
+            // Deny action if cron frequency is invalid
+            if (empty($cronFrequency) || !in_array($cronFrequency, array_keys($availableSchedules))) {
+                SucuriScanInterface::error(__('No frequency selected for the automatic secret key updater.', 'sucuri-scanner'));
+            } elseif ($cronFrequency === "disabled") {
+                // Disable Automatic Secret Keys Updater
+                if (SucuriScanEvent::deleteScheduledTask($cronName)) {
+                    $params['SecurityKeys.Schedules'] = str_replace('option value="'.$cronFrequency.'"', 'option value="'.$cronFrequency.'" selected', $params['SecurityKeys.Schedules']);
+                    $params['SecurityKeys.AutoStatusNum'] = 0;
+                    $params['SecurityKeys.AutoStatus'] = "Disabled";
+                    SucuriScanInterface::info(__('Automatic Secret Keys Updater disabled.', 'sucuri-scanner'));
+                    SucuriScanEvent::reportNoticeEvent(__('Automatic Secret Keys Updater disabled.', 'sucuri-scanner'));
+                } else {
+                    SucuriScanInterface::error(__('Something went wrong.', 'sucuri-scanner'));
+                }
+            } else {
+                // Enable Automatic Secret Keys Updater
+                if (SucuriScanEvent::addScheduledTask($cronName, $cronFrequency)) {
+                    $params['SecurityKeys.Schedules'] = str_replace('option value="'.$cronFrequency.'"', 'option value="'.$cronFrequency.'" selected', $params['SecurityKeys.Schedules']);
+                    $params['SecurityKeys.AutoStatusNum'] = 1;
+                    $params['SecurityKeys.AutoStatus'] = "Enabled";
+                    SucuriScanInterface::info(__('Automatic Secret Keys Updater enabled.', 'sucuri-scanner'));
+                    SucuriScanEvent::reportNoticeEvent(__('Automatic Secret Keys Updater enabled.', 'sucuri-scanner'));
+                } else {
+                    SucuriScanInterface::error(__('Something went wrong.', 'sucuri-scanner'));
+                }
+            }
+        } else {
+            // Re-order selection box with the current cron frequency
+            if (wp_next_scheduled($cronName)) {
+                $currentCronFrequency = SucuriScanEvent::activeSchedules()[$cronName]['schedule'];
+                $params['SecurityKeys.Schedules'] = str_replace('option value="'.$currentCronFrequency.'"', 'option value="'.$currentCronFrequency.'" selected', $params['SecurityKeys.Schedules']);
+            }
+        }
+
         return SucuriScanTemplate::getSection('settings-posthack-security-keys', $params);
     }
 
@@ -252,8 +307,8 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
         $allPlugins = SucuriScanAPI::getPlugins();
 
         foreach ($allPlugins as $plugin_path => $plugin_data) {
-            $plugin_type_class = ( $plugin_data['PluginType'] == 'free' ) ? 'primary' : 'warning';
-            $input_disabled = ( $plugin_data['PluginType'] == 'free' ) ? '' : 'disabled="disabled"';
+            $plugin_type_class = ($plugin_data['PluginType'] == 'free') ? 'primary' : 'warning';
+            $input_disabled = ($plugin_data['PluginType'] == 'free') ? '' : 'disabled="disabled"';
             $plugin_status_class = $plugin_data['IsPluginActive'] ? 'success' : 'default';
             $plugin_status = $plugin_data['IsPluginActive'] ? 'active' : 'not active';
 

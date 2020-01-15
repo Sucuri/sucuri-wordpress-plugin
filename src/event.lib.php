@@ -98,6 +98,109 @@ class SucuriScanEvent extends SucuriScan
     }
 
     /**
+     * Returns a list of active cronjobs.
+     *
+     * This method will return not only the default WordPress cronjobs but also
+     * the custom ones defined by 3rd-party plugins or themes.
+     *
+     * @see https://developer.wordpress.org/reference/functions/_get_cron_array/
+     *
+     * @return array List of available cronjobs.
+     */
+    public static function activeSchedules()
+    {
+        $activeCrons = array();
+        foreach ((array) _get_cron_array() as $timestamp => $cronhooks) {
+            foreach ((array) $cronhooks as $hook => $events) {
+                foreach ((array) $events as $key => $event) {
+                    if (empty($event['args'])) {
+                        $event['args'] = array('[]');
+                    }
+                    $activeCrons[$hook] = array(
+                        'schedule' => $event['schedule'],
+                        'nextTime' => SucuriScan::datetime($timestamp),
+                        'nextTimeHuman' => SucuriScan::humanTime($timestamp),
+                        'arguments' => SucuriScan::implode(', ', $event['args']),
+                    );
+                }
+            }
+        }
+        return $activeCrons;
+    }
+
+    /**
+     * Creates the cronjob weekly, monthly and quarterly frequencies.
+     *
+     * A few Sucuri services require additional cronjob frequencies that are not
+     * available on WordPress by default. This function will add these schedules
+     * frequency if they were not yet register by any a 3rd party extension.
+     *
+     * @return void
+     */
+    public static function additionalSchedulesFrequencies($schedules)
+    {
+        if (!isset($schedules['weekly'])) {
+            $schedules['weekly'] = array(
+                'display' => __('Weekly', 'sucuriscan'),
+                'interval' => WEEK_IN_SECONDS,
+            );
+        }
+        if (!isset($schedules['monthly'])) {
+            $schedules['monthly'] = array(
+                'display' => __('Monthly', 'sucuriscan'),
+                'interval' => MONTH_IN_SECONDS,
+            );
+        }
+        if (!isset($schedules['quarterly'])) {
+            $schedules['quarterly'] = array(
+                'display' => __('Quarterly', 'sucuriscan'),
+                'interval' => 3 * MONTH_IN_SECONDS,
+            );
+        }
+        return $schedules;
+    }
+
+    /**
+     * Creates a cronjob.
+     *
+     * @return bool True if the cronjob is correctly created.
+     */
+    public static function addScheduledTask($hookName, $frequency)
+    {
+        // Return false if schedule frequency does not exist.
+        if (!in_array($frequency, array_keys(self::availableSchedules()))) {
+            return false;
+        }
+
+        // Remove cron first if already exists.
+        if (wp_next_scheduled($hookName)) {
+            self::deleteScheduledTask($hookName);
+        }
+
+        // Add cron job hook.
+        wp_schedule_event(time() + 10, $frequency, $hookName);
+        return true;
+    }
+
+    /**
+     * Deletes a cronjob.
+     *
+     * @return bool True if the cronjob is correctly removed.
+     */
+    public static function deleteScheduledTask($hookName)
+    {
+        // Return false if task does not exist.
+        if (!wp_next_scheduled($hookName)) {
+            return false;
+        }
+
+        // Remove cron job hook.
+        wp_clear_scheduled_hook($hookName);
+
+        return true;
+    }
+
+    /**
      * Reports the WordPress version number to the API.
      *
      * @return bool True if the version number was reported, false otherwise.
@@ -355,7 +458,9 @@ class SucuriScanEvent extends SucuriScan
      */
     private static function reportEvent($severity = 0, $message = '')
     {
-        if (!function_exists('wp_get_current_user')) return;
+        if (!function_exists('wp_get_current_user')) {
+            return;
+        }
 
         $user = wp_get_current_user();
         $remote_ip = self::getRemoteAddr();
@@ -725,12 +830,12 @@ class SucuriScanEvent extends SucuriScan
 
     /**
      * Clear last logins or failed login logs.
-     * 
+     *
      * This can also be done via Sucuri Security -> Settings -> Data Storage,
      * however to improve the user experience, a button on Last Logins  and on
      * Failed logins sections was added and it triggers the removal of
      * sucuri/sucuri-lastlogins.php and sucuri/sucuri-failedlogins.php.
-     * 
+     *
      * @param string $filename Name of the file to be deleted.
      *
      * @return HTML Message with the delete action outcome.

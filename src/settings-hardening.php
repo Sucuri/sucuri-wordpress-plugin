@@ -553,6 +553,58 @@ class SucuriScanHardeningPage extends SucuriScan
     }
 
     /**
+     * Checks if the Automatic Secret Keys Updater is enabled.
+     *
+     * Changing the Secret Keys will invalidate all existing cookies, forcing all
+     * logged in users to login again. Doing this frequently will decrease the
+     * chances of misuse of sessions left open on unprotected devices.
+     *
+     * @return string HTML code with the replaced template variables
+     */
+    public static function autoSecretKeyUpdater()
+    {
+        $cronName = 'sucuriscan_autoseckeyupdater';
+        $cronFrequency = 'weekly';
+
+        // Activate auto secret key update.
+        if (self::processRequest(__FUNCTION__)) {
+            if (SucuriScanEvent::addScheduledTask($cronName, $cronFrequency)) {
+                SucuriScanInterface::info(__('Automatic Secret Keys Updater enabled. The default frequency is "Weekly", but you can change the frequency on Settings -> Post-Hack -> Update Secret Keys section.', 'sucuri-scanner'));
+                SucuriScanEvent::reportNoticeEvent(__('Automatic Secret Keys Updater enabled.', 'sucuri-scanner'));
+            } else {
+                SucuriScanInterface::error(__('Something went wrong.', 'sucuri-scanner'));
+            }
+        }
+
+        // Deactivate auto secret key update.
+        if (self::processRequest(__FUNCTION__ . '_revert')) {
+            if (SucuriScanEvent::deleteScheduledTask($cronName)) {
+                SucuriScanInterface::info(__('Automatic Secret Keys Updater disabled.', 'sucuri-scanner'));
+                SucuriScanEvent::reportNoticeEvent(__('Automatic Secret Keys Updater disabled.', 'sucuri-scanner'));
+            } else {
+                SucuriScanInterface::error(__('Something went wrong.', 'sucuri-scanner'));
+            }
+        }
+        
+        // Set status of auto secret key update.
+        $params = array();
+        $params['Hardening.Title'] = __('Automatic Secret Keys Updater', 'sucuri-scanner');
+        $params['Hardening.Description'] = __('Changing the Secret Keys will invalidate all existing cookies, forcing all logged in users to login again. Doing this frequently will decrease the chances of misuse of sessions left open on unprotected devices.', 'sucuri-scanner');
+
+        $params['Hardening.Status'] = 0;
+        $params['Hardening.FieldName'] = __FUNCTION__;
+        $params['Hardening.FieldText'] = __('Apply Hardening', 'sucuri-scanner');
+
+        if (wp_next_scheduled($cronName)) {
+            $params['Hardening.Status'] = 1;
+            $params['Hardening.FieldName'] = __FUNCTION__.'_revert';
+            $params['Hardening.FieldText'] = __('Revert Hardening', 'sucuri-scanner');
+        }
+
+        return self::drawSection($params);
+    }
+
+    /**
      * Whitelist individual PHP files.
      *
      * Allows an admin to whitelist individual PHP files after the directory has
