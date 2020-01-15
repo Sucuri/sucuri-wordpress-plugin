@@ -254,10 +254,7 @@ class SucuriScanAuditLogs
             }
         }
 
-        $cache = new SucuriScanCache('auditqueue');
-        $finfo = $cache->getDatastoreInfo();
-        $events = $cache->getAll();
-        $response['queueSize'] = count($events);
+        $response['queueSize'] = $auditlogs['total_entries'];
 
         wp_send_json($response, 200);
     }
