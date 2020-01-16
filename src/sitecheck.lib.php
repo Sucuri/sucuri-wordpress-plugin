@@ -129,7 +129,7 @@ class SucuriScanSiteCheck extends SucuriScanAPI
         $cache->delete('scan_results');
 
         /* send HTTP request to SiteCheck's API service. */
-        $results = self::runMalwareScan();
+        $results = self::runMalwareScan(true);
 
         /* check for error in the request's response. */
         if (is_string($results) || isset($results['SYSTEM']['ERROR'])) {
