@@ -10,5 +10,5 @@
 
     <td class="sucuriscan-monospace">%%SUCURI.LoggedInUsers.RemoteAddr%%</td>
 
-    <td><a href="%%SUCURI.LoggedInUsers.UserURL%%" target="_blank">{{Edit}}</a></td>
+    <td><a href="%%SUCURI.LoggedInUsers.UserURL%%" target="_blank">{{Edit User Profile}}</a></td>
 </tr>

@@ -75,7 +75,8 @@ __('Delete', 'sucuri-scanner');
 __('Submit', 'sucuri-scanner');
 __('Loading...', 'sucuri-scanner');
 __('IP Address Access', 'sucuri-scanner');
-__('This tool allows you to whitelist and blacklist one or more IP addresses from accessing your website. You can also configure the plugin to automatically blacklist any IP address involved in a password guessing brute-force attack. If a legitimate user fails to submit the correct credentials of their account they will have to log into the Firewall dashboard in order to delete their IP address from the blacklist, or try to login once again through a VPN.', 'sucuri-scanner');
+__('This tool allows you to blacklist one or more IP addresses from accessing your website.', 'sucuri-scanner');
+__('To delete an IP from the blacklist you can use the form below or you can log into the Firewall dashboard.', 'sucuri-scanner');
 __('Blacklist IP:', 'sucuri-scanner');
 __('e.g. 192.168.1.54', 'sucuri-scanner');
 __('IP Address', 'sucuri-scanner');
@@ -159,7 +160,7 @@ __('Newest To Oldest', 'sucuri-scanner');
 __('no data available', 'sucuri-scanner');
 __('IP Address', 'sucuri-scanner');
 __('Date/Time', 'sucuri-scanner');
-__('Edit', 'sucuri-scanner');
+__('Edit User Profile', 'sucuri-scanner');
 
 // lastlogins-all.html.tpl
 __('Successful Logins (all)', 'sucuri-scanner');
@@ -169,7 +170,7 @@ __('IP Address', 'sucuri-scanner');
 __('Hostname', 'sucuri-scanner');
 __('Date/Time', 'sucuri-scanner');
 __('no data available', 'sucuri-scanner');
-__('Delete', 'sucuri-scanner');
+__('Delete All Successful Logins', 'sucuri-scanner');
 
 // lastlogins-all.snippet.tpl
 __('Edit', 'sucuri-scanner');
@@ -183,7 +184,7 @@ __('Date/Time', 'sucuri-scanner');
 __('Web Browser', 'sucuri-scanner');
 __('no data available', 'sucuri-scanner');
 __('Block', 'sucuri-scanner');
-__('Delete', 'sucuri-scanner');
+__('Delete All Failed Logins', 'sucuri-scanner');
 
 // lastlogins-loggedin.html.tpl
 __('Logged-in Users}', 'sucuri-scanner');
@@ -195,7 +196,7 @@ __('Registered', 'sucuri-scanner');
 __('IP Address', 'sucuri-scanner');
 
 // lastlogins-loggedin.snippet.tpl
-__('Edit', 'sucuri-scanner');
+__('Edit User Profile', 'sucuri-scanner');
 __('Website:', 'sucuri-scanner');
 __('IP Address:', 'sucuri-scanner');
 __('Reverse IP:', 'sucuri-scanner');

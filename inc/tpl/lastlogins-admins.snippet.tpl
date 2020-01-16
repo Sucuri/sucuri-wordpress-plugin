@@ -24,6 +24,6 @@
     </td>
 
     <td>
-        <a href="%%SUCURI.AdminUsers.UserURL%%" target="_blank" class="button button-primary" rel="noopener">{{Edit}}</a>
+        <a href="%%SUCURI.AdminUsers.UserURL%%" target="_blank" class="button button-primary" rel="noopener">{{Edit User Profile}}</a>
     </td>
 </tr>
