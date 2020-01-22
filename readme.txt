@@ -192,6 +192,9 @@ This version adds an option to refresh the malware scan results on demand, as we
 
 = 1.8.23 =
 * Add Automatic Secret Keys Updater
+* Improve button's and link's messaging on Last Logins sections
+* Improve messaging on Hardening page
+* Improve messaging on IP Access page
 
 = 1.8.22 =
 * Add "SSL existence check" to WordPress Security Recommendations
