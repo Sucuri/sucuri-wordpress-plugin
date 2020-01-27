@@ -232,30 +232,15 @@ class SucuriScanCache extends SucuriScan
      * @param  bool $onlyInfo Returns the cache headers and no content.
      * @return array          Rainbow table with the key names and decoded values.
      */
-    private function getDatastoreContent($assoc = false, $onlyInfo = false)
+    private function getDatastoreContent($assoc = false)
     {
         $object = array();
-        $object['info'] = array();
+        $object['info'] = $this->getDatastoreInfo();
         $object['entries'] = array();
         $lines = SucuriScanFileInfo::fileLines($this->datastore_path);
 
         if (is_array($lines) && !empty($lines)) {
             foreach ($lines as $line) {
-                if (strpos($line, "//\x20") === 0
-                    && strpos($line, '=') !== false
-                    && $line[strlen($line) - 1] === ';'
-                ) {
-                    $section = substr($line, 3, strlen($line) - 4);
-                    list($header, $value) = explode('=', $section, 2);
-                    $object['info'][$header] = $value;
-                    continue;
-                }
-
-                /* skip content */
-                if ($onlyInfo) {
-                    continue;
-                }
-
                 if (strpos($line, ':') !== false) {
                     list($keyname, $value) = explode(':', $line, 2);
                     $object['entries'][$keyname] = @json_decode($value, $assoc);
@@ -280,23 +265,41 @@ class SucuriScanCache extends SucuriScan
      */
     public function getDatastoreInfo()
     {
-        $finfo = $this->getDatastoreContent(false, true);
+        $finfo = array();
 
-        if (empty($finfo['info'])) {
+        $datastore_handle = @fopen($this->datastore_path, 'r');
+
+        if (!$datastore_handle) {
             return false;
         }
 
-        $finfo['info']['fpath'] = $this->datastore_path;
+        while (($line = fgets($datastore_handle, 4096)) !== false) {
+            $line = trim($line);
 
-        if (!isset($finfo['info']['created_on'])) {
-            $finfo['info']['created_on'] = time();
+            if (strpos($line, "//\x20") === 0
+                && strpos($line, '=') !== false
+                && $line[strlen($line) - 1] === ';'
+            ) {
+                $section = substr($line, 3, strlen($line) - 4);
+                list($header, $value) = explode('=', $section, 2);
+                $finfo[$header] = $value;
+                continue;
+            }
+
+            if(strpos($line, "exit(0);\n") === 0) {
+                break; /* No more info */
+            }
         }
 
-        if (!isset($finfo['info']['updated_on'])) {
-            $finfo['info']['updated_on'] = time();
+        fclose($datastore_handle);
+
+        if (empty($finfo)) {
+            return false;
         }
 
-        return $finfo['info'];
+        $finfo['fpath'] = $this->datastore_path;
+
+        return $finfo;
     }
 
     /**
