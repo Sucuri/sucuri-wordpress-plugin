@@ -286,18 +286,22 @@ class SucuriScanCache extends SucuriScan
                 continue;
             }
 
-            if(strpos($line, "exit(0);\n") === 0) {
+            if(strpos($line, "exit(0);") !== false) {
                 break; /* No more info */
             }
         }
 
         fclose($datastore_handle);
 
-        if (empty($finfo)) {
-            return false;
+        $finfo['fpath'] = $this->datastore_path;
+
+        if (!isset($finfo['created_on'])) {
+            $finfo['created_on'] = time();
         }
 
-        $finfo['fpath'] = $this->datastore_path;
+        if (!isset($finfo['updated_on'])) {
+            $finfo['updated_on'] = time();
+        }   
 
         return $finfo;
     }
