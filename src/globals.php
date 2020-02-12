@@ -75,21 +75,9 @@ if (defined('SUCURISCAN')) {
     add_filter('cron_schedules', 'SucuriScanEvent::additionalSchedulesFrequencies');
 
     /**
-     * Add cronjob hooks methods.
-     *
-     * This is necessary because using add_action inside the feature class/method
-     * will not be persistent. The hooks must be declared on every page load.
+     * Hook the sucuriscan_autoseckeyupdater cron job.
      */
-    foreach (SucuriScanEvent::activeSchedules() as $hook => $details) {
-        if (substr($hook, 0, strlen('sucuriscan_')) === 'sucuriscan_') {
-            if (!has_action($hook)) {
-                $methodLocation = array('SucuriScanCrons', $hook);
-                if (method_exists($methodLocation[0], $methodLocation[1])) {
-                    add_action($hook, $methodLocation);
-                }
-            }
-        }
-    }
+    add_action('sucuriscan_autoseckeyupdater', 'SucuriScanCrons::sucuriscan_autoseckeyupdater');
 
     /**
      * List an associative array with the sub-pages of this plugin.

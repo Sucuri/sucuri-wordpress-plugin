@@ -120,7 +120,7 @@ class SucuriScanEvent extends SucuriScan
                         'schedule' => $event['schedule'],
                         'nextTime' => SucuriScan::datetime($timestamp),
                         'nextTimeHuman' => SucuriScan::humanTime($timestamp),
-                        'arguments' => SucuriScan::implode(', ', $event['args']),
+                        'arguments' => json_encode($event['args']),
                     );
                 }
             }

@@ -183,6 +183,10 @@ class SucuriScan
      */
     public static function humanTime($time = 0)
     {
+        if (!is_numeric($time)) {
+            return 'N/A';
+        }
+
         $now = time();
 
         if ($time === $now) {
