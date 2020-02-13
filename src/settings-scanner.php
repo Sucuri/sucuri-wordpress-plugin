@@ -168,7 +168,7 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
                             'Cronjob.Schedule' => $event['schedule'],
                             'Cronjob.NextTime' => SucuriScan::datetime($timestamp),
                             'Cronjob.NextTimeHuman' => SucuriScan::humanTime($timestamp),
-                            'Cronjob.Arguments' => SucuriScan::implode(', ', $event['args']),
+                            'Cronjob.Arguments' => json_encode($event['args']),
                         )
                     );
                 }

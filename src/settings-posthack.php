@@ -164,8 +164,13 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
         } else {
             // Re-order selection box with the current cron frequency
             if (wp_next_scheduled($cronName)) {
-                $currentCronFrequency = SucuriScanEvent::activeSchedules()[$cronName]['schedule'];
-                $params['SecurityKeys.Schedules'] = str_replace('option value="'.$currentCronFrequency.'"', 'option value="'.$currentCronFrequency.'" selected', $params['SecurityKeys.Schedules']);
+                $activeSchedules = SucuriScanEvent::activeSchedules();
+
+                if ( isset($activeSchedules[$cronName]) && isset($activeSchedules[$cronName]['schedule'])) {
+                    $currentCronFrequency = $activeSchedules[$cronName]['schedule'];
+
+                    $params['SecurityKeys.Schedules'] = str_replace('option value="'.$currentCronFrequency.'"', 'option value="'.$currentCronFrequency.'" selected', $params['SecurityKeys.Schedules']);
+                }
             }
         }
 
