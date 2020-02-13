@@ -168,9 +168,9 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
 
                 if ( isset($activeSchedules[$cronName]) && isset($activeSchedules[$cronName]['schedule'])) {
                     $currentCronFrequency = $activeSchedules[$cronName]['schedule'];
-                }
 
-                $params['SecurityKeys.Schedules'] = str_replace('option value="'.$currentCronFrequency.'"', 'option value="'.$currentCronFrequency.'" selected', $params['SecurityKeys.Schedules']);
+                    $params['SecurityKeys.Schedules'] = str_replace('option value="'.$currentCronFrequency.'"', 'option value="'.$currentCronFrequency.'" selected', $params['SecurityKeys.Schedules']);
+                }
             }
         }
 
