@@ -139,6 +139,9 @@ class SucuriScanEvent extends SucuriScan
      */
     public static function additionalSchedulesFrequencies($schedules)
     {
+        if (!defined('MONTH_IN_SECONDS')) {
+            define('MONTH_IN_SECONDS', 30 * DAY_IN_SECONDS);
+        }
         if (!isset($schedules['weekly'])) {
             $schedules['weekly'] = array(
                 'display' => __('Weekly', 'sucuriscan'),

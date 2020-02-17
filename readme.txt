@@ -193,6 +193,7 @@ This version adds an option to refresh the malware scan results on demand, as we
 = 1.8.24 =
 * Fix warning caused by humanTime function
 * Fix fatal error caused by cron jobs with nested arguments
+* Fix notice caused by lack of MONTH_IN_SECONDS constant introduced only on WP 4.4
 
 = 1.8.23 =
 * Add Automatic Secret Keys Updater
