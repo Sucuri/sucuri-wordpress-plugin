@@ -11,7 +11,7 @@
             <form action="%%SUCURI.URL.Settings%%" method="post">
                 <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
                 <input type="hidden" name="sucuriscan_dns_lookups" value="%%SUCURI.DnsLookupsSwitchValue%%" />
-                <button type="submit" class="button button-primary">%%SUCURI.DnsLookupsSwitchText%%</button>
+                <button type="submit" class="button button-primary" data-cy="sucuriscan_ip_address_discovery_toggle_submit">%%SUCURI.DnsLookupsSwitchText%%</button>
             </form>
         </div>
 
@@ -20,10 +20,10 @@
 
             <fieldset class="sucuriscan-clearfix">
                 <label>{{HTTP Header:}}</label>
-                <select name="sucuriscan_addr_header">
+                <select name="sucuriscan_addr_header" data-cy="sucuriscan_addr_header_select">
                     %%%SUCURI.AddrHeaderOptions%%%
                 </select>
-                <button type="submit" class="button button-primary">{{Proceed}}</button>
+                <button type="submit" class="button button-primary" data-cy="sucuriscan_addr_header_proceed">{{Proceed}}</button>
             </fieldset>
 
             <div class="sucuriscan-hstatus sucuriscan-hstatus-2 sucuriscan-monospace">

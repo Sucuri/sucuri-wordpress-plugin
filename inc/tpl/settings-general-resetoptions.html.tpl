@@ -10,11 +10,11 @@
             <p>
                 <label>
                     <input type="hidden" name="sucuriscan_process_form" value="0" />
-                    <input type="checkbox" name="sucuriscan_process_form" value="1" />
+                    <input type="checkbox" name="sucuriscan_process_form" value="1" data-cy="sucuriscan_reset_checkbox" />
                     <span>{{I understand that this operation cannot be reverted.}}</span>
                 </label>
             </p>
-            <button type="submit" name="sucuriscan_reset_options" class="button button-primary">{{Submit}}</button>
+            <button type="submit" name="sucuriscan_reset_options" class="button button-primary" data-cy="sucuriscan_reset_submit">{{Submit}}</button>
         </form>
     </div>
 </div>

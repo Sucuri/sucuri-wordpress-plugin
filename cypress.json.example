@@ -1,0 +1,7 @@
+{
+  "baseUrl": "http://localhost:8888/",
+  "env": {
+    "wp_user": "admin",
+    "wp_pass": "password"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "sucuri-scanner",
+  "version": "1.0.0",
+  "description": "=== Sucuri Security - Auditing, Malware Scanner and Security Hardening === Contributors: dd@sucuri.net Donate Link: https://sucuri.net/ Tags: malware, security, firewall, scan, spam, virus, sucuri, protection, blacklist, detection, hardening, file integrity Requires at least: 3.6 Tested up to: 5.3.2 Stable tag: 1.8.23",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/imgerson/sucuri-wordpress-plugin.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/imgerson/sucuri-wordpress-plugin/issues"
+  },
+  "homepage": "https://github.com/imgerson/sucuri-wordpress-plugin#readme",
+  "devDependencies": {
+    "cypress": "^5.2.0"
+  }
+}

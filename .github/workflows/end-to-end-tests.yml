@@ -1,0 +1,57 @@
+name: End-to-end tests
+
+on:
+  push:
+    branches:
+      - add-e2e-tests
+
+jobs:
+  e2e-tests:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+
+      - name: Log debug information
+        run: |
+          npm --version
+          node --version
+          curl --version
+          git --version
+          svn --version
+          php --version
+          php -i
+          locale -a
+
+      - name: Install NodeJS
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+
+      - name: Install Dependencies
+        run: |
+          npm install -g @wordpress/env
+          npm install -g cypress
+
+      - name: Start Docker environment
+        run: wp-env start
+
+      - name: Log running Docker containers
+        run: docker ps -a
+
+      - name: General debug information
+        run: |
+          npm --version
+          node --version
+          curl --version
+          git --version
+          svn --version
+
+      - name: Docker debug information
+        run: docker -v
+
+      - name: Run E2E tests
+        run: |
+          cp cypress.json.example cypress.json
+          npx cypress run
