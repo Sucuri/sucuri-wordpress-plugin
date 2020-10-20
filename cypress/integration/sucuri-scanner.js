@@ -74,7 +74,7 @@ describe( 'Run integration tests', () => {
 
 		cy.get('[data-cy=sucuriscan_general_datastore_delete_checkbox]').click();
 		cy.get('[data-cy=sucuriscan_general_datastore_delete_button]').click();
-		cy.get('.sucuriscan-alert').contains('8 out of 8 files have been deleted.');
+		cy.get('.sucuriscan-alert').contains('files have been deleted.');
 	});
 
 	it('can import JSON settings', () => {
