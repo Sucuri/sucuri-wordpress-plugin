@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/imgerson/sucuri-wordpress-plugin#readme",
   "devDependencies": {
+    "@wordpress/env": "^2.1.0",
     "cypress": "^5.2.0"
   }
 }

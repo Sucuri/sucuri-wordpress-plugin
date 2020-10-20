@@ -30,12 +30,10 @@ jobs:
           node-version: 12
 
       - name: Install Dependencies
-        run: |
-          npm install -g @wordpress/env
-          npm install -g cypress
+        run: npm install
 
       - name: Start Docker environment
-        run: wp-env start
+        run: npx wp-env start
 
       - name: Log running Docker containers
         run: docker ps -a

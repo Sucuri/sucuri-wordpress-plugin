@@ -73,6 +73,18 @@ describe( 'Run integration tests', () => {
 		cy.get('.sucuriscan-alert').contains('HTTP header was set to HTTP_X_SUCURI_CLIENTIP');
 	});
 
+	it.only('can delete datastore files', () => {
+		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#general');
+
+		cy.get('input[value="sucuri-auditqueue.php"]').click();
+		cy.get('[data-cy=sucuriscan_general_datastore_delete_button]').click();
+		cy.get('.sucuriscan-alert').contains('1 out of 1 files have been deleted.');
+
+		cy.get('[data-cy=sucuriscan_general_datastore_delete_checkbox]').click();
+		cy.get('[data-cy=sucuriscan_general_datastore_delete_button]').click();
+		cy.get('.sucuriscan-alert').contains('8 out of 8 files have been deleted.');
+	});
+
 	// it( 'can deactivate sucuri-scanner', () => {
 	// 	cy.visit( '/wp-admin/plugins.php' );
 		
