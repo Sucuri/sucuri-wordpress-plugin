@@ -77,7 +77,7 @@
                 </tr>
             </thead>
 
-            <tbody>
+            <tbody data-cy="sucuriscan_integrity_list_table">
                 %%%SUCURI.Integrity.List%%%
             </tbody>
         </table>
@@ -85,7 +85,7 @@
         <p>
             <label>
                 <input type="hidden" name="sucuriscan_process_form" value="0" />
-                <input type="checkbox" name="sucuriscan_process_form" value="1" />
+                <input type="checkbox" name="sucuriscan_process_form" value="1" data-cy="sucuriscan_integrity_incorrect_checkbox" />
                 <span>{{I understand that this operation cannot be reverted.}}</span>
             </label>
         </p>
@@ -99,7 +99,7 @@
                 <option value="delete">{{Delete File}}</option>
             </select>
 
-            <button type="submit" class="button button-primary">{{Submit}}</button>
+            <button type="submit" class="button button-primary" data-cy="sucuriscan_integrity_incorrect_submit">{{Submit}}</button>
 
             <span class="sucuriscan-tooltip" content="{{Marking one or more files as fixed will force the plugin to ignore them during the next scan, very useful when you find false positives. Additionally you can restore the original content of the core files that appear as modified or deleted, this will tell the plugin to download a copy of the original files from the official WordPress repository. Deleting a file is an irreversible action, be careful.}}">
                 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="14" height="14">

@@ -99,19 +99,81 @@ describe( 'Run integration tests', () => {
 		cy.get('.sucuriscan-alert').contains('The timezone for the date and time in the audit logs has been changed');
 	})
 
-	it( 'can deactivate sucuri-scanner', () => {
-		cy.visit( '/wp-admin/plugins.php' );
+	it('can deactivate sucuri-scanner', () => {
+		cy.visit('/wp-admin/plugins.php');
 		
-		cy.get( '#deactivate-sucuri-scanner' ).click();
+		cy.get('#deactivate-sucuri-scanner').click();
 
-		cy.get( '.notice' ).should( 'contain', 'Plugin deactivated.' );
+		cy.get('.notice').should('contain', 'Plugin deactivated.');
 	}	);
 
-	it( 'can activate sucuri-scanner', () => {
-		cy.visit( '/wp-admin/plugins.php' );
+	it('can activate sucuri-scanner', () => {
+		cy.visit('/wp-admin/plugins.php');
 		
-		cy.get( '#activate-sucuri-scanner' ).click();
+		cy.get('#activate-sucuri-scanner').click();
 
-		cy.get( '.notice' ).should( 'contain', 'Plugin activated.' );
+		cy.get('.notice').should('contain', 'Plugin activated.');
 	} );
+
+	it('can modify scheduled tasks', () => {
+		cy.visit('wp-admin/admin.php?page=sucuriscan_settings#scanner');
+
+		cy.get('input[value="wp_update_plugins"]').click();
+		cy.get('[data-cy=sucuriscan_cronjobs_select]').select('Quarterly (every 7776000 seconds)');
+		cy.get('[data-cy=sucuriscan_cronjobs_submit]').click();
+
+		cy.get('.sucuriscan-alert').contains('1 tasks has been re-scheduled to run quarterly.');
+
+		cy.get('[data-cy=sucuriscan_row_wp_update_plugins]').find('td:nth-child(3)').contains('quarterly');
+	});
+
+	it('can activate and deactivate the WordPress integrity diff utility', () => {
+		cy.visit('wp-admin/admin.php?page=sucuriscan_settings#scanner');
+
+		cy.get('[data-cy=sucuriscan_scanner_integrity_diff_utility_toggle]').click();
+		cy.get('.sucuriscan-alert').contains('The status of the integrity diff utility has been changed');
+		cy.get('[data-cy=sucuriscan_scanner_integrity_diff_utility_toggle]').contains('Disable');
+
+		cy.get('[data-cy=sucuriscan_scanner_integrity_diff_utility_toggle]').click();
+		cy.get('.sucuriscan-alert').contains('The status of the integrity diff utility has been changed');
+		cy.get('[data-cy=sucuriscan_scanner_integrity_diff_utility_toggle]').contains('Enable');
+	});
+
+	it('can ignore and unignore false positives (integrity diff utility)', () => {
+		cy.visit('/wp-admin/admin.php?page=sucuriscan#auditlogs');
+
+		cy.get('input[value="added@phpunit-wp-config.php"]').click();
+		cy.get('[data-cy=sucuriscan_integrity_incorrect_checkbox]').click();
+		cy.get('[data-cy=sucuriscan_integrity_incorrect_submit]').click();
+
+		cy.get('.sucuriscan-alert').contains('1 out of 1 files were successfully processed.');
+
+		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#scanner');
+
+		cy.get('[data-cy=sucuriscan_integrity_diff_false_positive_table]').contains('phpunit-wp-config.php');
+		cy.get('input[value="phpunit-wp-config.php"').click();
+		cy.get('[data-cy=sucuriscan_integrity_diff_false_positive_submit]').click();
+
+		cy.get('.sucuriscan-alert').contains('The selected files have been successfully processed.');
+		cy.get('[data-cy=sucuriscan_integrity_diff_false_positive_table]').contains('no data available');
+
+		cy.visit('/wp-admin/admin.php?page=sucuriscan#auditlogs');
+		cy.get('[data-cy=sucuriscan_integrity_list_table]').contains('phpunit-wp-config.php');
+	});
+
+	it('can ignore files and folders during the scans', () => {
+		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#scanner');
+
+		cy.get('[data-cy=sucuriscan_ignore_files_folders_input]').type('sucuri-images');
+		cy.get('[data-cy=sucuriscan_ignore_files_folders_ignore_submit]').click();
+
+		cy.get('.sucuriscan-alert').contains('Selected files have been successfully processed.');
+		cy.get('[data-cy=sucuriscan_ignore_files_folders_table]').contains('sucuri-images');
+
+		cy.get('input[value="sucuri-images"]').click();
+		cy.get('[data-cy=sucuriscan_ignore_files_folders_unignore_submit]').click();
+
+		cy.get('.sucuriscan-alert').contains('Selected files have been successfully processed.');
+		cy.get('[data-cy=sucuriscan_ignore_files_folders_table]').contains('no data available');
+	});
 }	);

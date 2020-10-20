@@ -1,5 +1,5 @@
 
-<tr>
+<tr data-cy="sucuriscan_row_%%SUCURI.Cronjob.Hook%%">
     <th class="check-column">
         <input type="checkbox" name="sucuriscan_cronjobs[]" value="%%SUCURI.Cronjob.Hook%%" />
     </th>

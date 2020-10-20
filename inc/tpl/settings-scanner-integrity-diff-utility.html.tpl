@@ -11,7 +11,7 @@
             <form action="%%SUCURI.URL.Settings%%#scanner" method="post">
                 <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
                 <input type="hidden" name="sucuriscan_diff_utility" value="%%SUCURI.DiffUtility.SwitchValue%%" />
-                <button type="submit" class="button button-primary">%%SUCURI.DiffUtility.SwitchText%%</button>
+                <button type="submit" class="button button-primary" data-cy="sucuriscan_scanner_integrity_diff_utility_toggle">%%SUCURI.DiffUtility.SwitchText%%</button>
             </form>
         </div>
     </div>

@@ -28,7 +28,7 @@
         <form action="%%SUCURI.URL.Settings%%#scanner" method="post">
             <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
 
-            <table class="wp-list-table widefat sucuriscan-table sucuriscan-wpcron-list">
+            <table class="wp-list-table widefat sucuriscan-table sucuriscan-wpcron-list" data-cy="sucuriscan_cronjobs_table">
                 <thead>
                     <tr>
                         <td id="cb" class="manage-column column-cb check-column">
@@ -53,10 +53,10 @@
 
             <fieldset class="sucuriscan-clearfix">
                 <label>{{Action:}}</label>
-                <select name="sucuriscan_cronjob_action">
+                <select name="sucuriscan_cronjob_action" data-cy="sucuriscan_cronjobs_select">
                     %%%SUCURI.Cronjob.Schedules%%%
                 </select>
-                <button type="submit" class="button button-primary">{{Submit}}</button>
+                <button type="submit" class="button button-primary" data-cy="sucuriscan_cronjobs_submit">{{Submit}}</button>
             </fieldset>
         </form>
     </div>

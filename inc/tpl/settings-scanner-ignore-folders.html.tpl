@@ -10,8 +10,8 @@
 
             <fieldset class="sucuriscan-clearfix">
                 <label>{{Ignore a file or directory:}}</label>
-                <input type="text" name="sucuriscan_ignorefolder" placeholder="{{e.g. /private/directory/}}" />
-                <button type="submit" class="button button-primary">{{Submit}}</button>
+                <input type="text" name="sucuriscan_ignorefolder" placeholder="{{e.g. /private/directory/}}" data-cy="sucuriscan_ignore_files_folders_input" />
+                <button type="submit" class="button button-primary" data-cy="sucuriscan_ignore_files_folders_ignore_submit">{{Submit}}</button>
             </fieldset>
         </form>
 
@@ -20,7 +20,7 @@
         <form action="%%SUCURI.URL.Settings%%#scanner" method="post">
             <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
 
-            <table class="wp-list-table widefat sucuriscan-table sucuriscan-ignorescanning">
+            <table class="wp-list-table widefat sucuriscan-table sucuriscan-ignorescanning" data-cy="sucuriscan_ignore_files_folders_table">
                 <thead>
                     <td id="cb" class="manage-column column-cb check-column">
                         <label class="screen-reader-text" for="cb-select-all-1">{{Select All}}</label>
@@ -35,7 +35,7 @@
                 </tbody>
             </table>
 
-            <button type="submit" class="button button-primary">{{Unignore Selected Directories}}</button>
+            <button type="submit" class="button button-primary" data-cy="sucuriscan_ignore_files_folders_unignore_submit">{{Unignore Selected Directories}}</button>
         </form>
     </div>
 </div>
