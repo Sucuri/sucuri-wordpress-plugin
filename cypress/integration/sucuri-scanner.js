@@ -8,14 +8,6 @@ describe( 'Run integration tests', () => {
 		cy.get('#wp-submit' ).click();
 	}	);
 
-	// it( 'can activate sucuri-scanner', () => {
-	// 	cy.visit( '/wp-admin/plugins.php' );
-		
-	// 	cy.get( '#activate-sucuri-scanner' ).click();
-
-	// 	cy.get( '.notice' ).should( 'contain', 'Plugin activated.' );
-	// } );
-
 	it('can change malware scan target', () => {
 		const testDomain = 'sucuri.net';
 
@@ -99,7 +91,7 @@ describe( 'Run integration tests', () => {
 		cy.get('[data-cy=sucuriscan_addr_header_select]').contains('REMOTE_ADDR');
 	});
 
-	it.only('can update timezone setting', () => {
+	it('can update timezone setting', () => {
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#general');
 
 		cy.get('[data-cy=sucuriscan_timezone_select]').select('UTC-07.00');
@@ -107,11 +99,19 @@ describe( 'Run integration tests', () => {
 		cy.get('.sucuriscan-alert').contains('The timezone for the date and time in the audit logs has been changed');
 	})
 
-	// it( 'can deactivate sucuri-scanner', () => {
-	// 	cy.visit( '/wp-admin/plugins.php' );
+	it( 'can deactivate sucuri-scanner', () => {
+		cy.visit( '/wp-admin/plugins.php' );
 		
-	// 	cy.get( '#deactivate-sucuri-scanner' ).click();
+		cy.get( '#deactivate-sucuri-scanner' ).click();
 
-	// 	cy.get( '.notice' ).should( 'contain', 'Plugin deactivated.' );
-	// }	);
+		cy.get( '.notice' ).should( 'contain', 'Plugin deactivated.' );
+	}	);
+
+	it( 'can activate sucuri-scanner', () => {
+		cy.visit( '/wp-admin/plugins.php' );
+		
+		cy.get( '#activate-sucuri-scanner' ).click();
+
+		cy.get( '.notice' ).should( 'contain', 'Plugin activated.' );
+	} );
 }	);
