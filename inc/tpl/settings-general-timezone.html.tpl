@@ -9,10 +9,10 @@
             <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
             <fieldset class="sucuriscan-clearfix">
                 <label>{{Timezone:}}</label>
-                <select name="sucuriscan_timezone">
+                <select name="sucuriscan_timezone" data-cy="sucuriscan_timezone_select">
                     %%%SUCURI.Timezone.Dropdown%%%
                 </select>
-                <button type="submit" class="button button-primary">{{Submit}}</button>
+                <button type="submit" class="button button-primary" data-cy="sucuriscan_timezone_submit">{{Submit}}</button>
                 <span><em>(%%SUCURI.Timezone.Example%%)</em></span>
             </fieldset>
         </form>

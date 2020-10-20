@@ -85,7 +85,7 @@ describe( 'Run integration tests', () => {
 		cy.get('.sucuriscan-alert').contains('8 out of 8 files have been deleted.');
 	});
 
-	it.only('can import JSON settings', () => {
+	it('can import JSON settings', () => {
 		const jsonPayload = '{"sucuriscan_addr_header":"REMOTE_ADDR","sucuriscan_api_protocol":"https","sucuriscan_api_service":"enabled","sucuriscan_cloudproxy_apikey":"","sucuriscan_diff_utility":"disabled","sucuriscan_dns_lookups":"enabled","sucuriscan_email_subject":"Sucuri Alert, :domain, :event, :remoteaddr","sucuriscan_emails_per_hour":5,"sucuriscan_ignored_events":"","sucuriscan_lastlogin_redirection":"enabled","sucuriscan_maximum_failed_logins":30,"sucuriscan_notify_available_updates":"disabled","sucuriscan_notify_bruteforce_attack":"disabled","sucuriscan_notify_failed_login":"disabled","sucuriscan_notify_plugin_activated":"enabled","sucuriscan_notify_plugin_change":"enabled","sucuriscan_notify_plugin_deactivated":"disabled","sucuriscan_notify_plugin_deleted":"disabled","sucuriscan_notify_plugin_installed":"disabled","sucuriscan_notify_plugin_updated":"disabled","sucuriscan_notify_post_publication":"enabled","sucuriscan_notify_scan_checksums":"disabled","sucuriscan_notify_settings_updated":"enabled","sucuriscan_notify_success_login":"disabled","sucuriscan_notify_theme_activated":"enabled","sucuriscan_notify_theme_deleted":"disabled","sucuriscan_notify_theme_editor":"enabled","sucuriscan_notify_theme_installed":"disabled","sucuriscan_notify_theme_updated":"disabled","sucuriscan_notify_to":"wordpress@example.com","sucuriscan_notify_user_registration":"disabled","sucuriscan_notify_website_updated":"disabled","sucuriscan_notify_widget_added":"disabled","sucuriscan_notify_widget_deleted":"disabled","sucuriscan_prettify_mails":"disabled","sucuriscan_revproxy":"enabled","sucuriscan_selfhosting_fpath":"","sucuriscan_selfhosting_monitor":"disabled","sucuriscan_use_wpmail":"enabled","trusted_ips":[]}';
 
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#general');
@@ -98,6 +98,14 @@ describe( 'Run integration tests', () => {
 
 		cy.get('[data-cy=sucuriscan_addr_header_select]').contains('REMOTE_ADDR');
 	});
+
+	it.only('can update timezone setting', () => {
+		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#general');
+
+		cy.get('[data-cy=sucuriscan_timezone_select]').select('UTC-07.00');
+		cy.get('[data-cy=sucuriscan_timezone_submit]').click();
+		cy.get('.sucuriscan-alert').contains('The timezone for the date and time in the audit logs has been changed');
+	})
 
 	// it( 'can deactivate sucuri-scanner', () => {
 	// 	cy.visit( '/wp-admin/plugins.php' );
