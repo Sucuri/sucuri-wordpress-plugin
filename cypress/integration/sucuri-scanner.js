@@ -176,4 +176,46 @@ describe( 'Run integration tests', () => {
 		cy.get('.sucuriscan-alert').contains('Selected files have been successfully processed.');
 		cy.get('[data-cy=sucuriscan_ignore_files_folders_table]').contains('no data available');
 	});
+
+	it('can toggle hardening options', () => {
+		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#hardening');
+
+		cy.get('input[name=sucuriscan_hardening_firewall]').click();
+		cy.get('.sucuriscan-alert').contains('The firewall is a premium service that you need purchase at - Sucuri Firewall');
+
+		cy.get('input[name=sucuriscan_hardening_wpuploads]').click();
+		cy.get('.sucuriscan-alert').contains('Hardening applied to the uploads directory');
+		cy.get('input[name=sucuriscan_hardening_wpuploads_revert]').click();
+		cy.get('.sucuriscan-alert').contains('Hardening reverted in the uploads directory');
+
+		cy.get('input[name=sucuriscan_hardening_wpcontent]').click();
+		cy.get('.sucuriscan-alert').contains('Hardening applied to the content directory');
+		cy.get('input[name=sucuriscan_hardening_wpcontent_revert]').click();
+		cy.get('.sucuriscan-alert').contains('Hardening reverted in the content directory');
+
+		cy.get('input[name=sucuriscan_hardening_wpincludes]').click();
+		cy.get('.sucuriscan-alert').contains('Hardening applied to the library directory');
+		cy.get('input[name=sucuriscan_hardening_wpincludes_revert]').click();
+		cy.get('.sucuriscan-alert').contains('Hardening reverted in the library directory');
+
+		cy.get('input[name=sucuriscan_hardening_fileeditor]').click();
+		cy.get('.sucuriscan-alert').contains('Hardening applied to the plugin and theme editor');
+		cy.get('input[name=sucuriscan_hardening_fileeditor_revert]').click();
+		cy.get('.sucuriscan-alert').contains('Hardening reverted in the plugin and theme editor');
+
+		cy.get('input[name=sucuriscan_hardening_autoSecretKeyUpdater]').click();
+		cy.get('.sucuriscan-alert').contains('Automatic Secret Keys Updater enabled. The default frequency is "Weekly"');
+		cy.get('input[name=sucuriscan_hardening_autoSecretKeyUpdater_revert]').click();
+		cy.get('.sucuriscan-alert').contains('Automatic Secret Keys Updater disabled.');
+	});
+
+	it.only('can whitelist blocked PHP files', () => {
+		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#hardening');
+
+		cy.get('[data-cy=sucuriscan_hardening_whitelist_input]').type('ok.php');
+		cy.get('[data-cy=sucuriscan_hardening_whitelist_select]').select('/var/www/html/wp-content');
+		cy.get('[data-cy=sucuriscan_hardening_whitelist_submit]').click();
+
+		cy.get('.sucuriscan-alert-error').contains('Access control file does not exists');
+	});
 }	);
