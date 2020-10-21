@@ -219,7 +219,7 @@ describe( 'Run integration tests', () => {
 		cy.get('.sucuriscan-alert-error').contains('Access control file does not exists');
 	});
 
-	it.only('can update the secret keys', () => {
+	it('can update the secret keys', () => {
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#posthack');
 
 		cy.get('[data-cy=sucuriscan_security_keys_checkbox]').click();
@@ -248,5 +248,18 @@ describe( 'Run integration tests', () => {
 		cy.get('[data-cy=sucuriscan_security_keys_autoupdater_submit]').click();
 
 		cy.get('.sucuriscan-alert').contains('Automatic Secret Keys Updater disabled.');
+	});
+
+	it.only('can reset installed plugins', () => {
+		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings&sucuriscan_lastlogin=1#posthack');
+
+		cy.get('input[value="akismet/akismet.php"]').click();
+		cy.get('[data-cy=sucuriscan_reset_plugins_submit]').click();
+
+		cy.get('[data-cy=sucuriscan_reset_plugin_response]').contains('Loading');
+
+		cy.wait(2000);
+
+		cy.get('[data-cy=sucuriscan_reset_plugin_response]').contains('Installed');
 	});
 }	);
