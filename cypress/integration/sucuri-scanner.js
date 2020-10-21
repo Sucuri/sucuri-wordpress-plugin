@@ -2,7 +2,7 @@
 describe( 'Run integration tests', () => {
 	beforeEach( function() {
 		cy.visit('/wp-login.php');
-		cy.wait( 1000 );
+		cy.wait(1000);
 		cy.get('#user_login' ).type( Cypress.env('wp_user'));
 		cy.get('#user_pass' ).type( Cypress.env('wp_pass'));
 		cy.get('#wp-submit' ).click();
@@ -209,7 +209,7 @@ describe( 'Run integration tests', () => {
 		cy.get('.sucuriscan-alert').contains('Automatic Secret Keys Updater disabled.');
 	});
 
-	it.only('can whitelist blocked PHP files', () => {
+	it('can whitelist blocked PHP files', () => {
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#hardening');
 
 		cy.get('[data-cy=sucuriscan_hardening_whitelist_input]').type('ok.php');
@@ -217,5 +217,36 @@ describe( 'Run integration tests', () => {
 		cy.get('[data-cy=sucuriscan_hardening_whitelist_submit]').click();
 
 		cy.get('.sucuriscan-alert-error').contains('Access control file does not exists');
+	});
+
+	it.only('can update the secret keys', () => {
+		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#posthack');
+
+		cy.get('[data-cy=sucuriscan_security_keys_checkbox]').click();
+		cy.get('[data-cy=sucuriscan_security_keys_submit]').click();
+
+		cy.get('.sucuriscan-alert').contains('Secret keys updated successfully (summary of the operation bellow).');
+
+		cy.wait(5000);
+
+		cy.reload();
+
+		cy.get('#user_login' ).type( Cypress.env('wp_user'));
+		cy.get('#user_pass' ).type( Cypress.env('wp_pass'));
+		cy.get('#wp-submit' ).click();
+
+		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#posthack');
+
+		cy.get('[data-cy=sucuriscan_security_keys_autoupdater]').contains('Automatic Secret Keys Updater — Disabled');
+		cy.get('[data-cy=sucuriscan_security_keys_autoupdater_select]').select('Quarterly');
+		cy.get('[data-cy=sucuriscan_security_keys_autoupdater_submit]').click();
+
+		cy.get('.sucuriscan-alert').contains('Automatic Secret Keys Updater enabled.');
+		cy.get('[data-cy=sucuriscan_security_keys_autoupdater]').contains('Automatic Secret Keys Updater — Enabled');
+
+		cy.get('[data-cy=sucuriscan_security_keys_autoupdater_select]').select('Disabled');
+		cy.get('[data-cy=sucuriscan_security_keys_autoupdater_submit]').click();
+
+		cy.get('.sucuriscan-alert').contains('Automatic Secret Keys Updater disabled.');
 	});
 }	);
