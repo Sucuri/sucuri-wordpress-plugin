@@ -10,8 +10,8 @@
 
             <fieldset class="sucuriscan-clearfix">
                 <label>{{E-mail:}}</label>
-                <input type="text" name="sucuriscan_recipient" placeholder="{{e.g. user@example.com}}" />
-                <button type="submit" name="sucuriscan_save_recipient" class="button button-primary">{{Submit}}</button>
+                <input type="text" name="sucuriscan_recipient" placeholder="{{e.g. user@example.com}}" data-cy="sucuriscan_alerts_recipient_input" />
+                <button type="submit" name="sucuriscan_save_recipient" class="button button-primary" data-cy="sucuriscan_alerts_recipient_add_email_submit">{{Submit}}</button>
             </fieldset>
 
             <table class="wp-list-table widefat sucuriscan-table">
@@ -30,8 +30,8 @@
                 </tbody>
             </table>
 
-            <button type="submit" name="sucuriscan_delete_recipients" class="button button-primary">{{Delete}}</button>
-            <button type="submit" name="sucuriscan_debug_email" value="1" class="button button-primary">{{Test Alerts}}</button>
+            <button type="submit" name="sucuriscan_delete_recipients" class="button button-primary" data-cy="sucuriscan_alerts_delete_recipient_submit">{{Delete}}</button>
+            <button type="submit" name="sucuriscan_debug_email" value="1" class="button button-primary" data-cy="sucuriscan_alerts_test_recipient_submit">{{Test Alerts}}</button>
         </form>
     </div>
 </div>

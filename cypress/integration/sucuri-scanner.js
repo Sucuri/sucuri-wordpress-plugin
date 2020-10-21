@@ -250,7 +250,7 @@ describe( 'Run integration tests', () => {
 		cy.get('.sucuriscan-alert').contains('Automatic Secret Keys Updater disabled.');
 	});
 
-	it.only('can reset installed plugins', () => {
+	it('can reset installed plugins', () => {
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings&sucuriscan_lastlogin=1#posthack');
 
 		cy.get('input[value="akismet/akismet.php"]').click();
@@ -261,5 +261,29 @@ describe( 'Run integration tests', () => {
 		cy.wait(2000);
 
 		cy.get('[data-cy=sucuriscan_reset_plugin_response]').contains('Installed');
+	});
+
+	it('can modify alerts recipients', () => {
+		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings&sucuriscan_lastlogin=1#alerts');
+
+		cy.get('input[value="wordpress@example.com"]').click();
+		cy.get('[data-cy=sucuriscan_alerts_test_recipient_submit]').click();
+
+		cy.get('.sucuriscan-alert').contains('A test alert was sent to your email, check your inbox');
+
+		cy.get('[data-cy=sucuriscan_alerts_recipient_input]').type('admin@sucuri.net');
+		cy.get('[data-cy=sucuriscan_alerts_recipient_add_email_submit]').click();
+
+		cy.get('.sucuriscan-alert').contains('The email alerts will be sent to: admin@sucuri.net');
+
+		cy.get('input[value="admin@sucuri.net"]').click();
+		cy.get('[data-cy=sucuriscan_alerts_delete_recipient_submit]').click();
+
+		cy.get('.sucuriscan-alert').contains('These emails will stop receiving alerts: admin@sucuri.net');
+
+		cy.get('input[value="wordpress@example.com"]').click();
+		cy.get('[data-cy=sucuriscan_alerts_test_recipient_submit]').click();
+
+		cy.get('.sucuriscan-alert').contains('A test alert was sent to your email, check your inbox');
 	});
 }	);
