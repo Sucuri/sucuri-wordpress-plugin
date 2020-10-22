@@ -10,8 +10,8 @@
 
             <fieldset class="sucuriscan-clearfix">
                 <label>{{IP Address:}}</label>
-                <input type="text" name="sucuriscan_trust_ip" placeholder="{{e.g. 182.120.56.0/24}}" />
-                <input type="submit" value="{{Submit}}" class="button button-primary" />
+                <input type="text" name="sucuriscan_trust_ip" placeholder="{{e.g. 182.120.56.0/24}}" data-cy="sucuriscan_trusted_ip_input" />
+                <input type="submit" value="{{Submit}}" class="button button-primary" data-cy="sucuriscan_trusted_ip_add_ip_submit" />
             </fieldset>
         </form>
 
@@ -20,7 +20,7 @@
         <form action="%%SUCURI.URL.Settings%%#alerts" method="post">
             <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
 
-            <table class="wp-list-table widefat sucuriscan-table sucuriscan-settings-trustip">
+            <table class="wp-list-table widefat sucuriscan-table sucuriscan-settings-trustip" data-cy="sucuriscan_trusted_ip_table">
                 <thead>
                     <tr>
                         <td id="cb" class="manage-column column-cb check-column">
@@ -44,7 +44,7 @@
                 </tbody>
             </table>
 
-            <button type="submit" class="button button-primary">{{Delete}}</button>
+            <button type="submit" class="button button-primary" data-cy="sucuriscan_trusted_ip_delete_ip_submit">{{Delete}}</button>
         </form>
     </div>
 </div>

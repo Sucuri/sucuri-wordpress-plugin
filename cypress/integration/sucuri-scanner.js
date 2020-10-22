@@ -286,4 +286,28 @@ describe( 'Run integration tests', () => {
 
 		cy.get('.sucuriscan-alert').contains('A test alert was sent to your email, check your inbox');
 	});
+
+	it('can modify trusted ip addresses', () => {
+		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#alerts');
+
+		cy.get('[data-cy=sucuriscan_trusted_ip_table]').contains('no data available');
+
+		cy.get('[data-cy=sucuriscan_trusted_ip_input]').type('182.190.190.0/24');
+		cy.get('[data-cy=sucuriscan_trusted_ip_add_ip_submit]').click();
+
+		cy.get('.sucuriscan-alert').contains('Events generated from this IP will be ignored: 182.190.190.0/24');
+
+		cy.get('[data-cy=sucuriscan_trusted_ip_input]').type('182.190.190.0/24');
+		cy.get('[data-cy=sucuriscan_trusted_ip_add_ip_submit]').click();
+
+		cy.get('.error').contains('The IP specified address was already added.');
+
+		cy.get('[data-cy=sucuriscan_trusted_ip_table]').find('td:nth-child(2)').contains('182.190.190.0');
+		cy.get('[data-cy=sucuriscan_trusted_ip_table]').find('td:nth-child(3)').contains('182.190.190.0/24');
+
+		cy.get('input[name="sucuriscan_del_trust_ip[]"]').click();
+		cy.get('[data-cy=sucuriscan_trusted_ip_delete_ip_submit]').click();
+
+		cy.get('.sucuriscan-alert').contains('The selected IP addresses were successfully deleted.');
+	});
 }	);
