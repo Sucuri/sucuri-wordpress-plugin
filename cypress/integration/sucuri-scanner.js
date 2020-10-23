@@ -311,7 +311,7 @@ describe( 'Run integration tests', () => {
 		cy.get('.sucuriscan-alert').contains('The selected IP addresses were successfully deleted.');
 	});
 
-	it.only('can modify alert subject', () => {
+	it('can modify alert subject', () => {
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#alerts');
 
 		cy.get('input[value="Sucuri Alert, :event, :hostname"]').click();
@@ -324,5 +324,13 @@ describe( 'Run integration tests', () => {
 		cy.get('[data-cy=sucuriscan_alerts_subject_submit]').click();
 
 		cy.get('.sucuriscan-alert').contains('The email subject has been successfully updated');
+	});
+
+	it.only('can update max alerts per hour', () => {
+		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#alerts');
+
+		cy.get('[data-cy=sucuriscan_alerts_per_hour_select]').select('Maximum 160 per hour');
+
+		cy.get('.sucuriscan-alert').contains('The maximum number of alerts per hour has been updated');
 	});
 }	);
