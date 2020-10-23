@@ -326,12 +326,21 @@ describe( 'Run integration tests', () => {
 		cy.get('.sucuriscan-alert').contains('The email subject has been successfully updated');
 	});
 
-	it.only('can update max alerts per hour', () => {
+	it('can update max alerts per hour', () => {
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#alerts');
 
 		cy.get('[data-cy=sucuriscan_alerts_per_hour_select]').select('Maximum 160 per hour');
 		cy.get('[data-cy=sucuriscan_alerts_per_hour_submit]').click();
 
 		cy.get('.sucuriscan-alert').contains('The maximum number of alerts per hour has been updated');
+	});
+
+	it.only('can update value after a brute force attack is considered', () => {
+		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#alerts');
+
+		cy.get('[data-cy=sucuriscan_max_failed_logins_select]').select('480 failed logins per hour');
+		cy.get('[data-cy=sucuriscan_max_failed_logins_submit]').click();
+
+		cy.get('.sucuriscan-alert').contains('The plugin will assume that your website is under a brute-force attack after 480 failed logins are detected during the same hour');
 	});
 }	);
