@@ -12,7 +12,7 @@
                 <select name="sucuriscan_emails_per_hour" data-cy="sucuriscan_alerts_per_hour_select">
                     %%%SUCURI.Alerts.PerHour%%%
                 </select>
-                <button type="submit" class="button button-primary">{{Submit}}</button>
+                <button type="submit" class="button button-primary" data-cy="sucuriscan_alerts_per_hour_submit">{{Submit}}</button>
             </fieldset>
         </form>
     </div>

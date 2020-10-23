@@ -330,6 +330,7 @@ describe( 'Run integration tests', () => {
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#alerts');
 
 		cy.get('[data-cy=sucuriscan_alerts_per_hour_select]').select('Maximum 160 per hour');
+		cy.get('[data-cy=sucuriscan_alerts_per_hour_submit]').click();
 
 		cy.get('.sucuriscan-alert').contains('The maximum number of alerts per hour has been updated');
 	});
