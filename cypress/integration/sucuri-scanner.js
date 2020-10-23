@@ -335,7 +335,7 @@ describe( 'Run integration tests', () => {
 		cy.get('.sucuriscan-alert').contains('The maximum number of alerts per hour has been updated');
 	});
 
-	it.only('can update value after a brute force attack is considered', () => {
+	it('can update value after a brute force attack is considered', () => {
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#alerts');
 
 		cy.get('[data-cy=sucuriscan_max_failed_logins_select]').select('480 failed logins per hour');
