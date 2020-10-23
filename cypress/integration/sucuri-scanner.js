@@ -310,4 +310,19 @@ describe( 'Run integration tests', () => {
 
 		cy.get('.sucuriscan-alert').contains('The selected IP addresses were successfully deleted.');
 	});
+
+	it.only('can modify alert subject', () => {
+		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#alerts');
+
+		cy.get('input[value="Sucuri Alert, :event, :hostname"]').click();
+		cy.get('[data-cy=sucuriscan_alerts_subject_submit]').click();
+
+		cy.get('.sucuriscan-alert').contains('The email subject has been successfully updated');
+
+		cy.get('input[value="custom"]').click();
+		cy.get('[data-cy=sucuriscan_alerts_subject_input]').type('Security alert: :event');
+		cy.get('[data-cy=sucuriscan_alerts_subject_submit]').click();
+
+		cy.get('.sucuriscan-alert').contains('The email subject has been successfully updated');
+	});
 }	);
