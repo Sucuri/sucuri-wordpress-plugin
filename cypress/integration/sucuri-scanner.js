@@ -344,7 +344,7 @@ describe( 'Run integration tests', () => {
 		cy.get('.sucuriscan-alert').contains('The plugin will assume that your website is under a brute-force attack after 480 failed logins are detected during the same hour');
 	});
 
-	it.only('can update the events that fire security alerts', () => {
+	it('can update the events that fire security alerts', () => {
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#alerts');
 
 		cy.get('input[name="sucuriscan_notify_plugin_deleted"][value="1"]').click();
