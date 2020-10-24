@@ -27,7 +27,7 @@
             </table>
 
             <div class="sucuriscan-recipient-form">
-                <button type="submit" name="sucuriscan_save_alert_events" class="button button-primary">{{Submit}}</button>
+                <button type="submit" name="sucuriscan_save_alert_events" class="button button-primary" data-cy="sucuriscan_save_alert_events_submit">{{Submit}}</button>
             </div>
         </form>
     </div>

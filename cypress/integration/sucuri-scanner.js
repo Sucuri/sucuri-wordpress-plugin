@@ -343,4 +343,24 @@ describe( 'Run integration tests', () => {
 
 		cy.get('.sucuriscan-alert').contains('The plugin will assume that your website is under a brute-force attack after 480 failed logins are detected during the same hour');
 	});
+
+	it.only('can update the events that fire security alerts', () => {
+		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#alerts');
+
+		cy.get('input[name="sucuriscan_notify_plugin_deleted"][value="1"]').click();
+		cy.get('[data-cy=sucuriscan_save_alert_events_submit]').click();
+
+		cy.get('.sucuriscan-alert').contains('The alert settings have been updated');
+
+		cy.get('input[name="sucuriscan_notify_plugin_deleted"][value="1"]')
+			.should('have.attr', 'checked', 'checked');
+
+		cy.get('input[name="sucuriscan_notify_plugin_deleted"][value="1"]').click();
+		cy.get('[data-cy=sucuriscan_save_alert_events_submit]').click();
+
+		cy.get('.sucuriscan-alert').contains('The alert settings have been updated');
+
+		cy.get('input[name="sucuriscan_notify_plugin_deleted"][value="1"]')
+			.should('not.have.attr', 'checked');
+	});
 }	);
