@@ -363,4 +363,21 @@ describe( 'Run integration tests', () => {
 		cy.get('input[name="sucuriscan_notify_plugin_deleted"][value="1"]')
 			.should('not.have.attr', 'checked');
 	});
+
+	it.only('can update alerts per post type', () => {
+		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#alerts');
+
+		const custom_post_type = 'new_sucuri_post_type';
+
+		cy.get('[data-cy=sucuriscan_alerts_post_type_input]').type(custom_post_type);
+		cy.get('[data-cy=sucuriscan_alerts_post_type_submit]').click();
+
+		cy.get('.sucuriscan-alert').contains('Post-type has been successfully ignored.');
+
+		cy.reload();
+
+		cy.get('[data-cy=sucuriscan_alerts_post_type_toggle_post_type_list]').click();
+
+		cy.get(`input[value="${custom_post_type}"]`).should('not.have.attr', 'checked');
+	});
 }	);
