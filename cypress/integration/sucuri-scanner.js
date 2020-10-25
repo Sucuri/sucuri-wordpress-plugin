@@ -416,4 +416,11 @@ describe( 'Run integration tests', () => {
 
 		cy.get('.updated').contains('The URL to retrieve the WordPress checksums has been changed');
 	});
+
+	it.only('can load website info OK', () => {
+		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#webinfo');
+
+		cy.get('[data-cy=ABSPATH]').find('td:first-child').contains('ABSPATH');
+		cy.get('[data-cy=ABSPATH]').find('td:last-child').contains('/var/www/html/');
+	});
 }	);
