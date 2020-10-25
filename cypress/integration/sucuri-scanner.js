@@ -364,7 +364,7 @@ describe( 'Run integration tests', () => {
 			.should('not.have.attr', 'checked');
 	});
 
-	it.only('can update alerts per post type', () => {
+	it('can update alerts per post type', () => {
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#alerts');
 
 		const custom_post_type = 'new_sucuri_post_type';
