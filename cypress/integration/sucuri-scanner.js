@@ -379,5 +379,16 @@ describe( 'Run integration tests', () => {
 		cy.get('[data-cy=sucuriscan_alerts_post_type_toggle_post_type_list]').click();
 
 		cy.get(`input[value="${custom_post_type}"]`).should('not.have.attr', 'checked');
+
+		cy.get('[data-cy=sucuriscan_alerts_post_type_input]').type(custom_post_type);
+		cy.get('[data-cy=sucuriscan_alerts_post_type_submit]').click();
+
+		cy.get('.sucuriscan-alert').contains('The post-type is already being ignored (duplicate).');
+
+		cy.get('[data-cy=sucuriscan_alerts_post_type_toggle_post_type_list]').click();
+		cy.get('input[value="nav_menu_item"]').click();
+		cy.get('[data-cy=sucuriscan_alerts_post_type_save_submit]').click();
+
+		cy.get('.sucuriscan-alert').contains('List of monitored post-types has been updated.');
 	});
 }	);

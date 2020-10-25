@@ -49,7 +49,7 @@
                     </tbody>
                 </table>
 
-                <button type="submit" class="button button-primary">{{Submit}}</button>
+                <button type="submit" class="button button-primary" data-cy="sucuriscan_alerts_post_type_save_submit">{{Submit}}</button>
             </form>
         </div>
     </div>
