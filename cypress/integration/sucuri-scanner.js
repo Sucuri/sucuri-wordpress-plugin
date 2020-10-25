@@ -407,4 +407,13 @@ describe( 'Run integration tests', () => {
 
 		cy.get('[data-cy=sucuriscan_api_status_toggle]').contains('Disable');
 	});
+
+	it('can update the wordpress checksum api ', () => {
+		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#apiservice');
+
+		cy.get('[data-cy=sucuriscan_wordpress_checksum_api_input]').type('https://api.wordpress.org/core/checksums/1.0/?version=5.5.1&locale=es_ES');
+		cy.get('[data-cy=sucuriscan_wordpress_checksum_api_submit]').click();
+
+		cy.get('.updated').contains('The URL to retrieve the WordPress checksums has been changed');
+	});
 }	);
