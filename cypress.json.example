@@ -3,5 +3,9 @@
   "env": {
     "wp_user": "admin",
     "wp_pass": "password"
-  }
+  },
+	"retries": {
+		"runMode": 3,
+		"openMode": 0
+	}
 }
