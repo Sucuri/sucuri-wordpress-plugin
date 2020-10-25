@@ -15,7 +15,7 @@
             <form action="%%SUCURI.URL.Settings%%#apiservice" method="post">
                 <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
                 <input type="hidden" name="sucuriscan_api_service" value="%%SUCURI.ApiStatus.SwitchValue%%" />
-                <button type="submit" class="button button-primary">%%SUCURI.ApiStatus.SwitchText%%</button>
+                <button type="submit" class="button button-primary" data-cy="sucuriscan_api_status_toggle">%%SUCURI.ApiStatus.SwitchText%%</button>
             </form>
         </div>
 

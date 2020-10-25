@@ -391,4 +391,20 @@ describe( 'Run integration tests', () => {
 
 		cy.get('.sucuriscan-alert').contains('List of monitored post-types has been updated.');
 	});
+
+	it('can toggle api service communication', () => {
+		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#apiservice');
+
+		cy.get('[data-cy=sucuriscan_api_status_toggle]').click();
+
+		cy.get('.sucuriscan-alert').contains('The status of the API service has been changed');
+
+		cy.get('[data-cy=sucuriscan_api_status_toggle]').contains('Enable');
+
+		cy.get('[data-cy=sucuriscan_api_status_toggle]').click();
+
+		cy.get('.sucuriscan-alert').contains('The status of the API service has been changed');
+
+		cy.get('[data-cy=sucuriscan_api_status_toggle]').contains('Disable');
+	});
 }	);
