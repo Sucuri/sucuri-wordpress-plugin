@@ -425,40 +425,4 @@ describe( 'Run integration tests', () => {
 
 		cy.get('[data-cy=sucuriscan_access_file_integrity]').contains('Htaccess file found in /var/www/html/.htaccess');
 	});
-
-	it.only('can send audit logs to sucuri server', () => {
-		cy.route2({
-			method: 'POST',
-			url: '/wp-admin/admin-ajax.php?page=sucuriscan',
-			query: {
-				form_action: 'auditlogs_send_logs'
-			},
-			response: {
-				"maxtime": 300,
-				"ttllogs": 458,
-				"success": 458,
-				"failure": 0,
-				"elapsed": 1.890899999999998470912032644264400005340576171875 }
-		});
-
-		cy.route2({
-			method: 'POST',
-			url: '/wp-admin/admin-ajax.php?page=sucuriscan',
-			query: {
-				form_action: 'get_audit_logs'
-			},
-			response: {
-				"maxtime": 300,
-				"ttllogs": 458,
-				"success": 458,
-				"failure": 0,
-				"elapsed": 1.890899999999998470912032644264400005340576171875 }
-		});
-
-		cy.visit('/wp-admin/admin.php?page=sucuriscan#auditlogs');
-
-		cy.get('[data-cy=sucuriscan_dashboard_send_audit_logs_submit]').click();
-
-		cy.get('[data-cy=sucuriscan_audit_logs_footer]').contains('loading...');
-	});
 }	);
