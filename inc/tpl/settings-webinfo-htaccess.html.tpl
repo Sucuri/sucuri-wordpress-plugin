@@ -1,5 +1,5 @@
 
-<div class="sucuriscan-panel">
+<div class="sucuriscan-panel" data-cy="sucuriscan_access_file_integrity">
     <h3 class="sucuriscan-title">{{Access File Integrity}}</h3>
 
     <div class="inside">

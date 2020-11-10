@@ -38,6 +38,9 @@ jobs:
       - name: Log running Docker containers
         run: docker ps -a
 
+      - name: Log WordPress debug information
+        run: npx wp-env run cli wp core version
+
       - name: General debug information
         run: |
           npm --version
