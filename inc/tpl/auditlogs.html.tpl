@@ -103,7 +103,7 @@ jQuery(document).ready(function ($) {
 </script>
 
 <div class="sucuriscan-auditlog-table">
-    <div class="sucuriscan-auditlog-response">
+    <div class="sucuriscan-auditlog-response" data-cy="sucuriscan_auditlog_response_loading">
         <em>{{Loading...}}</em>
     </div>
 

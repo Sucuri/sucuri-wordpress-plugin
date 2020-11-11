@@ -425,4 +425,28 @@ describe( 'Run integration tests', () => {
 
 		cy.get('[data-cy=sucuriscan_access_file_integrity]').contains('Htaccess file found in /var/www/html/.htaccess');
 	});
+
+	it('can send audit logs to sucuri servers', () => {
+		cy.visit('/wp-admin/admin.php?page=sucuriscan#auditlogs');
+
+		cy.route2('POST', '/wp-admin/admin-ajax.php?page=sucuriscan', (req) => {
+			if (req.body.includes('get_audit_logs')) {
+				req.reply((res) => {
+					res.send({ fixture: 'audit_logs.json' });
+				});
+			}
+
+			if (req.body.includes('auditlogs_send_logs')) {
+				req.reply((res) => {
+					res.send({ fixture: 'auditlogs_send_logs.json' });
+				});
+			}
+		});
+
+		cy.get('[data-cy=sucuriscan_dashboard_send_audit_logs_submit]').click();
+
+		cy.get('[data-cy=sucuriscan_auditlog_response_loading]').contains('Loading...');
+
+		cy.get('.sucuriscan-auditlog-entry-title').contains('User authentication succeeded: admin');
+	});
 }	);

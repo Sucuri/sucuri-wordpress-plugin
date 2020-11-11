@@ -15,7 +15,7 @@
     </div>
 
     <div class="sucuriscan-pull-left sucuriscan-auditlog-entry-message">
-        <div class="sucuriscan-auditlog-entry-title">
+        <div class="sucuriscan-auditlog-entry-title" data-cy="sucuriscan_auditlog_entry_title">
             <strong>%%SUCURI.AuditLog.Username%%</strong>
             <span>%%SUCURI.AuditLog.Message%%</span>
         </div>
