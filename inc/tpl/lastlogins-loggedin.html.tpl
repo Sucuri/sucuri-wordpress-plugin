@@ -5,7 +5,7 @@
     <div class="inside">
         <p>{{Here you can see a list of the users that are currently logged-in.}}</p>
 
-        <table class="wp-list-table widefat sucuriscan-loggedin-users">
+        <table class="wp-list-table widefat sucuriscan-loggedin-users" data-cy=sucuriscan_successful_loggedin_table>
             <thead>
                 <tr>
                     <th colspan="6">{{Logged-in Users}}</th>

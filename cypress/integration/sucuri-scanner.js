@@ -449,4 +449,45 @@ describe( 'Run integration tests', () => {
 
 		cy.get('.sucuriscan-auditlog-entry-title').contains('User authentication succeeded: admin');
 	});
+
+	it('can see last logins tab and delete last logins file', () => {
+		cy.visit('/wp-admin/admin.php?page=sucuriscan_lastlogins#allusers');
+
+		cy.get('[data-cy=sucuriscan_last_logins_table]').find('td:nth-child(1)').contains('admin (admin)');
+
+		cy.get('[data-cy=sucuriscan_last_logins_delete_logins_button]').click();
+
+		cy.get('.sucuriscan-alert').contains('sucuri-lastlogins.php was deleted.');
+		cy.get('[data-cy=sucuriscan_last_logins_table]').contains('no data available');
+
+		cy.get('[data-cy=sucuriscan_lastlogins_nav_admins]').click();
+
+		cy.get('[data-cy=sucuriscan_successful_logins_table]').find('td:nth-child(1)').contains('admin');
+
+		cy.get('[data-cy=sucuriscan_lastlogins_nav_loggedin]').click();
+
+		cy.get('[data-cy=sucuriscan_successful_loggedin_table]').find('td:nth-child(2)').contains('admin');
+
+		cy.get('[data-cy=sucuriscan_lastlogins_nav_failed]').click();
+
+		cy.visit('/wp-login.php');
+		cy.wait(1000);
+		cy.get('#user_login' ).type('_NOT_A_WP_USER');
+		cy.get('#user_pass' ).type('NOT_A_WP_PASS');
+		cy.get('#wp-submit' ).click();
+
+		cy.get('#user_login' ).type( Cypress.env('wp_user'));
+		cy.get('#user_pass' ).type( Cypress.env('wp_pass'));
+		cy.get('#wp-submit' ).click();
+
+		cy.visit('/wp-admin/admin.php?page=sucuriscan_lastlogins#failed');
+
+		cy.get('[data-cy=sucuriscan_failedlogins_table]').find('td:nth-child(1)').contains('admin_NOT_A_WP_USER');
+
+		cy.get('[data-cy=sucuriscan_failedlogins_delete_logins_button]').click();
+
+		cy.get('.sucuriscan-alert').contains('sucuri-failedlogins.php was deleted.');
+
+		cy.get('[data-cy=sucuriscan_failedlogins_table]').contains('no data available');
+	});
 }	);
