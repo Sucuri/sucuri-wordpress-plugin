@@ -1,8 +1,0 @@
-{
-  "editor.insertSpaces": false,
-  "editor.detectIndentation": false,
-  "phpcs.enable": true,
-  "phpcs.executablePath": "./vendor/bin/phpcs",
-	"phpcs.standard": "WordPress",
-	"editor.renderWhitespace": "all",
-}

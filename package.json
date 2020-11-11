@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/imgerson/sucuri-wordpress-plugin.git"
+    "url": "git+https://github.com/Sucuri/sucuri-wordpress-plugin.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/imgerson/sucuri-wordpress-plugin/issues"
+    "url": "https://github.com/Sucuri/sucuri-wordpress-plugin/issues"
   },
-  "homepage": "https://github.com/imgerson/sucuri-wordpress-plugin#readme",
+  "homepage": "https://github.com/Sucuri/sucuri-wordpress-plugin#readme",
   "devDependencies": {
     "@wordpress/env": "^2.1.0",
     "cypress": "^5.2.0"
