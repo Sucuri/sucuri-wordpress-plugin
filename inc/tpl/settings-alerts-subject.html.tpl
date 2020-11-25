@@ -15,13 +15,13 @@
                     <label>
                         <input type="radio" name="sucuriscan_email_subject" value="custom" %%SUCURI.Alerts.CustomChecked%% />
                         <span>{{Custom Format}}</span>
-                        <input type="text" name="sucuriscan_custom_email_subject" value="%%SUCURI.Alerts.CustomValue%%" />
+                        <input type="text" name="sucuriscan_custom_email_subject" value="%%SUCURI.Alerts.CustomValue%%" data-cy="sucuriscan_alerts_subject_input" />
                     </label>
                 </li>
             </ul>
 
             <div class="sucuriscan-recipient-form">
-                <button type="submit" class="button button-primary">{{Submit}}</button>
+                <button type="submit" class="button button-primary" data-cy="sucuriscan_alerts_subject_submit">{{Submit}}</button>
             </div>
         </form>
     </div>

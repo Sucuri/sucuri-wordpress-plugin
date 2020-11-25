@@ -15,14 +15,14 @@
 
             <fieldset class="sucuriscan-clearfix">
                 <label>{{Stop Alerts For This Post-Type:}}</label>
-                <input type="text" name="sucuriscan_ignorerule" placeholder="{{e.g. unique_post_type_id}}" />
-                <button type="submit" class="button button-primary">{{Submit}}</button>
+                <input type="text" name="sucuriscan_ignorerule" placeholder="{{e.g. unique_post_type_id}}" data-cy="sucuriscan_alerts_post_type_input" />
+                <button type="submit" class="button button-primary" data-cy="sucuriscan_alerts_post_type_submit">{{Submit}}</button>
             </fieldset>
         </form>
 
         <hr>
 
-        <button class="button button-primary sucuriscan-show-section" section="sucuriscan-ignorerules" on="{{Show Post-Types Table}}" off="{{Hide Post-Types Table}}">{{Show Post-Types Table}}</button>
+        <button class="button button-primary sucuriscan-show-section" section="sucuriscan-ignorerules" on="{{Show Post-Types Table}}" off="{{Hide Post-Types Table}}" data-cy="sucuriscan_alerts_post_type_toggle_post_type_list">{{Show Post-Types Table}}</button>
 
         <div class="sucuriscan-hidden" id="sucuriscan-ignorerules">
             <hr>
@@ -31,7 +31,7 @@
                 <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
                 <input type="hidden" name="sucuriscan_ignorerule_action" value="batch" />
 
-                <table class="wp-list-table widefat sucuriscan-table sucuriscan-settings-ignorerules">
+                <table class="wp-list-table widefat sucuriscan-table sucuriscan-settings-ignorerules" data-cy="sucuriscan_alerts_post_type_table">
                     <thead>
                         <tr>
                             <td id="cb" class="manage-column column-cb check-column">
@@ -49,7 +49,7 @@
                     </tbody>
                 </table>
 
-                <button type="submit" class="button button-primary">{{Submit}}</button>
+                <button type="submit" class="button button-primary" data-cy="sucuriscan_alerts_post_type_save_submit">{{Submit}}</button>
             </form>
         </div>
     </div>

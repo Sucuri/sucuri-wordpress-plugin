@@ -8,7 +8,7 @@
         <a href="%%SUCURI.ResetPlugin.Repository%%" target="_blank" rel="noopener">%%SUCURI.ResetPlugin.Plugin%%</a>
     </td>
 
-    <td class="sucuriscan-reset-plugin-response">
+    <td class="sucuriscan-reset-plugin-response" data-cy="sucuriscan_reset_plugin_response">
         <span class="sucuriscan-monospace">%%SUCURI.ResetPlugin.Version%%</span>
     </td>
 

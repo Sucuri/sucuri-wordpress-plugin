@@ -1,0 +1,12 @@
+{
+  "baseUrl": "http://localhost:8888/",
+  "env": {
+    "wp_user": "admin",
+    "wp_pass": "password"
+  },
+	"retries": {
+		"runMode": 3,
+		"openMode": 0
+	},
+	"experimentalNetworkStubbing": true
+}

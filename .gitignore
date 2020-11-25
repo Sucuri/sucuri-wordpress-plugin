@@ -1,0 +1,7 @@
+node_modules
+vendor
+
+cypress/videos
+cypress/screenshots
+
+cypress.json

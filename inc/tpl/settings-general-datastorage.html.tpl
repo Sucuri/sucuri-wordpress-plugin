@@ -14,12 +14,12 @@
         <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
         <input type="hidden" name="sucuriscan_reset_storage" value="1" />
 
-        <table class="wp-list-table widefat sucuriscan-table">
+        <table class="wp-list-table widefat sucuriscan-table" data-cy="sucuriscan_general_datastore_table">
             <thead>
                 <tr>
                     <td id="cb" class="manage-column column-cb check-column">
                         <label class="screen-reader-text" for="cb-select-all-1">{{Select All}}</label>
-                        <input id="cb-select-all-1" type="checkbox">
+                        <input id="cb-select-all-1" type="checkbox" data-cy="sucuriscan_general_datastore_delete_checkbox">
                     </td>
                     <th class="manage-column">{{File Path}}</th>
                     <th class="manage-column">{{File Size}}</th>
@@ -34,7 +34,7 @@
         </table>
 
         <p>
-            <button type="submit" class="button button-primary">{{Delete}}</button>
+            <button type="submit" class="button button-primary" data-cy="sucuriscan_general_datastore_delete_button">{{Delete}}</button>
         </p>
     </form>
 </div>

@@ -11,7 +11,7 @@
             <form action="%%SUCURI.URL.Settings%%" method="post">
                 <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
                 <input type="hidden" name="sucuriscan_revproxy" value="%%SUCURI.ReverseProxySwitchValue%%" />
-                <button type="submit" class="button button-primary">%%SUCURI.ReverseProxySwitchText%%</button>
+                <button type="submit" class="button button-primary" data-cy="sucuriscan_reverse_proxy_toggle">%%SUCURI.ReverseProxySwitchText%%</button>
             </form>
         </div>
     </div>

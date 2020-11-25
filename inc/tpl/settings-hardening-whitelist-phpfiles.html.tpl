@@ -9,11 +9,11 @@
             <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
             <fieldset class="sucuriscan-clearfix">
                 <label>{{File Path:}}</label>
-                <input type="text" name="sucuriscan_hardening_whitelist" placeholder="e.g. wp-tinymce.php" />
-                <select name="sucuriscan_hardening_folder">
+                <input type="text" name="sucuriscan_hardening_whitelist" placeholder="e.g. wp-tinymce.php" data-cy="sucuriscan_hardening_whitelist_input" />
+                <select name="sucuriscan_hardening_folder" data-cy="sucuriscan_hardening_whitelist_select">
                     %%%SUCURI.HardeningWhitelist.AllowedFolders%%%
                 </select>
-                <button type="submit" class="button button-primary">{{Submit}}</button>
+                <button type="submit" class="button button-primary" data-cy="sucuriscan_hardening_whitelist_submit">{{Submit}}</button>
             </fieldset>
         </form>
 

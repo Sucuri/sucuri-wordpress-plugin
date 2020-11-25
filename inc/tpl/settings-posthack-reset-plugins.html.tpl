@@ -73,6 +73,6 @@
             </tbody>
         </table>
 
-        <button type="button" id="sucuriscan_reset_plugins" class="button button-primary">{{Submit}}</button>
+        <button type="button" id="sucuriscan_reset_plugins" class="button button-primary" data-cy="sucuriscan_reset_plugins_submit">{{Submit}}</button>
     </div>
 </div>

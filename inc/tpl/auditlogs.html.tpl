@@ -103,7 +103,7 @@ jQuery(document).ready(function ($) {
 </script>
 
 <div class="sucuriscan-auditlog-table">
-    <div class="sucuriscan-auditlog-response">
+    <div class="sucuriscan-auditlog-response" data-cy="sucuriscan_auditlog_response_loading">
         <em>{{Loading...}}</em>
     </div>
 
@@ -117,11 +117,11 @@ jQuery(document).ready(function ($) {
         </div>
     </div>
 
-    <div class="sucuriscan-clearfix sucuriscan-auditlog-footer">
+    <div class="sucuriscan-clearfix sucuriscan-auditlog-footer" data-cy="sucuriscan_audit_logs_footer">
         <div class="sucuriscan-pull-left sucuriscan-hidden sucuriscan-tooltip
             sucuriscan-sendlogs-panel" tooltip-width="250" tooltip-html="true">
             <small class="sucuriscan-auditlogs-sendlogs-response"></small>
-            <small><a href="#" class="sucuriscan-auditlogs-sendlogs">{{Send Logs}}</a></small>
+            <small><a href="#" class="sucuriscan-auditlogs-sendlogs" data-cy="sucuriscan_dashboard_send_audit_logs_submit">{{Send Logs}}</a></small>
         </div>
 
         <div class="sucuriscan-pull-right">

@@ -9,10 +9,10 @@
             <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
             <fieldset class="sucuriscan-clearfix">
                 <label>{{Consider Brute-Force Attack After:}}</label>
-                <select name="sucuriscan_maximum_failed_logins">
+                <select name="sucuriscan_maximum_failed_logins" data-cy="sucuriscan_max_failed_logins_select">
                     %%%SUCURI.Alerts.BruteForce%%%
                 </select>
-                <button type="submit" class="button button-primary">{{Submit}}</button>
+                <button type="submit" class="button button-primary" data-cy="sucuriscan_max_failed_logins_submit">{{Submit}}</button>
             </fieldset>
         </form>
     </div>

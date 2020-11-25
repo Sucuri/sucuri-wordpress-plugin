@@ -20,7 +20,7 @@
                 </tr>
             </thead>
 
-            <tbody>
+            <tbody data-cy="sucuriscan_last_logins_table">
                 %%%SUCURI.UserList%%%
 
                 <tr class="sucuriscan-%%SUCURI.UserList.NoItemsVisibility%%">
@@ -42,6 +42,6 @@
     <form action="%%SUCURI.URL.Lastlogins%%#allusers" method="post">
         <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
         <input type="hidden" name="sucuriscan_delete_lastlogins" value="1" />
-        <input type="submit" value="{{Delete All Successful Logins}}" class="button button-primary" />
+        <input type="submit" value="{{Delete All Successful Logins}}" class="button button-primary" data-cy="sucuriscan_last_logins_delete_logins_button" />
     </form>
 </div>

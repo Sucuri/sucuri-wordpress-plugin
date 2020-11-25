@@ -9,10 +9,10 @@
             <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
             <fieldset class="sucuriscan-clearfix">
                 <label>{{Maximum Alerts Per Hour:}}</label>
-                <select name="sucuriscan_emails_per_hour">
+                <select name="sucuriscan_emails_per_hour" data-cy="sucuriscan_alerts_per_hour_select">
                     %%%SUCURI.Alerts.PerHour%%%
                 </select>
-                <button type="submit" class="button button-primary">{{Submit}}</button>
+                <button type="submit" class="button button-primary" data-cy="sucuriscan_alerts_per_hour_submit">{{Submit}}</button>
             </fieldset>
         </form>
     </div>

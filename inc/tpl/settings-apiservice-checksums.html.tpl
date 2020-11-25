@@ -15,8 +15,8 @@
             <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
             <fieldset class="sucuriscan-clearfix">
                 <label>{{WordPress Checksums API}}:</label>
-                <input type="text" name="sucuriscan_checksum_api" placeholder="{{e.g. URL — or — user/repo}}" size="30" />
-                <button type="submit" class="button button-primary">{{Submit}}</button>
+                <input type="text" name="sucuriscan_checksum_api" placeholder="{{e.g. URL — or — user/repo}}" size="30" data-cy="sucuriscan_wordpress_checksum_api_input" />
+                <button type="submit" class="button button-primary" data-cy="sucuriscan_wordpress_checksum_api_submit">{{Submit}}</button>
             </fieldset>
         </form>
     </div>

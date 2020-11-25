@@ -15,7 +15,7 @@
                 </tr>
             </thead>
 
-            <tbody>
+            <tbody data-cy="sucuriscan_successful_logins_table">
                 %%%SUCURI.AdminUsers.List%%%
             </tbody>
         </table>

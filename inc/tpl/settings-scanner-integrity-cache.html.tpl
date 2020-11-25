@@ -9,7 +9,7 @@
             <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
             <input type="hidden" name="sucuriscan_reset_integrity_cache" value="1" />
 
-            <table class="wp-list-table widefat sucuriscan-table">
+            <table class="wp-list-table widefat sucuriscan-table" data-cy="sucuriscan_integrity_diff_false_positive_table">
                 <thead>
                     <tr>
                         <td id="cb" class="manage-column column-cb check-column">
@@ -34,7 +34,7 @@
             </table>
 
             <p>
-                <button type="submit" class="button button-primary">{{Stop Ignoring the Selected Files}}</button>
+                <button type="submit" class="button button-primary" data-cy="sucuriscan_integrity_diff_false_positive_submit">{{Stop Ignoring the Selected Files}}</button>
             </p>
         </form>
     </div>
