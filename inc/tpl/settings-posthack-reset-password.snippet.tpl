@@ -4,7 +4,7 @@
         <input type="checkbox" name="user_ids[]" value="%%SUCURI.ResetPassword.UserID%%" %%SUCURI.ResetPassword.Disabled%% />
     </th>
 
-    <td>
+    <td data-cy="sucuriscan-reset-password-user-field">
     	<span class="sucuriscan-monospace">%%SUCURI.ResetPassword.Username%%</span>
     	<em class="sucuriscan-response"></em>
     </td>

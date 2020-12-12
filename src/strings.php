@@ -403,12 +403,12 @@ __('Loading...', 'sucuri-scanner');
 __('Download', 'sucuri-scanner');
 
 // settings-posthack-reset-password-alert.html.tpl
-__('WordPress has generated a new (random) password for your account <b>%%SUCURI.ResetPassword.UserName%%</b> at <a target="_blank" href="http://%%SUCURI.ResetPassword.Website%%" rel="noopener">%%SUCURI.ResetPassword.Website%%</a>. The change has been requested by one of the admins in this website for security reasons. Your new password is &mdash; <span style="font-family:Menlo, Monaco, monospace, serif;font-weight:700">%%%SUCURI.ResetPassword.Password%%%</span> &mdash; please change it as soon as possible.', 'sucuri-scanner');
+__('WordPress has invalidated the password for your account <b>%%SUCURI.ResetPassword.UserName%%</b> at <a target="_blank" href="http://%%SUCURI.ResetPassword.Website%%" rel="noopener">%%SUCURI.ResetPassword.Website%%</a>. The change has been requested by one of the admins in this website for security reasons. You can set a new password at &mdash; <span style="font-family:Menlo, Monaco, monospace, serif;font-weight:700"><a target="_blank" href="%%%SUCURI.ResetPassword.ResetURL%%%" rel="noopener">%%%SUCURI.ResetPassword.ResetURL%%%</a></span> &mdash;.', 'sucuri-scanner');
 
 // settings-posthack-reset-password.html.tpl
 __('Reset User Password', 'sucuri-scanner');
 __('Loading...', 'sucuri-scanner');
-__('You can generate a new random password for the user accounts that you select from the list. An email with the new password will be sent to the email address of each chosen user. If you choose to change the password of your own user, then your current session will expire immediately. You will need to log back into the admin panel with the new password that will be sent to your email.', 'sucuri-scanner');
+__('Select users from the list in order to change their passwords, terminate their sessions and email them a password reset link. Please be aware that the plugin will change the passwords before sending the emails, meaning that if your web server is unable to send emails, your users will be locked out of the site.', 'sucuri-scanner');
 __('Select All', 'sucuri-scanner');
 __('Username', 'sucuri-scanner');
 __('E-mail', 'sucuri-scanner');
