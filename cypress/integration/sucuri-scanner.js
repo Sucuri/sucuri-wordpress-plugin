@@ -1,11 +1,7 @@
 
 describe( 'Run integration tests', () => {
 	beforeEach( function() {
-		cy.visit('/wp-login.php');
-		cy.wait(1000);
-		cy.get('#user_login' ).type( Cypress.env('wp_user'));
-		cy.get('#user_pass' ).type( Cypress.env('wp_pass'));
-		cy.get('#wp-submit' ).click();
+		cy.login();
 	}	);
 
 	it('can change malware scan target', () => {
@@ -231,11 +227,7 @@ describe( 'Run integration tests', () => {
 
 		cy.reload();
 
-		cy.wait(1000);
-
-		cy.get('#user_login' ).type( Cypress.env('wp_user'));
-		cy.get('#user_pass' ).type( Cypress.env('wp_pass'));
-		cy.get('#wp-submit' ).click();
+		cy.login();
 
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#posthack');
 
@@ -472,15 +464,9 @@ describe( 'Run integration tests', () => {
 
 		cy.get('[data-cy=sucuriscan_lastlogins_nav_failed]').click();
 
-		cy.visit('/wp-login.php');
-		cy.wait(1000);
-		cy.get('#user_login' ).type('_NOT_A_WP_USER');
-		cy.get('#user_pass' ).type('NOT_A_WP_PASS');
-		cy.get('#wp-submit' ).click();
+		cy.login('_NOT_A_WP_USER', 'NOT_A_WP_PASS');
 
-		cy.get('#user_login' ).type( Cypress.env('wp_user'));
-		cy.get('#user_pass' ).type( Cypress.env('wp_pass'));
-		cy.get('#wp-submit' ).click();
+		cy.login();
 
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_lastlogins#failed');
 
@@ -497,26 +483,15 @@ describe( 'Run integration tests', () => {
 		cy.clearCookies();
 		cy.reload();
 
-		cy.visit('/wp-login.php')
-
-		cy.wait(1000);
-
 		// This user is added automatically at .github/workflows/end-to-end-tests.yml
-		cy.get('#user_login' ).type('sucuri');
-		cy.get('#user_pass' ).type('password');
-		cy.get('#wp-submit' ).click();
-
-		cy.wait(1000);
+		cy.login('sucuri', 'password');
 
 		cy.url().should('eq', 'http://localhost:8888/wp-admin/')
 
 		cy.clearCookies();
 		cy.reload();
 
-		cy.wait(1000);
-		cy.get('#user_login' ).type( Cypress.env('wp_user'));
-		cy.get('#user_pass' ).type( Cypress.env('wp_pass'));
-		cy.get('#wp-submit' ).click();
+		cy.login();
 
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#posthack');
 
@@ -528,12 +503,7 @@ describe( 'Run integration tests', () => {
 		cy.clearCookies();
 		cy.reload();
 
-		cy.wait(1000);
-
-		// This user is added automatically at .github/workflows/end-to-end-tests.yml
-		cy.get('#user_login' ).type('sucuri');
-		cy.get('#user_pass' ).type('password');
-		cy.get('#wp-submit' ).click();
+		cy.login('sucuri', 'password');
 
 		cy.get('#login_error').contains('The password you entered for the username sucuri is incorrect.');
 	});

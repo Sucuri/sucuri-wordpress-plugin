@@ -23,3 +23,17 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+
+Cypress.Commands.add('login', (username, password) => {
+  const loginUsername = username ? username : Cypress.env('wp_user');
+  const loginPassword = password ? password : Cypress.env('wp_pass');
+
+  cy.visit('/wp-login.php');
+
+  cy.contains('Username or Email Address');
+
+  cy.get('#user_login' ).type(loginUsername);
+  cy.get('#user_pass' ).type(loginPassword);
+
+  cy.get('#wp-submit' ).click();
+});
