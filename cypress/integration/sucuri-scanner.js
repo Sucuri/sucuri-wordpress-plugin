@@ -423,7 +423,7 @@ describe( 'Run integration tests', () => {
 	it('can send audit logs to sucuri servers', () => {
 		cy.visit('/wp-admin/admin.php?page=sucuriscan#auditlogs');
 
-		cy.route2('POST', '/wp-admin/admin-ajax.php?page=sucuriscan', (req) => {
+		cy.intercept('POST', '/wp-admin/admin-ajax.php?page=sucuriscan', (req) => {
 			if (req.body.includes('get_audit_logs')) {
 				req.reply((res) => {
 					res.send({ fixture: 'audit_logs.json' });
@@ -464,13 +464,13 @@ describe( 'Run integration tests', () => {
 
 		cy.get('[data-cy=sucuriscan_lastlogins_nav_failed]').click();
 
-		cy.login('_NOT_A_WP_USER', 'NOT_A_WP_PASS');
+		cy.login('_x', 'NOT_A_WP_PASS');
 
 		cy.login();
 
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_lastlogins#failed');
 
-		cy.get('[data-cy=sucuriscan_failedlogins_table]').find('td:nth-child(1)').contains('admin_NOT_A_WP_USER');
+		cy.get('[data-cy=sucuriscan_failedlogins_table]').find('td:nth-child(1)').contains('admin_x');
 
 		cy.get('[data-cy=sucuriscan_failedlogins_delete_logins_button]').click();
 
