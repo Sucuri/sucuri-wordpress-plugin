@@ -735,6 +735,11 @@ class SucuriScanEvent extends SucuriScan
         $user_login = $user->user_login;
         $display_name = $user->display_name;
         $key = self::GetPasswordResetKey($user);
+
+        if (is_wp_error($key)) {
+            return false;
+        }
+
         $reset_password_url = network_site_url("wp-login.php?action=rp&key=$key&login=" . rawurlencode($user_login), 'login' );
 
         $message = SucuriScanTemplate::getSection(
@@ -766,14 +771,16 @@ class SucuriScanEvent extends SucuriScan
      * @since 1.8.25
      *
      * @param WP_User $user WP_User object.
-     * @return string|false Returns a password reset key as a string, false otherwise.
+     * @return string|WP_Error Returns a password reset key as a string, WP_Error otherwise.
      */
     public static function GetPasswordResetKey($user)
     {
         global $wp_hasher;
 
+        $key_error = new WP_Error( 'no_password_reset' );
+
         if (!($user instanceof WP_User)) {
-            return false;
+            return $key_error;
         }
 
         /**
@@ -790,15 +797,11 @@ class SucuriScanEvent extends SucuriScan
         ) {
             $key = get_password_reset_key($user);
 
-            if (is_wp_error($key)) {
-                return false;
-            }
-
             return $key;
         }
 
         if (is_multisite() && is_user_spammy($user)) {
-            return false;
+            return $key_error;
         }
 
         // Generate something random for a password reset key.
@@ -819,7 +822,7 @@ class SucuriScanEvent extends SucuriScan
         );
 
         if (is_wp_error($key_saved)) {
-            return false;
+            return $key_error;
         }
 
         return $key;
