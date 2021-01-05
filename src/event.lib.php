@@ -773,11 +773,11 @@ class SucuriScanEvent extends SucuriScan
      * @param WP_User $user WP_User object.
      * @return string|WP_Error Returns a password reset key as a string, WP_Error otherwise.
      */
-    public static function GetPasswordResetKey($user)
+    private static function GetPasswordResetKey($user)
     {
         global $wp_hasher;
 
-        $key_error = new WP_Error( 'no_password_reset' );
+        $key_error = new WP_Error('no_password_reset');
 
         if (!($user instanceof WP_User)) {
             return $key_error;
@@ -822,7 +822,7 @@ class SucuriScanEvent extends SucuriScan
         );
 
         if (is_wp_error($key_saved)) {
-            return $key_error;
+            return $key_saved;
         }
 
         return $key;
