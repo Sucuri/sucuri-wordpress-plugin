@@ -56,8 +56,10 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Start Docker environment
-        run: npx wp-env start
+      - name: Start WordPress environment
+        run: |
+          npx wp-env start
+          npx wp-env run cli "wp user create sucuri sucuri@sucuri.net --role=author --user_pass=password"
 
       - name: Log running Docker containers
         run: docker ps -a
@@ -79,4 +81,14 @@ jobs:
       - name: Run E2E tests
         run: |
           cp cypress.json.example cypress.json
-          npx cypress run --config video=false
+          npx cypress run
+          
+      - name: Upload Cypress tests on failure
+        uses: actions/upload-artifact@v2.2.1
+        if: failure()
+        with:
+          name: cypress
+          path: |
+            cypress/videos
+            cypress/screenshots
+        

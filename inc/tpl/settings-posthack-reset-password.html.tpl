@@ -31,7 +31,7 @@
     </script>
 
     <div class="inside">
-        <p>{{You can generate a new random password for the user accounts that you select from the list. An email with the new password will be sent to the email address of each chosen user. If you choose to change the password of your own user, then your current session will expire immediately. You will need to log back into the admin panel with the new password that will be sent to your email.}}</p>
+        <p>{{Select users from the list in order to change their passwords, terminate their sessions and email them a password reset link. Please be aware that the plugin will change the passwords before sending the emails, meaning that if your web server is unable to send emails, your users will be locked out of the site.}}</p>
 
         <table class="wp-list-table widefat sucuriscan-table sucuriscan-reset-password-table">
             <thead>
@@ -61,6 +61,6 @@
         </table>
 
         <button type="button" id="sucuriscan-reset-password-button"
-        class="button button-primary">{{Submit}}</button>
+        class="button button-primary" data-cy="sucuriscan-reset-password-button">{{Submit}}</button>
     </div>
 </div>

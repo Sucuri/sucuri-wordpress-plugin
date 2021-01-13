@@ -1,11 +1,7 @@
 
 describe( 'Run integration tests', () => {
 	beforeEach( function() {
-		cy.visit('/wp-login.php');
-		cy.wait(1000);
-		cy.get('#user_login' ).type( Cypress.env('wp_user'));
-		cy.get('#user_pass' ).type( Cypress.env('wp_pass'));
-		cy.get('#wp-submit' ).click();
+		cy.login();
 	}	);
 
 	it('can change malware scan target', () => {
@@ -227,13 +223,11 @@ describe( 'Run integration tests', () => {
 
 		cy.get('.sucuriscan-alert').contains('Secret keys updated successfully (summary of the operation bellow).');
 
-		cy.wait(5000);
+		cy.wait(3000);
 
 		cy.reload();
 
-		cy.get('#user_login' ).type( Cypress.env('wp_user'));
-		cy.get('#user_pass' ).type( Cypress.env('wp_pass'));
-		cy.get('#wp-submit' ).click();
+		cy.login();
 
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#posthack');
 
@@ -429,7 +423,7 @@ describe( 'Run integration tests', () => {
 	it('can send audit logs to sucuri servers', () => {
 		cy.visit('/wp-admin/admin.php?page=sucuriscan#auditlogs');
 
-		cy.route2('POST', '/wp-admin/admin-ajax.php?page=sucuriscan', (req) => {
+		cy.intercept('POST', '/wp-admin/admin-ajax.php?page=sucuriscan', (req) => {
 			if (req.body.includes('get_audit_logs')) {
 				req.reply((res) => {
 					res.send({ fixture: 'audit_logs.json' });
@@ -470,24 +464,47 @@ describe( 'Run integration tests', () => {
 
 		cy.get('[data-cy=sucuriscan_lastlogins_nav_failed]').click();
 
-		cy.visit('/wp-login.php');
-		cy.wait(1000);
-		cy.get('#user_login' ).type('_NOT_A_WP_USER');
-		cy.get('#user_pass' ).type('NOT_A_WP_PASS');
-		cy.get('#wp-submit' ).click();
+		cy.login('_x', 'NOT_A_WP_PASS');
 
-		cy.get('#user_login' ).type( Cypress.env('wp_user'));
-		cy.get('#user_pass' ).type( Cypress.env('wp_pass'));
-		cy.get('#wp-submit' ).click();
+		cy.login();
 
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_lastlogins#failed');
 
-		cy.get('[data-cy=sucuriscan_failedlogins_table]').find('td:nth-child(1)').contains('admin_NOT_A_WP_USER');
+		cy.get('[data-cy=sucuriscan_failedlogins_table]').find('td:nth-child(1)').contains('admin_x');
 
 		cy.get('[data-cy=sucuriscan_failedlogins_delete_logins_button]').click();
 
 		cy.get('.sucuriscan-alert').contains('sucuri-failedlogins.php was deleted.');
 
 		cy.get('[data-cy=sucuriscan_failedlogins_table]').contains('no data available');
+	});
+
+	it('can reset password', () => {
+		cy.clearCookies();
+		cy.reload();
+
+		// This user is added automatically at .github/workflows/end-to-end-tests.yml
+		cy.login('sucuri', 'password');
+
+		cy.url().should('eq', 'http://localhost:8888/wp-admin/')
+
+		cy.clearCookies();
+		cy.reload();
+
+		cy.login();
+
+		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#posthack');
+
+		cy.get('input[value="2"]').click();
+		cy.get('[data-cy=sucuriscan-reset-password-button]').click();
+
+		cy.get('[data-cy=sucuriscan-reset-password-user-field]').contains('sucuri (Done)');
+
+		cy.clearCookies();
+		cy.reload();
+
+		cy.login('sucuri', 'password');
+
+		cy.get('#login_error').contains('The password you entered for the username sucuri is incorrect.');
 	});
 }	);
