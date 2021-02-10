@@ -28,7 +28,7 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  * SiteCheck is a web application scanner that reads the source code of a
  * website to determine if it is serving malicious code, it scans the home page
  * and linked sub-pages, then compares the results with a list of signatures as
- * well as a list of blacklist services to see if other malware scanners have
+ * well as a list of blocklist services to see if other malware scanners have
  * flagged the website before. This operation may take a couple of seconds,
  * around twenty seconds in most cases; be sure to set enough timeout for the
  * operation to finish, otherwise the scanner will return innacurate
@@ -301,11 +301,11 @@ class SucuriScanSiteCheck extends SucuriScanAPI
     }
 
     /**
-     * Generates the HTML section for the SiteCheck blacklist.
+     * Generates the HTML section for the SiteCheck blocklist.
      *
-     * @return string HTML code to render the blacklist section.
+     * @return string HTML code to render the blocklist section.
      */
-    public static function blacklist()
+    public static function blocklist()
     {
         $params = array();
         $data = self::scanAndCollectData();
@@ -314,9 +314,9 @@ class SucuriScanSiteCheck extends SucuriScanAPI
             return ''; /* there is not enough information to render */
         }
 
-        $params['Blacklist.Title'] = __('Not Blacklisted', 'sucuri-scanner');
-        $params['Blacklist.Color'] = 'green';
-        $params['Blacklist.Content'] = '';
+        $params['Blocklist.Title'] = __('Not in the blocklist', 'sucuri-scanner');
+        $params['Blocklist.Color'] = 'green';
+        $params['Blocklist.Content'] = '';
 
         foreach ($data['BLACKLIST'] as $type => $proof) {
             foreach ($proof as $info) {
@@ -327,23 +327,23 @@ class SucuriScanSiteCheck extends SucuriScanAPI
                     substr($info[0], 0, strrpos($info[0], ':'))
                 );
 
-                $params['Blacklist.Content'] .= SucuriScanTemplate::getSnippet(
-                    'sitecheck-blacklist',
+                $params['Blocklist.Content'] .= SucuriScanTemplate::getSnippet(
+                    'sitecheck-blocklist',
                     array(
-                        'Blacklist.URL' => $url,
-                        'Blacklist.Status' => $type,
-                        'Blacklist.Service' => $title,
+                        'Blocklist.URL' => $url,
+                        'Blocklist.Status' => $type,
+                        'Blocklist.Service' => $title,
                     )
                 );
             }
         }
 
         if (isset($data['BLACKLIST']['WARN'])) {
-            $params['Blacklist.Title'] = __('Blacklisted', 'sucuri-scanner');
-            $params['Blacklist.Color'] = 'red';
+            $params['Blocklist.Title'] = __('In the blocklist', 'sucuri-scanner');
+            $params['Blocklist.Color'] = 'red';
         }
 
-        return SucuriScanTemplate::getSection('sitecheck-blacklist', $params);
+        return SucuriScanTemplate::getSection('sitecheck-blocklist', $params);
     }
 
     /**
@@ -536,7 +536,7 @@ class SucuriScanSiteCheck extends SucuriScanAPI
         $response = array();
 
         $response['malware'] = SucuriScanSiteCheck::malware();
-        $response['blacklist'] = SucuriScanSiteCheck::blacklist();
+        $response['blocklist'] = SucuriScanSiteCheck::blocklist();
         $response['recommendations'] = SucuriScanSiteCheck::recommendations();
 
         $response['iframes'] = array(
@@ -556,7 +556,7 @@ class SucuriScanSiteCheck extends SucuriScanAPI
 
         if (!empty($errors)) {
             $response['malware'] = '';
-            $response['blacklist'] = '';
+            $response['blocklist'] = '';
             $response['recommendations'] = '';
         }
 

@@ -15,11 +15,11 @@ jQuery(document).ready(function ($) {
         }, function (data) {
             $('.sucuriscan-ipaccess-table tbody').html('');
 
-            for (var i in data.blacklist) {
+            for (var i in data.blocklist) {
                 $('.sucuriscan-ipaccess-table tbody').append('<tr>' +
-                '<td><span class="sucuriscan-monospace">' + data.blacklist[i] + '</span></td>' +
-                '<td><button class="button button-primary sucuriscan-deblacklist" ' +
-                'ip="' + data.blacklist[i] + '">{{Delete}}</button></td>' +
+                '<td><span class="sucuriscan-monospace">' + data.blocklist[i] + '</span></td>' +
+                '<td><button class="button button-primary sucuriscan-deblocklist" ' +
+                'ip="' + data.blocklist[i] + '">{{Delete}}</button></td>' +
                 '</tr>');
             }
         });
@@ -55,14 +55,14 @@ jQuery(document).ready(function ($) {
         $.post('%%SUCURI.AjaxURL.Firewall%%', {
             action: 'sucuriscan_ajax',
             sucuriscan_page_nonce: '%%SUCURI.PageNonce%%',
-            form_action: 'firewall_blacklist',
+            form_action: 'firewall_blocklist',
             ip: ip,
         }, function (data) {
             sucuriscanPrintStatus(button, data);
         });
     });
 
-    $('.sucuriscan-container').on('click', '.sucuriscan-deblacklist', function (event) {
+    $('.sucuriscan-container').on('click', '.sucuriscan-deblocklist', function (event) {
         event.preventDefault();
 
         var button = $(this);
@@ -74,7 +74,7 @@ jQuery(document).ready(function ($) {
         $.post('%%SUCURI.AjaxURL.Firewall%%', {
             action: 'sucuriscan_ajax',
             sucuriscan_page_nonce: '%%SUCURI.PageNonce%%',
-            form_action: 'firewall_deblacklist',
+            form_action: 'firewall_deblocklist',
             ip: button.attr('ip'),
         }, function (data) {
             sucuriscanPrintStatus(button, data);
@@ -89,15 +89,15 @@ jQuery(document).ready(function ($) {
     <h3 class="sucuriscan-title">{{IP Address Access}}</h3>
 
     <div class="inside">
-        <p>{{This tool allows you to blacklist one or more IP addresses from accessing your website.}}</p>
-        <p>{{To delete an IP from the blacklist you can use the form below or you can log into the Firewall dashboard.}}</p>
+        <p>{{This tool allows you to add one or more IP addresses to the blocklist and stop them from accessing your website.}}</p>
+        <p>{{To delete an IP from the blocklist you can use the form below or you can log into the Firewall dashboard.}}</p>
 
         <div id="sucuriscan-ipaccess-response"></div>
 
         <form action="%%SUCURI.URL.Firewall%%#ipaccess" method="post" class="sucuriscan-ipaccess-form">
-            <input type="hidden" name="sucuriscan_blacklist_ip" value="true" />
+            <input type="hidden" name="sucuriscan_blocklist_ip" value="true" />
             <fieldset class="sucuriscan-clearfix">
-                <label>{{Blacklist IP:}}</label>
+                <label>{{Add IP to the Blocklist:}}</label>
                 <input type="text" name="sucuriscan_ip" placeholder="{{e.g. 192.168.1.54}}" />
                 <button class="button button-primary sucuriscan-ipaccess-button">{{Submit}}</button>
             </fieldset>

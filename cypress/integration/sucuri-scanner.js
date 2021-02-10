@@ -205,12 +205,12 @@ describe( 'Run integration tests', () => {
 		cy.get('.sucuriscan-alert').contains('Automatic Secret Keys Updater disabled.');
 	});
 
-	it('can whitelist blocked PHP files', () => {
+	it('can unblocked PHP files', () => {
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#hardening');
 
-		cy.get('[data-cy=sucuriscan_hardening_whitelist_input]').type('ok.php');
-		cy.get('[data-cy=sucuriscan_hardening_whitelist_select]').select('/var/www/html/wp-content');
-		cy.get('[data-cy=sucuriscan_hardening_whitelist_submit]').click();
+		cy.get('[data-cy=sucuriscan_hardening_allowlist_input]').type('ok.php');
+		cy.get('[data-cy=sucuriscan_hardening_allowlist_select]').select('/var/www/html/wp-content');
+		cy.get('[data-cy=sucuriscan_hardening_allowlist_submit]').click();
 
 		cy.get('.sucuriscan-alert-error').contains('Access control file does not exists');
 	});

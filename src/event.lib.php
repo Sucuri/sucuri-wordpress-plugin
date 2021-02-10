@@ -592,8 +592,8 @@ class SucuriScanEvent extends SucuriScan
         /**
          * Skip if the IP address is trusted.
          *
-         * Ignore event if the website owner has whitelisted the IP address of
-         * the current user in session. This is useful if the administrator is
+         * Ignore event if the website owner has the IP address of the current
+         * user in session in the allowlist. This is useful if the administrator is
          * working in an office and they want to allow every person in the office
          * (aka. the same LAN) to execute any task without triggering a security
          * alert.
@@ -665,7 +665,7 @@ class SucuriScanEvent extends SucuriScan
             return false;
         }
 
-        /* check if exact IP address match is whitelisted */
+        /* check if exact IP address match is in the allowlist */
         if (array_key_exists(md5($addr), $trusted_ips)) {
             return true;
         }

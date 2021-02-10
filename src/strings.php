@@ -75,9 +75,9 @@ __('Delete', 'sucuri-scanner');
 __('Submit', 'sucuri-scanner');
 __('Loading...', 'sucuri-scanner');
 __('IP Address Access', 'sucuri-scanner');
-__('This tool allows you to blacklist one or more IP addresses from accessing your website.', 'sucuri-scanner');
-__('To delete an IP from the blacklist you can use the form below or you can log into the Firewall dashboard.', 'sucuri-scanner');
-__('Blacklist IP:', 'sucuri-scanner');
+__('This tool allows you to add one or more IP addresses to the blocklist and stop them from accessing your website.', 'sucuri-scanner');
+__('To delete an IP from the blocklist you can use the form below or you can log into the Firewall dashboard.', 'sucuri-scanner');
+__('Add IP to the Blocklist:', 'sucuri-scanner');
 __('e.g. 192.168.1.54', 'sucuri-scanner');
 __('IP Address', 'sucuri-scanner');
 
@@ -371,8 +371,8 @@ __('This option defines the timezone that will be used through out the entire pl
 __('Timezone:', 'sucuri-scanner');
 __('Submit', 'sucuri-scanner');
 
-// settings-hardening-whitelist-phpfiles.html.tpl
-__('Whitelist Blocked PHP Files', 'sucuri-scanner');
+// settings-hardening-allowlist-phpfiles.html.tpl
+__('Allow Blocked PHP Files', 'sucuri-scanner');
 __('After you apply the hardening in either the includes, content, and/or uploads directories, the plugin will add a rule in the access control file to deny access to any PHP file located in these folders. This is a good precaution in case an attacker is able to upload a shell script. With a few exceptions the <em>"index.php"</em> file is the only one that should be publicly accessible, however many theme/plugin developers decide to use these folders to process some operations. In this case applying the hardening <strong>may break</strong> their functionality.', 'sucuri-scanner');
 __('File Path:', 'sucuri-scanner');
 __('Submit', 'sucuri-scanner');

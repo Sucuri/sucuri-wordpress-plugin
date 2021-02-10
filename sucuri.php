@@ -2,7 +2,7 @@
 
 /**
  * Plugin Name: Sucuri Security - Auditing, Malware Scanner and Hardening
- * Description: The <a href="https://sucuri.net/" target="_blank">Sucuri</a> plugin provides the website owner the best Activity Auditing, SiteCheck Remote Malware Scanning, Effective Security Hardening and Post-Hack features. SiteCheck will check for malware, spam, blacklisting and other security issues like .htaccess redirects, hidden eval code, etc. The best thing about it is it's completely free.
+ * Description: The <a href="https://sucuri.net/" target="_blank">Sucuri</a> plugin provides the website owner the best Activity Auditing, SiteCheck Remote Malware Scanning, Effective Security Hardening and Post-Hack features. SiteCheck will check for malware, spam, blocklisting and other security issues like .htaccess redirects, hidden eval code, etc. The best thing about it is it's completely free.
  * Plugin URI: https://wordpress.sucuri.net/
  * Author URI: https://sucuri.net/
  * Author: Sucuri Inc.
@@ -301,8 +301,8 @@ function sucuriscanUninstall()
     }
 
     /* Delete hardening in standard directories */
-    SucuriScanHardening::dewhitelist('ms-files.php', 'wp-includes');
-    SucuriScanHardening::dewhitelist('wp-tinymce.php', 'wp-includes');
+    SucuriScanHardening::removeFromAllowlist('ms-files.php', 'wp-includes');
+    SucuriScanHardening::removeFromAllowlist('wp-tinymce.php', 'wp-includes');
     SucuriScanHardening::unhardenDirectory(WP_CONTENT_DIR);
     SucuriScanHardening::unhardenDirectory(WP_CONTENT_DIR . '/uploads');
     SucuriScanHardening::unhardenDirectory(ABSPATH . '/wp-includes');
