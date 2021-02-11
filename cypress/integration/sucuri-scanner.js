@@ -205,7 +205,7 @@ describe( 'Run integration tests', () => {
 		cy.get('.sucuriscan-alert').contains('Automatic Secret Keys Updater disabled.');
 	});
 
-	it('can unblocked PHP files', () => {
+	it('can unblock PHP files', () => {
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#hardening');
 
 		cy.get('[data-cy=sucuriscan_hardening_allowlist_input]').type('ok.php');
