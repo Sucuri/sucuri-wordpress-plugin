@@ -68,7 +68,7 @@
                 </div>
             </div>
 
-            %%%SUCURI.Settings.Hardening.WhitelistPHPFiles%%%
+            %%%SUCURI.Settings.Hardening.AllowlistPHPFiles%%%
         </div>
 
         <div id="sucuriscan-tabs-posthack">

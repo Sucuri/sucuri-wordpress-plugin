@@ -86,7 +86,7 @@ class SucuriScanHardeningPage extends SucuriScan
      *
      * WAF is a protection layer for your web site, blocking all sort of attacks
      * (brute force attempts, DDoS, SQL injections, etc) and helping it remain
-     * malware and blacklist free. This test checks if your site is using Sucuri
+     * malware and blocklist free. This test checks if your site is using Sucuri
      * Firewall to protect your site.
      *
      * @return string HTML code with the replaced template variables.
@@ -103,7 +103,7 @@ class SucuriScanHardeningPage extends SucuriScan
 
         $params['Hardening.FieldName'] = __FUNCTION__;
         $params['Hardening.Title'] = __('Enable Website Firewall Protection', 'sucuri-scanner');
-        $params['Hardening.Description'] = __('A WAF is a protection layer for your web site, blocking all sort of attacks (brute force attempts, DDoS, SQL injections, etc) and helping it remain malware and blacklist free. This test checks if your site is using Sucuri Firewall to protect your site.', 'sucuri-scanner');
+        $params['Hardening.Description'] = __('A WAF is a protection layer for your web site, blocking all sort of attacks (brute force attempts, DDoS, SQL injections, etc) and helping it remain malware and blocklist free. This test checks if your site is using Sucuri Firewall to protect your site.', 'sucuri-scanner');
 
         if (!SucuriScan::isBehindFirewall()) {
             $params['Hardening.Status'] = 0;
@@ -194,7 +194,7 @@ class SucuriScanHardeningPage extends SucuriScan
         $params['Hardening.Status'] = 2;
         $params['Hardening.FieldName'] = __FUNCTION__;
         $params['Hardening.FieldText'] = __('Check Hardening', 'sucuri-scanner');
-        $params['Hardening.Description'] = __('Block the execution of PHP files in sensitive directories. Be careful while applying this hardening option as there are many plugins and theme which rely on the ability to execute PHP files in the content directory to generate images or save temporary data. Use the "Whitelist PHP Files" tool to add exceptions to individual files.', 'sucuri-scanner');
+        $params['Hardening.Description'] = __('Block the execution of PHP files in sensitive directories. Be careful while applying this hardening option as there are many plugins and theme which rely on the ability to execute PHP files in the content directory to generate images or save temporary data. Use the "Add PHP Files to the Allowlist" tool to add exceptions to individual files.', 'sucuri-scanner');
 
         return self::drawSection($params);
     }
@@ -240,7 +240,7 @@ class SucuriScanHardeningPage extends SucuriScan
         }
 
         $params['Hardening.Title'] = __('Block PHP Files in Uploads Directory', 'sucuri-scanner');
-        $params['Hardening.Description'] = __('Block the execution of PHP files in sensitive directories. Be careful while applying this hardening option as there are many plugins and theme which rely on the ability to execute PHP files in the content directory to generate images or save temporary data. Use the "Whitelist PHP Files" tool to add exceptions to individual files.', 'sucuri-scanner');
+        $params['Hardening.Description'] = __('Block the execution of PHP files in sensitive directories. Be careful while applying this hardening option as there are many plugins and theme which rely on the ability to execute PHP files in the content directory to generate images or save temporary data. Use the "Add PHP Files to the Allowlist" tool to add exceptions to individual files.', 'sucuri-scanner');
 
         if (SucuriScan::isBehindFirewall()) {
             $params['Hardening.Status'] = 1;
@@ -299,7 +299,7 @@ class SucuriScanHardeningPage extends SucuriScan
         }
 
         $params['Hardening.Title'] = __('Block PHP Files in WP-CONTENT Directory', 'sucuri-scanner');
-        $params['Hardening.Description'] = __('Block the execution of PHP files in sensitive directories. Be careful while applying this hardening option as there are many plugins and theme which rely on the ability to execute PHP files in the content directory to generate images or save temporary data. Use the "Whitelist PHP Files" tool to add exceptions to individual files.', 'sucuri-scanner');
+        $params['Hardening.Description'] = __('Block the execution of PHP files in sensitive directories. Be careful while applying this hardening option as there are many plugins and theme which rely on the ability to execute PHP files in the content directory to generate images or save temporary data. Use the "Add PHP Files to the Allowlist" tool to add exceptions to individual files.', 'sucuri-scanner');
 
         if (SucuriScan::isBehindFirewall()) {
             $params['Hardening.Status'] = 1;
@@ -342,8 +342,8 @@ class SucuriScanHardeningPage extends SucuriScan
 
             if ($result === true) {
                 try {
-                    SucuriScanHardening::whitelist('wp-tinymce.php', 'wp-includes');
-                    SucuriScanHardening::whitelist('ms-files.php', 'wp-includes');
+                    SucuriScanHardening::allow('wp-tinymce.php', 'wp-includes');
+                    SucuriScanHardening::allow('ms-files.php', 'wp-includes');
                     SucuriScanEvent::reportNoticeEvent(__('Hardening applied to the library directory', 'sucuri-scanner'));
                     SucuriScanInterface::info(__('Hardening applied to the library directory', 'sucuri-scanner'));
                 } catch (Exception $e) {
@@ -358,8 +358,8 @@ class SucuriScanHardeningPage extends SucuriScan
             $result = SucuriScanHardening::unhardenDirectory($folder);
 
             if ($result === true) {
-                SucuriScanHardening::dewhitelist('wp-tinymce.php', 'wp-includes');
-                SucuriScanHardening::dewhitelist('ms-files.php', 'wp-includes');
+                SucuriScanHardening::removeFromAllowlist('wp-tinymce.php', 'wp-includes');
+                SucuriScanHardening::removeFromAllowlist('ms-files.php', 'wp-includes');
                 SucuriScanEvent::reportErrorEvent(__('Hardening reverted in the library directory', 'sucuri-scanner'));
                 SucuriScanInterface::info(__('Hardening reverted in the library directory', 'sucuri-scanner'));
             } else {
@@ -368,7 +368,7 @@ class SucuriScanHardeningPage extends SucuriScan
         }
 
         $params['Hardening.Title'] = __('Block PHP Files in WP-INCLUDES Directory', 'sucuri-scanner');
-        $params['Hardening.Description'] = __('Block the execution of PHP files in sensitive directories. Be careful while applying this hardening option as there are many plugins and theme which rely on the ability to execute PHP files in the content directory to generate images or save temporary data. Use the "Whitelist PHP Files" tool to add exceptions to individual files.', 'sucuri-scanner');
+        $params['Hardening.Description'] = __('Block the execution of PHP files in sensitive directories. Be careful while applying this hardening option as there are many plugins and theme which rely on the ability to execute PHP files in the content directory to generate images or save temporary data. Use the "Add PHP Files to the Allowlist" tool to add exceptions to individual files.', 'sucuri-scanner');
 
         if (SucuriScan::isBehindFirewall()) {
             $params['Hardening.Status'] = 1;
@@ -605,9 +605,9 @@ class SucuriScanHardeningPage extends SucuriScan
     }
 
     /**
-     * Whitelist individual PHP files.
+     * Allow individual PHP files.
      *
-     * Allows an admin to whitelist individual PHP files after the directory has
+     * Allows an admin to allow individual PHP files after the directory has
      * been hardened. Since the hardening rules denies access to all PHP files
      * contained in such directory, 3rd-party plugins and themes that makes use
      * of these direct requests will stop working. The admins will want to allow
@@ -615,12 +615,12 @@ class SucuriScanHardeningPage extends SucuriScan
      *
      * @return HTML with the information about this hardening option.
      */
-    public static function whitelistPHPFiles()
+    public static function AllowPHPFiles()
     {
         $params = array(
-            'HardeningWhitelist.List' => '',
-            'HardeningWhitelist.AllowedFolders' => '',
-            'HardeningWhitelist.NoItemsVisibility' => 'visible',
+            'HardeningAllowlist.List' => '',
+            'HardeningAllowlist.AllowedFolders' => '',
+            'HardeningAllowlist.NoItemsVisibility' => 'visible',
         );
 
         $upload_dir = wp_upload_dir();
@@ -631,16 +631,16 @@ class SucuriScanHardeningPage extends SucuriScan
         );
 
         if (SucuriScanInterface::checkNonce()) {
-            // Add a new file to the hardening whitelist.
-            $fwhite = SucuriScanRequest::post(':hardening_whitelist');
+            // Add a new file to the hardening allowlist.
+            $fwhite = SucuriScanRequest::post(':hardening_allowlist');
 
             if ($fwhite) {
                 $folder = SucuriScanRequest::post(':hardening_folder');
 
                 if (in_array($folder, $allowed_folders)) {
                     try {
-                        SucuriScanHardening::whitelist($fwhite, $folder);
-                        SucuriScanInterface::info(__('The file has been whitelisted from the hardening', 'sucuri-scanner'));
+                        SucuriScanHardening::allow($fwhite, $folder);
+                        SucuriScanInterface::info(__('The file has been allowed', 'sucuri-scanner'));
                     } catch (Exception $e) {
                         SucuriScanInterface::error($e->getMessage());
                     }
@@ -649,48 +649,48 @@ class SucuriScanHardeningPage extends SucuriScan
                 }
             }
 
-            // Remove a file from the hardening whitelist.
+            // Remove a file from the hardening allowlist.
             $rmfwhite = SucuriScanRequest::post(':hardening_rmfwhite', '_array');
 
             if ($rmfwhite) {
                 foreach ($rmfwhite as $fpath) {
                     $fpath = str_replace('/.*/', '|', $fpath);
                     $parts = explode('|', $fpath, 2);
-                    SucuriScanHardening::dewhitelist($parts[1], $parts[0]);
+                    SucuriScanHardening::removeFromAllowlist($parts[1], $parts[0]);
                 }
 
                 SucuriScanInterface::info(__('Selected files have been removed', 'sucuri-scanner'));
             }
         }
 
-        // Read the access control file and retrieve the whitelisted files.
+        // Read the access control file and retrieve the files in the allowlist.
         foreach ($allowed_folders as $folder) {
-            $files = SucuriScanHardening::getWhitelisted($folder);
+            $files = SucuriScanHardening::getAllowlist($folder);
 
-            $params['HardeningWhitelist.AllowedFolders'] .= sprintf(
+            $params['HardeningAllowlist.AllowedFolders'] .= sprintf(
                 '<option value="%s">%s</option>',
                 SucuriScan::escape($folder),
                 SucuriScan::escape($folder)
             );
 
             if (is_array($files) && !empty($files)) {
-                $params['HardeningWhitelist.NoItemsVisibility'] = 'hidden';
+                $params['HardeningAllowlist.NoItemsVisibility'] = 'hidden';
 
                 foreach ($files as $file) {
                     $fregexp = sprintf('%s/.*/%s', $folder, $file);
                     $html = SucuriScanTemplate::getSnippet(
-                        'settings-hardening-whitelist-phpfiles',
+                        'settings-hardening-allowlist-phpfiles',
                         array(
-                            'HardeningWhitelist.Regexp' => $fregexp,
-                            'HardeningWhitelist.Folder' => $folder,
-                            'HardeningWhitelist.File' => $file,
+                            'HardeningAllowlist.Regexp' => $fregexp,
+                            'HardeningAllowlist.Folder' => $folder,
+                            'HardeningAllowlist.File' => $file,
                         )
                     );
-                    $params['HardeningWhitelist.List'] .= $html;
+                    $params['HardeningAllowlist.List'] .= $html;
                 }
             }
         }
 
-        return SucuriScanTemplate::getSection('settings-hardening-whitelist-phpfiles', $params);
+        return SucuriScanTemplate::getSection('settings-hardening-allowlist-phpfiles', $params);
     }
 }

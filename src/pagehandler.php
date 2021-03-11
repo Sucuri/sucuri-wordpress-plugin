@@ -48,7 +48,7 @@ function sucuriscan_page()
     $params['SiteCheck.LinksContent'] = __('Loading...', 'sucuri-scanner');
     $params['SiteCheck.ScriptsContent'] = __('Loading...', 'sucuri-scanner');
     $params['SiteCheck.Malware'] = '<div id="sucuriscan-malware"></div>';
-    $params['SiteCheck.Blacklist'] = '<div id="sucuriscan-blacklist"></div>';
+    $params['SiteCheck.Blocklist'] = '<div id="sucuriscan-blocklist"></div>';
     $params['SiteCheck.Recommendations'] = '<div id="sucuriscan-recommendations"></div>';
     
     /* load data for the WordPress best practices section */
@@ -156,7 +156,7 @@ function sucuriscan_settings_page()
     $params['Settings.Hardening.AdminUser'] = SucuriScanHardeningPage::adminuser();
     $params['Settings.Hardening.FileEditor'] = SucuriScanHardeningPage::fileeditor();
     $params['Settings.Hardening.SecKeyUpdater'] = SucuriScanHardeningPage::autoSecretKeyUpdater();
-    $params['Settings.Hardening.WhitelistPHPFiles'] = SucuriScanHardeningPage::whitelistPHPFiles();
+    $params['Settings.Hardening.AllowlistPHPFiles'] = SucuriScanHardeningPage::AllowPHPFiles();
 
     /* settings - posthack */
     $params['Settings.Posthack.SecurityKeys'] = SucuriScanSettingsPosthack::securityKeys();
@@ -203,8 +203,8 @@ function sucuriscan_ajax()
         SucuriScanIntegrity::ajaxIntegrityDiffUtility();
         SucuriScanFirewall::auditlogsAjax();
         SucuriScanFirewall::ipAccessAjax();
-        SucuriScanFirewall::blacklistAjax();
-        SucuriScanFirewall::deblacklistAjax();
+        SucuriScanFirewall::blocklistAjax();
+        SucuriScanFirewall::deblocklistAjax();
         SucuriScanFirewall::getSettingsAjax();
         SucuriScanFirewall::clearCacheAjax();
         SucuriScanFirewall::clearAutoCacheAjax();

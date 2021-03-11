@@ -1,15 +1,15 @@
-# Copyright (C) 2020 Sucuri Inc.
+# Copyright (C) 2021 Sucuri Inc.
 # This file is distributed under the same license as the Sucuri Security - Auditing, Malware Scanner and Hardening plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Sucuri Security - Auditing, Malware Scanner and Hardening 1.8.23\n"
+"Project-Id-Version: Sucuri Security - Auditing, Malware Scanner and Hardening 1.8.26\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/sucuri-scanner\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2020-01-22T17:55:39+00:00\n"
+"POT-Creation-Date: 2021-02-10T17:01:19+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.4.0\n"
 "X-Domain: sucuri-scanner\n"
@@ -23,7 +23,7 @@ msgid "https://wordpress.sucuri.net/"
 msgstr ""
 
 #. Description of the plugin
-msgid "The <a href=\"https://sucuri.net/\" target=\"_blank\">Sucuri</a> plugin provides the website owner the best Activity Auditing, SiteCheck Remote Malware Scanning, Effective Security Hardening and Post-Hack features. SiteCheck will check for malware, spam, blacklisting and other security issues like .htaccess redirects, hidden eval code, etc. The best thing about it is it's completely free."
+msgid "The <a href=\"https://sucuri.net/\" target=\"_blank\">Sucuri</a> plugin provides the website owner the best Activity Auditing, SiteCheck Remote Malware Scanning, Effective Security Hardening and Post-Hack features. SiteCheck will check for malware, spam, blocklisting and other security issues like .htaccess redirects, hidden eval code, etc. The best thing about it is it's completely free."
 msgstr ""
 
 #. Author of the plugin
@@ -138,53 +138,53 @@ msgstr ""
 msgid "Never (no execution)"
 msgstr ""
 
-#: src/event.lib.php:211
-#: src/event.lib.php:261
+#: src/event.lib.php:214
+#: src/event.lib.php:264
 msgid "API key is not available"
 msgstr ""
 
-#: src/event.lib.php:219
+#: src/event.lib.php:222
 msgid "WordPress version was already reported"
 msgstr ""
 
-#: src/event.lib.php:222
+#: src/event.lib.php:225
 msgid "WordPress version detected %s"
 msgstr ""
 
-#: src/event.lib.php:265
+#: src/event.lib.php:268
 msgid "Scanner ran a couple of minutes ago"
 msgstr ""
 
-#: src/event.lib.php:297
+#: src/event.lib.php:300
 msgid "Event identifier cannot be empty"
 msgstr ""
 
-#: src/event.lib.php:478
-#: src/event.lib.php:482
+#: src/event.lib.php:481
+#: src/event.lib.php:485
 msgid "Info"
 msgstr ""
 
-#: src/event.lib.php:480
+#: src/event.lib.php:483
 msgid "Debug"
 msgstr ""
 
-#: src/event.lib.php:481
+#: src/event.lib.php:484
 msgid "Notice"
 msgstr ""
 
-#: src/event.lib.php:483
+#: src/event.lib.php:486
 msgid "Warning"
 msgstr ""
 
-#: src/event.lib.php:484
+#: src/event.lib.php:487
 msgid "Error"
 msgstr ""
 
-#: src/event.lib.php:485
+#: src/event.lib.php:488
 msgid "Critical"
 msgstr ""
 
-#: src/event.lib.php:615
+#: src/event.lib.php:618
 msgid ""
 "<br><br>\n"
 "\n"
@@ -196,16 +196,16 @@ msgid ""
 ""
 msgstr ""
 
-#: src/event.lib.php:747
+#: src/event.lib.php:760
 msgid "Password Change"
 msgstr ""
 
-#: src/event.lib.php:852
+#: src/event.lib.php:925
 msgid "%s cannot be deleted."
 msgstr ""
 
-#: src/event.lib.php:864
-#: src/event.lib.php:870
+#: src/event.lib.php:937
+#: src/event.lib.php:943
 msgid "%s was deleted."
 msgstr ""
 
@@ -319,37 +319,37 @@ msgid "Failure connecting to the API service; try again."
 msgstr ""
 
 #: src/firewall.lib.php:617
-msgid "IP has been blacklisted: %s"
+msgid "IP has been added to the blocklist: %s"
 msgstr ""
 
 #: src/firewall.lib.php:656
-msgid "IP has been unblacklisted: %s"
+msgid "IP has been removed from the blocklist: %s"
 msgstr ""
 
-#: src/globals.php:102
+#: src/globals.php:90
 #: src/strings.php:39
 #: src/strings.php:290
 msgid "Dashboard"
 msgstr ""
 
-#: src/globals.php:103
+#: src/globals.php:91
 #: src/strings.php:40
 msgid "Firewall (WAF)"
 msgstr ""
 
-#: src/globals.php:104
+#: src/globals.php:92
 msgid "Last Logins"
 msgstr ""
 
-#: src/globals.php:105
+#: src/globals.php:93
 #: src/strings.php:41
 #: src/strings.php:96
 #: src/strings.php:291
 msgid "Settings"
 msgstr ""
 
-#: src/globals.php:126
-#: src/globals.php:127
+#: src/globals.php:114
+#: src/globals.php:115
 #: src/strings.php:35
 msgid "Sucuri Security"
 msgstr ""
@@ -371,7 +371,7 @@ msgid "Access control file is not writable"
 msgstr ""
 
 #: src/hardening.lib.php:281
-msgid "Cannot remove file from whitelist; no permissions."
+msgid "Cannot remove file from the allowlist; no permissions."
 msgstr ""
 
 #: src/hook.lib.php:68
@@ -1257,7 +1257,7 @@ msgid "%d out of %d files have been deleted."
 msgstr ""
 
 #: src/settings-general.php:237
-#: src/settings-posthack.php:363
+#: src/settings-posthack.php:368
 msgid "Not Writable"
 msgstr ""
 
@@ -1339,7 +1339,7 @@ msgid "Enable Website Firewall Protection"
 msgstr ""
 
 #: src/settings-hardening.php:106
-msgid "A WAF is a protection layer for your web site, blocking all sort of attacks (brute force attempts, DDoS, SQL injections, etc) and helping it remain malware and blacklist free. This test checks if your site is using Sucuri Firewall to protect your site."
+msgid "A WAF is a protection layer for your web site, blocking all sort of attacks (brute force attempts, DDoS, SQL injections, etc) and helping it remain malware and blocklist free. This test checks if your site is using Sucuri Firewall to protect your site."
 msgstr ""
 
 #: src/settings-hardening.php:110
@@ -1408,7 +1408,7 @@ msgstr ""
 #: src/settings-hardening.php:243
 #: src/settings-hardening.php:302
 #: src/settings-hardening.php:371
-msgid "Block the execution of PHP files in sensitive directories. Be careful while applying this hardening option as there are many plugins and theme which rely on the ability to execute PHP files in the content directory to generate images or save temporary data. Use the \"Whitelist PHP Files\" tool to add exceptions to individual files."
+msgid "Block the execution of PHP files in sensitive directories. Be careful while applying this hardening option as there are many plugins and theme which rely on the ability to execute PHP files in the content directory to generate images or save temporary data. Use the \"Add PHP Files to the Allowlist\" tool to add exceptions to individual files."
 msgstr ""
 
 #: src/settings-hardening.php:224
@@ -1557,7 +1557,7 @@ msgid "Changing the Secret Keys will invalidate all existing cookies, forcing al
 msgstr ""
 
 #: src/settings-hardening.php:643
-msgid "The file has been whitelisted from the hardening"
+msgid "The file has been allowed"
 msgstr ""
 
 #: src/settings-hardening.php:648
@@ -1612,43 +1612,43 @@ msgstr ""
 msgid "No frequency selected for the automatic secret key updater."
 msgstr ""
 
-#: src/settings-posthack.php:258
+#: src/settings-posthack.php:263
 msgid "Password changed for user #%d"
 msgstr ""
 
-#: src/settings-posthack.php:353
+#: src/settings-posthack.php:358
 msgid "not installed"
 msgstr ""
 
-#: src/settings-posthack.php:360
+#: src/settings-posthack.php:365
 msgid "Plugin is Premium"
 msgstr ""
 
-#: src/settings-posthack.php:366
+#: src/settings-posthack.php:371
 msgid "Missing Library"
 msgstr ""
 
-#: src/settings-posthack.php:376
+#: src/settings-posthack.php:381
 msgid "Cannot Download"
 msgstr ""
 
-#: src/settings-posthack.php:379
+#: src/settings-posthack.php:384
 msgid "Cannot Backup"
 msgstr ""
 
-#: src/settings-posthack.php:392
+#: src/settings-posthack.php:397
 msgid "Cannot Install"
 msgstr ""
 
-#: src/settings-posthack.php:401
+#: src/settings-posthack.php:406
 msgid "Installed v%s"
 msgstr ""
 
-#: src/settings-posthack.php:475
+#: src/settings-posthack.php:480
 msgid "Newest WordPress"
 msgstr ""
 
-#: src/settings-posthack.php:513
+#: src/settings-posthack.php:518
 msgid "There are no updates available."
 msgstr ""
 
@@ -1730,11 +1730,11 @@ msgid "Site is not Clean"
 msgstr ""
 
 #: src/sitecheck.lib.php:317
-msgid "Not Blacklisted"
+msgid "Not in the blocklist"
 msgstr ""
 
 #: src/sitecheck.lib.php:342
-msgid "Blacklisted"
+msgid "In the blocklist"
 msgstr ""
 
 #: src/sitecheck.lib.php:393
@@ -1903,15 +1903,15 @@ msgid "IP Address Access"
 msgstr ""
 
 #: src/strings.php:78
-msgid "This tool allows you to blacklist one or more IP addresses from accessing your website."
+msgid "This tool allows you to add one or more IP addresses to the blocklist and stop them from accessing your website."
 msgstr ""
 
 #: src/strings.php:79
-msgid "To delete an IP from the blacklist you can use the form below or you can log into the Firewall dashboard."
+msgid "To delete an IP from the blocklist you can use the form below or you can log into the Firewall dashboard."
 msgstr ""
 
 #: src/strings.php:80
-msgid "Blacklist IP:"
+msgid "Add IP to the Blocklist:"
 msgstr ""
 
 #: src/strings.php:81
@@ -2557,7 +2557,7 @@ msgid "Timezone:"
 msgstr ""
 
 #: src/strings.php:375
-msgid "Whitelist Blocked PHP Files"
+msgid "Allow Blocked PHP Files"
 msgstr ""
 
 #: src/strings.php:376
@@ -2602,7 +2602,7 @@ msgid "Download"
 msgstr ""
 
 #: src/strings.php:406
-msgid "WordPress has generated a new (random) password for your account <b>%%SUCURI.ResetPassword.UserName%%</b> at <a target=\"_blank\" href=\"http://%%SUCURI.ResetPassword.Website%%\" rel=\"noopener\">%%SUCURI.ResetPassword.Website%%</a>. The change has been requested by one of the admins in this website for security reasons. Your new password is &mdash; <span style=\"font-family:Menlo, Monaco, monospace, serif;font-weight:700\">%%%SUCURI.ResetPassword.Password%%%</span> &mdash; please change it as soon as possible."
+msgid "WordPress has invalidated the password for your account <b>%%SUCURI.ResetPassword.UserName%%</b> at <a target=\"_blank\" href=\"http://%%SUCURI.ResetPassword.Website%%\" rel=\"noopener\">%%SUCURI.ResetPassword.Website%%</a>. The change has been requested by one of the admins in this website for security reasons. You can set a new password at &mdash; <span style=\"font-family:Menlo, Monaco, monospace, serif;font-weight:700\"><a target=\"_blank\" href=\"%%%SUCURI.ResetPassword.ResetURL%%%\" rel=\"noopener\">%%%SUCURI.ResetPassword.ResetURL%%%</a></span> &mdash;."
 msgstr ""
 
 #: src/strings.php:409
@@ -2610,7 +2610,7 @@ msgid "Reset User Password"
 msgstr ""
 
 #: src/strings.php:411
-msgid "You can generate a new random password for the user accounts that you select from the list. An email with the new password will be sent to the email address of each chosen user. If you choose to change the password of your own user, then your current session will expire immediately. You will need to log back into the admin panel with the new password that will be sent to your email."
+msgid "Select users from the list in order to change their passwords, terminate their sessions and email them a password reset link. Please be aware that the plugin will change the passwords before sending the emails, meaning that if your web server is unable to send emails, your users will be locked out of the site."
 msgstr ""
 
 #: src/strings.php:416

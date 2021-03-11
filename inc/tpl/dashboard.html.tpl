@@ -40,7 +40,7 @@ jQuery(document).ready(function ($) {
         sucuriscanSiteCheckLinks('#sucuriscan-tabs-scripts', data.scripts.content);
 
         $('#sucuriscan-malware').html(data.malware);
-        $('#sucuriscan-blacklist').html(data.blacklist);
+        $('#sucuriscan-blocklist').html(data.blocklist);
         $('#sucuriscan-recommendations').html(data.recommendations);
     });
 });
@@ -81,7 +81,7 @@ jQuery(document).ready(function ($) {
     <div class="sucuriscan-pull-right sucuriscan-dashboard-right">
         %%%SUCURI.SiteCheck.Malware%%%
 
-        %%%SUCURI.SiteCheck.Blacklist%%%
+        %%%SUCURI.SiteCheck.Blocklist%%%
 
         %%%SUCURI.SiteCheck.Recommendations%%%
         

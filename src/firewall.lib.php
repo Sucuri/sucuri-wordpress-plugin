@@ -541,7 +541,7 @@ class SucuriScanFirewall extends SucuriScanAPI
     }
 
     /**
-     * Returns the whitelisted and blacklisted IP addresses.
+     * Returns the IP addresses in the blocklist and allowlist.
      *
      * @codeCoverageIgnore
      *
@@ -574,22 +574,22 @@ class SucuriScanFirewall extends SucuriScanAPI
         }
 
         $response['ok'] = true;
-        $response['whitelist'] = $settings['whitelist_list'];
-        $response['blacklist'] = $settings['blacklist_list'];
+        $response['allowlist'] = $settings['whitelist_list'];
+        $response['blocklist'] = $settings['blacklist_list'];
 
         wp_send_json($response, 200);
     }
 
     /**
-     * Blacklists an IP address.
+     * Blocklists an IP address.
      *
      * @codeCoverageIgnore
      *
      * @return void
      */
-    public static function blacklistAjax()
+    public static function blocklistAjax()
     {
-        if (SucuriScanRequest::post('form_action') !== 'firewall_blacklist') {
+        if (SucuriScanRequest::post('form_action') !== 'firewall_blocklist') {
             return;
         }
 
@@ -614,7 +614,7 @@ class SucuriScanFirewall extends SucuriScanAPI
             $response['msg'] = implode(";\x20", $out['messages']);
 
             if ($out['status'] == 1) {
-                SucuriScanEvent::reportInfoEvent(sprintf(__('IP has been blacklisted: %s', 'sucuri-scanner'), $params['ip']));
+                SucuriScanEvent::reportInfoEvent(sprintf(__('IP has been added to the blocklist: %s', 'sucuri-scanner'), $params['ip']));
             }
         }
 
@@ -622,15 +622,15 @@ class SucuriScanFirewall extends SucuriScanAPI
     }
 
     /**
-     * Deletes an IP address from the blacklist.
+     * Deletes an IP address from the blocklist.
      *
      * @codeCoverageIgnore
      *
      * @return void
      */
-    public static function deblacklistAjax()
+    public static function deblocklistAjax()
     {
-        if (SucuriScanRequest::post('form_action') !== 'firewall_deblacklist') {
+        if (SucuriScanRequest::post('form_action') !== 'firewall_deblocklist') {
             return;
         }
 
@@ -653,7 +653,7 @@ class SucuriScanFirewall extends SucuriScanAPI
         $response['msg'] = implode(";\x20", $out['messages']);
 
         if ($out['status'] == 1) {
-            SucuriScanEvent::reportInfoEvent(sprintf(__('IP has been unblacklisted: %s', 'sucuri-scanner'), $params['ip']));
+            SucuriScanEvent::reportInfoEvent(sprintf(__('IP has been removed from the blocklist: %s', 'sucuri-scanner'), $params['ip']));
         }
 
         wp_send_json($response, 200);

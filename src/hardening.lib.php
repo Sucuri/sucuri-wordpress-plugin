@@ -200,14 +200,14 @@ class SucuriScanHardening extends SucuriScan
      * Generates Apache access control rules for a file.
      *
      * Assumming that the directory hosting the specified file is hardened, this
-     * method will generate the necessary rules to whitelist such file so anyone
+     * method will generate the necessary rules to allowlist such file so anyone
      * can send a direct request to it. The method will generate both the rules
      * for Apache 2.4 and a compatibility conditional for older versions.
      *
      * @param  string $file File to be ignored by the hardening.
-     * @return string       Access control rules to whitelist the file.
+     * @return string       Access control rules to allowlist the file.
      */
-    private static function whitelistRule($file = '')
+    private static function allowlistRule($file = '')
     {
         $file = str_replace('/', '', $file);
         $file = str_replace('<', '', $file);
@@ -227,7 +227,7 @@ class SucuriScanHardening extends SucuriScan
     }
 
     /**
-     * Whitelists a file in the specified folder.
+     * Adds file in the specified folder to the allowlist.
      *
      * If the website owner has applied the hardening to the folder where the
      * specified file is located, all the requests sent directly to the file
@@ -237,9 +237,9 @@ class SucuriScanHardening extends SucuriScan
      *
      * @param  string $file   File to be ignored by the hardening.
      * @param  string $folder Folder hosting the specified file.
-     * @return bool           True if the file has been whitelisted, false otherwise.
+     * @return bool           True if the file has been added to the allowlist, false otherwise.
      */
-    public static function whitelist($file = '', $folder = '')
+    public static function allow($file = '', $folder = '')
     {
         $htaccess = self::htaccess($folder);
 
@@ -253,35 +253,35 @@ class SucuriScanHardening extends SucuriScan
 
         return (bool) @file_put_contents(
             $htaccess,
-            "\n" . self::whitelistRule($file),
+            "\n" . self::allowlistRule($file),
             FILE_APPEND
         );
     }
 
     /**
-     * Dewhitelists a file in the specified folder.
+     * Blocks a file in the specified folder.
      *
      * If the website owner has applied the hardening to the folder where the
      * specified file is located, all the requests sent directly to the file
      * will be blocked by the web server using its access control module. If an
-     * admin has whitelisted a file in this folder because a 3rd-party plugin or
-     * theme required it, they can decide to revert the whitelisting using this
+     * admin has added a file to the allowlist in this folder because a 3rd-party plugin or
+     * theme required it, they can decide to remove this file from the allowlist using this
      * method which is executed by one of the tools in the settings page.
      *
      * @param  string $file   File to stop ignoring from the hardening.
      * @param  string $folder Folder hosting the specified file.
-     * @return bool           True if the file has been dewhitelisted, false otherwise.
+     * @return bool           True if the file has been removed from the allowlist, false otherwise.
      */
-    public static function dewhitelist($file = '', $folder = '')
+    public static function removeFromAllowlist($file = '', $folder = '')
     {
         $htaccess = self::htaccess($folder);
         $content = SucuriScanFileInfo::fileContent($htaccess);
 
         if (!$content || !is_writable($htaccess)) {
-            return self::throwException(__('Cannot remove file from whitelist; no permissions.', 'sucuri-scanner'));
+            return self::throwException(__('Cannot remove file from the allowlist; no permissions.', 'sucuri-scanner'));
         }
 
-        $rules = self::whitelistRule($file);
+        $rules = self::allowlistRule($file);
         $content = str_replace($rules, '', $content);
         $content = rtrim($content) . "\n";
 
@@ -289,12 +289,12 @@ class SucuriScanHardening extends SucuriScan
     }
 
     /**
-     * Returns a list of whitelisted files in folder.
+     * Returns a list of files in the allowlist in folder.
      *
-     * @param  string $folder Directory to scan for whitelisted files.
-     * @return array          List of whitelisted files, false on failure.
+     * @param  string $folder Directory to scan for files in the allowlist.
+     * @return array          List of files in the allowlist, false on failure.
      */
-    public static function getWhitelisted($folder = '')
+    public static function getAllowlist($folder = '')
     {
         $htaccess = self::htaccess($folder);
         $content = SucuriScanFileInfo::fileContent($htaccess);
