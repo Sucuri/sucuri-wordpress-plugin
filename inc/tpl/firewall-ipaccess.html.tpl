@@ -19,6 +19,7 @@ jQuery(document).ready(function ($) {
                 $('.sucuriscan-ipaccess-table tbody').append('<tr>' +
                 '<td><span class="sucuriscan-monospace">' + data.blocklist[i] + '</span></td>' +
                 '<td><button class="button button-primary sucuriscan-deblocklist" ' +
+                'data-cy="' + data.blocklist[i] + '" ' +
                 'ip="' + data.blocklist[i] + '">{{Delete}}</button></td>' +
                 '</tr>');
             }
@@ -98,8 +99,8 @@ jQuery(document).ready(function ($) {
             <input type="hidden" name="sucuriscan_blocklist_ip" value="true" />
             <fieldset class="sucuriscan-clearfix">
                 <label>{{Add IP to the Blocklist:}}</label>
-                <input type="text" name="sucuriscan_ip" placeholder="{{e.g. 192.168.1.54}}" />
-                <button class="button button-primary sucuriscan-ipaccess-button">{{Submit}}</button>
+                <input type="text" name="sucuriscan_ip" data-cy="sucuriscan_ip_access_input" placeholder="{{e.g. 192.168.1.54}}" />
+                <button class="button button-primary sucuriscan-ipaccess-button" data-cy="sucuriscan_ip_access_submit">{{Submit}}</button>
             </fieldset>
         </form>
 

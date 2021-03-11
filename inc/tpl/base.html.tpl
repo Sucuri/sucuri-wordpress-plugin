@@ -26,7 +26,7 @@
 
                 <li><a href="%%SUCURI.URL.Dashboard%%" class="button button-primary">{{Dashboard}}</a></li>
 
-                <li><a href="%%SUCURI.URL.Firewall%%" class="button button-primary">{{Firewall (WAF)}}</a></li>
+                <li><a href="%%SUCURI.URL.Firewall%%" class="button button-primary" data-cy="sucuriscan-main-nav-firewall">{{Firewall (WAF)}}</a></li>
 
                 <li><a href="%%SUCURI.URL.Settings%%" class="button button-primary">{{Settings}}</a></li>
             </ul>

@@ -45,7 +45,7 @@ jQuery(document).ready(function ($) {
             <span class="sucuriscan-monospace">%%SUCURI.Firewall.APIKey%%</span>
             <form action="%%SUCURI.URL.Firewall%%" method="post">
                 <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
-                <button type="submit" name="sucuriscan_delete_wafkey" class="button button-primary">{{Delete}}</button>
+                <button type="submit" name="sucuriscan_delete_wafkey" data-cy="sucuriscan-delete-wafkey" class="button button-primary">{{Delete}}</button>
             </form>
         </div>
 
@@ -54,7 +54,7 @@ jQuery(document).ready(function ($) {
             <fieldset class="sucuriscan-clearfix">
                 <label>{{Firewall API Key:}}</label>
                 <input type="text" name="sucuriscan_cloudproxy_apikey" />
-                <button type="submit" class="button button-primary">{{Save}}</button>
+                <button type="submit" class="button button-primary" data-cy="sucuriscan-save-wafkey">{{Save}}</button>
             </fieldset>
             <br>
         </form>
