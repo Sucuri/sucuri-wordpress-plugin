@@ -78,10 +78,16 @@ jobs:
       - name: Docker debug information
         run: docker -v
 
-      - name: Run E2E tests
+      - name: Run Sucuri Scanner tests (E2E)
         run: |
           cp cypress.json.example cypress.json
-          npx cypress run
+          npx cypress run --spec cypress/integration/sucuri-scanner.js
+
+      - name: Run Firewall tests (E2E)
+        if: env.cypress_waf_api_key
+        env:
+          cypress_waf_api_key: ${{ secrets.WAF_API_KEY }}
+        run: npx cypress run --spec cypress/integration/sucuri-scanner-firewall.js
           
       - name: Upload Cypress tests on failure
         uses: actions/upload-artifact@v2.2.1
