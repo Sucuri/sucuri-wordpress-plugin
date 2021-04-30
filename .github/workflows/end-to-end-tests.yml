@@ -22,6 +22,17 @@ jobs:
   e2e-tests:
     name: E2E Tests
     runs-on: ubuntu-16.04
+    strategy:
+      matrix:
+        include:
+          - env_1: "Latest WordPress on PHP 7.2"
+            php: "7.2"
+          - env_2: "Latest WordPress on PHP 7.3"
+            php: "7.3"
+          - env_3: "Latest WordPress on PHP 7.4"
+            php: "7.4"
+          - env_4: "Latest WordPress on PHP 8"
+            php: "8.0"
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v2
@@ -57,8 +68,10 @@ jobs:
         run: npm install
 
       - name: Start WordPress environment
+        env:
+          PHP_VERSION: ${{ matrix.php }}
         run: |
-          npx wp-env start
+          WP_ENV_PHP_VERSION=$PHP_VERSION npx wp-env start
           npx wp-env run cli "wp user create sucuri sucuri@sucuri.net --role=author --user_pass=password"
 
       - name: Log running Docker containers
