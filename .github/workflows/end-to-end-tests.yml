@@ -31,8 +31,6 @@ jobs:
             php: "7.3"
           - env_3: "Latest WordPress on PHP 7.4"
             php: "7.4"
-          - env_4: "Latest WordPress on PHP 8"
-            php: "8.0"
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v2
