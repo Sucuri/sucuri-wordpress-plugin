@@ -389,8 +389,11 @@ class SucuriScanSiteCheck extends SucuriScanAPI
     public static function iFramesTitle()
     {
         $data = self::scanAndCollectData();
+        $niframes = isset($data['LINKS']['IFRAME']) && is_array($data['LINKS']['IFRAME'])
+            ? count($data['LINKS']['IFRAME'])
+            : 0;
 
-        return sprintf(__('iFrames: %d', 'sucuri-scanner'), @count($data['LINKS']['IFRAME']));
+        return sprintf(__('iFrames: %d', 'sucuri-scanner'), $niframes);
     }
 
     /**
@@ -401,8 +404,11 @@ class SucuriScanSiteCheck extends SucuriScanAPI
     public static function linksTitle()
     {
         $data = self::scanAndCollectData();
+        $nlinks = isset($data['LINKS']['URL']) && is_array($data['LINKS']['URL'])
+            ? count($data['LINKS']['URL'])
+            : 0;
 
-        return sprintf(__('Links: %d', 'sucuri-scanner'), @count($data['LINKS']['URL']));
+        return sprintf(__('Links: %d', 'sucuri-scanner'), $nlinks);
     }
 
     /**
