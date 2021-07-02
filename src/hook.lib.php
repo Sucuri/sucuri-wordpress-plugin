@@ -996,7 +996,7 @@ class SucuriScanHook extends SucuriScanEvent
      * @param int $id The identifier of the edited user account
      * @param object $old_user_data Object containing user's data prior to update.
      */
-    public static function hookProfileUpdate($id = 0, $old_user_data)
+    public static function hookProfileUpdate($id = 0, $old_user_data = false)
     {
         $title = __('unknown', 'sucuri-scanner');
         $email = __('user@domain.com', 'sucuri-scanner');
