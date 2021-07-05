@@ -482,6 +482,13 @@ class SucuriScanHardeningPage extends SucuriScan
                 $newlines = array();
 
                 foreach ($lines as $line) {
+                    if (self::containsConstant($line, 'DISALLOW_FILE_EDIT')) {
+                        // Skip lines that define the `DISALLOW_FILE_EDIT` constant,
+                        // to make hardening possible when other plugins have already
+                        // defined the same constant with a falsy value.
+                        continue;
+                    }
+
                     if (strpos($line, 'DB_COLLATE') === false) {
                         $newlines[] = $line;
                         continue;
@@ -489,8 +496,8 @@ class SucuriScanHardeningPage extends SucuriScan
 
                     $newlines[] = $line; /* add current line */
                     $newlines[] = ''; /* add line separator */
-                    $newlines[] = "define('DISALLOW_FILE_EDIT', true);";
                 }
+                $newlines[] = "define('DISALLOW_FILE_EDIT', true);";
 
                 $fileEditorWasDisabled = true;
                 $content = implode("\n", $newlines);
@@ -692,5 +699,10 @@ class SucuriScanHardeningPage extends SucuriScan
         }
 
         return SucuriScanTemplate::getSection('settings-hardening-allowlist-phpfiles', $params);
+    }
+
+    private static function containsConstant($line, $constant)
+    {
+        return strpos($line, "'" . $constant . "'") !== false || strpos($line, '"' . $constant . '"') !== false;
     }
 }
