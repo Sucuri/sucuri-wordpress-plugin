@@ -237,31 +237,40 @@ class SucuriScanCache extends SucuriScan
         $object = array();
         $object['info'] = array();
         $object['entries'] = array();
-        $lines = SucuriScanFileInfo::fileLines($this->datastore_path);
 
-        if (is_array($lines) && !empty($lines)) {
-            foreach ($lines as $line) {
-                if (strpos($line, "//\x20") === 0
-                    && strpos($line, '=') !== false
-                    && $line[strlen($line) - 1] === ';'
-                ) {
-                    $section = substr($line, 3, strlen($line) - 4);
-                    list($header, $value) = explode('=', $section, 2);
-                    $object['info'][$header] = $value;
-                    continue;
-                }
+        if (($fh = fopen($this->datastore_path, 'r')) === false) {
+            return $object;
+        }
 
-                /* skip content */
-                if ($onlyInfo) {
-                    continue;
-                }
+        while (($line = fgets($fh)) !== false) {
+            $line = trim($line);
 
-                if (strpos($line, ':') !== false) {
-                    list($keyname, $value) = explode(':', $line, 2);
-                    $object['entries'][$keyname] = @json_decode($value, $assoc);
-                }
+            if (!$line) {
+                continue;
+            }
+
+            if (strpos($line, "//\x20") === 0
+                && strpos($line, '=') !== false
+                && $line[strlen($line) - 1] === ';'
+            ) {
+                $section = substr($line, 3, -1);
+                list($header, $value) = explode('=', $section, 2);
+                $object['info'][$header] = $value;
+                continue;
+            }
+
+            // skip content
+            if ($onlyInfo) {
+                continue;
+            }
+
+            if (strpos($line, ':') !== false) {
+                list($keyname, $value) = explode(':', $line, 2);
+                $object['entries'][$keyname] = @json_decode($value, $assoc);
             }
         }
+
+        fclose($fh);
 
         return $object;
     }
