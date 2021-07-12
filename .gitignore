@@ -6,3 +6,5 @@ cypress/screenshots
 
 cypress.json
 .wp-env.override.json
+
+.phpunit.result.cache
