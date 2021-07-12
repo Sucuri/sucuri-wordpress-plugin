@@ -98,17 +98,17 @@ describe( 'Run integration tests', () => {
 	it('can deactivate sucuri-scanner', () => {
 		cy.visit('/wp-admin/plugins.php');
 		
-		cy.get('#deactivate-sucuri-scanner').click();
+		cy.get('[data-slug=sucuri-scanner] .deactivate').click();
 
-		cy.get('.notice').should('contain', 'Plugin deactivated.');
+		cy.contains('Plugin deactivated.');
 	}	);
 
 	it('can activate sucuri-scanner', () => {
 		cy.visit('/wp-admin/plugins.php');
 		
-		cy.get('#activate-sucuri-scanner').click();
+		cy.get('[data-slug=sucuri-scanner] .activate').click();
 
-		cy.get('.notice').should('contain', 'Plugin activated.');
+		cy.contains('Plugin activated.');
 	} );
 
 	it('can modify scheduled tasks', () => {
@@ -123,20 +123,10 @@ describe( 'Run integration tests', () => {
 		cy.get('[data-cy=sucuriscan_row_wp_update_plugins]').find('td:nth-child(3)').contains('quarterly');
 	});
 
-	it('can activate and deactivate the WordPress integrity diff utility', () => {
-		cy.visit('wp-admin/admin.php?page=sucuriscan_settings#scanner');
-
-		cy.get('[data-cy=sucuriscan_scanner_integrity_diff_utility_toggle]').click();
-		cy.get('.sucuriscan-alert').contains('The status of the integrity diff utility has been changed');
-		cy.get('[data-cy=sucuriscan_scanner_integrity_diff_utility_toggle]').contains('Disable');
-
-		cy.get('[data-cy=sucuriscan_scanner_integrity_diff_utility_toggle]').click();
-		cy.get('.sucuriscan-alert').contains('The status of the integrity diff utility has been changed');
-		cy.get('[data-cy=sucuriscan_scanner_integrity_diff_utility_toggle]').contains('Enable');
-	});
-
 	it('can ignore and unignore false positives (integrity diff utility)', () => {
 		cy.visit('/wp-admin/admin.php?page=sucuriscan#auditlogs');
+
+		cy.wait(3000);
 
 		cy.get('input[value="added@phpunit-wp-config.php"]').click();
 		cy.get('[data-cy=sucuriscan_integrity_incorrect_checkbox]').click();
@@ -154,7 +144,21 @@ describe( 'Run integration tests', () => {
 		cy.get('[data-cy=sucuriscan_integrity_diff_false_positive_table]').contains('no data available');
 
 		cy.visit('/wp-admin/admin.php?page=sucuriscan#auditlogs');
+
+		cy.wait(3000);
 		cy.get('[data-cy=sucuriscan_integrity_list_table]').contains('phpunit-wp-config.php');
+	});
+
+	it('can activate and deactivate the WordPress integrity diff utility', () => {
+		cy.visit('wp-admin/admin.php?page=sucuriscan_settings#scanner');
+
+		cy.get('[data-cy=sucuriscan_scanner_integrity_diff_utility_toggle]').click();
+		cy.get('.sucuriscan-alert').contains('The status of the integrity diff utility has been changed');
+		cy.get('[data-cy=sucuriscan_scanner_integrity_diff_utility_toggle]').contains('Disable');
+
+		cy.get('[data-cy=sucuriscan_scanner_integrity_diff_utility_toggle]').click();
+		cy.get('.sucuriscan-alert').contains('The status of the integrity diff utility has been changed');
+		cy.get('[data-cy=sucuriscan_scanner_integrity_diff_utility_toggle]').contains('Enable');
 	});
 
 	it('can ignore files and folders during the scans', () => {
@@ -486,7 +490,7 @@ describe( 'Run integration tests', () => {
 		// This user is added automatically at .github/workflows/end-to-end-tests.yml
 		cy.login('sucuri', 'password');
 
-		cy.url().should('eq', 'http://localhost:8888/wp-admin/')
+		cy.url().should('eq', 'http://localhost:8889/wp-admin/')
 
 		cy.clearCookies();
 		cy.reload();
