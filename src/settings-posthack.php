@@ -136,7 +136,7 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
             $cronFrequency = SucuriScanRequest::post(':autoseckeyupdater_frequency');
 
             // Deny action if cron frequency is invalid
-            if (empty($cronFrequency) || !in_array($cronFrequency, array_keys($availableSchedules))) {
+            if (empty($cronFrequency) || !in_array($cronFrequency, $availableSchedules)) {
                 SucuriScanInterface::error(__('No frequency selected for the automatic secret key updater.', 'sucuri-scanner'));
             } elseif ($cronFrequency === "disabled") {
                 // Disable Automatic Secret Keys Updater

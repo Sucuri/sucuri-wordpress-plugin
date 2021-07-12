@@ -51,10 +51,12 @@ if (class_exists('SucuriScanInterface') && class_exists('SucuriScanRequest')) {
             /**
              * Reports the progress of the plugin installation.
              *
-             * @param  string $string Message to send to the buffer.
+             * @param string $string  Message to display in administration message.
+             * @param mixed  ...$args Optional text replacements.
+             *
              * @return void
              */
-            public function feedback($string = '')
+            public function feedback($string = '', ...$args)
             {
                 /* do not do anything */
             }

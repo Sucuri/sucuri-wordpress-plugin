@@ -21,16 +21,22 @@ jobs:
   # - Run the E2E tests.
   e2e-tests:
     name: E2E Tests
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         include:
           - env_1: "Latest WordPress on PHP 7.2"
             php: "7.2"
+            wp: "latest"
           - env_2: "Latest WordPress on PHP 7.3"
             php: "7.3"
+            wp: "latest"
           - env_3: "Latest WordPress on PHP 7.4"
             php: "7.4"
+            wp: "latest"
+          - env_4: "Latest WordPress on PHP 8.0"
+            php: "8.0"
+            wp: "latest"
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v2
@@ -65,18 +71,30 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Start WordPress environment
+      - name: Setup WordPress environment
         env:
           PHP_VERSION: ${{ matrix.php }}
+          WP_VERSION: ${{ matrix.wp }}
         run: |
-          WP_ENV_PHP_VERSION=$PHP_VERSION npx wp-env start
-          npx wp-env run cli "wp user create sucuri sucuri@sucuri.net --role=author --user_pass=password"
+          if [[ $WP_VERSION == "latest" ]]; then
+            echo "{ \"core\": null, \"plugins\": [\".\"], \"phpVersion\": \"$PHP_VERSION\" }" > .wp-env.override.json
+          else
+            echo "{ \"core\": \"WordPress/WordPress#$WP_VERSION\", \"plugins\": [\".\"], \"phpVersion\": \"$PHP_VERSION\" }" > .wp-env.override.json
+          fi
+          cat .wp-env.override.json
 
-      - name: Log running Docker containers
-        run: docker ps -a
+      - name: Start WordPress environment
+        run: |
+          npx wp-env start
+          npx wp-env run tests-cli "wp user create sucuri sucuri@sucuri.net --role=author --user_pass=password"
+          npx wp-env run tests-cli "wp plugin install akismet --activate"
+          npx wp-env run tests-cli "touch .htaccess"
 
       - name: Log WordPress debug information
         run: npx wp-env run cli wp core version
+
+      - name: Log running Docker containers
+        run: docker ps -a
 
       - name: General debug information
         run: |
