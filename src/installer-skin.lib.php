@@ -27,6 +27,11 @@ if (class_exists('SucuriScanInterface') && class_exists('SucuriScanRequest')) {
         include_once ABSPATH . '/wp-admin/includes/class-wp-upgrader.php';
         include_once ABSPATH . '/wp-admin/includes/plugin-install.php';
 
+        if (version_compare(SucuriScan::siteVersion(), '5.4', '<')) {
+            include_once './installer-skin-legacy.lib.php';
+            return;
+        }
+
         /**
          * Plugin Installer Skin for WordPress Plugin Installer.
          *
