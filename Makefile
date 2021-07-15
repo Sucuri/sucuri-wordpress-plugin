@@ -1,8 +1,8 @@
-.PHONY: e2e prepare-e2e e2e-scanner e2e-firewall unit-test
+.PHONY: e2e e2e-prepare e2e-scanner e2e-firewall unit-test
 
-e2e: prepare-e2e e2e-scanner e2e-firewall
+e2e: e2e-prepare e2e-scanner e2e-firewall
 
-prepare-e2e:
+e2e-prepare:
 	npx wp-env start
 	npx wp-env clean all
 	npx wp-env run tests-cli "wp user create sucuri sucuri@sucuri.net --role=author --user_pass=password"
