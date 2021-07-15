@@ -126,8 +126,6 @@ describe( 'Run integration tests', () => {
 	it('can ignore and unignore false positives (integrity diff utility)', () => {
 		cy.visit('/wp-admin/admin.php?page=sucuriscan#auditlogs');
 
-		cy.wait(3000);
-
 		cy.get('input[value="added@phpunit-wp-config.php"]').click();
 		cy.get('[data-cy=sucuriscan_integrity_incorrect_checkbox]').click();
 		cy.get('[data-cy=sucuriscan_integrity_incorrect_submit]').click();
