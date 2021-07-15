@@ -124,7 +124,15 @@ describe( 'Run integration tests', () => {
 	});
 
 	it('can ignore and unignore false positives (integrity diff utility)', () => {
+		cy.intercept('POST', '/wp-admin/admin-ajax.php?page=sucuriscan', (req) => {
+			if (req.body.includes('check_wordpress_integrity')) {
+				req.alias = 'integrityCheck';
+			}
+		});
+
 		cy.visit('/wp-admin/admin.php?page=sucuriscan#auditlogs');
+
+		cy.wait('@integrityCheck');
 
 		cy.get('input[value="added@phpunit-wp-config.php"]').click();
 		cy.get('[data-cy=sucuriscan_integrity_incorrect_checkbox]').click();
@@ -142,6 +150,8 @@ describe( 'Run integration tests', () => {
 		cy.get('[data-cy=sucuriscan_integrity_diff_false_positive_table]').contains('no data available');
 
 		cy.visit('/wp-admin/admin.php?page=sucuriscan#auditlogs');
+
+		cy.wait('@integrityCheck');
 
 		cy.get('[data-cy=sucuriscan_integrity_list_table]').contains('phpunit-wp-config.php');
 	});
