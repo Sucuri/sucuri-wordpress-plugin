@@ -145,7 +145,6 @@ describe( 'Run integration tests', () => {
 
 		cy.visit('/wp-admin/admin.php?page=sucuriscan#auditlogs');
 
-		cy.wait(3000);
 		cy.get('[data-cy=sucuriscan_integrity_list_table]').contains('phpunit-wp-config.php');
 	});
 
