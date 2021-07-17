@@ -190,8 +190,12 @@ class SucuriScanHardening extends SucuriScan
      */
     private static function htaccess($folder = '')
     {
-        $folder = str_replace(ABSPATH, '', $folder);
-        $bpath = rtrim(ABSPATH, DIRECTORY_SEPARATOR);
+        // Normalize paths (see https://github.com/Sucuri/sucuri-wordpress-plugin/issues/118)
+        $abs_path = str_replace('\\', '/', ABSPATH);
+        $folder = str_replace('\\', '/', $folder);
+
+        $folder = str_replace($abs_path, '', $folder);
+        $bpath = rtrim($abs_path, '/');
 
         return $bpath . '/' . $folder . '/.htaccess';
     }

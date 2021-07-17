@@ -13,3 +13,4 @@ define('SUCURI_DATA_STORAGE', BASE_DIR . '/tests/fixtures');
 
 require BASE_DIR . '/src/base.lib.php';
 require BASE_DIR . '/src/cache.lib.php';
+require BASE_DIR . '/src/hardening.lib.php';

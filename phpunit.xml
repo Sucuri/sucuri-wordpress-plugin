@@ -24,5 +24,9 @@
     <testsuite name="Cache">
       <file>tests/CacheTest.php</file>
     </testsuite>
+
+    <testsuite name="Hardening">
+      <file>tests/HardeningTest.php</file>
+    </testsuite>
   </testsuites>
 </phpunit>
