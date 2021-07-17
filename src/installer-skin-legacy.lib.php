@@ -50,7 +50,7 @@ class SucuriScanPluginInstallerSkin extends Plugin_Installer_Skin
      *
      * @return void
      */
-    public function feedback($string = '')
+    public function feedback($string)
     {
         /* do not do anything */
     }

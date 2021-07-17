@@ -61,7 +61,7 @@ if (class_exists('SucuriScanInterface') && class_exists('SucuriScanRequest')) {
              *
              * @return void
              */
-            public function feedback($string = '', ...$args)
+            public function feedback($string, ...$args)
             {
                 /* do not do anything */
             }
