@@ -319,9 +319,9 @@ class SucuriScan
     }
 
     /**
-     * Find and retrieve the current version of Wordpress installed.
+     * Find and retrieve the current version of WordPress installed.
      *
-     * @return string The version number of Wordpress installed.
+     * @return string The version number of WordPress installed.
      */
     public static function siteVersion()
     {

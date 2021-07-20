@@ -27,6 +27,11 @@ if (class_exists('SucuriScanInterface') && class_exists('SucuriScanRequest')) {
         include_once ABSPATH . '/wp-admin/includes/class-wp-upgrader.php';
         include_once ABSPATH . '/wp-admin/includes/plugin-install.php';
 
+        if (version_compare(SucuriScan::siteVersion(), '5.3', '<')) {
+            include_once 'installer-skin-legacy.lib.php';
+            return;
+        }
+
         /**
          * Plugin Installer Skin for WordPress Plugin Installer.
          *
@@ -51,10 +56,12 @@ if (class_exists('SucuriScanInterface') && class_exists('SucuriScanRequest')) {
             /**
              * Reports the progress of the plugin installation.
              *
-             * @param  string $string Message to send to the buffer.
+             * @param string $string  Message to display in administration message.
+             * @param mixed  ...$args Optional text replacements.
+             *
              * @return void
              */
-            public function feedback($string = '')
+            public function feedback($string, ...$args)
             {
                 /* do not do anything */
             }
