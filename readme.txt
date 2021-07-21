@@ -189,6 +189,11 @@ We take your privacy seriously. For free plugin users without an API key, no inf
 This version adds an option to refresh the malware scan results on demand, as well as several small bug fixes and improvements.
 
 == Changelog ==
+= 1.8.27 =
+* Improve PHP 8 support
+* Reduce memory requirements when reading a log file
+* Fix DISALLOW_FILE_EDIT related notice
+
 = 1.8.26 =
 * Replace the word "blacklist" with "blocklist" in the codebase
 * Replace the word "whitelist" with "allowlist" in the codebase
