@@ -10,15 +10,16 @@ jobs:
   # - Checks out the repository.
   # - Logs debug information about the runner container.
   # - Installs NodeJS
-  # - Sets up caching for NPM.
   # - Installs NPM dependencies.
+  # - Setup WordPress env.
   # - Starts the WordPress Docker container (wp-env FTW 🎉)
-  # - Logs the running Docker containers.
   # - Logs WordPress debug information.
+  # - Logs the running Docker containers.
   # - Logs general debug information.
   # - Logs Docker debug information (about both the Docker installation within the runner and the WordPress container)
-  # - Install WordPress within the Docker container.
-  # - Run the E2E tests.
+  # - Run Sucuri Scanner tests
+  # - Run Firewall testes
+  # - Upload Cypress tests on failure
   e2e-tests:
     name: E2E Tests
     runs-on: ubuntu-latest
@@ -53,20 +54,10 @@ jobs:
           locale -a
 
       - name: Install NodeJS
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
           node-version: 12
-
-      - name: Cache NodeJS modules
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-node-modules
-        with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: ~/.npm
-          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-
+          cache: 'npm'
 
       - name: Install Dependencies
         run: npm install
@@ -84,11 +75,7 @@ jobs:
           cat .wp-env.override.json
 
       - name: Start WordPress environment
-        run: |
-          npx wp-env start
-          npx wp-env run tests-cli "wp user create sucuri sucuri@sucuri.net --role=author --user_pass=password"
-          npx wp-env run tests-cli "wp plugin install akismet --activate"
-          npx wp-env run tests-cli "touch .htaccess"
+        run: make e2e-prepare
 
       - name: Log WordPress debug information
         run: npx wp-env run cli wp core version
@@ -110,13 +97,13 @@ jobs:
       - name: Run Sucuri Scanner tests (E2E)
         run: |
           cp cypress.json.example cypress.json
-          npx cypress run --spec cypress/integration/sucuri-scanner.js
+          make e2e-scanner
 
       - name: Run Firewall tests (E2E)
         if: env.cypress_waf_api_key
         env:
           cypress_waf_api_key: ${{ secrets.WAF_API_KEY }}
-        run: npx cypress run --spec cypress/integration/sucuri-scanner-firewall.js
+        run: make e2e-firewall
           
       - name: Upload Cypress tests on failure
         uses: actions/upload-artifact@v2.2.1
