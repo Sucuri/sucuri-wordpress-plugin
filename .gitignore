@@ -9,3 +9,4 @@ cypress.json
 
 .phpunit.result.cache
 .vscode/launch.json
+.vscode/settings.json

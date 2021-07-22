@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Sucuri Security - Auditing, Malware Scanner and Hardening plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Sucuri Security - Auditing, Malware Scanner and Hardening 1.8.26\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/sucuri-scanner\n"
+"Project-Id-Version: Sucuri Security - Auditing, Malware Scanner and Hardening 1.8.27\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/sucuri-wordpress-plugin\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-02-10T17:01:19+00:00\n"
+"POT-Creation-Date: 2021-07-20T22:21:26+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.4.0\n"
 "X-Domain: sucuri-scanner\n"
@@ -111,10 +111,10 @@ msgstr ""
 msgid "Info:"
 msgstr ""
 
-#: src/cache.lib.php:392
-#: src/cache.lib.php:412
-#: src/cache.lib.php:453
-#: src/cache.lib.php:470
+#: src/cache.lib.php:401
+#: src/cache.lib.php:421
+#: src/cache.lib.php:462
+#: src/cache.lib.php:479
 msgid "Invalid cache key name"
 msgstr ""
 
@@ -1348,8 +1348,8 @@ msgstr ""
 #: src/settings-hardening.php:384
 #: src/settings-hardening.php:416
 #: src/settings-hardening.php:456
-#: src/settings-hardening.php:549
-#: src/settings-hardening.php:596
+#: src/settings-hardening.php:556
+#: src/settings-hardening.php:603
 msgid "Apply Hardening"
 msgstr ""
 
@@ -1363,8 +1363,8 @@ msgstr ""
 #: src/settings-hardening.php:380
 #: src/settings-hardening.php:419
 #: src/settings-hardening.php:452
-#: src/settings-hardening.php:545
-#: src/settings-hardening.php:601
+#: src/settings-hardening.php:552
+#: src/settings-hardening.php:608
 msgid "Revert Hardening"
 msgstr ""
 
@@ -1491,80 +1491,80 @@ msgid "Check if the primary user account still uses the name \"admin\". This all
 msgstr ""
 
 #: src/settings-hardening.php:476
-#: src/settings-hardening.php:507
+#: src/settings-hardening.php:514
 #: src/settings-posthack.php:63
 msgid "WordPress configuration file was not found."
 msgstr ""
 
 #: src/settings-hardening.php:478
-#: src/settings-hardening.php:509
+#: src/settings-hardening.php:516
 #: src/settings-posthack.php:76
 msgid "WordPress configuration file is not writable."
 msgstr ""
 
-#: src/settings-hardening.php:498
-#: src/settings-hardening.php:499
+#: src/settings-hardening.php:505
+#: src/settings-hardening.php:506
 msgid "Hardening applied to the plugin and theme editor"
 msgstr ""
 
-#: src/settings-hardening.php:527
+#: src/settings-hardening.php:534
 msgid "File Editor was not disabled using this tool. You must scan your project for a constant defined as DISALLOW_FILE_EDIT, then either delete it or set its value to False. Any plugin/theme can disable the file editor, so it is impossible to determine the origin of the constant."
 msgstr ""
 
-#: src/settings-hardening.php:533
-#: src/settings-hardening.php:534
+#: src/settings-hardening.php:540
+#: src/settings-hardening.php:541
 msgid "Hardening reverted in the plugin and theme editor"
 msgstr ""
 
-#: src/settings-hardening.php:539
+#: src/settings-hardening.php:546
 msgid "Disable Plugin and Theme Editor"
 msgstr ""
 
-#: src/settings-hardening.php:540
+#: src/settings-hardening.php:547
 msgid "Disables the theme and plugin editors to prevent unwanted modifications to the code. If you are having problems reverting this please open the wp-config.php file and delete the line with the constant DISALLOW_FILE_EDIT."
 msgstr ""
 
-#: src/settings-hardening.php:572
+#: src/settings-hardening.php:579
 msgid "Automatic Secret Keys Updater enabled. The default frequency is \"Weekly\", but you can change the frequency on Settings -> Post-Hack -> Update Secret Keys section."
 msgstr ""
 
-#: src/settings-hardening.php:573
+#: src/settings-hardening.php:580
 #: src/settings-posthack.php:158
 #: src/settings-posthack.php:159
 msgid "Automatic Secret Keys Updater enabled."
 msgstr ""
 
-#: src/settings-hardening.php:575
-#: src/settings-hardening.php:585
+#: src/settings-hardening.php:582
+#: src/settings-hardening.php:592
 #: src/settings-posthack.php:150
 #: src/settings-posthack.php:161
 msgid "Something went wrong."
 msgstr ""
 
-#: src/settings-hardening.php:582
-#: src/settings-hardening.php:583
+#: src/settings-hardening.php:589
+#: src/settings-hardening.php:590
 #: src/settings-posthack.php:147
 #: src/settings-posthack.php:148
 msgid "Automatic Secret Keys Updater disabled."
 msgstr ""
 
-#: src/settings-hardening.php:591
+#: src/settings-hardening.php:598
 msgid "Activate Automatic Secret Keys Updater"
 msgstr ""
 
-#: src/settings-hardening.php:592
+#: src/settings-hardening.php:599
 msgid "Changing the Secret Keys will invalidate all existing cookies, forcing all logged in users to login again. Doing this frequently will decrease the chances of misuse of sessions left open on unprotected devices."
 msgstr ""
 
-#: src/settings-hardening.php:643
+#: src/settings-hardening.php:650
 msgid "The file has been allowed"
 msgstr ""
 
-#: src/settings-hardening.php:648
+#: src/settings-hardening.php:655
 msgid "Specified folder is not hardened by this plugin"
 msgstr ""
 
-#: src/settings-hardening.php:662
+#: src/settings-hardening.php:669
 msgid "Selected files have been removed"
 msgstr ""
 
@@ -1737,15 +1737,15 @@ msgstr ""
 msgid "In the blocklist"
 msgstr ""
 
-#: src/sitecheck.lib.php:393
+#: src/sitecheck.lib.php:396
 msgid "iFrames: %d"
 msgstr ""
 
-#: src/sitecheck.lib.php:405
+#: src/sitecheck.lib.php:411
 msgid "Links: %d"
 msgstr ""
 
-#: src/sitecheck.lib.php:426
+#: src/sitecheck.lib.php:432
 msgid "Scripts: %d"
 msgstr ""
 
