@@ -9,7 +9,8 @@ jobs:
   # Performs the following steps:
   # - Checks out the repository.
   # - Logs debug information about the runner container.
-  # - Install dependencies and run tests
+  # - Install dependencies.
+  # - Run unit tests.
   e2e-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
@@ -20,5 +21,6 @@ jobs:
 
       - name: Install dependencies
         uses: php-actions/composer@v6
-        with:
-          command: make unit-test
+
+      - name: Run tests
+        run: make unit-test
