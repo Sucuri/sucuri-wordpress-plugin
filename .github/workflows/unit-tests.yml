@@ -1,0 +1,33 @@
+name: Unit tests
+
+# Triggers the workflow on push or pull request events
+on: [push, pull_request]
+
+jobs:
+  # Runs the unit test suite.
+  #
+  # Performs the following steps:
+  # - Checks out the repository.
+  # - Logs debug information about the runner container.
+  # - Setup PHP.
+  # - Install dependencies.
+  # - Run unit tests.
+  e2e-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          tools: composer
+
+      - name: Install dependencies
+        run: composer install
+
+      - name: Run tests
+        run: make unit-test

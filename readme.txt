@@ -190,7 +190,7 @@ This version adds an option to refresh the malware scan results on demand, as we
 
 == Changelog ==
 = 1.8.27 =
-* Improve PHP 8 support
+* Add support for PHP 8
 * Reduce memory requirements when reading a log file
 * Fix DISALLOW_FILE_EDIT related notice
 
