@@ -238,7 +238,7 @@ class SucuriScanCache extends SucuriScan
         $object['info'] = array();
         $object['entries'] = array();
 
-        if (($fh = fopen($this->datastore_path, 'r')) === false) {
+        if (($fh = @fopen($this->datastore_path, 'r')) === false) {
             return $object;
         }
 
