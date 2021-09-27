@@ -12,7 +12,8 @@ The Sucuri WordPress Security plugin is a security toolset for security integrit
 
 Sucuri Inc. is a globally recognized authority in all matters related to website security, with specialization in WordPress Security.
 
-The Sucuri Security WordPress plugin is free to all WordPress users. It is a security suite meant to complement your existing security posture. It offers its users a set of security features for their website, each designed to have a positive effect on their security posture:
+The Sucuri Security WordPress plugin is free to all WordPress users. It is a security suite meant to complement your existing security posture. Currently the ownership of this plugin was transferred to GoDaddy.
+It offers its users a set of security features for their website, each designed to have a positive effect on their security posture:
 
 * Security Activity Auditing
 * File Integrity Monitoring
