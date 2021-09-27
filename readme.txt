@@ -1,5 +1,5 @@
 === Sucuri Security - Auditing, Malware Scanner and Security Hardening ===
-Contributors: dd@sucuri.net
+Contributors: dscalzo@godaddy.com
 Donate Link: https://sucuri.net/
 Tags: malware, security, firewall, scan, spam, virus, sucuri, protection, blocklist, detection, hardening, file integrity
 Requires at least: 3.6
