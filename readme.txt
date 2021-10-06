@@ -1,5 +1,5 @@
 === Sucuri Security - Auditing, Malware Scanner and Security Hardening ===
-Contributors: dscalzo@godaddy.com
+Contributors: wordpress@sucuri.net
 Donate Link: https://sucuri.net/
 Tags: malware, security, firewall, scan, spam, virus, sucuri, protection, blocklist, detection, hardening, file integrity
 Requires at least: 3.6
@@ -188,6 +188,11 @@ We take your privacy seriously. For free plugin users without an API key, no inf
 
 = 1.8.19 =
 This version adds an option to refresh the malware scan results on demand, as well as several small bug fixes and improvements.
+
+== Contributors & Maintenance Notice ==
+
+= 1.8.30 =
+Daniel is no longer maintaining the Sucuri plugin at GoDaddy. We have transferred it to a dedicated team to maintain and improve it.
 
 == Changelog ==
 = 1.8.30 =
