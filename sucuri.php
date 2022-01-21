@@ -109,7 +109,7 @@ define('SUCURISCAN_PLUGIN_FOLDER', basename(dirname(__FILE__)));
  $sucuriscanPluginPath = WP_PLUGIN_DIR . '/' . SUCURISCAN_PLUGIN_FOLDER;
  if (!is_dir($sucuriscanPluginPath) && is_dir(WPMU_PLUGIN_DIR . '/' . SUCURISCAN_PLUGIN_FOLDER)) {
     $sucuriscanPluginPath = WPMU_PLUGIN_DIR . '/' . SUCURISCAN_PLUGIN_FOLDER;
- } else {
+ } elseif(!is_dir($sucuriscanPluginPath)) {
      throw new \RuntimeException('Sucuri scan plugin cannot be found in plugins or must-use plugins.');
  }
 
