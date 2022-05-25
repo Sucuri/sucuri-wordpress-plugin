@@ -402,6 +402,9 @@ class SucuriScanCache extends SucuriScan
         }
 
         $finfo = $this->getDatastoreInfo();
+        if (empty($finfo['fpath'])) {
+            return false;
+        }
         $line = sprintf("%s:%s\n", $key, json_encode($data));
 
         return (bool) @file_put_contents($finfo['fpath'], $line, FILE_APPEND);

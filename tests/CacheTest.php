@@ -21,4 +21,24 @@ final class CacheTest extends TestCase
         $entries = $cache->getAll();
         $this->assertSame(20, count($entries));
     }
+
+    public function testDatastoreAddToMissingFile()
+    {
+        $cache = new SucuriScanCache('test-datastore', false);
+        $ok = $cache->add('1234567890_0000', 'value');
+        $this->assertFalse($ok);
+    }
+
+    public function testDatastoreAddToReadOnlyFile()
+    {
+        $datastore = 'test-datastore';
+        $datastoreFullpath = SUCURI_DATA_STORAGE . "/sucuri-$datastore.php";
+        $cache = new SucuriScanCache($datastore, true);
+        chmod($datastoreFullpath, 000);
+
+        $ok = $cache->add('1234567890_0000', 'value');
+        unlink($datastoreFullpath);
+
+        $this->assertFalse($ok);
+    }
 }
