@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Sucuri Security - Auditing, Malware Scanner and Hardening plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Sucuri Security - Auditing, Malware Scanner and Hardening 1.8.31\n"
+"Project-Id-Version: Sucuri Security - Auditing, Malware Scanner and Hardening 1.8.32\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/sucuri-wordpress-plugin\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: 2022-06-08T17:04:41+00:00\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2022-07-01T10:00:00+00:00\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: sucuri-scanner\n"
 
