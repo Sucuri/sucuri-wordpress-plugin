@@ -853,6 +853,10 @@ class SucuriScanEvent extends SucuriScan
         $content = SucuriScanFileInfo::fileContent($config_path);
         $config_lines = explode("\n", $content); /* maintain new lines */
         $new_keys = SucuriScanAPI::getNewSecretKeys();
+        if (!$new_keys) {
+            return false;
+        }
+
         $new_keys_string = '';
         $old_keys_string = '';
         $old_keys = array();
