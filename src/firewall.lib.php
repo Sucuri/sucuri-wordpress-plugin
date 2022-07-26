@@ -665,9 +665,14 @@ class SucuriScanFirewall extends SucuriScanAPI
      * @param  array|bool $api_key The firewall API key.
      * @return string|bool         Message explaining the result of the operation.
      */
-    public static function clearCache($api_key = false)
+    public static function clearCache($api_key = false, $path = '')
     {
         $params = array('a' => 'clear_cache');
+        $path = ltrim(trim($path), '/');
+
+        if ($path) {
+            $params['file'] = $path;
+        }
 
         if (is_array($api_key)) {
             $params = array_merge($params, $api_key);
@@ -737,7 +742,8 @@ class SucuriScanFirewall extends SucuriScanAPI
         $api_key = self::getKey();
 
         if ($api_key) {
-            $res = self::clearCache($api_key);
+            $path = SucuriScanRequest::post('path');
+            $res = self::clearCache($api_key, $path);
 
             if (is_array($res) && isset($res['messages'])) {
                 $response = sprintf(
