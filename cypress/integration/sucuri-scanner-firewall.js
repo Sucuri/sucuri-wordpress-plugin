@@ -54,6 +54,18 @@ describe( '', () => {
 
     cy.get( '#firewall-clear-cache-response' ).contains( /The cache for the domain ".*" is being cleared. Note that it may take up to two minutes for it to be fully flushed./g );
   } );
+  
+  it( 'can clear cache by path', () => {
+    cy.visit( '/wp-admin/admin.php?page=sucuriscan_firewall#clearcache' );
+
+    cy.get( '[data-cy=firewall-clear-cache-path-input]').type('blog');
+
+    cy.get( '[data-cy=sucuriscan-clear-cache-path]' ).click();
+
+    cy.wait( 2000 );
+
+    cy.get( '#firewall-clear-cache-response' ).contains( /The cache for ".*" is being cleared. Note that it may take up to two minutes for it to be fully flushed./g );
+  } );
 
   it( 'can delete api key', () => {
     cy.visit( '/wp-admin/admin.php?page=sucuriscan#auditlogs' );

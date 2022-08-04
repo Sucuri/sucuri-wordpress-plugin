@@ -20,6 +20,30 @@ jQuery(document).ready(function ($) {
             $('#firewall-clear-cache-response').html(data);
         });
     });
+    
+    $('#firewall-clear-cache-path-button').on('click', function (event) {
+        event.preventDefault();
+
+        var button = $(this),
+            pathEl = $('input[name="path"]'),
+            path = $(pathEl).val();
+
+        if (!path) return;
+
+        button.attr('disabled', true);
+        button.html('{{Loading...}}');
+        $('#firewall-clear-cache-response').html('');
+
+        $.post('%%SUCURI.AjaxURL.Firewall%%', {
+            action: 'sucuriscan_ajax',
+            sucuriscan_page_nonce: '%%SUCURI.PageNonce%%',
+            form_action: 'firewall_clear_cache',
+            path
+        }, function (data) {
+            $('#firewall-clear-cache-response').html(data);
+            button.html('{{Clear Cache}}');
+        });
+    });
 
     $('#firewall-clear-cache-auto').on('change', 'input:checkbox', function () {
         var checked = $(this).is(':checked');
@@ -34,6 +58,13 @@ jQuery(document).ready(function ($) {
         }, function () {
             $('#firewall-clear-cache-auto span').html('{{Clear cache when a post or page is updated}}');
         });
+    });
+    
+    $('#firewall-clear-cache-path-input').on('keyup', function () {
+        var input = $(this),
+            button = $("#firewall-clear-cache-path-button");
+
+        button.attr('disabled', $(input).val().length === 0);
     });
 });
 </script>
@@ -50,14 +81,32 @@ jQuery(document).ready(function ($) {
 
         <p>{{A web cache (or HTTP cache) is an information technology for the temporary storage (caching) of web documents, such as HTML pages and images, to reduce bandwidth usage, server load, and perceived lag. A web cache system stores copies of documents passing through it; subsequent requests may be satisfied from the cache if certain conditions are met. A web cache system can refer either to an appliance, or to a computer program. &mdash; <a href="https://en.wikipedia.org/wiki/Web_cache" target="_blank" rel="noopener">WikiPedia - Web Cache</a>}}</p>
 
-        <div id="firewall-clear-cache-auto">
+        <div class="firewall-clear-cache-path">
+            <form action="%%SUCURI.URL.Firewall%%" method="post" class="sucuriscan-%%SUCURI.Firewall.APIKeyFormVisibility%%">
+                <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
+                <h3 class="lead">Clear Cache by Path</h3>
+                <p>This option allows you to clear the cache for an individual page, post, or other path. Enter the URL you wish to clear and then click the Clear Cache button. </p>
+                <p>This functionality will not clear static content. (i.e. .jpg or .css)</p>
+                <fieldset class="sucuriscan-clearfix">
+                    <label>
+                        <span class="ml-0">{{Path:}}</span>
+                        <input type="text" name="path" id="firewall-clear-cache-path-input" data-cy="firewall-clear-cache-path-input" placeholder="e.g. security/how-to-clear-a-path" class="ml-0" />
+                    </label>
+                    <button type="submit" class="button button-primary" id="firewall-clear-cache-path-button" disabled data-cy="sucuriscan-clear-cache-path">{{Clear Cache}}</button>
+                </fieldset>
+            </form>
+        </div>
+        <div id="firewall-clear-cache-auto" class="mt-2">
+            <h3 class="lead">Clear Cache Globally</h3>
+            <p>This option allows you to purge all of your page and files cache at once.</p>
+            <p>You can select the checkbox below to clear your website cache globally every time a save is made on your WordPress website.</p>
             <label>
                 <input type="checkbox" name="sucuriscan_auto_clear_cache" value="true" %%SUCURI.FirewallAutoClearCache%% />
-                <span>{{Clear cache when a post or page is updated}}</span>
+                <span>{{Clear cache whenever a post or page is updated}}</span>
             </label>
         </div>
+        <button id="firewall-clear-cache-button" class="button button-primary">{{Clear Global Cache}}</button>
 
-        <div id="firewall-clear-cache-response"></div>
-        <button id="firewall-clear-cache-button" class="button button-primary">{{Clear Cache}}</button>
+        <div id="firewall-clear-cache-response" class="mt-2"></div>
     </div>
 </div>

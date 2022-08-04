@@ -50,6 +50,7 @@ body.sucuri-security_page_sucuriscan_hardening {
     margin: 0;
     padding: 0 7px;
     line-height: 28px;
+    font-weight: 400;
 }
 .sucuriscan-container fieldset {
     margin-bottom: 10px;
@@ -942,4 +943,37 @@ body.sucuri-security_page_sucuriscan_hardening {
 .rtl .wrap .sucuriscan-alert > .close {
     right: initial;
     left: 20px;
+}
+
+.firewall-clear-cache-path {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.firewall-clear-cache-path fieldset {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+} 
+
+.firewall-clear-cache-path fieldset input {
+    min-width: 300px;
+}
+
+.firewall-clear-cache-path fieldset label{
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+}
+
+.ml-0 {
+    margin-left: 0 !important;
+}
+
+.mt-2 {
+    margin-top: 2em !important;
+}
+
+h3.lead {
+    margin: .5em 0;
 }
