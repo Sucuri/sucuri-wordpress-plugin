@@ -141,19 +141,15 @@ class SucuriScanHook extends SucuriScanEvent
     /**
      * Detects when the core files are updated.
      *
+     * @param string $wp_version The current WordPress version.
      * @return void
      */
-    public static function hookCoreUpdate()
+    public static function hookCoreUpdate($wp_version='')
     {
-        // WordPress update request.
-        if (current_user_can('update_core')
-            && SucuriScanRequest::get('action', '(do-core-upgrade|do-core-reinstall)')
-            && SucuriScanRequest::post('upgrade')
-        ) {
-            $message = sprintf(__('WordPress updated to version: %s', 'sucuri-scanner'), SucuriScanRequest::post('version'));
-            self::reportCriticalEvent($message);
-            self::notifyEvent('website_updated', $message);
-        }
+        // WordPress core has been successfully updated
+        $message = sprintf(__('WordPress updated to version: %s', 'sucuri-scanner'), $wp_version);
+        self::reportCriticalEvent($message);
+        self::notifyEvent('website_updated', $message);
     }
 
     /**
@@ -522,9 +518,10 @@ class SucuriScanHook extends SucuriScanEvent
     {
         // Plugin installation request.
         if (current_user_can('install_plugins')
-            && SucuriScanRequest::get('action', '(install|upload)-plugin')
+            && check_ajax_referer( 'updates', false, false )
+            && SucuriScanRequest::getOrPost('action', '(install|upload)-plugin')
         ) {
-            $plugin = SucuriScanRequest::get('plugin', '.+');
+            $plugin = SucuriScanRequest::getOrPost('plugin', '.+');
 
             if (isset($_FILES['pluginzip'])) {
                 $plugin = $_FILES['pluginzip']['name'];
@@ -547,7 +544,7 @@ class SucuriScanHook extends SucuriScanEvent
         // Plugin update request.
         $plugin_update_actions = '(upgrade-plugin|do-plugin-upgrade|update-selected)';
 
-        if (!current_user_can('update_plugins')) {
+        if (!current_user_can('update_plugins') || !check_ajax_referer( 'updates', false, false )) {
             return;
         }
 
@@ -863,6 +860,7 @@ class SucuriScanHook extends SucuriScanEvent
     {
         // Theme deletion request.
         if (current_user_can('delete_themes')
+            && check_ajax_referer( 'updates', false, false )
             && SucuriScanRequest::getOrPost('action', 'delete')
             && SucuriScanRequest::getOrPost('stylesheet', '.+')
         ) {
@@ -884,6 +882,7 @@ class SucuriScanHook extends SucuriScanEvent
     {
         // Theme editor request.
         if (current_user_can('edit_themes')
+            && check_ajax_referer( 'updates', false, false )
             && SucuriScanRequest::post('action', 'update')
             && SucuriScanRequest::post('theme', '.+')
             && SucuriScanRequest::post('file', '.+')
@@ -906,6 +905,7 @@ class SucuriScanHook extends SucuriScanEvent
     {
         // Theme installation request.
         if (current_user_can('install_themes')
+            && check_ajax_referer( 'updates', false, false )
             && SucuriScanRequest::get('action', 'install-theme')
         ) {
             $theme = SucuriScanRequest::get('theme', '.+');
@@ -940,6 +940,7 @@ class SucuriScanHook extends SucuriScanEvent
     {
         // Theme update request.
         if (current_user_can('update_themes')
+            && check_ajax_referer( 'updates', false, false )
             && SucuriScanRequest::get('action', '(upgrade-theme|do-theme-upgrade)')
             && SucuriScanRequest::post('checked', '_array')
         ) {
@@ -1072,7 +1073,7 @@ class SucuriScanHook extends SucuriScanEvent
     }
 
     /**
-     * Detects when a widget is added.
+     * Detects when a widget is added or deleted
      *
      * @return void
      */
@@ -1080,6 +1081,7 @@ class SucuriScanHook extends SucuriScanEvent
     {
         // Widget addition or deletion.
         if (current_user_can('edit_theme_options')
+            && check_ajax_referer( 'save-sidebar-widgets', 'savewidgets', false )
             && SucuriScanRequest::post('action', 'save-widget')
             && SucuriScanRequest::post('id_base') !== false
             && SucuriScanRequest::post('sidebar') !== false
@@ -1107,6 +1109,7 @@ class SucuriScanHook extends SucuriScanEvent
             self::notifyEvent('widget_' . $action_d, $message);
         }
     }
+
 
     /**
      * Detects when a widget is deleted.
