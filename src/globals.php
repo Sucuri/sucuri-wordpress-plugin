@@ -175,9 +175,9 @@ if (defined('SUCURISCAN')) {
         add_action('xmlrpc_publish_post', 'SucuriScanHook::hookPublishPostXMLRPC', 50, 5);
 
         if (SucuriScan::runAdminInit()) {
-            add_action('admin_init', 'SucuriScanHook::hookCoreUpdate');
+            add_action('_core_updated_successfully', 'SucuriScanHook::hookCoreUpdate');
             add_action('admin_init', 'SucuriScanHook::hookOptionsManagement');
-            add_action('admin_init', 'SucuriScanHook::hookPluginDelete');
+            add_action('deleted_plugin', 'SucuriScanHook::hookPluginDelete');
             add_action('admin_init', 'SucuriScanHook::hookPluginEditor');
             add_action('admin_init', 'SucuriScanHook::hookPluginInstall');
             add_action('admin_init', 'SucuriScanHook::hookPluginUpdate');
