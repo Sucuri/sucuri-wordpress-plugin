@@ -518,8 +518,8 @@ class SucuriScanHook extends SucuriScanEvent
     {
         // Plugin installation request.
         if (current_user_can('install_plugins')
-            && check_ajax_referer( 'updates', false, false )
             && SucuriScanRequest::getOrPost('action', '(install|upload)-plugin')
+            && check_ajax_referer( 'updates', false, false )
         ) {
             $plugin = SucuriScanRequest::getOrPost('plugin', '.+');
 
@@ -544,13 +544,18 @@ class SucuriScanHook extends SucuriScanEvent
         // Plugin update request.
         $plugin_update_actions = '(upgrade-plugin|do-plugin-upgrade|update-selected)';
 
-        if (!current_user_can('update_plugins') || !check_ajax_referer( 'updates', false, false )) {
+        if (!current_user_can('update_plugins')) {
             return;
         }
 
         if (SucuriScanRequest::getOrPost('action', $plugin_update_actions)
             || SucuriScanRequest::getOrPost('action2', $plugin_update_actions)
         ) {
+
+            if (!check_ajax_referer( 'updates', false, false )) {
+                return;
+            }
+
             $plugin_list = array();
             $items_affected = array();
 
@@ -860,9 +865,9 @@ class SucuriScanHook extends SucuriScanEvent
     {
         // Theme deletion request.
         if (current_user_can('delete_themes')
-            && check_ajax_referer( 'updates', false, false )
             && SucuriScanRequest::getOrPost('action', 'delete')
             && SucuriScanRequest::getOrPost('stylesheet', '.+')
+            && check_ajax_referer( 'updates', false, false )
         ) {
             $theme = SucuriScanRequest::getOrPost('stylesheet', '.+');
             $theme = $theme ? $theme : __('Unknown', 'sucuri-scanner');
@@ -882,11 +887,11 @@ class SucuriScanHook extends SucuriScanEvent
     {
         // Theme editor request.
         if (current_user_can('edit_themes')
-            && check_ajax_referer( 'updates', false, false )
             && SucuriScanRequest::post('action', 'update')
             && SucuriScanRequest::post('theme', '.+')
             && SucuriScanRequest::post('file', '.+')
             && strpos($_SERVER['SCRIPT_NAME'], 'theme-editor.php') !== false
+            && check_ajax_referer( 'updates', false, false )
         ) {
             $theme_name = SucuriScanRequest::post('theme');
             $filename = SucuriScanRequest::post('file');
@@ -905,8 +910,8 @@ class SucuriScanHook extends SucuriScanEvent
     {
         // Theme installation request.
         if (current_user_can('install_themes')
-            && check_ajax_referer( 'updates', false, false )
             && SucuriScanRequest::get('action', 'install-theme')
+            && check_ajax_referer( 'updates', false, false )
         ) {
             $theme = SucuriScanRequest::get('theme', '.+');
             $theme = $theme ? $theme : __('Unknown', 'sucuri-scanner');
@@ -940,9 +945,9 @@ class SucuriScanHook extends SucuriScanEvent
     {
         // Theme update request.
         if (current_user_can('update_themes')
-            && check_ajax_referer( 'updates', false, false )
             && SucuriScanRequest::get('action', '(upgrade-theme|do-theme-upgrade)')
             && SucuriScanRequest::post('checked', '_array')
+            && check_ajax_referer( 'updates', false, false )
         ) {
             $themes = SucuriScanRequest::post('checked', '_array');
             $items_affected = array();
@@ -1081,10 +1086,10 @@ class SucuriScanHook extends SucuriScanEvent
     {
         // Widget addition or deletion.
         if (current_user_can('edit_theme_options')
-            && check_ajax_referer( 'save-sidebar-widgets', 'savewidgets', false )
             && SucuriScanRequest::post('action', 'save-widget')
             && SucuriScanRequest::post('id_base') !== false
             && SucuriScanRequest::post('sidebar') !== false
+            && check_ajax_referer( 'save-sidebar-widgets', 'savewidgets', false )
         ) {
             if (SucuriScanRequest::post('delete_widget', '1')) {
                 $action_d = 'deleted';
