@@ -71,7 +71,7 @@ body.sucuri-security_page_sucuriscan_hardening {
 }
 .sucuriscan-container select {
     margin: 0;
-    padding: 0;
+    padding: 0 30px 0 8px;
     height: 30px;
     line-height: normal;
 }
@@ -199,8 +199,8 @@ body.sucuri-security_page_sucuriscan_hardening {
 .wp-core-ui .sucuriscan-container .button-primary:disabled,
 .wp-core-ui .sucuriscan-container .button-primary[disabled] {
     color: #fff;
-    background: #26BA9E;
-    border-color: #26BA9E;
+    background: #028673;
+    border-color: #028673;
     text-shadow: none !important;
     box-shadow: none !important;
 }
@@ -661,7 +661,8 @@ body.sucuri-security_page_sucuriscan_hardening {
     background-size: 62px 62px;
 }
 .sucuriscan-integrity-incorrect .sucuriscan-integrity-right {
-    background: url('../images/checkcross.png') no-repeat 25px 30px;
+    background-image: url("data:image/svg+xml,%3Csvg id='Layer_1' data-name='Layer 1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Cdefs%3E%3Cstyle%3E .cls-1 %7B fill: %23ce3030; %7D %3C/style%3E%3C/defs%3E%3Cg id='Ellipse_33' data-name='Ellipse 33'%3E%3Cpath class='cls-1' d='M30,6c13.23,0,24,10.77,24,24s-10.77,24-24,24S6,43.23,6,30,16.77,6,30,6M30,0C13.43,0,0,13.43,0,30s13.43,30,30,30,30-13.43,30-30S46.57,0,30,0h0Z'/%3E%3C/g%3E%3Cg%3E%3Crect class='cls-1' x='27.43' y='17.26' width='5.14' height='25.49' transform='translate(-12.43 30) rotate(-45)'/%3E%3Crect class='cls-1' x='17.26' y='27.43' width='25.49' height='5.14' transform='translate(-12.43 30) rotate(-45)'/%3E%3C/g%3E%3C/svg%3E");
+    background-repeat: no-repeat;
     background-size: 62px 62px;
 }
 .sucuriscan-integrity-loading .sucuriscan-integrity-missing {
@@ -674,7 +675,7 @@ body.sucuri-security_page_sucuriscan_hardening {
     color: #028673;
 }
 .sucuriscan-integrity-incorrect .sucuriscan-subtitle {
-    color: #f33924;
+    color: #CE3030;
 }
 .sucuriscan-integrity-incorrect .sucuriscan-table .sucuriscan-tooltip {
     left: 5px;
