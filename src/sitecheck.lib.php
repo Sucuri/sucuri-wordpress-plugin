@@ -314,7 +314,7 @@ class SucuriScanSiteCheck extends SucuriScanAPI
             return ''; /* there is not enough information to render */
         }
 
-        $params['Blocklist.Title'] = __('Not in the blocklist', 'sucuri-scanner');
+        $params['Blocklist.Title'] = __('Not blocklisted', 'sucuri-scanner');
         $params['Blocklist.Color'] = 'green';
         $params['Blocklist.Content'] = '';
 

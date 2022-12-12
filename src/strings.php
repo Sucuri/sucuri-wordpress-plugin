@@ -90,7 +90,7 @@ __('Delete', 'sucuri-scanner');
 __('Save', 'sucuri-scanner');
 __('Name', 'sucuri-scanner');
 __('Value', 'sucuri-scanner');
-__('<em>[1]</em> More information about the <a href="https://sucuri.net/website-firewall/" target="_blank" rel="noopener">Sucuri Firewall</a>, features and pricing.<br><em>[2]</em> Instructions and videos in the official <a href="https://kb.sucuri.net/firewall" target="_blank" rel="noopener">Knowledge Base</a> site.<br><em>[3]</em> <a href="https://login.sucuri.net/signup2/create?CloudProxy" target="_blank" rel="noopener">Sign up</a> for a new account and start protecting your site.', 'sucuri-scanner');
+__('<em>[1]</em> More information about the <a href="https://sucuri.net/website-firewall/" target="_blank" rel="noopener">Sucuri Firewall</a>, features and pricing.<br><em>[2]</em> Instructions and videos in the official <a href="https://kb.sucuri.net/firewall" target="_blank" rel="noopener">Knowledge Base</a> site.<br><em>[3]</em> <a href="https://sucuri.net/website-security-platform/signup/" target="_blank" rel="noopener">Sign up</a> for a new account and start protecting your site.', 'sucuri-scanner');
 
 // firewall.html.tpl
 __('Settings', 'sucuri-scanner');

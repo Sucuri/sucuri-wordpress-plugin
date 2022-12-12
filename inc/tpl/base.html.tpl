@@ -7,7 +7,7 @@
     %%%SUCURI.GenerateAPIKey.Modal%%%
 
     <div class="sucuriscan-header sucuriscan-clearfix">
-        <div class="sucuriscan-pull-left">
+        <div class="sucuriscan-pull-left sucuriscan-logo-wrapper">
             <a href="https://sucuri.net/signup" target="_blank" title="{{Sucuri Security}}" class="sucuriscan-logo">
                 <img src="%%SUCURI.PluginURL%%/inc/images/pluginlogo.png" alt="Sucuri Inc." />
             </a>
@@ -17,7 +17,7 @@
 
         <div class="sucuriscan-pull-right sucuriscan-navbar">
             <ul>
-                <li><a href="https://wordpress.org/support/plugin/sucuri-scanner/reviews/" target="_blank" rel="noopener" class="button button-secondary">{{Review}}</a></li>
+                <li><a href="https://sucuri.typeform.com/to/qNe18eDf" target="_blank" rel="noopener" class="button button-secondary">{{Feedback Survey}}</a></li>
 
                 <li class="sucuriscan-%%SUCURI.GenerateAPIKey.Visibility%%">
                     <a href="#" class="button button-primary sucuriscan-modal-button sucuriscan-register-site-button"
