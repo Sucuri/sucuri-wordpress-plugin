@@ -740,7 +740,7 @@ class SucuriScanEvent extends SucuriScan
             return false;
         }
 
-        $reset_password_url = network_site_url("wp-login.php?action=rp&key=$key&login=" . rawurlencode($user_login), 'login' );
+        $reset_password_url = network_site_url("wp-login.php?action=rp&key=$key&login=" . rawurlencode($user_login), 'https' );
 
         $message = SucuriScanTemplate::getSection(
             'settings-posthack-reset-password-alert',
