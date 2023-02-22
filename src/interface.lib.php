@@ -63,14 +63,6 @@ class SucuriScanInterface
      */
     public static function enqueueScripts()
     {
-		wp_register_style(
-			'sucuriscan-google-fonts',
-			'https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i|Roboto+Slab:700|Titillium+Web:wght@400,700,900|Roboto:wght@400&amp;display=swap',
-			array(),
-			false
-		);
-        wp_enqueue_style( 'sucuriscan-google-fonts' );
-
         wp_register_style(
             'sucuriscan',
             SUCURISCAN_URL . '/inc/css/styles.css',
