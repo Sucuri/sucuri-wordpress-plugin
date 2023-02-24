@@ -280,7 +280,7 @@ class SucuriScanEvent extends SucuriScan
      * Sends information of a security event to the API.
      *
      * If the website owner has enabled the security log exporter, this method
-     * will also write the information about the security event to taht file.
+     * will also write the information about the security event to that file.
      * This allows to integrate with different monitoring systems like OSSEC or
      * OpenVAS.
      *
@@ -384,7 +384,7 @@ class SucuriScanEvent extends SucuriScan
      */
     public static function sendLogsFromQueue()
     {
-        if (SucuriScanOption::isDisabled(':api_service')) {
+        if (SucuriScanOption::isDisabled(':api_service') || !defined('SUCURISCAN_API_URL')) {
             return false;
         }
 

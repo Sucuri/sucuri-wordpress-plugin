@@ -8,7 +8,7 @@
  * Author: Sucuri Inc.
  * Text Domain: sucuri-scanner
  * Domain Path: /lang
- * Version: 1.8.36
+ * Version: 1.8.37
  *
  * PHP version 7
  *
@@ -112,18 +112,6 @@ define('SUCURISCAN_PLUGIN_PATH', WP_PLUGIN_DIR . '/' . SUCURISCAN_PLUGIN_FOLDER)
  * The local URL where the plugin's files and assets are served.
  */
 define('SUCURISCAN_URL', rtrim(plugin_dir_url(__FILE__), '/'));
-
-/**
- * Remote URL where the public Sucuri API service is running.
- *
- * We will check if the constant was already set to allow developers to use
- * their own API service. This is useful both for the execution of the tests
- * as well as for website owners who do not want to send data to the Sucuri
- * servers.
- */
-if (!defined('SUCURISCAN_API_URL')) {
-    define('SUCURISCAN_API_URL', 'https://wordpress.sucuri.net/api/');
-}
 
 /**
  * Latest version of the public Sucuri API.
