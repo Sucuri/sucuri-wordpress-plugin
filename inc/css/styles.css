@@ -1,9 +1,77 @@
+@font-face {
+    font-family: 'Titillium Web';
+    font-weight: 600;
+    font-display: swap;
+    src:  url('../fonts/TitilliumWeb-SemiBold.woff2') format('woff2'),
+        url('../fonts/TitilliumWeb-SemiBold.woff') format('woff'),
+        url('../fonts/TitilliumWeb-SemiBold.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Titillium Web';
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+    src:  url('../fonts/TitilliumWeb-Bold.woff2') format('woff2'),
+        url('../fonts/TitilliumWeb-Bold.woff') format('woff'),
+        url('../fonts/TitilliumWeb-Bold.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Titillium Web';
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+    src:  url('../fonts/TitilliumWeb-Black.woff2') format('woff2'),
+        url('../fonts/TitilliumWeb-Black.woff') format('woff'),
+        url('../fonts/TitilliumWeb-Black.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-weight: normal;
+    font-display: swap;
+    src:  url('../fonts/OpenSans-Regular.woff2') format('woff2'),
+        url('../fonts/OpenSans-Regular.woff') format('woff'),
+        url('../fonts/OpenSans-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+    src:  url('../fonts/OpenSans-Medium.woff2') format('woff2'),
+        url('../fonts/OpenSans-Medium.woff') format('woff'),
+        url('../fonts/OpenSans-Medium.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+    src:  url('../fonts/OpenSans-SemiBold.woff2') format('woff2'),
+        url('../fonts/OpenSans-SemiBold.woff') format('woff'),
+        url('../fonts/OpenSans-SemiBold.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+    src:  url('../fonts/OpenSans-Bold.woff2') format('woff2'),
+        url('../fonts/OpenSans-Bold.woff') format('woff'),
+        url('../fonts/OpenSans-Bold.ttf') format('truetype');
+}
+
 body.toplevel_page_sucuriscan,
 body.sucuri-security_page_sucuriscan_settings,
 body.sucuri-security_page_sucuriscan_firewall,
 body.sucuri-security_page_sucuriscan_hardening {
     background: #E9E7E7;
-    font-family: 'Open Sans', serif;
+    font-family: 'Open Sans', sans-serif;
     font-size: 14px;
     line-height: 1.5rem;
     color: #1A272C;
