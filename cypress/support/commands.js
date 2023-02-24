@@ -30,8 +30,8 @@ Cypress.Commands.add('login', (username, password) => {
 
   cy.visit('/wp-login.php');
 
-  cy.get('#user_login' ).wait(200).type(loginUsername);
-  cy.get('#user_pass' ).wait(200).type(loginPassword);
+  cy.get('#user_login' ).wait(200).clear().type(loginUsername);
+  cy.get('#user_pass' ).wait(200).clear().type(loginPassword);
 
   cy.get('#wp-submit' ).click();
 });

@@ -16,5 +16,10 @@
 // Import commands.js using ES2015 syntax:
 import './commands'
 
-// Alternatively you can use CommonJS syntax:
-// require('./commands')
+Cypress.Cookies.defaults({
+    preserve: /wp|wordpress/
+});
+
+before(() => {
+    cy.login(Cypress.env('wpUsername'), Cypress.env('wpPassword'));
+});
