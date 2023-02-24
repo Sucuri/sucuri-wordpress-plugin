@@ -1,8 +1,4 @@
 describe( '', () => {
-  beforeEach( function() {
-		cy.login();
-	}	);
-
   it( 'can activate api key', () => {
     cy.visit( '/wp-admin/admin.php?page=sucuriscan#auditlogs' );
 

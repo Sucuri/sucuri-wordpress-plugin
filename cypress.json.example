@@ -4,8 +4,10 @@
     "wp_user": "admin",
     "wp_pass": "password"
   },
-	"retries": {
-		"runMode": 3,
-		"openMode": 0
-	}
+  "responseTimeout": 30000,
+  "defaultCommandTimeout": 30000,
+  "retries": {
+    "runMode": 3,
+    "openMode": 0
+  }
 }
