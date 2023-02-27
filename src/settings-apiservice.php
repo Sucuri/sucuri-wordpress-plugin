@@ -62,7 +62,7 @@ function sucuriscan_settings_apiservice_status($nonce)
         $params['ApiStatus.SwitchValue'] = 'enable';
         $params['ApiStatus.WarningVisibility'] = 'hidden';
         $params['ApiStatus.ErrorVisibility'] = 'visible';
-        $params['ApiStatus.ServiceURL'] = 'Service API URL not set. To enable the API service add your API service url as the SUCURISCAN_API_URL constant value to the main configuration file (wp-config.php).';
+        $params['ApiStatus.ServiceURL'] = 'Service API URL not set. To enable the API service, add your API service URL as the SUCURISCAN_API_URL constant value to the main configuration file (wp-config.php).';
     } else {
         $params['ApiStatus.StatusNum'] = '1';
         $params['ApiStatus.Status'] = __('Enabled', 'sucuri-scanner');
