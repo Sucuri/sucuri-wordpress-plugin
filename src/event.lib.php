@@ -384,7 +384,7 @@ class SucuriScanEvent extends SucuriScan
      */
     public static function sendLogsFromQueue()
     {
-        if (SucuriScanOption::isDisabled(':api_service') || !defined('SUCURISCAN_API_URL')) {
+        if (SucuriScanOption::isDisabled(':api_service') || !defined('SUCURISCAN_API_URL') || empty(SUCURISCAN_API_URL)) {
             return false;
         }
 

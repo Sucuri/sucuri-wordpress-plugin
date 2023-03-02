@@ -1,4 +1,7 @@
 {
     "core": null,
-    "plugins": ["."]
+    "plugins": ["."],
+    "config":{
+        "SUCURISCAN_API_URL": "https://sucuri.net"
+    }
 }

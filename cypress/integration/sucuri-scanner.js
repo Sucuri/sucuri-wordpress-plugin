@@ -60,7 +60,7 @@ describe( 'Run integration tests', () => {
 	it('can delete datastore files', () => {
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#general');
 
-		cy.get('input[value="sucuri-auditqueue.php"]').click();
+		cy.get('input[value="sucuri-integrity.php"]').click();
 		cy.get('[data-cy=sucuriscan_general_datastore_delete_button]').click();
 		cy.get('.sucuriscan-alert').contains('1 out of 1 files have been deleted.');
 

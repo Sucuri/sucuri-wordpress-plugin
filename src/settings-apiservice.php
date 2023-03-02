@@ -30,27 +30,27 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  */
 function sucuriscan_settings_apiservice_status($nonce)
 {
-    $api_url_is_set = defined('SUCURISCAN_API_URL');
+    $api_url_is_set = defined('SUCURISCAN_API_URL') && !empty(SUCURISCAN_API_URL);
 
     $params = array();
 
     if ($nonce) {
-            // Enable or disable the API service communication.
-            $api_service = SucuriScanRequest::post(':api_service', '(en|dis)able');
+        // Enable or disable the API service communication.
+        $api_service = SucuriScanRequest::post(':api_service', '(en|dis)able');
 
-            if ($api_service) {
-                if (!$api_url_is_set) {
-                    SucuriScanInterface::error(__('The status of the API service could not be enabled because the required SUCURISCAN_API_URL configuration was not found.', 'sucuri-scanner'));
-                } else {
-                    $action_d = $api_service . 'd';
-                    $message = sprintf(__('API service communication was <code>%s</code>', 'sucuri-scanner'), $action_d);
+        if ($api_service) {
+            if (!$api_url_is_set) {
+                SucuriScanInterface::error(__('The status of the API service could not be enabled because the required SUCURISCAN_API_URL configuration was not found.', 'sucuri-scanner'));
+            } else {
+                $action_d = $api_service . 'd';
+                $message = sprintf(__('API service communication was <code>%s</code>', 'sucuri-scanner'), $action_d);
 
-                    SucuriScanEvent::reportInfoEvent($message);
-                    SucuriScanEvent::notifyEvent('plugin_change', $message);
-                    SucuriScanOption::updateOption(':api_service', $action_d);
-                    SucuriScanInterface::info(__('The status of the API service has been changed', 'sucuri-scanner'));
-                }
+                SucuriScanEvent::reportInfoEvent($message);
+                SucuriScanEvent::notifyEvent('plugin_change', $message);
+                SucuriScanOption::updateOption(':api_service', $action_d);
+                SucuriScanInterface::info(__('The status of the API service has been changed', 'sucuri-scanner'));
             }
+        }
     }
 
     $api_service_option = SucuriScanOption::getOption(':api_service');
