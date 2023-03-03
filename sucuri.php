@@ -114,18 +114,6 @@ define('SUCURISCAN_PLUGIN_PATH', WP_PLUGIN_DIR . '/' . SUCURISCAN_PLUGIN_FOLDER)
 define('SUCURISCAN_URL', rtrim(plugin_dir_url(__FILE__), '/'));
 
 /**
- * Remote URL where the public Sucuri API service is running.
- *
- * We will check if the constant was already set to allow developers to use
- * their own API service. This is useful both for the execution of the tests
- * as well as for website owners who do not want to send data to the Sucuri
- * servers.
- */
-if (!defined('SUCURISCAN_API_URL')) {
-    define('SUCURISCAN_API_URL', 'https://wordpress.sucuri.net/api/');
-}
-
-/**
  * Latest version of the public Sucuri API.
  */
 define('SUCURISCAN_API_VERSION', 'v1');

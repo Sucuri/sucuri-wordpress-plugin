@@ -647,6 +647,12 @@ body.sucuri-security_page_sucuriscan_hardening {
     right: 20px;
     top: 14px;
 }
+.apiservice .sucuriscan-hstatus form {
+    position: relative;
+    right: 0;
+    top: 0;
+    margin-top: 14px;
+}
 .sucuriscan-flag-bar {
     fill: #fff !important;
 }

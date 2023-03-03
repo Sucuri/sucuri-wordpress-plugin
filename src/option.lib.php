@@ -66,7 +66,7 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_addr_header' => 'HTTP_X_SUCURI_CLIENTIP',
             'sucuriscan_api_key' => false,
             'sucuriscan_api_protocol' => 'https',
-            'sucuriscan_api_service' => 'enabled',
+            'sucuriscan_api_service' => 'disabled',
             'sucuriscan_auto_clear_cache' => 'disabled',
             'sucuriscan_checksum_api' => '',
             'sucuriscan_cloudproxy_apikey' => '',

@@ -30,41 +30,48 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  */
 function sucuriscan_settings_apiservice_status($nonce)
 {
-    $params = array();
+    $api_url_is_set = defined('SUCURISCAN_API_URL') && !empty(SUCURISCAN_API_URL);
 
-    $params['ApiStatus.StatusNum'] = '1';
-    $params['ApiStatus.Status'] = __('Enabled', 'sucuri-scanner');
-    $params['ApiStatus.SwitchText'] = __('Disable', 'sucuri-scanner');
-    $params['ApiStatus.SwitchValue'] = 'disable';
-    $params['ApiStatus.WarningVisibility'] = 'visible';
-    $params['ApiStatus.ErrorVisibility'] = 'hidden';
-    $params['ApiStatus.ServiceURL'] = SUCURISCAN_API_URL;
-    $params['ApiStatus.ApiKey'] = '';
+    $params = array();
 
     if ($nonce) {
         // Enable or disable the API service communication.
         $api_service = SucuriScanRequest::post(':api_service', '(en|dis)able');
 
         if ($api_service) {
-            $action_d = $api_service . 'd';
-            $message = sprintf(__('API service communication was <code>%s</code>', 'sucuri-scanner'), $action_d);
+            if (!$api_url_is_set) {
+                SucuriScanInterface::error(__('The status of the API service could not be enabled because the required SUCURISCAN_API_URL configuration was not found.', 'sucuri-scanner'));
+            } else {
+                $action_d = $api_service . 'd';
+                $message = sprintf(__('API service communication was <code>%s</code>', 'sucuri-scanner'), $action_d);
 
-            SucuriScanEvent::reportInfoEvent($message);
-            SucuriScanEvent::notifyEvent('plugin_change', $message);
-            SucuriScanOption::updateOption(':api_service', $action_d);
-            SucuriScanInterface::info(__('The status of the API service has been changed', 'sucuri-scanner'));
+                SucuriScanEvent::reportInfoEvent($message);
+                SucuriScanEvent::notifyEvent('plugin_change', $message);
+                SucuriScanOption::updateOption(':api_service', $action_d);
+                SucuriScanInterface::info(__('The status of the API service has been changed', 'sucuri-scanner'));
+            }
         }
     }
 
-    $api_service = SucuriScanOption::getOption(':api_service');
+    $api_service_option = SucuriScanOption::getOption(':api_service');
 
-    if ($api_service === 'disabled') {
+    if ($api_service_option === 'disabled' || !$api_url_is_set) {
         $params['ApiStatus.StatusNum'] = '0';
         $params['ApiStatus.Status'] = __('Disabled', 'sucuri-scanner');
         $params['ApiStatus.SwitchText'] = __('Enable', 'sucuri-scanner');
         $params['ApiStatus.SwitchValue'] = 'enable';
         $params['ApiStatus.WarningVisibility'] = 'hidden';
         $params['ApiStatus.ErrorVisibility'] = 'visible';
+        $params['ApiStatus.ServiceURL'] = 'Service API URL not set. To enable the API service, add your API service URL as the SUCURISCAN_API_URL constant value to the main configuration file (wp-config.php).';
+    } else {
+        $params['ApiStatus.StatusNum'] = '1';
+        $params['ApiStatus.Status'] = __('Enabled', 'sucuri-scanner');
+        $params['ApiStatus.SwitchText'] = __('Disable', 'sucuri-scanner');
+        $params['ApiStatus.SwitchValue'] = 'disable';
+        $params['ApiStatus.WarningVisibility'] = 'visible';
+        $params['ApiStatus.ErrorVisibility'] = 'hidden';
+        $params['ApiStatus.ServiceURL'] = SUCURISCAN_API_URL;
+        $params['ApiStatus.ApiKey'] = '';
     }
 
     $api_key = SucuriScanAPI::getPluginKey();
