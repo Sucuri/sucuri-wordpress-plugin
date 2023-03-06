@@ -3,8 +3,8 @@ Contributors: wordpress@sucuri.net
 Donate Link: https://sucuri.net/
 Tags: malware, security, firewall, scan, spam, virus, sucuri, protection, blocklist, detection, hardening, file integrity
 Requires at least: 3.6
-Tested up to: 6.0
-Stable tag: 1.8.36
+Tested up to: 6.1.1
+Stable tag: 1.8.37
 
 The Sucuri WordPress Security plugin is a security toolset for security integrity monitoring, malware detection and security hardening.
 
@@ -186,6 +186,9 @@ We take your privacy seriously. For free plugin users without an API key, no inf
 
 == Upgrade Notice ==
 
+= 1.8.37 =
+This version removes the API communication service dependency on https://wordpress.sucuri.net/api/, because this service has been discontinued until further notice. Users who have their custom APIs to use in place of https://wordpress.sucuri.net/api/ can still use the API communication service by adding the API endpoint as SUCURISCAN_API_URL on the wp-config.php file.
+
 = 1.8.19 =
 This version adds an option to refresh the malware scan results on demand, as well as several small bug fixes and improvements.
 
@@ -195,6 +198,13 @@ This version adds an option to refresh the malware scan results on demand, as we
 Daniel is no longer maintaining the Sucuri plugin at GoDaddy. We have transferred it to a dedicated team to maintain and improve it.
 
 == Changelog ==
+= 1.8.37 =
+* Fixed plugin image assets and screenshots to match new branding
+* Fixed password reset email link protocol
+* Fixed remote fonts usage
+* Removed wordpress.sucuri.net API dependency
+* Updated screenshots
+
 = 1.8.36 =
 * Changed Branding fonts, colors and images to match the current Sucuri brand
 
