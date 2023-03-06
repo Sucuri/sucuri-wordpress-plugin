@@ -366,7 +366,7 @@ body.sucuri-security_page_sucuriscan_hardening {
 }
 .sucuriscan-modal-outside {
     background: #fff;
-    border-top: 10px solid #639940;
+    border-top: 10px solid #028673;
     left: 0;
     position: relative;
 }
@@ -393,7 +393,7 @@ body.sucuri-security_page_sucuriscan_hardening {
     letter-spacing: 0.1px;
 }
 .sucuriscan-modal-header .sucuriscan-modal-close {
-    background: #639940;
+    background: #028673;
     border-radius: 50%;
     color: #fff;
     display: inline-block;
