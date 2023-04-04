@@ -190,8 +190,11 @@ class SucuriScanHardening extends SucuriScan
      */
     private static function htaccess($folder = '')
     {
-        $folder = str_replace(ABSPATH, '', $folder);
-        $bpath = rtrim(ABSPATH, DIRECTORY_SEPARATOR);
+        if (!function_exists('get_home_path')) {
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+        }
+        $folder = str_replace(get_home_path(), '', $folder);
+        $bpath = rtrim(get_home_path(), DIRECTORY_SEPARATOR);
 
         return $bpath . '/' . $folder . '/.htaccess';
     }
