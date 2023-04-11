@@ -12,8 +12,6 @@
 
     <div class="sucuriscan-tabs-containers">
         <div id="sucuriscan-tabs-general">
-            %%%SUCURI.Settings.General.ApiKey%%%
-
             %%%SUCURI.Settings.General.DataStorage%%%
 
             %%%SUCURI.Settings.General.SelfHosting%%%

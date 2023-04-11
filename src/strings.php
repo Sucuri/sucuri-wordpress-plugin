@@ -311,16 +311,6 @@ __('Once the API key is generate the plugin will communicate with a remote API s
 __('Disabling the API service communication will stop the event monitoring, consider to enable the <a href="%%SUCURI.URL.Settings%%#general">Log Exporter</a> to keep the monitoring working while the HTTP requests are ignored, otherwise an attacker may execute an action that will not be registered in the security logs and you will not have a way to investigate the attack in the future.', 'sucuri-scanner');
 __('<strong>Are you a developer?</strong> You may be interested in our API. Feel free to use the URL shown below to access the latest 50 entries in your security log, change the value for the parameter <code>l=N</code> if you need more. Be aware that the API doesn’t provides an offset parameter, so if you have the intention to query specific sections of the log you will need to wrap the HTTP request around your own cache mechanism. We <strong>DO NOT</strong> take feature requests for the API, this is a semi-private service tailored for the specific needs of the plugin and not intended to be used by 3rd-party apps, we may change the behavior of each API endpoint without previous notice, use it at your own risk.', 'sucuri-scanner');
 
-// settings-general-apikey.html.tpl
-__('API Key', 'sucuri-scanner');
-__('An API key is required to prevent attackers from deleting audit logs that can help you investigate and recover after a hack, and allows the plugin to display statistics. By generating an API key, you agree that Sucuri will collect and store anonymous data about your website. We take your privacy seriously.', 'sucuri-scanner');
-__('Your domain <code>%%SUCURI.CleanDomain%%</code> does not seems to have a DNS <code>A</code> record so it will be considered as <em>invalid</em> by the API interface when you request the generation of a new key. Adding <code>www</code> at the beginning of the domain name may fix this issue. If you do not understand what is this then send an email to our support team requesting the key.', 'sucuri-scanner');
-__('Recover Via E-mail', 'sucuri-scanner');
-__('Manual Activation', 'sucuri-scanner');
-__('If you do not have access to the administrator email, you can reinstall the plugin. The API key is generated using an administrator email and the domain of the website. Click the "Manual Activation" button if you already have a valid API key to authenticate this website with the remote API web service.', 'sucuri-scanner');
-__('Delete', 'sucuri-scanner');
-__('API Key:', 'sucuri-scanner');
-
 // settings-general-datastorage.html.tpl
 __('Data Storage', 'sucuri-scanner');
 __('This is the directory where the plugin will store the security logs, the list of files marked as fixed in the core integrity tool, the cache for the malware scanner and 3rd-party plugin metadata. The plugin requires write permissions in this directory as well as the files contained in it. If you prefer to keep these files in a non-public directory <em>(one level up the document root)</em> please define a constant in the <em>"wp-config.php"</em> file named <em>"SUCURI_DATA_STORAGE"</em> with the absolute path to the new directory.', 'sucuri-scanner');

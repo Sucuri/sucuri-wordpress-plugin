@@ -19,11 +19,6 @@
             <ul>
                 <li><a href="https://sucuri.typeform.com/to/qNe18eDf" target="_blank" rel="noopener" class="button button-secondary">{{Feedback Survey}}</a></li>
 
-                <li class="sucuriscan-%%SUCURI.GenerateAPIKey.Visibility%%">
-                    <a href="#" class="button button-primary sucuriscan-modal-button sucuriscan-register-site-button"
-                    data-modalid="sucuriscan-register-site">{{Generate API Key}}</a>
-                </li>
-
                 <li><a href="%%SUCURI.URL.Dashboard%%" class="button button-primary">{{Dashboard}}</a></li>
 
                 <li><a href="%%SUCURI.URL.Firewall%%" class="button button-primary" data-cy="sucuriscan-main-nav-firewall">{{Firewall (WAF)}}</a></li>

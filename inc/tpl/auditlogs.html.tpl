@@ -3,8 +3,8 @@
 /* global jQuery */
 /* jshint camelcase:false */
 jQuery(document).ready(function ($) {
-    var writeQueueSize = function (queueSize) {
-        if (queueSize === 0) {
+    var writeQueueSize = function (queueSize, issetApiUrl) {
+        if (queueSize === 0 || !issetApiUrl) {
             $('.sucuriscan-auditlogs-sendlogs-response').html('');
             $('.sucuriscan-sendlogs-panel').addClass('sucuriscan-hidden');
         } else {
@@ -34,7 +34,7 @@ jQuery(document).ready(function ($) {
         }, function (data) {
             $('.sucuriscan-pagination-loading').html('');
 
-            writeQueueSize(data.queueSize);
+            writeQueueSize(data.queueSize, data.status != 'API is not available; using local queue');
 
             $('.sucuriscan-auditlog-status').html(data.status);
             $('.sucuriscan-auditlog-footer').removeClass('sucuriscan-hidden');

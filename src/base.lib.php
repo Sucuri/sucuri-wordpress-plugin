@@ -910,4 +910,8 @@ class SucuriScan
     {
         return substr(md5_file(SUCURISCAN_PLUGIN_PATH . '/' . $file), 0, 7);
     }
+
+    public static function issetScanApiUrl() {
+        return defined('SUCURISCAN_API_URL') && !empty(SUCURISCAN_API_URL);
+    }
 }

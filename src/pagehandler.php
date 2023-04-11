@@ -130,7 +130,6 @@ function sucuriscan_settings_page()
     $params['Settings.General.ResetOptions'] = sucuriscan_settings_general_resetoptions($nonce);
 
     /* settings - general */
-    $params['Settings.General.ApiKey'] = sucuriscan_settings_general_apikey($nonce);
     $params['Settings.General.DataStorage'] = sucuriscan_settings_general_datastorage($nonce);
     $params['Settings.General.SelfHosting'] = sucuriscan_settings_general_selfhosting($nonce);
     $params['Settings.General.ReverseProxy'] = sucuriscan_settings_general_reverseproxy($nonce);
