@@ -30,7 +30,7 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  */
 function sucuriscan_settings_apiservice_status($nonce)
 {
-    $api_url_is_set = defined('SUCURISCAN_API_URL') && !empty(SUCURISCAN_API_URL);
+    $api_url_is_set = SucuriScan::issetScanApiUrl();
 
     $params = array();
 
@@ -71,7 +71,6 @@ function sucuriscan_settings_apiservice_status($nonce)
         $params['ApiStatus.WarningVisibility'] = 'visible';
         $params['ApiStatus.ErrorVisibility'] = 'hidden';
         $params['ApiStatus.ServiceURL'] = SUCURISCAN_API_URL;
-        $params['ApiStatus.ApiKey'] = '';
     }
 
     $api_key = SucuriScanAPI::getPluginKey();

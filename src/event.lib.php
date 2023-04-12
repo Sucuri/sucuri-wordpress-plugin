@@ -357,22 +357,9 @@ class SucuriScanEvent extends SucuriScan
             }
         }
 
-        /**
-         * Send event to the API if possible.
-         *
-         * If the user have not disabled the communication with the API service,
-         * the plugin will send a message with information about every triggered
-         * event in the website in realtime with a maximum connection time of
-         * two seconds. If the API service does not responds on time the plugin
-         * will insert the event into the local queue system and it will try to
-         * send the message again with a scheduled task every 24 hours, once the
-         * operation succeeds the event will be deleted from the queue.
-         */
-        if (SucuriScanOption::isEnabled(':api_service')) {
-            $cache = new SucuriScanCache('auditqueue');
-            $key = str_replace('.', '_', microtime(true));
-            $written = $cache->add($key, $message);
-        }
+        $cache = new SucuriScanCache('auditqueue');
+        $key = str_replace('.', '_', microtime(true));
+        $written = $cache->add($key, $message);
 
         return true;
     }

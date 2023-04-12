@@ -115,17 +115,12 @@ class SucuriScanAuditLogs
             }
         }
 
-        /* explain missing API key */
-        if (!SucuriScanAPI::getPluginKey()) {
-            $response['status'] = __('API key is missing', 'sucuri-scanner');
-        }
-
         /* stop everything and report errors */
         if (!empty($errors)) {
             $response['content'] .= $errors;
         }
 
-        /* Cache the data for sometime. */
+        /* Cache the data for some time. */
         if ($cacheTheResponse && $auditlogs && empty($errors)) {
             $cache->add('response', $auditlogs);
         }
@@ -134,13 +129,14 @@ class SucuriScanAuditLogs
         $queuelogs = SucuriScanAPI::getAuditLogsFromQueue();
 
         if (is_array($queuelogs) && !empty($queuelogs)) {
-            if (!$auditlogs) {
+            if (!$auditlogs || empty($auditlogs)) {
                 $auditlogs = $queuelogs;
             } else {
                 $auditlogs['output'] = array_merge(
                     $queuelogs['output'],
                     @$auditlogs['output']
                 );
+
                 $auditlogs['output_data'] = array_merge(
                     $queuelogs['output_data'],
                     @$auditlogs['output_data']

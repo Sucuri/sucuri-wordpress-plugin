@@ -216,6 +216,10 @@ class SucuriScanAPI extends SucuriScanOption
      */
     public static function apiCallWordpress($method = 'GET', $params = array(), $send_api_key = true, $args = array())
     {
+        if (!SucuriScan::issetScanApiUrl()) {
+            return false;
+        }
+
         $params[SUCURISCAN_API_VERSION] = 1;
         $params['p'] = 'wordpress';
 
@@ -390,6 +394,10 @@ class SucuriScanAPI extends SucuriScanOption
      */
     public static function getAuditLogs($lines = 50)
     {
+        if (SucuriScanOption::isDisabled(':api_service') || SucuriScan::issetScanApiUrl()) {
+            return self::parseAuditLogs(array());
+        }
+
         $res = self::apiCallWordpress(
             'GET',
             array(
@@ -455,12 +463,12 @@ class SucuriScanAPI extends SucuriScanOption
      * Reads, parses and extracts relevant data from the security logs.
      *
      * @param  array $res JSON-decoded logs.
-     * @return array      Full data extracted from the logs.
+     * @return array|null      Full data extracted from the logs.
      */
     private static function parseAuditLogs($res)
     {
-        if (!is_array($res)) {
-            $res = array();
+        if (!is_array($res) || !isset($res['output'])) {
+            return null;
         }
 
         $res['output_data'] = array();
