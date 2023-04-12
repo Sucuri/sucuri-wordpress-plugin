@@ -1117,3 +1117,7 @@ body.sucuri-security_page_sucuriscan_hardening {
 h3.lead {
     margin: .5em 0;
 }
+
+.sucuriscan-hstatus-2 .btn-enable-api-s {
+    display: none;
+}
