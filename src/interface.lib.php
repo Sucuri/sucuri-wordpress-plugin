@@ -228,19 +228,6 @@ class SucuriScanInterface
         SucuriScanOption::updateOption(':plugin_version', SUCURISCAN_VERSION);
 
         /**
-         * Suggest re-activation of the API communication.
-         *
-         * Check if the API communication has been disabled due to issues with
-         * the previous version of the code, in this case we will display a
-         * message at the top of the admin dashboard suggesting the user to
-         * enable it once again expecting to see have a better performance with
-         * the new code.
-         */
-        if (SucuriScanOption::isDisabled(':api_service')) {
-            self::info(__('API service communication is disabled, if you just updated the plugin this might be a good opportunity to test this feature once again with the new code. Enable it again from the "API Service" panel located in the settings page.', 'sucuri-scanner'));
-        }
-
-        /**
          * Invite website owner to subscribe to our security newsletter.
          *
          * For every fresh installation of the plugin we will send a one-time

@@ -55,23 +55,29 @@ function sucuriscan_settings_apiservice_status($nonce)
 
     $api_service_option = SucuriScanOption::getOption(':api_service');
 
-    if ($api_service_option === 'disabled' || !$api_url_is_set) {
-        $params['ApiStatus.StatusNum'] = '0';
-        $params['ApiStatus.Status'] = __('Disabled', 'sucuri-scanner');
-        $params['ApiStatus.SwitchText'] = __('Enable', 'sucuri-scanner');
-        $params['ApiStatus.SwitchValue'] = 'enable';
-        $params['ApiStatus.WarningVisibility'] = 'hidden';
-        $params['ApiStatus.ErrorVisibility'] = 'visible';
-        $params['ApiStatus.ServiceURL'] = 'Service API URL not set. To enable the API service, add your API service URL as the SUCURISCAN_API_URL constant value to the main configuration file (wp-config.php).';
-    } else {
+    if ($api_service_option === 'enabled') {
         $params['ApiStatus.StatusNum'] = '1';
         $params['ApiStatus.Status'] = __('Enabled', 'sucuri-scanner');
         $params['ApiStatus.SwitchText'] = __('Disable', 'sucuri-scanner');
         $params['ApiStatus.SwitchValue'] = 'disable';
         $params['ApiStatus.WarningVisibility'] = 'visible';
         $params['ApiStatus.ErrorVisibility'] = 'hidden';
-        $params['ApiStatus.ServiceURL'] = SUCURISCAN_API_URL;
     }
+
+    if ($api_service_option === 'disabled' || !$api_url_is_set) {
+        $params['ApiStatus.StatusNum'] = '2';
+        $params['ApiStatus.Status'] = __('Disabled', 'sucuri-scanner');
+        $params['ApiStatus.SwitchText'] = __('Enable', 'sucuri-scanner');
+        $params['ApiStatus.SwitchValue'] = 'enable';
+        $params['ApiStatus.WarningVisibility'] = 'hidden';
+        $params['ApiStatus.ErrorVisibility'] = 'visible';
+    }
+
+    if ($api_service_option === 'disabled' && $api_url_is_set) {
+        $params['ApiStatus.StatusNum'] = '0';
+    }
+
+    $params['ApiStatus.ServiceURL'] = !$api_url_is_set ? __('Service API URL not set. To enable the API service, add your custom API service URL as the SUCURISCAN_API_URL constant value to the main configuration file (wp-config.php). If you do not have a custom API to store the audit logs, the plugin will still store these logs on your hosting environment.') : __('Service API URL: '). SUCURISCAN_API_URL;
 
     $api_key = SucuriScanAPI::getPluginKey();
     $params['ApiStatus.ApiKey'] = $api_key ? $api_key : __('NONE', 'sucuri-scanner');
