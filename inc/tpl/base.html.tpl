@@ -17,10 +17,6 @@
 
         <div class="sucuriscan-pull-right sucuriscan-navbar">
             <ul>
-                <li><a href="https://docs.sucuri.net/plugins/" target="_blank" rel="noopener" class="button button-secondary">{{Knowledge Base}}</a></li>
-
-                <li><a href="https://sucuri.net/guides/how-to-use-the-wordpress-security-plugin/" target="_blank" rel="noopener" class="button button-secondary">{{Help}}</a></li>
-
                 <li><a href="https://sucuri.typeform.com/to/qNe18eDf" target="_blank" rel="noopener" class="button button-secondary">{{Feedback Survey}}</a></li>
 
                 <li><a href="%%SUCURI.URL.Dashboard%%" class="button button-primary">{{Dashboard}}</a></li>
