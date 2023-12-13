@@ -659,6 +659,7 @@ class SucuriScanIntegrity
         /* use regular expressions */
         $ignore = false;
         $irrelevant = array(
+            '^sucuri_[0-9a-z\-]+\.php$',
             '^sucuri-[0-9a-z\-]+\.php$',
             '^\S+-sucuri-db-dump-gzip-[0-9]{10}-[0-9a-z]{32}\.gz$',
             '^\.sucuri-sss-resume-[0-9a-z]{32}\.php$',

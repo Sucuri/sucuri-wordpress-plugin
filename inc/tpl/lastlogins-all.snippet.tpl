@@ -6,7 +6,7 @@
 
     <td><span class="sucuriscan-ellipsis" title="%%SUCURI.UserList.Hostname%%">%%SUCURI.UserList.Hostname%%</span></td>
 
-    <td><span title="%%SUCURI.UserList.Datetime%%">%%SUCURI.UserList.TimeAgo%%</span></td>
+    <td><span title="%%SUCURI.UserList.Datetime%%">%%SUCURI.UserList.Datetime%%</span></td>
 
     <td><a href="%%SUCURI.UserList.UserURL%%" target="_blank" rel="noopener">{{Edit}}</a></td>
 </tr>

@@ -11,3 +11,5 @@ cypress.json
 .vscode/launch.json
 .vscode/settings.json
 .idea/
+
+composer.phar
