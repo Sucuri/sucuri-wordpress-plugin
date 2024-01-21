@@ -180,7 +180,7 @@ describe( 'Run integration tests', () => {
 		cy.get('[data-cy=sucuriscan_ignore_files_folders_table]').contains('no data available');
 	});
 
-	it.skip('can toggle hardening options', () => {
+	it('can toggle hardening options', () => {
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#hardening');
 
 		cy.get('input[name=sucuriscan_hardening_firewall]').click();
@@ -251,7 +251,7 @@ describe( 'Run integration tests', () => {
 		cy.get('.sucuriscan-alert').contains('Automatic Secret Keys Updater disabled.');
 	});
 
-	it.skip('can reset installed plugins', () => {
+	it('can reset installed plugins', () => {
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings&sucuriscan_lastlogin=1#posthack');
 
 		cy.get('input[value="akismet/akismet.php"]').click();
