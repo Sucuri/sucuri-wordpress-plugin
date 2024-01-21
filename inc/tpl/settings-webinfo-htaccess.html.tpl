@@ -18,13 +18,13 @@
         </div>
 
         <div class="sucuriscan-inline-alert-info sucuriscan-%%SUCURI.HTAccess.StandardVisible%%">
-            <p>{{The main <code>.htaccess</code> file in your site has the standard rules for a WordPress installation. You can customize it to improve the performance and change the behaviour of the redirections for pages and posts in your site. To get more information visit the official documentation at <a target="_blank" rel="noopener" href="https://codex.wordpress.org/Using_Permalinks#Creating_and_editing_.28.htaccess.29"> Codex WordPress - Creating and editing (.htaccess)</a>}}</p>
+            <p>{{The main <code>.htaccess</code> file in your site has the standard rules for a WordPress installation. You can customize it to improve the performance and change the behaviour of the redirections for pages and posts in your site. To get more information visit the official documentation at <a target="_blank" rel="noopener" href="https://wordpress.org/documentation/article/customize-permalinks/"> Codex WordPress - Creating and editing (.htaccess)</a>}}</p>
         </div>
 
         <textarea readonly class="sucuriscan-full-textarea sucuriscan-monospace %%SUCURI.HTAccess.TextareaVisible%%">%%SUCURI.HTAccess.Content%%</textarea>
 
         <p>
-            <small>&mdash; <a href="https://codex.wordpress.org/htaccess" target="_blank" rel="noopener">{{Codex WordPress HTAccess}}</a></small>
+            <small>&mdash; <a href="https://developer.wordpress.org/advanced-administration/server/web-server/httpd/#htaccess" target="_blank" rel="noopener">{{Codex WordPress HTAccess}}</a></small>
         </p>
     </div>
 </div>

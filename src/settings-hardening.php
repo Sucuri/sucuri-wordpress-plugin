@@ -186,7 +186,7 @@ class SucuriScanHardeningPage extends SucuriScan
 
         if (self::processRequest(__FUNCTION__)) {
             SucuriScanInterface::error(
-                __('Read the official WordPress guidelines to learn how to restrict access to PHP files in sensitive directories - <a href="https://codex.wordpress.org/Nginx#Global_restrictions_file" target="_blank" rel="noopener">Nginx Global Restrictions For WordPress</a>', 'sucuri-scanner')
+                __('Read the official WordPress guidelines to learn how to restrict access to PHP files in sensitive directories - <a href="https://developer.wordpress.org/advanced-administration/server/web-server/nginx/#global-restrictions-file" target="_blank" rel="noopener">Nginx Global Restrictions For WordPress</a>', 'sucuri-scanner')
             );
         }
 
