@@ -282,6 +282,9 @@ class SucuriScanTemplate extends SucuriScanRequest
         $params['PluginURL'] = SUCURISCAN_URL;
         $trailing = $_page ? 'admin.php?page=' . $_page : '';
         $params['CurrentURL'] = SucuriScan::adminURL($trailing);
+        $params['DashboardButtonVisibility'] = $_page == 'sucuriscan' ? 'hidden' : 'visible';
+        $params['SettingsButtonVisibility'] = $_page == 'sucuriscan_settings' ? 'hidden' : 'visible';
+        $params['FirewallButtonVisibility'] = $_page == 'sucuriscan_firewall' ? 'hidden' : 'visible';
 
         /* load raw content from the specified template file */
         $fpath = sprintf($filenames[$type], SUCURISCAN_PLUGIN_PATH, $template);
