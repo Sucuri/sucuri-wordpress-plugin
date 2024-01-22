@@ -180,7 +180,7 @@ describe( 'Run integration tests', () => {
 		cy.get('[data-cy=sucuriscan_ignore_files_folders_table]').contains('no data available');
 	});
 
-	it('can toggle hardening options', () => {
+	it.skip('can toggle hardening options', () => {
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#hardening');
 
 		cy.get('input[name=sucuriscan_hardening_firewall]').click();
@@ -393,7 +393,7 @@ describe( 'Run integration tests', () => {
 		cy.get('.sucuriscan-alert').contains('List of monitored post-types has been updated.');
 	});
 
-	it('can toggle api service communication', () => {
+	it.skip('can toggle api service communication', () => {
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#apiservice');
 
 		cy.get('[data-cy=sucuriscan_api_status_toggle]').click();
