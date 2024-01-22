@@ -19,7 +19,7 @@
             <ul>
                 <li>
                     <div class="sucuriscan-dropdown">
-                        <a target="_blank" rel="noopener" class="button button-secondary">{{More}}</a>
+                        <a target="_blank" rel="noopener" class="button button-secondary">{{Help & More}}</a>
 
                         <div class="sucuriscan-dropdown-content">
                             <i class="sucuriscan-pointer"></i>

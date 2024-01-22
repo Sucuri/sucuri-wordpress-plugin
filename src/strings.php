@@ -41,6 +41,7 @@ __('Firewall (WAF)', 'sucuri-scanner');
 __('Settings', 'sucuri-scanner');
 __('Copyright', 'sucuri-scanner');
 __('Sucuri Inc. All Rights Reserved.', 'sucuri-scanner');
+__('Help & More', 'sucuri-scanner');
 
 // dashboard.html.tpl
 __('no data available', 'sucuri-scanner');
