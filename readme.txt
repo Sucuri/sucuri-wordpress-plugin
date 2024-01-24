@@ -198,6 +198,11 @@ This version adds an option to refresh the malware scan results on demand, as we
 Daniel is no longer maintaining the Sucuri plugin at GoDaddy. We have transferred it to a dedicated team to maintain and improve it.
 
 == Changelog ==
+= 1.8.41 =
+* Updates navigation to include "More" dropdown
+* Add further validation when trying to write HTACCESS
+* Update WordPress.org links (redirected from codex)
+
 = 1.8.40 =
 * Update list of Sucuri cleanup files
 * Update successful login screen to show date time
