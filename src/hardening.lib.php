@@ -88,6 +88,10 @@ class SucuriScanHardening extends SucuriScan
             return self::throwException(__('Directory is not usable', 'sucuri-scanner'));
         }
 
+        if (SucuriScan::isNginxServer() || SucuriScan::isIISServer()) {
+            return self::throwException(__('Access control file is not supported', 'sucuri-scanner'));
+        }
+
         $fhandle = false;
         $target = self::htaccess($directory);
 
@@ -244,6 +248,10 @@ class SucuriScanHardening extends SucuriScan
      */
     public static function allow($file = '', $folder = '')
     {
+        if (SucuriScan::isNginxServer() || SucuriScan::isIISServer()) {
+            throw new Exception(__('Access control file is not supported', 'sucuri-scanner'));
+        }
+
         $htaccess = self::htaccess($folder);
 
         if (!file_exists($htaccess)) {

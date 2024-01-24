@@ -17,13 +17,24 @@
 
         <div class="sucuriscan-pull-right sucuriscan-navbar">
             <ul>
-                <li><a href="https://sucuri.typeform.com/to/qNe18eDf" target="_blank" rel="noopener" class="button button-secondary">{{Feedback Survey}}</a></li>
+                <li>
+                    <div class="sucuriscan-dropdown">
+                        <a target="_blank" rel="noopener" class="button button-secondary">{{Help & More}}</a>
 
-                <li><a href="%%SUCURI.URL.Dashboard%%" class="button button-primary">{{Dashboard}}</a></li>
+                        <div class="sucuriscan-dropdown-content">
+                            <i class="sucuriscan-pointer"></i>
+                            <a href="https://sucuri.net/guides/how-to-use-the-wordpress-security-plugin/" target="_blank">{{Help}}</a>
+                            <a href="https://docs.sucuri.net/plugins/" target="_blank">{{Knowledge Base}}</a>
+                            <a href="https://sucuri.typeform.com/to/qNe18eDf" target="_blank">{{Feedback Survey}}</a>
+                        </div>
+                    </div>
+                </li>
 
-                <li><a href="%%SUCURI.URL.Firewall%%" class="button button-primary" data-cy="sucuriscan-main-nav-firewall">{{Firewall (WAF)}}</a></li>
+                <li><a href="%%SUCURI.URL.Dashboard%%" class="button button-primary sucuriscan-%%SUCURI.DashboardButtonVisibility%%"">{{Dashboard}}</a></li>
 
-                <li><a href="%%SUCURI.URL.Settings%%" class="button button-primary">{{Settings}}</a></li>
+                <li><a href="%%SUCURI.URL.Firewall%%" class="button button-primary sucuriscan-%%SUCURI.FirewallButtonVisibility%%" data-cy="sucuriscan-main-nav-firewall">{{Firewall (WAF)}}</a></li>
+
+                <li><a href="%%SUCURI.URL.Settings%%" class="button button-primary sucuriscan-%%SUCURI.SettingsButtonVisibility%%">{{Settings}}</a></li>
             </ul>
         </div>
     </div>

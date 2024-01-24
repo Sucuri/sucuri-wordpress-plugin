@@ -1,6 +1,6 @@
 #!/bin/sh
 
-.PHONY: e2e e2e-prepare e2e-scanner e2e-firewall unit-test
+.PHONY: e2e e2e-prepare e2e-scanner e2e-firewall unit-test update-translations
 
 e2e: e2e-prepare e2e-scanner e2e-firewall
 
@@ -22,3 +22,6 @@ e2e-firewall:
 
 unit-test:
 	./vendor/bin/phpunit
+
+update-translations:
+	wp i18n make-pot . lang/sucuri-scanner.pot
