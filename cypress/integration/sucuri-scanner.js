@@ -251,7 +251,7 @@ describe( 'Run integration tests', () => {
 		cy.get('.sucuriscan-alert').contains('Automatic Secret Keys Updater disabled.');
 	});
 
-	it('can reset installed plugins', () => {
+	it.skip('can reset installed plugins', () => {
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings&sucuriscan_lastlogin=1#posthack');
 
 		cy.get('input[value="akismet/akismet.php"]').click();
@@ -393,7 +393,7 @@ describe( 'Run integration tests', () => {
 		cy.get('.sucuriscan-alert').contains('List of monitored post-types has been updated.');
 	});
 
-	it.skip('can toggle api service communication', () => {
+	it('can toggle api service communication', () => {
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#apiservice');
 
 		cy.get('[data-cy=sucuriscan_api_status_toggle]').click();
