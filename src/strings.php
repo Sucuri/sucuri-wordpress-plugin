@@ -501,12 +501,15 @@ __('This information will be updated %%SUCURI.SiteCheck.Lifetime%%', 'sucuri-sca
 __('Refresh Malware Scan', 'sucuri-scanner');
 
 // sitecheck-malware.html.tpl
+__('Request Malware Cleanup', 'sucuri-scanner');
 __('No malicious JavaScript', 'sucuri-scanner');
 __('No malicious iFrames', 'sucuri-scanner');
 __('No suspicious redirections', 'sucuri-scanner');
 __('No blackhat SEO spam', 'sucuri-scanner');
 __('No anomaly detection', 'sucuri-scanner');
-__('Some types of problems cannot be detected by this scanner. If this scanner did not detect any issue and you still suspect a problem exists, you can <a href="https://sucuri.net/website-security-platform/signup" target="_blank" rel="noopener">sign up with Sucuri</a> for a complete and in-depth scan + cleanup (not included in the free checks).', 'sucuri-scanner');
+__('This is a free website security scanner. Some types of malware and security issues cannot be detected by this scanner. If no issues are detected but you suspect a problem still exists, <a href="https://sucuri.net/website-security-platform/signup/" target="_blank" rel="noopener">sign up</a> for a complete and in depth website scan with malware cleanup.', 'sucuri-scanner');
+__('The Sucuri Security Plugin&apos;s automated scanner has detected malware in your WordPress environment.', 'sucuri-scanner');
+__('Log in to the <a href="https://dashboard.sucuri.net/login" target="_blank" rel="noopener">Sucuri Platform</a> dashboard for a complete scan of your website files and guaranteed malware removal. You can <a href="https://sucuri.net/website-security-platform/signup/" target="_blank" rel="noopener">sign up here</a> if you don&apos;t have an account yet.', 'sucuri-scanner');
 
 // sitecheck-malware.snippet.tpl
 __('Hover to see the Payload', 'sucuri-scanner');

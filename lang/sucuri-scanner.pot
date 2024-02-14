@@ -9,28 +9,33 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-01-22T22:04:16+00:00\n"
+"POT-Creation-Date: 2024-02-29T15:55:21+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.9.0\n"
+"X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: sucuri-scanner\n"
 
 #. Plugin Name of the plugin
+#: sucuri.php
 msgid "Sucuri Security - Auditing, Malware Scanner and Hardening"
 msgstr ""
 
 #. Plugin URI of the plugin
+#: sucuri.php
 msgid "https://wordpress.sucuri.net/"
 msgstr ""
 
 #. Description of the plugin
+#: sucuri.php
 msgid "The <a href=\"https://sucuri.net/\" target=\"_blank\">Sucuri</a> plugin provides the website owner the best Activity Auditing, SiteCheck Remote Malware Scanning, Effective Security Hardening and Post-Hack features. SiteCheck will check for malware, spam, blocklisting and other security issues like .htaccess redirects, hidden eval code, etc. The best thing about it is it's completely free."
 msgstr ""
 
 #. Author of the plugin
+#: sucuri.php
 msgid "Sucuri Inc."
 msgstr ""
 
 #. Author URI of the plugin
+#: sucuri.php
 msgid "https://sucuri.net/"
 msgstr ""
 
@@ -1802,7 +1807,7 @@ msgstr ""
 #: src/strings.php:435
 #: src/strings.php:449
 #: src/strings.php:456
-#: src/strings.php:522
+#: src/strings.php:525
 msgid "Submit"
 msgstr ""
 
@@ -2748,51 +2753,63 @@ msgid "Refresh Malware Scan"
 msgstr ""
 
 #: src/strings.php:504
-msgid "No malicious JavaScript"
+msgid "Request Malware Cleanup"
 msgstr ""
 
 #: src/strings.php:505
-msgid "No malicious iFrames"
+msgid "No malicious JavaScript"
 msgstr ""
 
 #: src/strings.php:506
-msgid "No suspicious redirections"
+msgid "No malicious iFrames"
 msgstr ""
 
 #: src/strings.php:507
-msgid "No blackhat SEO spam"
+msgid "No suspicious redirections"
 msgstr ""
 
 #: src/strings.php:508
-msgid "No anomaly detection"
+msgid "No blackhat SEO spam"
 msgstr ""
 
 #: src/strings.php:509
-msgid "Some types of problems cannot be detected by this scanner. If this scanner did not detect any issue and you still suspect a problem exists, you can <a href=\"https://sucuri.net/website-security-platform/signup\" target=\"_blank\" rel=\"noopener\">sign up with Sucuri</a> for a complete and in-depth scan + cleanup (not included in the free checks)."
+msgid "No anomaly detection"
+msgstr ""
+
+#: src/strings.php:510
+msgid "This is a free website security scanner. Some types of malware and security issues cannot be detected by this scanner. If no issues are detected but you suspect a problem still exists, <a href=\"https://sucuri.net/website-security-platform/signup/\" target=\"_blank\" rel=\"noopener\">sign up</a> for a complete and in depth website scan with malware cleanup."
+msgstr ""
+
+#: src/strings.php:511
+msgid "The Sucuri Security Plugin&apos;s automated scanner has detected malware in your WordPress environment."
 msgstr ""
 
 #: src/strings.php:512
-msgid "Hover to see the Payload"
+msgid "Log in to the <a href=\"https://dashboard.sucuri.net/login\" target=\"_blank\" rel=\"noopener\">Sucuri Platform</a> dashboard for a complete scan of your website files and guaranteed malware removal. You can <a href=\"https://sucuri.net/website-security-platform/signup/\" target=\"_blank\" rel=\"noopener\">sign up here</a> if you don&apos;t have an account yet."
 msgstr ""
 
 #: src/strings.php:515
-msgid "Recommendations"
+msgid "Hover to see the Payload"
 msgstr ""
 
 #: src/strings.php:518
-#: src/strings.php:520
-msgid "Malware Scan Target"
-msgstr ""
-
-#: src/strings.php:519
-msgid "The remote malware scanner provided by the plugin is powered by <a href=\"https://sitecheck.sucuri.net/\" target=\"_blank\" rel=\"noopener\">Sucuri SiteCheck</a>, a service that takes a publicly accessible URL and scans it for malicious code. If your website is not visible to the Internet, for example, if it is hosted in a local development environment or a restricted network, the scanner will not be able to work on it. Additionally, if the website was installed in a non-standard directory the scanner will report a \"404 Not Found\" error. You can use this option to change the URL that will be scanned."
+msgid "Recommendations"
 msgstr ""
 
 #: src/strings.php:521
+#: src/strings.php:523
+msgid "Malware Scan Target"
+msgstr ""
+
+#: src/strings.php:522
+msgid "The remote malware scanner provided by the plugin is powered by <a href=\"https://sitecheck.sucuri.net/\" target=\"_blank\" rel=\"noopener\">Sucuri SiteCheck</a>, a service that takes a publicly accessible URL and scans it for malicious code. If your website is not visible to the Internet, for example, if it is hosted in a local development environment or a restricted network, the scanner will not be able to work on it. Additionally, if the website was installed in a non-standard directory the scanner will report a \"404 Not Found\" error. You can use this option to change the URL that will be scanned."
+msgstr ""
+
+#: src/strings.php:524
 msgid "Malware Scan Target:"
 msgstr ""
 
-#: src/strings.php:525
+#: src/strings.php:528
 msgid "WordPress Security Recommendations"
 msgstr ""
 
