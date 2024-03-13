@@ -1178,4 +1178,40 @@ h3.lead {
     margin-left: 0;
 }
 
+.sucuriscan-tag-malware-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sucuriscan-tag-malware-container a {
+    margin-top: 0 !important;
+}
+
+@media (max-width: 1500px) {
+    .sucuriscan-tag-malware-container-link-top {
+        display: none !important;
+        margin-top: 0 !important;
+    }
+}
+
+@media (min-width: 1500px) {
+    .sucuriscan-tag-malware-container-link-bottom {
+        display: none !important;
+    }
+}
+
+.sucuriscan-tag-malware-container-link-top,
+.sucuriscan-tag-malware-container-link-bottom {
+    border-radius: 4px !important;
+}
+
+.sucuriscan-mt-20 {
+    margin-top: 20px !important;
+}
+
+.sucuriscan-mb-5 {
+    margin-bottom: 5px !important;
+}
+
 

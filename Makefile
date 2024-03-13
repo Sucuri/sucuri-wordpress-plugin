@@ -25,3 +25,6 @@ unit-test:
 
 update-translations:
 	wp i18n make-pot . lang/sucuri-scanner.pot
+
+git-archive:
+	git archive -o ~/Desktop/sucuri-scanner.zip HEAD
