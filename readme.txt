@@ -5,6 +5,8 @@ Tags: malware, security, firewall, scan, spam, virus, sucuri, protection, blockl
 Requires at least: 3.6
 Tested up to: 6.4
 Stable tag: 1.8.42
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 The Sucuri WordPress Security plugin is a security toolset for security integrity monitoring, malware detection and security hardening.
 
