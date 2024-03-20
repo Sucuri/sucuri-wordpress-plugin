@@ -73,9 +73,9 @@ function sucuriscan_get_online_users($add_current_user = false)
     $users = array();
 
     if (SucuriScan::isMultiSite()) {
-        $users = get_site_transient('online_users');
+        $users = get_site_transient('sucuriscan_online_users');
     } else {
-        $users = get_transient('online_users');
+        $users = get_transient('sucuriscan_online_users');
     }
 
     // If not online users but current user is logged in, add it to the list.
@@ -105,9 +105,9 @@ function sucuriscan_save_online_users($logged_in_users = array())
     $expiration = 30 * 60;
 
     if (SucuriScan::isMultiSite()) {
-        return set_site_transient('online_users', $logged_in_users, $expiration);
+        return set_site_transient('sucuriscan_online_users', $logged_in_users, $expiration);
     } else {
-        return set_transient('online_users', $logged_in_users, $expiration);
+        return set_transient('sucuriscan_online_users', $logged_in_users, $expiration);
     }
 }
 
