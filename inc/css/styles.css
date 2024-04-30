@@ -1156,11 +1156,21 @@ h3.lead {
     left: 0;
 }
 
+.sucuriscan-dropdown-content-sm {
+    min-width: 120px;
+}
+
+.sucuriscan-dropdown-content option,
 .sucuriscan-dropdown-content a {
     color: black;
     padding: 6px 16px;
     text-decoration: none;
     display: block;
+}
+
+.sucuriscan-dropdown-content option:hover {
+    color: #26BA9E;
+    cursor: pointer;
 }
 
 .sucuriscan-pointer {
@@ -1186,6 +1196,12 @@ h3.lead {
 
 .sucuriscan-tag-malware-container a {
     margin-top: 0 !important;
+}
+
+#sucuriscan_toggle_wafkey {
+    position: absolute;
+    right: 115px;
+    top: 14px;
 }
 
 @media (max-width: 1500px) {
