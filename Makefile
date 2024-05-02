@@ -15,7 +15,7 @@ e2e-prepare:
 	docker-compose run --rm -u `id -u` tests-cli touch /var/www/html/.htaccess
 
 e2e-scanner:
-	npx cypress run --spec cypress/integration/sucuri-scanner.js --browser firefox
+	npx cypress run --spec cypress/integration/sucuri-scanner.js
 
 e2e-firewall:
 	npx cypress run --spec cypress/integration/sucuri-scanner-firewall.js
