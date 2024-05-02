@@ -4,7 +4,7 @@ vendor
 cypress/videos
 cypress/screenshots
 
-cypress.json
+cypress.config.js
 .wp-env.override.json
 
 .phpunit.result.cache
