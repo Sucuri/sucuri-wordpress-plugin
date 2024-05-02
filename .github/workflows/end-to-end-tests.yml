@@ -26,6 +26,9 @@ jobs:
     strategy:
       matrix:
         include:
+          - env_1: "WordPress 5.5 on PHP 7.2"
+            php: "7.2"
+            wp: "5.5"
           - env_1: "Latest WordPress on PHP 7.2"
             php: "7.2"
             wp: "latest"
