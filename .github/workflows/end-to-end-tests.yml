@@ -40,7 +40,7 @@ jobs:
             wp: "latest"
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Log debug information
         run: |
@@ -54,9 +54,9 @@ jobs:
           locale -a
 
       - name: Install NodeJS
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
-          node-version: 12
+          node-version: 22
           cache: 'npm'
 
       - name: Install Dependencies
@@ -96,7 +96,7 @@ jobs:
 
       - name: Run Sucuri Scanner tests (E2E)
         run: |
-          cp cypress.json.example cypress.json
+          cp cypress.config.js.example cypress.config.js
           make e2e-scanner
 
       - name: Run Firewall tests (E2E)
@@ -106,7 +106,7 @@ jobs:
         run: make e2e-firewall
           
       - name: Upload Cypress tests on failure
-        uses: actions/upload-artifact@v2.2.1
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: cypress

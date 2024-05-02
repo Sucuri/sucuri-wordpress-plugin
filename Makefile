@@ -15,10 +15,10 @@ e2e-prepare:
 	docker-compose run --rm -u `id -u` tests-cli touch /var/www/html/.htaccess
 
 e2e-scanner:
-	npx cypress run --spec cypress/integration/sucuri-scanner.js
+	npx cypress run --spec cypress/e2e/sucuri-scanner.cy.js
 
 e2e-firewall:
-	npx cypress run --spec cypress/integration/sucuri-scanner-firewall.js
+	npx cypress run --spec cypress/e2e/sucuri-scanner-firewall.cy.js
 
 unit-test:
 	./vendor/bin/phpunit

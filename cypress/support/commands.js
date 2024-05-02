@@ -25,13 +25,17 @@
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
 Cypress.Commands.add('login', (username, password) => {
-  const loginUsername = username ? username : Cypress.env('wp_user');
-  const loginPassword = password ? password : Cypress.env('wp_pass');
+  const loginUsername = username || Cypress.env('wp_user');
+  const loginPassword = password || Cypress.env('wp_pass');
 
-  cy.visit('/wp-login.php');
+  cy.session([username, password], () => {
+    cy.visit('/wp-login.php');
 
-  cy.get('#user_login' ).wait(200).clear().type(loginUsername);
-  cy.get('#user_pass' ).wait(200).clear().type(loginPassword);
+    cy.get('#user_login').clear().wait(200).type(loginUsername);
+    cy.get('#user_pass').clear().wait(200).type(loginPassword);
 
-  cy.get('#wp-submit' ).click();
+    cy.get('#wp-submit').click();
+
+    cy.url().should('contain', '/wp-admin/')
+  })
 });

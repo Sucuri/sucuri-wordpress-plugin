@@ -3,8 +3,8 @@ Contributors: wordpress@sucuri.net
 Donate Link: https://sucuri.net/
 Tags: malware, security, firewall, scan, spam, virus, sucuri, protection, blocklist, detection, hardening, file integrity
 Requires at least: 3.6
-Tested up to: 6.4
-Stable tag: 1.8.43
+Tested up to: 6.5
+Stable tag: 1.8.44
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -200,6 +200,9 @@ This version adds an option to refresh the malware scan results on demand, as we
 Daniel is no longer maintaining the Sucuri plugin at GoDaddy. We have transferred it to a dedicated team to maintain and improve it.
 
 == Changelog ==
+= 1.8.44 =
+* Update Firewall settings page to improve privacy and offer new options to handle API keys
+
 = 1.8.43 =
 * Update readme and main plugin file to specify license
 * Update plugin's transient name to address to best practices

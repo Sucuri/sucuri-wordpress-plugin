@@ -1,0 +1,18 @@
+const { defineConfig } = require("cypress");
+
+module.exports = defineConfig({
+  e2e: {
+    supportFile: 'cypress/support/index.js',
+    baseUrl: 'http://localhost:8889/',
+    env: {
+      wp_user: 'admin',
+      wp_pass: 'password',
+    },
+    responseTimeout: 30000,
+    defaultCommandTimeout: 30000,
+    retries: {
+      runMode: 3,
+      openMode: 0,
+    },
+  },
+});
