@@ -218,11 +218,11 @@ describe( 'Run e2e tests', () => {
 		cy.get('.sucuriscan-alert').contains('Automatic Secret Keys Updater disabled.');
 	});
 
-	it.only('can unblock PHP files', () => {
+	it('can unblock PHP files', () => {
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#hardening');
 
 		cy.get('[data-cy=sucuriscan_hardening_allowlist_input]').type('ok.php');
-		cy.get('[data-cy=sucuriscan_hardening_allowlist_select]').select('/var/www/html/wp-content');
+		cy.get('[data-cy=sucuriscan_hardening_allowlist_select]').select('/var/www/html/wp-includes');
 		cy.get('[data-cy=sucuriscan_hardening_allowlist_submit]').click();
 
 		cy.get('.sucuriscan-alert-error').contains('Access control file does not exists');
@@ -399,7 +399,7 @@ describe( 'Run e2e tests', () => {
 		cy.get('.sucuriscan-alert').contains('List of monitored post-types has been updated.');
 	});
 
-	it.only('can toggle api service communication', () => {
+	it('can toggle api service communication', () => {
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#apiservice');
 
 		cy.get('[data-cy=sucuriscan_api_status_toggle]').click();
@@ -424,13 +424,13 @@ describe( 'Run e2e tests', () => {
 		cy.get('.updated').contains('The URL to retrieve the WordPress checksums has been changed');
 	});
 
-	it.only('can load website info OK', () => {
+	it('can load website info OK', () => {
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#webinfo');
 
 		cy.get('[data-cy=ABSPATH]').find('td:first-child').contains('ABSPATH');
 		cy.get('[data-cy=ABSPATH]').find('td:last-child').contains('/var/www/html/');
 
-		cy.get('[data-cy=sucuriscan_access_file_integrity]').contains('Htaccess file found in /var/www/html/.htaccess');
+		cy.get('[data-cy=sucuriscan_access_file_integrity]').contains('Your website has no .htaccess file or it was not found in the default location.');
 	});
 
 	it('can send audit logs to sucuri servers', () => {
@@ -457,7 +457,7 @@ describe( 'Run e2e tests', () => {
 		cy.get('.sucuriscan-auditlog-entry-title').contains('User authentication succeeded: admin');
 	});
 
-	it.only('can see last logins tab and delete last logins file', () => {
+	it('can see last logins tab and delete last logins file', () => {
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_lastlogins#allusers');
 
 		cy.get('[data-cy=sucuriscan_last_logins_table]').find('td:nth-child(1)').contains('admin (admin)');
@@ -492,18 +492,14 @@ describe( 'Run e2e tests', () => {
 		cy.get('[data-cy=sucuriscan_failedlogins_table]').contains('no data available');
 	});
 
-	it.only('can reset password', () => {
-		cy.clearCookies();
+	it('can reset password', () => {
+		Cypress.session.clearAllSavedSessions()
 		cy.visit('/');
 
 		// This user is added automatically at .github/workflows/end-to-end-tests.yml
 		cy.login('sucuri', 'password');
 
-		cy.url().should('eq', 'http://localhost:8889/wp-admin/')
-
-		cy.clearCookies();
-		cy.reload();
-
+		Cypress.session.clearAllSavedSessions()
 		cy.login();
 
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#posthack');
@@ -513,10 +509,14 @@ describe( 'Run e2e tests', () => {
 
 		cy.get('[data-cy=sucuriscan-reset-password-user-field]').contains('sucuri (Done)');
 
-		cy.clearCookies();
-		cy.reload();
+		Cypress.session.clearCurrentSessionData();
 
-		cy.login('sucuri', 'password');
+		cy.visit('/wp-login.php');
+
+		cy.get('#user_login').clear().wait(200).type('sucuri');
+		cy.get('#user_pass').clear().wait(200).type('password');
+
+		cy.get('#wp-submit').click();
 
 		cy.get('#login_error').contains('The password you entered for the username sucuri is incorrect.');
 	});

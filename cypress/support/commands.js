@@ -31,8 +31,8 @@ Cypress.Commands.add('login', (username, password) => {
   cy.session([username, password], () => {
     cy.visit('/wp-login.php');
 
-    cy.get('#user_login').clear().type(loginUsername);
-    cy.get('#user_pass').clear().type(loginPassword);
+    cy.get('#user_login').clear().wait(200).type(loginUsername);
+    cy.get('#user_pass').clear().wait(200).type(loginPassword);
 
     cy.get('#wp-submit').click();
 
