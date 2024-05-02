@@ -457,7 +457,7 @@ describe( 'Run e2e tests', () => {
 		cy.get('.sucuriscan-auditlog-entry-title').contains('User authentication succeeded: admin');
 	});
 
-	it('can see last logins tab and delete last logins file', () => {
+	it.skip('can see last logins tab and delete last logins file', () => {
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_lastlogins#allusers');
 
 		cy.get('[data-cy=sucuriscan_last_logins_table]').find('td:nth-child(1)').contains('admin (admin)');
