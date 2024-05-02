@@ -240,6 +240,9 @@ describe( 'Run e2e tests', () => {
 
 		cy.reload();
 
+		cy.url().should('contain', 'wp-login.php');
+
+		Cypress.session.clearAllSavedSessions();
 		cy.login();
 
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#posthack');
@@ -493,13 +496,13 @@ describe( 'Run e2e tests', () => {
 	});
 
 	it('can reset password', () => {
-		Cypress.session.clearAllSavedSessions()
+		Cypress.session.clearAllSavedSessions();
 		cy.visit('/');
 
 		// This user is added automatically at .github/workflows/end-to-end-tests.yml
 		cy.login('sucuri', 'password');
 
-		Cypress.session.clearAllSavedSessions()
+		Cypress.session.clearAllSavedSessions();
 		cy.login();
 
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#posthack');
