@@ -1,5 +1,11 @@
 
-describe( 'Run integration tests', () => {
+beforeEach(() => {
+	cy.session('Login to WordPress', () => {
+		cy.login();
+	})
+})
+
+describe( 'Run e2e tests', () => {
 	it('can change malware scan target', () => {
 		const testDomain = 'sucuri.net';
 
@@ -212,7 +218,7 @@ describe( 'Run integration tests', () => {
 		cy.get('.sucuriscan-alert').contains('Automatic Secret Keys Updater disabled.');
 	});
 
-	it('can unblock PHP files', () => {
+	it.only('can unblock PHP files', () => {
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#hardening');
 
 		cy.get('[data-cy=sucuriscan_hardening_allowlist_input]').type('ok.php');
@@ -393,7 +399,7 @@ describe( 'Run integration tests', () => {
 		cy.get('.sucuriscan-alert').contains('List of monitored post-types has been updated.');
 	});
 
-	it('can toggle api service communication', () => {
+	it.only('can toggle api service communication', () => {
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#apiservice');
 
 		cy.get('[data-cy=sucuriscan_api_status_toggle]').click();
@@ -418,7 +424,7 @@ describe( 'Run integration tests', () => {
 		cy.get('.updated').contains('The URL to retrieve the WordPress checksums has been changed');
 	});
 
-	it('can load website info OK', () => {
+	it.only('can load website info OK', () => {
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#webinfo');
 
 		cy.get('[data-cy=ABSPATH]').find('td:first-child').contains('ABSPATH');
@@ -451,7 +457,7 @@ describe( 'Run integration tests', () => {
 		cy.get('.sucuriscan-auditlog-entry-title').contains('User authentication succeeded: admin');
 	});
 
-	it('can see last logins tab and delete last logins file', () => {
+	it.only('can see last logins tab and delete last logins file', () => {
 		cy.visit('/wp-admin/admin.php?page=sucuriscan_lastlogins#allusers');
 
 		cy.get('[data-cy=sucuriscan_last_logins_table]').find('td:nth-child(1)').contains('admin (admin)');
