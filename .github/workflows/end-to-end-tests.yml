@@ -99,7 +99,7 @@ jobs:
 
       - name: Run Sucuri Scanner tests (E2E)
         run: |
-          cp cypress.json.example cypress.json
+          cp cypress.config.js.example cypress.config.js
           make e2e-scanner
 
       - name: Run Firewall tests (E2E)

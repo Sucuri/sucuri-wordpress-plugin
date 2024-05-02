@@ -1,0 +1,17 @@
+const { defineConfig } = require('cypress')
+
+module.exports = defineConfig({
+    e2e: {
+        baseUrl: 'http://localhost:1234',
+        env: {
+            wp_user: 'admin',
+            wp_pass: 'password',
+        },
+        responseTimeout: 30000,
+        defaultCommandTimeout: 30000,
+        retries: {
+            runMode: 3,
+            openMode: 0,
+        },
+    },
+})

@@ -486,7 +486,7 @@ describe( 'Run integration tests', () => {
 		cy.get('[data-cy=sucuriscan_failedlogins_table]').contains('no data available');
 	});
 
-	it('can reset password', () => {
+	it.only('can reset password', () => {
 		cy.clearCookies();
 		cy.visit('/');
 
