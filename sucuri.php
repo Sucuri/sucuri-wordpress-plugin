@@ -214,6 +214,7 @@ require_once 'src/wordpress-recommendations.lib.php';
 require_once 'src/integrity.lib.php';
 require_once 'src/firewall.lib.php';
 require_once 'src/installer-skin.lib.php';
+require_once 'src/cacheoptions.lib.php';
 
 /* Load page and ajax handlers */
 require_once 'src/pagehandler.php';
@@ -231,6 +232,7 @@ require_once 'src/settings-integrity.php';
 require_once 'src/settings-hardening.php';
 require_once 'src/settings-posthack.php';
 require_once 'src/settings-alerts.php';
+require_once 'src/settings-headers.php';
 require_once 'src/settings-apiservice.php';
 require_once 'src/settings-webinfo.php';
 
@@ -240,6 +242,18 @@ require_once 'src/globals.php';
 /* Load WP-CLI command */
 if (defined('WP_CLI') && WP_CLI) {
     include_once 'src/cli.lib.php';
+}
+
+add_action( 'send_headers', 'sucuriscanSetCacheHeaders', 99 );
+function sucuriscanSetCacheHeaders() {
+	$isCacheEnabled = SucuriScanOption::getOption(':cache_option_cache') === 'enabled';
+
+//	if (!$isCacheEnabled) {
+//		return;
+//	}
+
+	$sucuriScanCacheHeaders = new SucuriScanCacheHeaders();
+	$sucuriScanCacheHeaders->setCacheHeaders();
 }
 
 /**

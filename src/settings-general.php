@@ -74,6 +74,7 @@ function sucuriscan_settings_general_datastorage($nonce)
         'settings' => __('Stores all the options used to configure the functionality and behavior of the plugin.', 'sucuri-scanner'),
         'sitecheck' => sprintf(__('Cache to store the result of the malware scanner. Expires after %s seconds, reset at any time to force a re-scan.', 'sucuri-scanner'), SUCURISCAN_SITECHECK_LIFETIME),
         'trustip' => __('Stores a list of IP addresses trusted by the plugin, events triggered by one of these IPs will not be reported to the remote monitoring API service.', 'sucuri-scanner'),
+        'cacheoptions' => __('Stores the cache header options.', 'sucuri-scanner'),
     );
 
     $params['Storage.Files'] = '';

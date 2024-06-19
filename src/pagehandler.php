@@ -172,6 +172,9 @@ function sucuriscan_settings_page()
     $params['Settings.Alerts.IgnorePosts'] = sucuriscan_settings_alerts_ignore_posts();
     $params['Settings.Alerts.TrustedIPs'] = sucuriscan_settings_alerts_trustedips();
 
+	/* settings - cache options */
+	$params['Settings.Headers.Cache'] = sucuriscan_settings_cache_options($nonce);
+
     /* settings - api service */
     $params['Settings.APIService.Status'] = sucuriscan_settings_apiservice_status($nonce);
     $params['Settings.APIService.Proxy'] = sucuriscan_settings_apiservice_proxy();
