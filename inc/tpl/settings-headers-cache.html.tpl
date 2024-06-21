@@ -34,9 +34,20 @@
         </table>
     </div>
 
-    <form action="%%SUCURI.URL.Lastlogins%%#allusers" method="post">
-        <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
-        <input type="hidden" name="sucuriscan_delete_lastlogins" value="1" />
-        <input type="submit" value="{{Disable Cache Control}}" class="button button-primary" data-cy="sucuriscan_last_logins_delete_logins_button" />
-    </form>
+    <div class="sucuriscan-double-box sucuriscan-hstatus sucuriscan-hstatus-%%SUCURI.CacheOptions.CacheControl%%" data-cy="sucuriscan_security_keys_autoupdater">
+        <p>
+            <strong>{{Cache Control Header}}</strong> &mdash; %%SUCURI.CacheOptions.Status%%<br />
+            {{WordPress by default does not come with cache control headers, used by WAFs and CDNs that are useful to both improve performance and reduce bandwidth and other resources demand on the hosting server. }}
+        </p>
+
+        <form action="%%SUCURI.URL.Settings%%#headers" method="post">
+            <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
+            <input type="hidden" name="sucuriscan_update_cache_options" value="1" />
+            <label><strong>{{Frequency:}}</strong></label>
+            <select name="sucuriscan_cache_options_mode" data-cy="sucuriscan_security_keys_autoupdater_select">
+                %%%SUCURI.CacheOptions.Modes%%%
+            </select>
+            <input type="submit" value="{{Submit}}" class="button button-primary" data-cy="sucuriscan_security_keys_autoupdater_submit" />
+        </form>
+    </div>
 </div>

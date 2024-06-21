@@ -104,9 +104,36 @@ function sucuriscan_cacheoptions_datastore_is_readable()
  */
 function sucuriscan_settings_cache_options($nonce)
 {
-	$params = array(
-		'CacheOptions.Options' => '',
-	);
+    $params = array(
+        'CacheOptions.Options' => '',
+        'CacheOptions.Modes' => '',
+    );
+
+    $availableSettings = array('disabled', 'static', 'occasional', 'frequent', 'busy', 'custom');
+
+    foreach ($availableSettings as $mode) {
+        $params['CacheOptions.Modes'] .= sprintf('<option value="%s">%s</option>', $mode, ucfirst($mode));
+    }
+
+
+    if (SucuriScanInterface::checkNonce() && SucuriScanRequest::post(':update_cache_options')) {
+        $headerCacheControl = SucuriScanRequest::post(':cache_options_mode');
+
+
+        // stop progress if the options are not valid
+//        if (empty($headerCacheControl) || !in_array($headerCacheControl, $availableSettings)) {
+//            SucuriScanInterface::error(__('No frequency selected for the automatic secret key updater.',
+//                'sucuri-scanner'));
+//        }
+
+        SucuriScanOption::updateOption(':headers_cache_control', $headerCacheControl);
+
+        if (SucuriScanOption::getOption(':headers_cache_control') === 'disabled') {
+            SucuriScanInterface::info(__('Cache-Control header was deactivated.', 'sucuri-scanner'));
+        } else {
+            SucuriScanInterface::info(__('Cache-Control header was activated.', 'sucuri-scanner'));
+        }
+    }
 
     $options = SucuriScanOption::getOption(':cache_options');
 
@@ -125,7 +152,12 @@ function sucuriscan_settings_cache_options($nonce)
 		);
 	}
 
-	$params['CacheOptions.NoItemsVisibility'] = 'hidden';
+    $headersCacheControlMode = SucuriScanOption::getOption(':headers_cache_control');
+    $isCacheControlHeaderDisabled = $headersCacheControlMode === 'disabled';
+    $params['CacheOptions.NoItemsVisibility'] = 'hidden';
+    $params['CacheOptions.CacheControl'] = $isCacheControlHeaderDisabled ? 0 : 1;
+    $params['CacheOptions.Status'] = $isCacheControlHeaderDisabled ? 'Disabled' : 'Enabled';
+    $params['CacheOptions.Modes'] = str_replace('option value="'.$headersCacheControlMode.'"', 'option value="'.$headersCacheControlMode.'" selected', $params['CacheOptions.Modes']);
 
 	return SucuriScanTemplate::getSection('settings-headers-cache', $params);
 }

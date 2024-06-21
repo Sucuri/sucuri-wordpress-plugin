@@ -246,9 +246,9 @@ if (defined('WP_CLI') && WP_CLI) {
 
 add_action( 'send_headers', 'sucuriscanSetCacheHeaders' );
 function sucuriscanSetCacheHeaders() {
-	$isCacheEnabled = SucuriScanOption::getOption(':cache_option_cache') === 'enabled';
+	$isCacheControlHeaderDisabled = SucuriScanOption::getOption(':headers_cache_control') === 'disabled';
 
-	if (!$isCacheEnabled) {
+	if ($isCacheControlHeaderDisabled) {
 		return;
 	}
 

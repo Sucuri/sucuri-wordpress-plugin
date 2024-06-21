@@ -113,7 +113,7 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_timezone' => 'UTC+00.00',
             'sucuriscan_use_wpmail' => 'enabled',
 
-			'sucuriscan_cache_option_cache' => 'disabled',
+			'sucuriscan_headers_cache_control' => 'disabled',
             'sucuriscan_cache_options' => array(
                 'front_page' => array(
                     'id' => 'front_page',
