@@ -244,13 +244,13 @@ if (defined('WP_CLI') && WP_CLI) {
     include_once 'src/cli.lib.php';
 }
 
-add_action( 'send_headers', 'sucuriscanSetCacheHeaders', 99 );
+add_action( 'send_headers', 'sucuriscanSetCacheHeaders' );
 function sucuriscanSetCacheHeaders() {
 	$isCacheEnabled = SucuriScanOption::getOption(':cache_option_cache') === 'enabled';
 
-//	if (!$isCacheEnabled) {
-//		return;
-//	}
+	if (!$isCacheEnabled) {
+		return;
+	}
 
 	$sucuriScanCacheHeaders = new SucuriScanCacheHeaders();
 	$sucuriScanCacheHeaders->setCacheHeaders();

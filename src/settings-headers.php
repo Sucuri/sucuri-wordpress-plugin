@@ -108,140 +108,19 @@ function sucuriscan_settings_cache_options($nonce)
 		'CacheOptions.Options' => '',
 	);
 
+    $options = SucuriScanOption::getOption(':cache_options');
 
-	$cacheOptions = array(
-		'cache_option_front_page' => array(
-			'name' => 'Front Page',
-			'max-age' => SucuriScanOption::getOption(':cache_option_front_page_max_age'),
-			's-maxage' => SucuriScanOption::getOption(':cache_option_front_page_s_maxage'),
-			'stale-if-error' => SucuriScanOption::getOption(':cache_option_front_page_stale_if_error'),
-			'stale-while-revalidate' => SucuriScanOption::getOption(':cache_option_front_page_stale_while_revalidate'),
-			'pagination-factor' => SucuriScanOption::getOption(':cache_option_front_page_pagination_factor'),
-			'old-age-multiplier' => SucuriScanOption::getOption(':cache_option_front_page_old_age_multiplier'),
-		),
-		'cache_option_posts' => array(
-			'name' => 'Posts',
-			'max-age' => SucuriScanOption::getOption(':cache_option_posts_max_age'),
-			's-maxage' => SucuriScanOption::getOption(':cache_option_posts_s_maxage'),
-			'stale-if-error' => SucuriScanOption::getOption(':cache_option_posts_stale_if_error'),
-			'stale-while-revalidate' => SucuriScanOption::getOption(':cache_option_posts_stale_while_revalidate'),
-			'pagination-factor' => SucuriScanOption::getOption(':cache_option_posts_pagination_factor'),
-			'old-age-multiplier' => SucuriScanOption::getOption(':cache_option_posts_old_age_multiplier'),
-		),
-		'cache_option_pages' => array(
-			'name' => 'Pages',
-			'max-age' => SucuriScanOption::getOption(':cache_option_pages_max_age'),
-			's-maxage' => SucuriScanOption::getOption(':cache_option_pages_s_maxage'),
-			'stale-if-error' => SucuriScanOption::getOption(':cache_option_pages_stale_if_error'),
-			'stale-while-revalidate' => SucuriScanOption::getOption(':cache_option_pages_stale_while_revalidate'),
-			'pagination-factor' => SucuriScanOption::getOption(':cache_option_pages_pagination_factor'),
-			'old-age-multiplier' => SucuriScanOption::getOption(':cache_option_pages_old_age_multiplier'),
-		),
-		'cache_option_main_index' => array(
-			'name' => 'Main Index',
-			'max-age' => SucuriScanOption::getOption(':cache_option_main_index_max_age'),
-			's-maxage' => SucuriScanOption::getOption(':cache_option_main_index_s_maxage'),
-			'stale-if-error' => SucuriScanOption::getOption(':cache_option_main_index_stale_if_error'),
-			'stale-while-revalidate' => SucuriScanOption::getOption(':cache_option_main_index_stale_while_revalidate'),
-			'pagination-factor' => SucuriScanOption::getOption(':cache_option_main_index_pagination_factor'),
-			'old-age-multiplier' => SucuriScanOption::getOption(':cache_option_main_index_old_age_multiplier'),
-		),
-		'cache_option_categories' => array(
-			'name' => 'Categories',
-			'max-age' => SucuriScanOption::getOption(':cache_option_categories_max_age'),
-			's-maxage' => SucuriScanOption::getOption(':cache_option_categories_s_maxage'),
-			'stale-if-error' => SucuriScanOption::getOption(':cache_option_categories_stale_if_error'),
-			'stale-while-revalidate' => SucuriScanOption::getOption(':cache_option_categories_stale_while_revalidate'),
-			'pagination-factor' => SucuriScanOption::getOption(':cache_option_categories_pagination_factor'),
-			'old-age-multiplier' => SucuriScanOption::getOption(':cache_option_categories_old_age_multiplier'),
-		),
-		'cache_option_tags' => array(
-			'name' => 'Tags',
-			'max-age' => SucuriScanOption::getOption(':cache_option_tags_max_age'),
-			's-maxage' => SucuriScanOption::getOption(':cache_option_tags_s_maxage'),
-			'stale-if-error' => SucuriScanOption::getOption(':cache_option_tags_stale_if_error'),
-			'stale-while-revalidate' => SucuriScanOption::getOption(':cache_option_tags_stale_while_revalidate'),
-			'pagination-factor' => SucuriScanOption::getOption(':cache_option_tags_pagination_factor'),
-			'old-age-multiplier' => SucuriScanOption::getOption(':cache_option_tags_old_age_multiplier'),
-		),
-		'cache_option_authors' => array(
-			'name' => 'Authors',
-			'max-age' => SucuriScanOption::getOption(':cache_option_authors_max_age'),
-			's-maxage' => SucuriScanOption::getOption(':cache_option_authors_s_maxage'),
-			'stale-if-error' => SucuriScanOption::getOption(':cache_option_authors_stale_if_error'),
-			'stale-while-revalidate' => SucuriScanOption::getOption(':cache_option_authors_stale_while_revalidate'),
-			'pagination-factor' => SucuriScanOption::getOption(':cache_option_authors_pagination_factor'),
-			'old-age-multiplier' => SucuriScanOption::getOption(':cache_option_authors_old_age_multiplier'),
-		),
-		'cache_option_dated_archives' => array(
-			'name' => 'Dated Archives',
-			'max-age' => SucuriScanOption::getOption(':cache_option_dated_archives_max_age'),
-			's-maxage' => SucuriScanOption::getOption(':cache_option_dated_archives_s_maxage'),
-			'stale-if-error' => SucuriScanOption::getOption(':cache_option_dated_archives_stale_if_error'),
-			'stale-while-revalidate' => SucuriScanOption::getOption(':cache_option_dated_archives_stale_while_revalidate'),
-			'pagination-factor' => SucuriScanOption::getOption(':cache_option_dated_archives_pagination_factor'),
-			'old-age-multiplier' => SucuriScanOption::getOption(':cache_option_dated_archives_old_age_multiplier'),
-		),
-		'cache_option_feeds' => array(
-			'name' => 'Feeds',
-			'max-age' => SucuriScanOption::getOption(':cache_option_feeds_max_age'),
-			's-maxage' => SucuriScanOption::getOption(':cache_option_feeds_s_maxage'),
-			'stale-if-error' => SucuriScanOption::getOption(':cache_option_feeds_stale_if_error'),
-			'stale-while-revalidate' => SucuriScanOption::getOption(':cache_option_feeds_stale_while_revalidate'),
-			'pagination-factor' => SucuriScanOption::getOption(':cache_option_feeds_pagination_factor'),
-			'old-age-multiplier' => SucuriScanOption::getOption(':cache_option_feeds_old_age_multiplier'),
-		),
-		'cache_option_attachment_pages' => array(
-			'name' => 'Attachment Pages',
-			'max-age' => SucuriScanOption::getOption(':cache_option_attachment_pages_max_age'),
-			's-maxage' => SucuriScanOption::getOption(':cache_option_attachment_pages_s_maxage'),
-			'stale-if-error' => SucuriScanOption::getOption(':cache_option_attachment_pages_stale_if_error'),
-			'stale-while-revalidate' => SucuriScanOption::getOption(':cache_option_attachment_pages_stale_while_revalidate'),
-			'pagination-factor' => SucuriScanOption::getOption(':cache_option_attachment_pages_pagination_factor'),
-			'old-age-multiplier' => SucuriScanOption::getOption(':cache_option_attachment_pages_old_age_multiplier'),
-		),
-		'cache_option_search_results' => array(
-			'name' => 'Search Results',
-			'max-age' => SucuriScanOption::getOption(':cache_option_search_results_max_age'),
-			's-maxage' => SucuriScanOption::getOption(':cache_option_search_results_s_maxage'),
-			'stale-if-error' => SucuriScanOption::getOption(':cache_option_search_results_stale_if_error'),
-			'stale-while-revalidate' => SucuriScanOption::getOption(':cache_option_search_results_stale_while_revalidate'),
-			'pagination-factor' => SucuriScanOption::getOption(':cache_option_search_results_pagination_factor'),
-			'old-age-multiplier' => SucuriScanOption::getOption(':cache_option_search_results_old_age_multiplier'),
-		),
-		'cache_option_404_not_found' => array(
-			'name' => '404 Not Found',
-			'max-age' => SucuriScanOption::getOption(':cache_option_404_not_found_max_age'),
-			's-maxage' => SucuriScanOption::getOption(':cache_option_404_not_found_s_maxage'),
-			'stale-if-error' => SucuriScanOption::getOption(':cache_option_404_not_found_stale_if_error'),
-			'stale-while-revalidate' => SucuriScanOption::getOption(':cache_option_404_not_found_stale_while_revalidate'),
-			'pagination-factor' => SucuriScanOption::getOption(':cache_option_404_not_found_pagination_factor'),
-			'old-age-multiplier' => SucuriScanOption::getOption(':cache_option_404_not_found_old_age_multiplier'),
-		),
-		'cache_option_permanent_redirects' => array(
-			'name' => 'Permanent Redirects',
-			'max-age' => SucuriScanOption::getOption(':cache_option_permanent_redirects_max_age'),
-			's-maxage' => SucuriScanOption::getOption(':cache_option_permanent_redirects_s_maxage'),
-			'stale-if-error' => SucuriScanOption::getOption(':cache_option_permanent_redirects_stale_if_error'),
-			'stale-while-revalidate' => SucuriScanOption::getOption(':cache_option_permanent_redirects_stale_while_revalidate'),
-			'pagination-factor' => SucuriScanOption::getOption(':cache_option_permanent_redirects_pagination_factor'),
-			'old-age-multiplier' => SucuriScanOption::getOption(':cache_option_permanent_redirects_old_age_multiplier'),
-		),
-	);
-
-
-
-	foreach ($cacheOptions as $option) {
+	foreach ($options as $option) {
 		$params['CacheOptions.Options'] .= SucuriScanTemplate::getSnippet(
 			'settings-headers-cache-option',
 			array(
-				'name' => $option['name'],
-				'maxAge' => $option['max-age'],
-				'sMaxAge' => $option['s-maxage'],
-				'staleIferror' => $option['stale-if-error'],
-				'staleWhileRevalidate' => $option['stale-while-revalidate'],
-				'paginationFactor' => $option['pagination-factor'],
-				'oldAgeMultiplier' => $option['old-age-multiplier'],
+				'name' => $option['title'],
+				'maxAge' => $option['max_age'],
+				'sMaxAge' => $option['s_maxage'],
+				'staleIferror' => $option['stale_if_error'],
+				'staleWhileRevalidate' => $option['stale_while_revalidate'],
+				'paginationFactor' => $option['pagination_factor'],
+				'oldAgeMultiplier' => $option['old_age_multiplier'],
 			)
 		);
 	}
