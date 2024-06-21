@@ -43,7 +43,7 @@
         <form action="%%SUCURI.URL.Settings%%#headers" method="post">
             <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
             <input type="hidden" name="sucuriscan_update_cache_options" value="1" />
-            <label><strong>{{Frequency:}}</strong></label>
+            <label><strong>{{Mode:}}</strong></label>
             <select name="sucuriscan_cache_options_mode" data-cy="sucuriscan_security_keys_autoupdater_select">
                 %%%SUCURI.CacheOptions.Modes%%%
             </select>
