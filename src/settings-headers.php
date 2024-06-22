@@ -141,10 +141,11 @@ function sucuriscan_settings_cache_options($nonce)
 		$params['CacheOptions.Options'] .= SucuriScanTemplate::getSnippet(
 			'settings-headers-cache-option',
 			array(
+                'id' => $option['id'],
 				'name' => $option['title'],
 				'maxAge' => $option['max_age'],
 				'sMaxAge' => $option['s_maxage'],
-				'staleIferror' => $option['stale_if_error'],
+				'staleIfError' => $option['stale_if_error'],
 				'staleWhileRevalidate' => $option['stale_while_revalidate'],
 				'paginationFactor' => $option['pagination_factor'],
 				'oldAgeMultiplier' => $option['old_age_multiplier'],
