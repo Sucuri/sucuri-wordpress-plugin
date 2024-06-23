@@ -1230,4 +1230,19 @@ h3.lead {
     margin-bottom: 5px !important;
 }
 
+.vertical-align-middle {
+    vertical-align: middle;
+}
+
+.sucuriscan-double-box-update p {
+    vertical-align: middle;
+}
+
+.sucuriscan-double-box-update div {
+    display: inline-block;
+    vertical-align: middle;
+    text-align: right;
+    width: 29%;
+}
+
 

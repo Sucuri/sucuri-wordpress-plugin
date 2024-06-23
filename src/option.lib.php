@@ -114,7 +114,7 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_use_wpmail' => 'enabled',
 
 			'sucuriscan_headers_cache_control' => 'disabled',
-            'sucuriscan_cache_options' => array(
+            'sucuriscan_headers_cache_control_options' => array(
                 'front_page' => array(
                     'id' => 'front_page',
                     'title' => 'Front Page',

@@ -118,6 +118,9 @@ function sucuriscan_settings_cache_options($nonce)
 
     if (SucuriScanInterface::checkNonce() && SucuriScanRequest::post(':update_cache_options')) {
         $headerCacheControl = SucuriScanRequest::post(':cache_options_mode');
+        $headerCacheControlOptions = SucuriScanRequest::post(':front_page_max_age');
+
+        var_dump($_POST);
 
 
         // stop progress if the options are not valid
