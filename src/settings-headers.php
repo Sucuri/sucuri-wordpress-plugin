@@ -111,6 +111,9 @@ function sucuriscan_settings_cache_options($nonce)
 
     $availableSettings = array('disabled', 'static', 'occasional', 'frequent', 'busy', 'custom');
 
+    $headersCacheControlOptions = SucuriScanOption::getOption(':headers_cache_control_options');
+
+
     foreach ($availableSettings as $mode) {
         $params['CacheOptions.Modes'] .= sprintf('<option value="%s">%s</option>', $mode, ucfirst($mode));
     }
@@ -118,9 +121,26 @@ function sucuriscan_settings_cache_options($nonce)
 
     if (SucuriScanInterface::checkNonce() && SucuriScanRequest::post(':update_cache_options')) {
         $headerCacheControl = SucuriScanRequest::post(':cache_options_mode');
-        $headerCacheControlOptions = SucuriScanRequest::post(':front_page_max_age');
 
-        var_dump($_POST);
+        $newOptions = array();
+
+        foreach ($headersCacheControlOptions as $pageType => $options) {
+            $newOptions[$pageType] = array();
+
+            foreach ($options as $optionName => $defaultValue) {
+                $postKey = 'sucuriscan_' . $pageType . '_' . $optionName;
+                $postValue = SucuriScanRequest::post($postKey);
+
+                if (isset($_POST[$postKey])) {
+                    $newOptions[$pageType][$optionName] = intval($postValue);
+                } else {
+                    $newOptions[$pageType][$optionName] = $defaultValue;
+                }
+            }
+        }
+
+        echo '<pre>' . var_export($newOptions, true) . '</pre>';
+
 
 
         // stop progress if the options are not valid
@@ -130,6 +150,7 @@ function sucuriscan_settings_cache_options($nonce)
 //        }
 
         SucuriScanOption::updateOption(':headers_cache_control', $headerCacheControl);
+        SucuriScanOption::updateOption(':headers_cache_control_options', $newOptions);
 
         if (SucuriScanOption::getOption(':headers_cache_control') === 'disabled') {
             SucuriScanInterface::info(__('Cache-Control header was deactivated.', 'sucuri-scanner'));
@@ -138,9 +159,9 @@ function sucuriscan_settings_cache_options($nonce)
         }
     }
 
-    $options = SucuriScanOption::getOption(':cache_options');
+    $latestHeadersCacheControlOptions = SucuriScanOption::getOption(':headers_cache_control_options');
 
-	foreach ($options as $option) {
+	foreach ($latestHeadersCacheControlOptions as $option) {
 		$params['CacheOptions.Options'] .= SucuriScanTemplate::getSnippet(
 			'settings-headers-cache-option',
 			array(

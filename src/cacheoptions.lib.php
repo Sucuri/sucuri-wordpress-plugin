@@ -112,7 +112,7 @@ class SucuriScanCacheHeaders extends SucuriScan
 
     private function getCacheDirectiveFromOption($option_name)
     {
-        $cache_options = SucuriScanOption::getOption(':cache_options');
+        $cache_options = SucuriScanOption::getOption(':headers_cache_control_options');
 
         $option = $cache_options[$option_name];
 
