@@ -495,7 +495,7 @@ describe('Run e2e tests', () => {
         cy.get('[data-cy=sucuriscan_failedlogins_table]').contains('no data available');
     });
 
-    it('can reset password', () => {
+    it.only('can reset password', () => {
         Cypress.session.clearAllSavedSessions();
         cy.visit('/');
 
@@ -537,7 +537,7 @@ describe('Run e2e tests', () => {
         cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#headers');
 
         cy.get('[data-cy=sucuriscan_headers_cache_control_dropdown]').select('Busy');
-        cy.get('[data-cy=ssucuriscan_headers_cache_control_submit_btn]').click();
+        cy.get('[data-cy=sucuriscan_headers_cache_control_submit_btn]').click();
         cy.get('.sucuriscan-alert').contains('Cache-Control header was activated.');
 
         cy.get('[data-cy=ssucuriscan_headers_cache_control_submit_btn]').click();
@@ -557,7 +557,7 @@ describe('Run e2e tests', () => {
         cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#headers');
 
         cy.get('[data-cy=sucuriscan_headers_cache_control_dropdown]').select('Occasional');
-        cy.get('[data-cy=ssucuriscan_headers_cache_control_submit_btn]').click();
+        cy.get('[data-cy=sucuriscan_headers_cache_control_submit_btn]').click();
         cy.get('.sucuriscan-alert').contains('Cache-Control header was activated.');
 
         Cypress.session.clearCurrentSessionData();

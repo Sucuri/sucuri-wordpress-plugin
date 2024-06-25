@@ -139,7 +139,7 @@ function sucuriscan_settings_cache_options($nonce)
             }
         }
 
-        echo '<pre>' . var_export($newOptions, true) . '</pre>';
+//        echo '<pre>' . var_export($newOptions, true) . '</pre>';
 
 
 
