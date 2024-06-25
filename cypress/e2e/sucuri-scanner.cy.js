@@ -495,7 +495,7 @@ describe('Run e2e tests', () => {
         cy.get('[data-cy=sucuriscan_failedlogins_table]').contains('no data available');
     });
 
-    it.only('can reset password', () => {
+    it('can reset password', () => {
         Cypress.session.clearAllSavedSessions();
         cy.visit('/');
 
@@ -525,15 +525,6 @@ describe('Run e2e tests', () => {
     });
 
     it.only('Can toggle the header cache control setting', () => {
-        Cypress.session.clearAllSavedSessions();
-        cy.visit('/');
-
-        // This user is added automatically at .github/workflows/end-to-end-tests.yml
-        cy.login('sucuri', 'password');
-
-        Cypress.session.clearAllSavedSessions();
-        cy.login();
-
         cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#headers');
 
         cy.get('[data-cy=sucuriscan_headers_cache_control_dropdown]').select('Busy');
@@ -545,15 +536,6 @@ describe('Run e2e tests', () => {
     });
 
     it.only('Can set the Cache-Control header properly', () => {
-        Cypress.session.clearAllSavedSessions();
-        cy.visit('/');
-
-        // This user is added automatically at .github/workflows/end-to-end-tests.yml
-        cy.login('sucuri', 'password');
-
-        Cypress.session.clearAllSavedSessions();
-        cy.login();
-
         cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#headers');
 
         cy.get('[data-cy=sucuriscan_headers_cache_control_dropdown]').select('Occasional');
