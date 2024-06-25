@@ -531,7 +531,7 @@ describe('Run e2e tests', () => {
         cy.get('[data-cy=sucuriscan_headers_cache_control_submit_btn]').click();
         cy.get('.sucuriscan-alert').contains('Cache-Control header was activated.');
 
-        cy.get('[data-cy=ssucuriscan_headers_cache_control_submit_btn]').click();
+        cy.get('[data-cy=sucuriscan_headers_cache_control_submit_btn]').click();
         cy.get('.sucuriscan-alert').contains('Cache-Control header was deactivated.');
     });
 
@@ -541,8 +541,6 @@ describe('Run e2e tests', () => {
         cy.get('[data-cy=sucuriscan_headers_cache_control_dropdown]').select('Occasional');
         cy.get('[data-cy=sucuriscan_headers_cache_control_submit_btn]').click();
         cy.get('.sucuriscan-alert').contains('Cache-Control header was activated.');
-
-        Cypress.session.clearCurrentSessionData();
 
         cy.request('GET', '/').then((response) => {
             expect(response.headers).to.have.property('Cache-Control', 'max-age=max-age=21600') //assert Request header
