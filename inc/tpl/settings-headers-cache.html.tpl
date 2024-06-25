@@ -7,23 +7,41 @@
         $('.sucuriscan-header-cache-control-edit-btn').each(function() {
             $(this).click(function(e) {
                 e.preventDefault();
-                var rowClass = $(this).data('cy');
-                console.log(rowClass);
-                var valueSpans = $('.' + rowClass + ' .sucuriscan-headers-cache-value');
-                var inputFields = $('.' + rowClass + ' .sucuriscan-headers-cache-input');
+                var rowClass = $(this).closest('tr').data('page');
+                var valueSpans = $('.sucuriscan-row-' + rowClass + ' .sucuriscan-headers-cache-value');
+                var inputFields = $('.sucuriscan-row-' + rowClass + ' .sucuriscan-headers-cache-input');
+
                 if ($(this).text() === 'Edit') {
                     valueSpans.addClass('sucuriscan-hidden');
                     inputFields.removeClass('sucuriscan-hidden');
                     $(this).text('Update');
-                } else {
-                    valueSpans.each(function(index, span) {
-                        $(span).text(inputFields.eq(index).val());
-                    });
-                    valueSpans.removeClass('sucuriscan-hidden');
-                    inputFields.addClass('sucuriscan-hidden');
-                    inputFields.addClass('p-0');
-                    $(this).text('Edit');
+
+                    return;
                 }
+
+                valueSpans.each(function(index, span) {
+                    $(span).text(inputFields.eq(index).val());
+                });
+
+                valueSpans.removeClass('sucuriscan-hidden');
+                inputFields.addClass('sucuriscan-hidden');
+                inputFields.addClass('p-0');
+
+                $(this).text('Edit');
+
+                var newValues = {};
+
+                inputFields.each(function() {
+                    newValues[this.name] = this.value;
+                });
+
+                $.post('%%SUCURI.URL.Settings%%#headers', {
+                    sucuriscan_page_nonce: '%%SUCURI.PageNonce%%',
+                    sucuriscan_update_cache_options: 1,
+                    sucuriscan_cache_options_mode: 'custom',
+                    sucuriscan_page_type: rowClass,
+                    ...newValues,
+                });
             });
         });
     });
