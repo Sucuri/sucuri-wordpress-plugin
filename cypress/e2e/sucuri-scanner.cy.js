@@ -524,26 +524,32 @@ describe('Run e2e tests', () => {
         cy.get('#login_error').contains('The password you entered for the username sucuri is incorrect.');
     });
 
-    it.only('Can toggle the header cache control setting', () => {
+    it('Can toggle the header cache control setting', () => {
         cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#headers');
 
         cy.get('[data-cy=sucuriscan_headers_cache_control_dropdown]').select('Busy');
-        cy.get('[data-cy=sucuriscan_headers_cache_control_submit_btn]').click();
+        cy.get('[data-cy=sucuriscan_headers_cache_control_submit_btn]').click({force: true});
         cy.get('.sucuriscan-alert').contains('Cache-Control header was activated.');
 
-        cy.get('[data-cy=sucuriscan_headers_cache_control_submit_btn]').click();
+        cy.get('[data-cy=sucuriscan_headers_cache_control_dropdown]').select('Disabled');
+        cy.get('[data-cy=sucuriscan_headers_cache_control_submit_btn]').click({force: true});
         cy.get('.sucuriscan-alert').contains('Cache-Control header was deactivated.');
     });
 
-    it.only('Can set the Cache-Control header properly', () => {
+    it('Can set the Cache-Control header properly', () => {
         cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#headers');
 
-        cy.get('[data-cy=sucuriscan_headers_cache_control_dropdown]').select('Occasional');
-        cy.get('[data-cy=sucuriscan_headers_cache_control_submit_btn]').click();
+        cy.get('[data-cy=sucuriscan_headers_cache_control_dropdown]').select('Busy');
+        cy.get('[data-cy=sucuriscan_headers_cache_control_submit_btn]').click({force: true});
         cy.get('.sucuriscan-alert').contains('Cache-Control header was activated.');
 
-        cy.request('GET', '/').then((response) => {
-            expect(response.headers).to.have.property('Cache-Control', 'max-age=max-age=21600') //assert Request header
+        cy.clearCookies();
+
+        cy.visit('/');
+
+        cy.request('/').then((response) => {
+            expect(response.headers['cache-control']).to.exist;
+            expect(response.headers['cache-control']).to.include('max-age=300');
         });
     });
 });

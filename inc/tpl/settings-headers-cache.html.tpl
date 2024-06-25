@@ -128,6 +128,7 @@
 
         $('[data-cy="sucuriscan_headers_cache_control_dropdown"]').change(function() {
             var selectedOption = $(this).val();
+            if (selectedOption === 'disabled') return;
 
             $('tr[data-page]').each(function() {
                 var pageType = $(this).data('page');
