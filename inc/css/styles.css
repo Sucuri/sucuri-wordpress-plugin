@@ -1245,4 +1245,25 @@ h3.lead {
     width: 29%;
 }
 
+.sucuriscan-headers-cache-input {
+    width: 120px;
+    height: auto;
+    padding: 0;
+    font-size: 1em;
+}
+
+.sucuriscan-headers-cache-is-editing {
+    td {
+        padding: 3px 10px;
+    }
+}
+
+.sucuriscan-table-fixed-layout {
+    table-layout: fixed;
+}
+
+.sucuriscan-table-fixed-layout td {
+    vertical-align: middle;
+}
+
 

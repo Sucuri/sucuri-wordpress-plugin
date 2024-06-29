@@ -8,10 +8,12 @@
             $(this).click(function(e) {
                 e.preventDefault();
                 var rowClass = $(this).closest('tr').data('page');
+                var row = $(this).closest('tr');
                 var valueSpans = $('.sucuriscan-row-' + rowClass + ' .sucuriscan-headers-cache-value');
                 var inputFields = $('.sucuriscan-row-' + rowClass + ' .sucuriscan-headers-cache-input');
 
                 if ($(this).text() === 'Edit') {
+                    row.addClass('sucuriscan-headers-cache-is-editing');
                     valueSpans.addClass('sucuriscan-hidden');
                     inputFields.removeClass('sucuriscan-hidden');
                     $(this).text('Update');
@@ -23,6 +25,7 @@
                     $(span).text(inputFields.eq(index).val());
                 });
 
+                row.removeClass('sucuriscan-headers-cache-is-editing');
                 valueSpans.removeClass('sucuriscan-hidden');
                 inputFields.addClass('sucuriscan-hidden');
                 inputFields.addClass('p-0');
@@ -152,7 +155,7 @@
         <div class="inside">
             <p>{{Here you can see all the cache options available.}}</p>
 
-            <table class="wp-list-table widefat sucuriscan-table sucuriscan-table-double-title sucuriscan-last-logins">
+            <table class="wp-list-table widefat sucuriscan-table sucuriscan-table-fixed-layout sucuriscan-table-double-title sucuriscan-last-logins">
                 <thead>
                     <tr>
                         <th class="manage-column">{{Option}}</th>
