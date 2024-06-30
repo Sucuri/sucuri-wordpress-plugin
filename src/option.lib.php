@@ -133,7 +133,7 @@ class SucuriScanOption extends SucuriScanRequest
                     's_maxage' => 0,
                     'stale_if_error' => 0,
                     'stale_while_revalidate' => 0,
-                    'pagination_factor' => 0,
+                    'pagination_factor' => 'unavailable',
                     'old_age_multiplier' => true,
                 ),
 
@@ -144,7 +144,7 @@ class SucuriScanOption extends SucuriScanRequest
                     's_maxage' => 0,
                     'stale_if_error' => 0,
                     'stale_while_revalidate' => 0,
-                    'pagination_factor' => 0,
+                    'pagination_factor' => 'unavailable',
                     'old_age_multiplier' => 'unavailable',
                 ),
 
@@ -199,7 +199,7 @@ class SucuriScanOption extends SucuriScanRequest
                     's_maxage' => 0,
                     'stale_if_error' => 0,
                     'stale_while_revalidate' => 0,
-                    'pagination_factor' => 0,
+                    'pagination_factor' => 'unavailable',
                     'old_age_multiplier' => 'unavailable',
                 ),
 
@@ -210,7 +210,7 @@ class SucuriScanOption extends SucuriScanRequest
                     's_maxage' => 0,
                     'stale_if_error' => 0,
                     'stale_while_revalidate' => 0,
-                    'pagination_factor' => 0,
+                    'pagination_factor' => 'unavailable',
                     'old_age_multiplier' => 'unavailable',
                 ),
 
@@ -221,7 +221,7 @@ class SucuriScanOption extends SucuriScanRequest
                     's_maxage' => 0,
                     'stale_if_error' => 0,
                     'stale_while_revalidate' => 0,
-                    'pagination_factor' => 0,
+                    'pagination_factor' => 'unavailable',
                     'old_age_multiplier' => 'unavailable',
                 ),
 
@@ -232,7 +232,7 @@ class SucuriScanOption extends SucuriScanRequest
                     's_maxage' => 0,
                     'stale_if_error' => 0,
                     'stale_while_revalidate' => 0,
-                    'pagination_factor' => 0,
+                    'pagination_factor' => 'unavailable',
                     'old_age_multiplier' => 'unavailable',
                 ),
 
@@ -243,7 +243,7 @@ class SucuriScanOption extends SucuriScanRequest
                     's_maxage' => 0,
                     'stale_if_error' => 0,
                     'stale_while_revalidate' => 0,
-                    'pagination_factor' => 0,
+                    'pagination_factor' => 'unavailable',
                     'old_age_multiplier' => 'unavailable',
                 ),
 
@@ -254,7 +254,7 @@ class SucuriScanOption extends SucuriScanRequest
                     's_maxage' => 0,
                     'stale_if_error' => 0,
                     'stale_while_revalidate' => 0,
-                    'pagination_factor' => 0,
+                    'pagination_factor' => 'unavailable',
                     'old_age_multiplier' => 'unavailable',
                 ),
             )

@@ -172,7 +172,9 @@ function sucuriscan_settings_cache_options($nonce)
 				'staleIfError' => $option['stale_if_error'],
 				'staleWhileRevalidate' => $option['stale_while_revalidate'],
 				'paginationFactor' => $option['pagination_factor'],
+                'paginationFactorVisibility' => $option['pagination_factor'] !== 'unavailable' ? 'visible' : 'hidden',
 				'oldAgeMultiplier' => $option['old_age_multiplier'],
+                'oldAgeMultiplierVisibility' => $option['old_age_multiplier'] !== 'unavailable' ? 'visible' : 'hidden',
 			)
 		);
 	}

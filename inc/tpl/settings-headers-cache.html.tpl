@@ -15,27 +15,57 @@
                 // Check if the row is already in editing mode
                 if ($(this).text().trim() === 'Edit') {
                     row.addClass('sucuriscan-headers-cache-is-editing');
-                    valueSpans.addClass('sucuriscan-hidden');
-                    inputFields.removeClass('sucuriscan-hidden');
-                    $(this).text('Update');
-                    $('[data-cy=sucuriscan_headers_cache_control_dropdown]').val('custom');
-                } else {
-                    valueSpans.each(function (index, span) {
-                        $(span).text(inputFields.eq(index).val());
+
+                    valueSpans.each(function(index, span) {
+                        if (!$(span).hasClass('sucuriscan-unavailable')) {
+                            $(span).addClass('sucuriscan-hidden');
+                        }
                     });
 
-                    row.removeClass('sucuriscan-headers-cache-is-editing');
-                    valueSpans.removeClass('sucuriscan-hidden');
-                    inputFields.addClass('sucuriscan-hidden');
-                    inputFields.addClass('p-0');
+                    inputFields.each(function(index, input) {
+                        if (!$(input).hasClass('sucuriscan-unavailable')) {
+                            $(input).removeClass('sucuriscan-hidden');
+                        }
+                    });
 
+                    $(this).text('Update');
+
+                    // Update the dropdown to custom mode
+                    $('[data-cy=sucuriscan_headers_cache_control_dropdown]').val('custom');
+                } else {
+                    var newValues = {};
+
+                    row.removeClass('sucuriscan-headers-cache-is-editing');
+
+                    // update values
+                    inputFields.each(function(index, input) {
+                        if (!$(input).hasClass('sucuriscan-hidden')) {
+                            var newValue = $(input).val();
+                            $(valueSpans[index]).text(newValue);
+                            newValues[this.name] = newValue;
+                        }
+                    });
+
+
+                    valueSpans.each(function(index, span) {
+                        if (!$(span).hasClass('sucuriscan-unavailable')) {
+                            $(span).removeClass('sucuriscan-hidden');
+                        }
+                    });
+
+                    inputFields.each(function(index, input) {
+                        if (!$(input).hasClass('sucuriscan-unavailable')) {
+                            $(input).addClass('sucuriscan-hidden');
+                        }
+                    });
 
                     $(this).text('Edit');
 
-                    var newValues = {};
 
                     inputFields.each(function () {
-                        newValues[this.name] = this.value;
+                        if (!$(this).hasClass('sucuriscan-unavailable')) {
+                            newValues[this.name] = this.value;
+                        }
                     });
 
                     $.post('%%SUCURI.URL.Settings%%#headers', {
