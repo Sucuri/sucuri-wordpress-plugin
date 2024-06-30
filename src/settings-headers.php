@@ -132,6 +132,11 @@ function sucuriscan_settings_cache_options($nonce)
                 $postValue = SucuriScanRequest::post($postKey);
 
                 if (isset($_POST[$postKey])) {
+                    if ($postValue === 'unavailable' || $postValue === '') {
+                        $newOptions[$pageType][$optionName] = 'unavailable';
+                        continue;
+                    }
+
                     $newOptions[$pageType][$optionName] = intval($postValue);
                 } else {
                     $newOptions[$pageType][$optionName] = $defaultValue;

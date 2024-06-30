@@ -75,6 +75,14 @@
                         sucuriscan_page_type: rowClass,
                         ...newValues,
                     });
+
+                    var cacheControlStatusDiv = $('.sucuriscan-double-box-update');
+                    var cacheControlStatusSpan = cacheControlStatusDiv.find('span');
+
+                    cacheControlStatusDiv.removeClass('sucuriscan-hstatus-0');
+                    cacheControlStatusDiv.addClass('sucuriscan-hstatus-1');
+
+                    cacheControlStatusSpan.text('Enabled');
                 }
             });
         });
@@ -285,7 +293,7 @@
         <div class="sucuriscan-double-box sucuriscan-hstatus sucuriscan-double-box-update sucuriscan-hstatus-%%SUCURI.CacheOptions.CacheControl%%"
              data-cy="sucuriscan_headers_cache_control">
             <p>
-                <strong>{{Cache Control Header}}</strong> &mdash; %%SUCURI.CacheOptions.Status%%<br/>
+                <strong>{{Cache Control Header}}</strong> &mdash; <span>%%SUCURI.CacheOptions.Status%%</span><br/>
                 {{WordPress by default does not come with cache control headers, used by WAFs and CDNs that are useful to both improve performance and reduce bandwidth and other resources demand on the hosting server. }}
             </p>
 
