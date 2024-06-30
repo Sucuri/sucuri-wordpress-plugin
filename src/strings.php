@@ -526,3 +526,11 @@ __('Submit', 'sucuri-scanner');
 
 // wordpress-recommendations.html.tpl
 __('WordPress Security Recommendations', 'sucuri-scanner');
+
+// settings-headers-cache.html.tpl
+__('The max-age setting tells your browser how long, in seconds, it can keep a copy of a web page before it needs to check for a new version. This is the basic setting needed to make caching work on most devices.', 'sucuri-scanner');
+__('The s-maxage setting tells shared caches, like those used by multiple visitors or devices (such as CDNs or web accelerators), how long they can keep a copy of a web page. It allows you to control how often these shared caches update their content compared to private caches.', 'sucuri-scanner');
+__('The stale-if-error setting allows a cached page to be served even after it has expired if the original web server returns an error. This helps keep your website available by showing an older version of the page instead of an error message. You need to set a private or shared cache duration to use this option, and it can be set for hours or days.', 'sucuri-scanner');
+__('The stale-while-revalidate setting lets shared caches serve an old version of a web page while they update the cached copy in the background. This improves loading times because visitors don’t have to wait for the updated content. Like stale-if-error, it requires a private or shared cache duration, and can be used together with stale-if-error. This setting is useful for ensuring quick page loads while keeping content reasonably fresh.', 'sucuri-scanner');
+__('When this option is set, older pages will be cached for longer than newer pages (determined by page number). The configured pagination factor is added to the main maxage and s-maxage options. This allows less popular archives to be served as stale for longer.', 'sucuri-scanner');
+__('When this option is set, the max-age and s-maxage values will be multiplied by the number of years since the last edit or comment (the Last Modified time). This allows posts that were published a long time ago to be cached longer than newer posts.', 'sucuri-scanner');

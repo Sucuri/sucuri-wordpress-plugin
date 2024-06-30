@@ -1262,6 +1262,15 @@ h3.lead {
     table-layout: fixed;
 }
 
+.sucuriscan-table-fixed-layout .sucuriscan-tooltip {
+    vertical-align: middle;
+}
+
+.sucuriscan-table-fixed-layout .manage-column svg {
+    width: 14px;
+    height: 14px;
+}
+
 .sucuriscan-table-fixed-layout td {
     vertical-align: middle;
 }
