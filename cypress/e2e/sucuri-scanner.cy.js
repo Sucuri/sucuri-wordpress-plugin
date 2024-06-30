@@ -545,11 +545,40 @@ describe('Run e2e tests', () => {
 
         cy.clearCookies();
 
-        cy.visit('/');
-
+        // main page
         cy.request('/').then((response) => {
             expect(response.headers['cache-control']).to.exist;
             expect(response.headers['cache-control']).to.equal('max-age=300');
+        });
+
+        // posts
+        cy.request('/?p=1').then((response) => {
+            expect(response.headers['cache-control']).to.exist;
+            expect(response.headers['cache-control']).to.equal('max-age=600');
+        });
+
+        // pages
+        cy.request('/?page_id=2').then((response) => {
+            expect(response.headers['cache-control']).to.exist;
+            expect(response.headers['cache-control']).to.equal('max-age=600');
+        });
+
+        // categories
+        cy.request('/?cat=1').then((response) => {
+            expect(response.headers['cache-control']).to.exist;
+            expect(response.headers['cache-control']).to.equal('max-age=600');
+        });
+
+        // authors
+        cy.request('/?author=1').then((response) => {
+            expect(response.headers['cache-control']).to.exist;
+            expect(response.headers['cache-control']).to.equal('max-age=600');
+        });
+
+        // 404s
+        cy.request({url: '/?p=12', failOnStatusCode: false}).then((response) => {
+            expect(response.headers['cache-control']).to.exist;
+            expect(response.headers['cache-control']).to.equal('max-age=600');
         });
     });
 
