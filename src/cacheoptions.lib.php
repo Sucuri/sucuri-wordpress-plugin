@@ -262,7 +262,7 @@ class SucuriScanCacheHeaders extends SucuriScan
 
         $header = $this->selectCacheDirective();
 
-        $cacheHeader = 'Cache-Control: max-age=' . $header;
+        $cacheHeader = 'Cache-Control: ' . $header;
 
         header($cacheHeader);
 

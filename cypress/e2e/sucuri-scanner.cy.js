@@ -549,7 +549,24 @@ describe('Run e2e tests', () => {
 
         cy.request('/').then((response) => {
             expect(response.headers['cache-control']).to.exist;
-            expect(response.headers['cache-control']).to.include('max-age=300');
+            expect(response.headers['cache-control']).to.equal('max-age=300');
+        });
+    });
+
+    it('Can customize the Cache-Control header properly', () => {
+        cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#headers');
+
+        cy.get('[data-cy=sucuriscan-row-posts]').click();
+        cy.get('[name=sucuriscan_posts_max_age]').clear().type('12345');
+        cy.get('[data-cy=sucuriscan_headers_cache_control_dropdown]').should('have.value', 'custom');
+        cy.get('[data-cy=sucuriscan_headers_cache_control_submit_btn]').click({force: true});
+        cy.get('.sucuriscan-alert').contains('Cache-Control header was activated.');
+
+        cy.clearCookies();
+
+        cy.request('/?p=1').then((response) => {
+            expect(response.headers['cache-control']).to.exist;
+            expect(response.headers['cache-control']).to.equal('max-age=12345');
         });
     });
 });
