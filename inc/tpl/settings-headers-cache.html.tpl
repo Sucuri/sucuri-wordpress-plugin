@@ -10,9 +10,7 @@
                 $(this).prop('checked', true);
             }
         });
-    });
 
-    jQuery(document).ready(function ($) {
         $('input.sucuriscan-headers-cache-input[type="checkbox"]').change(function () {
             if ($(this).is(':checked')) {
                 $(this).val('1');
@@ -27,78 +25,67 @@
             $(this).click(function (e) {
                 e.preventDefault();
 
-                var rowClass = $(this).closest('tr').data('page');
+                var isEditing = $(this).text().trim() === 'Edit';
+
                 var row = $(this).closest('tr');
-                var valueSpans = $('.sucuriscan-row-' + rowClass + ' .sucuriscan-headers-cache-value');
-                var inputFields = $('.sucuriscan-row-' + rowClass + ' .sucuriscan-headers-cache-input');
+                var contentType = $(this).closest('tr').data('page');
+
+                var spans = $('.sucuriscan-row-' + contentType + ' .sucuriscan-headers-cache-value:not(.sucuriscan-unavailable)');
+                var inputs = $('.sucuriscan-row-' + contentType + ' .sucuriscan-headers-cache-input:not(.sucuriscan-unavailable)');
 
                 // Check if the row is already in editing mode
-                if ($(this).text().trim() === 'Edit') {
+                if (isEditing) {
                     row.addClass('sucuriscan-headers-cache-is-editing');
 
-                    valueSpans.each(function (index, span) {
-                        if (!$(span).hasClass('sucuriscan-unavailable')) {
-                            $(span).addClass('sucuriscan-hidden');
-                        }
+                    spans.each(function (index, span) {
+                        $(span).addClass('sucuriscan-hidden');
                     });
 
-                    inputFields.each(function (index, input) {
-                        if (!$(input).hasClass('sucuriscan-unavailable')) {
-                            $(input).removeClass('sucuriscan-hidden');
-                        }
+                    inputs.each(function (index, input) {
+                        $(input).removeClass('sucuriscan-hidden');
                     });
+
+
+                    $('[data-cy=sucuriscan_headers_cache_control_dropdown]').val('custom');
+                    $('.sucuriscan-headers-cache-input[type="checkbox"]').prop('disabled', false);
 
                     $(this).text('Update');
-
-                    // Update the dropdown to custom mode
-                    $('[data-cy=sucuriscan_headers_cache_control_dropdown]').val('custom');
-
-                    // Update old age multiplier checkbox to be disabled
-                    $('.sucuriscan-headers-cache-input[type="checkbox"]').prop('disabled', false);
                 } else {
                     var newValues = {};
 
                     row.removeClass('sucuriscan-headers-cache-is-editing');
 
-                    // update values
-                    inputFields.each(function (index, input) {
-                        if (!$(input).hasClass('sucuriscan-hidden')) {
-                            var newValue = $(input).val();
-                            $(valueSpans[index]).text(newValue);
-                            newValues[this.name] = newValue;
-                        }
+                    inputs.each(function (index, input) {
+                        var newValue = $(input).val();
+                        $(spans[index]).text(newValue);
+                        newValues[this.name] = newValue;
                     });
 
-
-                    valueSpans.each(function (index, span) {
-                        if (!$(span).hasClass('sucuriscan-unavailable')) {
-                            $(span).removeClass('sucuriscan-hidden');
-                        }
+                    spans.each(function (index, span) {
+                        $(span).removeClass('sucuriscan-hidden');
                     });
 
-                    inputFields.each(function (index, input) {
-                        if (!$(input).hasClass('sucuriscan-unavailable') && $(input).attr('type') !== 'checkbox') {
+                    inputs.each(function (index, input) {
+                        if ($(input).attr('type') !== 'checkbox') {
                             $(input).addClass('sucuriscan-hidden');
                         }
                     });
 
                     $(this).text('Edit');
 
-
-                    inputFields.each(function () {
-                        if (!$(this).hasClass('sucuriscan-unavailable')) {
-                            newValues[this.name] = this.value;
-                        }
+                    inputs.each(function () {
+                        newValues[this.name] = this.value;
                     });
 
                     $.post('%%SUCURI.URL.Settings%%#headers', {
                         sucuriscan_page_nonce: '%%SUCURI.PageNonce%%',
                         sucuriscan_update_cache_options: 1,
                         sucuriscan_cache_options_mode: 'custom',
-                        sucuriscan_page_type: rowClass,
+                        sucuriscan_page_type: contentType,
                         ...newValues,
                     });
 
+                    // Update the box to enabled
                     var cacheControlStatusDiv = $('.sucuriscan-double-box-update');
                     var cacheControlStatusSpan = cacheControlStatusDiv.find('span');
 
@@ -114,7 +101,6 @@
 
 
     jQuery(document).ready(function ($) {
-        // Define a mapper function
         var optionValues = {
             'static': {
                 'front_page': {'max-age': 604800},
@@ -195,17 +181,19 @@
 
         $('[data-cy="sucuriscan_headers_cache_control_dropdown"]').change(function () {
             var selectedOption = $(this).val();
+
             if (selectedOption === 'disabled') return;
 
             $('tr[data-page]').each(function () {
-                var pageType = $(this).data('page');
-                var values = optionValues[selectedOption][pageType] || optionValues['default'][pageType];
-                var currentRow = $(this); // Store the reference to the current row
+                var contentType = $(this).data('page');
+                var values = optionValues[selectedOption][contentType] || optionValues['default'][contentType];
+                var row = $(this);
 
                 $.each(values, function (fieldName, fieldValue) {
                     var fieldClass = '.sucuriscan-headers-' + fieldName;
-                    currentRow.find(fieldClass + ' .sucuriscan-headers-cache-input').val(fieldValue);
-                    currentRow.find(fieldClass + ' .sucuriscan-headers-cache-value').text(fieldValue);
+
+                    row.find(fieldClass + ' .sucuriscan-headers-cache-input').val(fieldValue);
+                    row.find(fieldClass + ' .sucuriscan-headers-cache-value').text(fieldValue);
                 });
             });
         });
