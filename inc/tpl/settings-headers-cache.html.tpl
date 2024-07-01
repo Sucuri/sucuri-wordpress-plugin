@@ -3,6 +3,31 @@
     /* jshint camelcase: false */
 
     jQuery(document).ready(function ($) {
+        $('.sucuriscan-headers-cache-input[type="checkbox"]').prop('disabled', true);
+
+        $('input.sucuriscan-headers-cache-input[type="checkbox"]').each(function () {
+            // If the value of the checkbox is "1", add the checked property to the checkbox
+            if ($(this).val() === '1') {
+                $(this).prop('checked', true);
+            }
+        });
+    });
+
+    jQuery(document).ready(function ($) {
+        // Listen to the change event of the checkbox
+        $('input.sucuriscan-headers-cache-input[type="checkbox"]').change(function () {
+            // If the checkbox is checked, set its value to "1"
+            if ($(this).is(':checked')) {
+                $(this).val('1');
+            }
+            // If the checkbox is unchecked, set its value to "0"
+            else {
+                $(this).val('0');
+            }
+        });
+    });
+
+    jQuery(document).ready(function ($) {
         $('.sucuriscan-header-cache-control-edit-btn').each(function () {
             $(this).click(function (e) {
                 e.preventDefault();
@@ -32,6 +57,9 @@
 
                     // Update the dropdown to custom mode
                     $('[data-cy=sucuriscan_headers_cache_control_dropdown]').val('custom');
+
+                    // Update old age multiplier checkbox to be disabled
+                    $('.sucuriscan-headers-cache-input[type="checkbox"]').prop('disabled', false);
                 } else {
                     var newValues = {};
 
@@ -54,7 +82,7 @@
                     });
 
                     inputFields.each(function(index, input) {
-                        if (!$(input).hasClass('sucuriscan-unavailable')) {
+                        if (!$(input).hasClass('sucuriscan-unavailable') && $(input).attr('type') !== 'checkbox') {
                             $(input).addClass('sucuriscan-hidden');
                         }
                     });
@@ -83,6 +111,7 @@
                     cacheControlStatusDiv.addClass('sucuriscan-hstatus-1');
 
                     cacheControlStatusSpan.text('Enabled');
+                    $('.sucuriscan-headers-cache-input[type="checkbox"]').prop('disabled', true);
                 }
             });
         });

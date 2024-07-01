@@ -1262,7 +1262,7 @@ h3.lead {
     table-layout: fixed;
 }
 
-.sucuriscan-table-fixed-layout .sucuriscan-tooltip {
+.sucuriscan-table-fixed-layout .sucuriscan-tooltip > svg {
     vertical-align: middle;
 }
 
