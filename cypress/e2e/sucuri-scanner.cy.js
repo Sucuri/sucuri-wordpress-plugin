@@ -585,11 +585,19 @@ describe('Run e2e tests', () => {
     it('Can customize the Cache-Control header properly', () => {
         cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#headers');
 
+        // Deactivate the cache control header
+        cy.get('[data-cy=sucuriscan_headers_cache_control_dropdown]').select('Disabled');
+        cy.get('[data-cy=sucuriscan_headers_cache_control_submit_btn]').click({force: true});
+        cy.get('.sucuriscan-alert').contains('Cache-Control header was deactivated.');
+
         cy.get('[data-cy=sucuriscan-row-posts]').click();
         cy.get('[name=sucuriscan_posts_max_age]').clear().type('12345');
         cy.get('[data-cy=sucuriscan_headers_cache_control_dropdown]').should('have.value', 'custom');
         cy.get('[data-cy=sucuriscan_headers_cache_control_submit_btn]').click({force: true});
         cy.get('.sucuriscan-alert').contains('Cache-Control header was activated.');
+
+        // Meaning that the box is now green and the status is now marked as Enabled
+        cy.get('.sucuriscan-hstatus-1').contains('Enabled');
 
         cy.clearCookies();
 
