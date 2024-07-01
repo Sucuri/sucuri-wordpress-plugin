@@ -18,6 +18,7 @@
   "homepage": "https://github.com/Sucuri/sucuri-wordpress-plugin#readme",
   "devDependencies": {
     "@wordpress/env": "^9.8.0",
-    "cypress": "^13.8.1"
+    "cypress": "^13.8.1",
+    "prettier": "3.3.2"
   }
 }

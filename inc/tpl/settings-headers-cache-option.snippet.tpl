@@ -21,7 +21,6 @@
         <input type="number" class="sucuriscan-hidden sucuriscan-headers-cache-input sucuriscan-%%SUCURI.paginationFactorVisibility%% sucuriscan-%%SUCURI.paginationFactor%%" name="sucuriscan_%%SUCURI.id%%_pagination_factor" value="%%SUCURI.paginationFactor%%">
     </td>
     <td class="sucuriscan-headers-old-age-multiplier">
-        <input type="hidden" class="sucuriscan-%%SUCURI.oldAgeMultiplierVisibility%% sucuriscan-%%SUCURI.oldAgeMultiplier%%" name="sucuriscan_%%SUCURI.id%%_old_age_multiplier" value="%%SUCURI.oldAgeMultiplier%%">
         <input type="checkbox" class="sucuriscan-headers-cache-input sucuriscan-%%SUCURI.oldAgeMultiplierVisibility%% sucuriscan-%%SUCURI.oldAgeMultiplier%%" name="sucuriscan_%%SUCURI.id%%_old_age_multiplier" value="%%SUCURI.oldAgeMultiplier%%" disabled>
         <span class="sucuriscan-tooltip sucuriscan-%%SUCURI.oldAgeMultiplierVisibility%% sucuriscan-%%SUCURI.oldAgeMultiplier%%" content="Set by last modified/comment date.">
             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="14" height="14">

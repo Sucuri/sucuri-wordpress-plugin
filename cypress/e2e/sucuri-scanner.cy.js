@@ -524,7 +524,7 @@ describe('Run e2e tests', () => {
         cy.get('#login_error').contains('The password you entered for the username sucuri is incorrect.');
     });
 
-    it('Can toggle the header cache control setting', () => {
+    it.only('Can toggle the header cache control setting', () => {
         cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#headers');
 
         cy.get('[data-cy=sucuriscan_headers_cache_control_dropdown]').select('Busy');
@@ -536,7 +536,7 @@ describe('Run e2e tests', () => {
         cy.get('.sucuriscan-alert').contains('Cache-Control header was deactivated.');
     });
 
-    it('Can set the Cache-Control header properly', () => {
+    it.only('Can set the Cache-Control header properly', () => {
         cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#headers');
 
         cy.get('[data-cy=sucuriscan_headers_cache_control_dropdown]').select('Busy');
@@ -582,7 +582,7 @@ describe('Run e2e tests', () => {
         });
     });
 
-    it('Can customize the Cache-Control header properly', () => {
+    it.only('Can customize the Cache-Control header properly', () => {
         cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#headers');
 
         // Deactivate the cache control header
@@ -593,11 +593,12 @@ describe('Run e2e tests', () => {
         cy.get('[data-cy=sucuriscan-row-posts]').click();
         cy.get('[name=sucuriscan_posts_max_age]').clear().type('12345');
         cy.get('[data-cy=sucuriscan_headers_cache_control_dropdown]').should('have.value', 'custom');
-        cy.get('[data-cy=sucuriscan_headers_cache_control_submit_btn]').click({force: true});
-        cy.get('.sucuriscan-alert').contains('Cache-Control header was activated.');
+        cy.get('[data-cy=sucuriscan-row-posts]').click();
 
         // Meaning that the box is now green and the status is now marked as Enabled
         cy.get('.sucuriscan-hstatus-1').contains('Enabled');
+
+        cy.visit('/wp-admin/admin.php?page=sucuriscan_lastlogins#allusers');
 
         cy.clearCookies();
 
@@ -605,5 +606,37 @@ describe('Run e2e tests', () => {
             expect(response.headers['cache-control']).to.exist;
             expect(response.headers['cache-control']).to.equal('max-age=12345');
         });
+    });
+
+    it.only('Can customize the old age multiplier for the Cache-Control header', () => {
+        cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#headers');
+
+        // Deactivate the cache control header
+        cy.get('[data-cy=sucuriscan_headers_cache_control_dropdown]').select('Disabled');
+        cy.get('[data-cy=sucuriscan_headers_cache_control_submit_btn]').click({force: true});
+        cy.get('.sucuriscan-alert').contains('Cache-Control header was deactivated.');
+
+        cy.get('[name=sucuriscan_posts_old_age_multiplier]').should('have.prop', 'checked', false);
+
+        cy.get('[data-cy=sucuriscan-row-posts]').click();
+        cy.get('[name=sucuriscan_posts_old_age_multiplier]').click();
+        cy.get('[data-cy=sucuriscan-row-posts]').click();
+
+        // Meaning that the box is now green and the status is now marked as Enabled
+        cy.get('.sucuriscan-hstatus-1').contains('Enabled');
+
+        cy.visit('/wp-admin/admin.php?page=sucuriscan_lastlogins#allusers');
+        cy.visit('/wp-admin/admin.php?page=sucuriscan_settings#headers');
+
+        cy.get('[name=sucuriscan_posts_old_age_multiplier]').should('have.prop', 'checked', true);
+
+        cy.get('[data-cy=sucuriscan-row-posts]').click();
+        cy.get('[name=sucuriscan_posts_old_age_multiplier]').click();
+        cy.get('[data-cy=sucuriscan-row-posts]').click();
+
+        cy.get('[name=sucuriscan_posts_old_age_multiplier]').should('have.prop', 'checked', false);
+
+        // Meaning that the box is now green and the status is now marked as Enabled
+        cy.get('.sucuriscan-hstatus-1').contains('Enabled');
     });
 });

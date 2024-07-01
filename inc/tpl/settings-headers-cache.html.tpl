@@ -6,22 +6,17 @@
         $('.sucuriscan-headers-cache-input[type="checkbox"]').prop('disabled', true);
 
         $('input.sucuriscan-headers-cache-input[type="checkbox"]').each(function () {
-            // If the value of the checkbox is "1", add the checked property to the checkbox
-            if ($(this).val() === '1') {
+            if ($(this).val() === '1' || $(this).val().toLowerCase() === 'true') {
                 $(this).prop('checked', true);
             }
         });
     });
 
     jQuery(document).ready(function ($) {
-        // Listen to the change event of the checkbox
         $('input.sucuriscan-headers-cache-input[type="checkbox"]').change(function () {
-            // If the checkbox is checked, set its value to "1"
             if ($(this).is(':checked')) {
                 $(this).val('1');
-            }
-            // If the checkbox is unchecked, set its value to "0"
-            else {
+            } else {
                 $(this).val('0');
             }
         });
@@ -41,13 +36,13 @@
                 if ($(this).text().trim() === 'Edit') {
                     row.addClass('sucuriscan-headers-cache-is-editing');
 
-                    valueSpans.each(function(index, span) {
+                    valueSpans.each(function (index, span) {
                         if (!$(span).hasClass('sucuriscan-unavailable')) {
                             $(span).addClass('sucuriscan-hidden');
                         }
                     });
 
-                    inputFields.each(function(index, input) {
+                    inputFields.each(function (index, input) {
                         if (!$(input).hasClass('sucuriscan-unavailable')) {
                             $(input).removeClass('sucuriscan-hidden');
                         }
@@ -66,7 +61,7 @@
                     row.removeClass('sucuriscan-headers-cache-is-editing');
 
                     // update values
-                    inputFields.each(function(index, input) {
+                    inputFields.each(function (index, input) {
                         if (!$(input).hasClass('sucuriscan-hidden')) {
                             var newValue = $(input).val();
                             $(valueSpans[index]).text(newValue);
@@ -75,13 +70,13 @@
                     });
 
 
-                    valueSpans.each(function(index, span) {
+                    valueSpans.each(function (index, span) {
                         if (!$(span).hasClass('sucuriscan-unavailable')) {
                             $(span).removeClass('sucuriscan-hidden');
                         }
                     });
 
-                    inputFields.each(function(index, input) {
+                    inputFields.each(function (index, input) {
                         if (!$(input).hasClass('sucuriscan-unavailable') && $(input).attr('type') !== 'checkbox') {
                             $(input).addClass('sucuriscan-hidden');
                         }
@@ -266,37 +261,43 @@
                     <th class="manage-column">{{Option}} </th>
                     <th class="manage-column">
                         {{max-age}}
-                        <span class="sucuriscan-tooltip" content="{{The max-age setting tells your browser how long, in seconds, it can keep a copy of a web page before it needs to check for a new version. This is the basic setting needed to make caching work on most devices.}}">
+                        <span class="sucuriscan-tooltip"
+                              content="{{The max-age setting tells your browser how long, in seconds, it can keep a copy of a web page before it needs to check for a new version. This is the basic setting needed to make caching work on most devices.}}">
                             <svg><use xlink:href="#helper-svg"></use></svg>
                         </span>
                     </th>
                     <th class="manage-column">
                         {{s-maxage}}
-                        <span class="sucuriscan-tooltip" content="{{The s-maxage setting tells shared caches, like those used by multiple visitors or devices (such as CDNs or web accelerators), how long they can keep a copy of a web page. It allows you to control how often these shared caches update their content compared to private caches.}}">
+                        <span class="sucuriscan-tooltip"
+                              content="{{The s-maxage setting tells shared caches, like those used by multiple visitors or devices (such as CDNs or web accelerators), how long they can keep a copy of a web page. It allows you to control how often these shared caches update their content compared to private caches.}}">
                             <svg><use xlink:href="#helper-svg"></use></svg>
                         </span>
                     </th>
                     <th class="manage-column">
                         {{stale-if-error}}
-                        <span class="sucuriscan-tooltip" content="{{The stale-if-error setting allows a cached page to be served even after it has expired if the original web server returns an error. This helps keep your website available by showing an older version of the page instead of an error message. You need to set a private or shared cache duration to use this option, and it can be set for hours or days.}}">
+                        <span class="sucuriscan-tooltip"
+                              content="{{The stale-if-error setting allows a cached page to be served even after it has expired if the original web server returns an error. This helps keep your website available by showing an older version of the page instead of an error message. You need to set a private or shared cache duration to use this option, and it can be set for hours or days.}}">
                             <svg><use xlink:href="#helper-svg"></use></svg>
                         </span>
                     </th>
                     <th class="manage-column">
                         {{stale-while-revalidate}}
-                        <span class="sucuriscan-tooltip" content="{{The stale-while-revalidate setting lets shared caches serve an old version of a web page while they update the cached copy in the background. This improves loading times because visitors don’t have to wait for the updated content. Like stale-if-error, it requires a private or shared cache duration, and can be used together with stale-if-error. This setting is useful for ensuring quick page loads while keeping content reasonably fresh.}}">
+                        <span class="sucuriscan-tooltip"
+                              content="{{The stale-while-revalidate setting lets shared caches serve an old version of a web page while they update the cached copy in the background. This improves loading times because visitors don’t have to wait for the updated content. Like stale-if-error, it requires a private or shared cache duration, and can be used together with stale-if-error. This setting is useful for ensuring quick page loads while keeping content reasonably fresh.}}">
                             <svg><use xlink:href="#helper-svg"></use></svg>
                         </span>
                     </th>
                     <th class="manage-column">
                         {{Pagination factor}}
-                        <span class="sucuriscan-tooltip" content="{{When this option is set, older pages will be cached for longer than newer pages (determined by page number). The configured pagination factor is added to the main maxage and s-maxage options. This allows less popular archives to be served as stale for longer.}}">
+                        <span class="sucuriscan-tooltip"
+                              content="{{When this option is set, older pages will be cached for longer than newer pages (determined by page number). The configured pagination factor is added to the main maxage and s-maxage options. This allows less popular archives to be served as stale for longer.}}">
                             <svg><use xlink:href="#helper-svg"></use></svg>
                         </span>
                     </th>
                     <th class="manage-column">
                         {{Old age multiplier}}
-                        <span class="sucuriscan-tooltip" content="{{When this option is set, the max-age and s-maxage values will be multiplied by the number of years since the last edit or comment (the Last Modified time). This allows posts that were published a long time ago to be cached longer than newer posts.}}">
+                        <span class="sucuriscan-tooltip"
+                              content="{{When this option is set, the max-age and s-maxage values will be multiplied by the number of years since the last edit or comment (the Last Modified time). This allows posts that were published a long time ago to be cached longer than newer posts.}}">
                             <svg><use xlink:href="#helper-svg"></use></svg>
                         </span>
                     </th>
