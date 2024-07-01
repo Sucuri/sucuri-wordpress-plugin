@@ -15,11 +15,11 @@
  */
 
 if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
-	if (!headers_sent()) {
-		/* Report invalid access if possible. */
-		header('HTTP/1.1 403 Forbidden');
-	}
-	exit(1);
+    if (!headers_sent()) {
+        /* Report invalid access if possible. */
+        header('HTTP/1.1 403 Forbidden');
+    }
+    exit(1);
 }
 
 define('SUCURISCAN_CACHEOPTIONS_DATASTORE_FILE', 'sucuri-cacheoptions.php');
@@ -31,7 +31,7 @@ define('SUCURISCAN_CACHEOPTIONS_DATASTORE_FILE', 'sucuri-cacheoptions.php');
  */
 function sucuriscan_cacheoptions_datastore_filepath()
 {
-	return SucuriScan::dataStorePath('sucuri-cacheoptions.php');
+    return SucuriScan::dataStorePath('sucuri-cacheoptions.php');
 }
 
 /**
@@ -42,13 +42,13 @@ function sucuriscan_cacheoptions_datastore_filepath()
  */
 function sucuriscan_cacheoptions_datastore_exists()
 {
-	$fpath = sucuriscan_cacheoptions_datastore_filepath();
+    $fpath = sucuriscan_cacheoptions_datastore_filepath();
 
-	if (!file_exists($fpath)) {
-		@file_put_contents($fpath, "<?php exit(0); ?>\n", LOCK_EX);
-	}
+    if (!file_exists($fpath)) {
+        @file_put_contents($fpath, "<?php exit(0); ?>\n", LOCK_EX);
+    }
 
-	return file_exists($fpath) ? $fpath : false;
+    return file_exists($fpath) ? $fpath : false;
 }
 
 /**
@@ -59,19 +59,19 @@ function sucuriscan_cacheoptions_datastore_exists()
  */
 function sucuriscan_cacheoptions_datastore_is_writable()
 {
-	$datastore_filepath = sucuriscan_cacheoptions_datastore_filepath();
+    $datastore_filepath = sucuriscan_cacheoptions_datastore_filepath();
 
-	if ($datastore_filepath) {
-		if (!is_writable($datastore_filepath)) {
-			@chmod($datastore_filepath, 0644);
-		}
+    if ($datastore_filepath) {
+        if (!is_writable($datastore_filepath)) {
+            @chmod($datastore_filepath, 0644);
+        }
 
-		if (is_writable($datastore_filepath)) {
-			return $datastore_filepath;
-		}
-	}
+        if (is_writable($datastore_filepath)) {
+            return $datastore_filepath;
+        }
+    }
 
-	return false;
+    return false;
 }
 
 /**
@@ -82,13 +82,13 @@ function sucuriscan_cacheoptions_datastore_is_writable()
  */
 function sucuriscan_cacheoptions_datastore_is_readable()
 {
-	$datastore_filepath = sucuriscan_cacheoptions_datastore_exists();
+    $datastore_filepath = sucuriscan_cacheoptions_datastore_exists();
 
-	if ($datastore_filepath && is_readable($datastore_filepath)) {
-		return $datastore_filepath;
-	}
+    if ($datastore_filepath && is_readable($datastore_filepath)) {
+        return $datastore_filepath;
+    }
 
-	return false;
+    return false;
 }
 
 /**
@@ -99,11 +99,13 @@ function sucuriscan_cacheoptions_datastore_is_readable()
  * is usually the email of the website owner. The plugin allows to add more
  * emails to the list so the alerts are sent to other people.
  *
- * @param  bool $nonce True if the CSRF protection worked, false otherwise.
+ * @param bool $nonce True if the CSRF protection worked, false otherwise.
  * @return string      HTML for the email alert recipients.
  */
 function sucuriscan_settings_cache_options($nonce)
 {
+    $is_woo_active = in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')));
+
     $params = array(
         'CacheOptions.Options' => '',
         'CacheOptions.Modes' => '',
@@ -147,7 +149,6 @@ function sucuriscan_settings_cache_options($nonce)
 //        echo '<pre>' . var_export($newOptions, true) . '</pre>';
 
 
-
         // stop progress if the options are not valid
 //        if (empty($headerCacheControl) || !in_array($headerCacheControl, $availableSettings)) {
 //            SucuriScanInterface::error(__('No frequency selected for the automatic secret key updater.',
@@ -166,30 +167,34 @@ function sucuriscan_settings_cache_options($nonce)
 
     $latestHeadersCacheControlOptions = SucuriScanOption::getOption(':headers_cache_control_options');
 
-	foreach ($latestHeadersCacheControlOptions as $option) {
-		$params['CacheOptions.Options'] .= SucuriScanTemplate::getSnippet(
-			'settings-headers-cache-option',
-			array(
+    foreach ($latestHeadersCacheControlOptions as $option) {
+        if (!$is_woo_active && ($option['id'] === 'woocommerce_products' || $option['id'] === 'woocommerce_categories')) {
+            continue;
+        }
+
+        $params['CacheOptions.Options'] .= SucuriScanTemplate::getSnippet(
+            'settings-headers-cache-option',
+            array(
                 'id' => $option['id'],
-				'name' => $option['title'],
-				'maxAge' => $option['max_age'],
-				'sMaxAge' => $option['s_maxage'],
-				'staleIfError' => $option['stale_if_error'],
-				'staleWhileRevalidate' => $option['stale_while_revalidate'],
-				'paginationFactor' => $option['pagination_factor'],
+                'name' => $option['title'],
+                'maxAge' => $option['max_age'],
+                'sMaxAge' => $option['s_maxage'],
+                'staleIfError' => $option['stale_if_error'],
+                'staleWhileRevalidate' => $option['stale_while_revalidate'],
+                'paginationFactor' => $option['pagination_factor'],
                 'paginationFactorVisibility' => $option['pagination_factor'] !== 'unavailable' ? 'visible' : 'hidden',
-				'oldAgeMultiplier' => $option['old_age_multiplier'],
+                'oldAgeMultiplier' => $option['old_age_multiplier'],
                 'oldAgeMultiplierVisibility' => $option['old_age_multiplier'] !== 'unavailable' ? 'visible' : 'hidden',
-			)
-		);
-	}
+            )
+        );
+    }
 
     $headersCacheControlMode = SucuriScanOption::getOption(':headers_cache_control');
     $isCacheControlHeaderDisabled = $headersCacheControlMode === 'disabled';
     $params['CacheOptions.NoItemsVisibility'] = 'hidden';
     $params['CacheOptions.CacheControl'] = $isCacheControlHeaderDisabled ? 0 : 1;
     $params['CacheOptions.Status'] = $isCacheControlHeaderDisabled ? 'Disabled' : 'Enabled';
-    $params['CacheOptions.Modes'] = str_replace('option value="'.$headersCacheControlMode.'"', 'option value="'.$headersCacheControlMode.'" selected', $params['CacheOptions.Modes']);
+    $params['CacheOptions.Modes'] = str_replace('option value="' . $headersCacheControlMode . '"', 'option value="' . $headersCacheControlMode . '" selected', $params['CacheOptions.Modes']);
 
-	return SucuriScanTemplate::getSection('settings-headers-cache', $params);
+    return SucuriScanTemplate::getSection('settings-headers-cache', $params);
 }

@@ -257,6 +257,28 @@ class SucuriScanOption extends SucuriScanRequest
                     'pagination_factor' => 'unavailable',
                     'old_age_multiplier' => 'unavailable',
                 ),
+
+                'woocommerce_products' => array(
+                    'id' => 'woocommerce_products',
+                    'title' => 'Woocommerce Products',
+                    'max_age' => 86400,
+                    's_maxage' => 0,
+                    'stale_if_error' => 0,
+                    'stale_while_revalidate' => 0,
+                    'pagination_factor' => 'unavailable',
+                    'old_age_multiplier' => 'unavailable',
+                ),
+
+                'woocommerce_categories' => array(
+                    'id' => 'woocommerce_categories',
+                    'title' => 'Woocommerce Categories',
+                    'max_age' => 86400,
+                    's_maxage' => 0,
+                    'stale_if_error' => 0,
+                    'stale_while_revalidate' => 0,
+                    'pagination_factor' => 'unavailable',
+                    'old_age_multiplier' => 'unavailable',
+                ),
             )
         );
 
