@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Code related to the settings-alerts.php interface.
+ * Code related to the cache control headers settings.
  *
  * PHP version 5
  *
@@ -22,89 +22,19 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     exit(1);
 }
 
-define('SUCURISCAN_CACHEOPTIONS_DATASTORE_FILE', 'sucuri-cacheoptions.php');
-
 /**
- * Get the filepath where the information of the cache options is stored.
+ * Returns the HTML to configure the header's cache options.
  *
- * @return string Absolute filepath where the ache options is stored.
- */
-function sucuriscan_cacheoptions_datastore_filepath()
-{
-    return SucuriScan::dataStorePath('sucuri-cacheoptions.php');
-}
-
-/**
- * Check whether the cache options datastore file exists or not, if not then
- * we try to create the file and check again the success of the operation.
+ * WordPress by default does not come with cache control headers,
+ * used by WAFs and CDNs and that are useful to both improve performance
+ * and reduce bandwidth and other resources demand on the hosting server.
  *
- * @return string|bool Path to the storage file if exists, false otherwise.
- */
-function sucuriscan_cacheoptions_datastore_exists()
-{
-    $fpath = sucuriscan_cacheoptions_datastore_filepath();
-
-    if (!file_exists($fpath)) {
-        @file_put_contents($fpath, "<?php exit(0); ?>\n", LOCK_EX);
-    }
-
-    return file_exists($fpath) ? $fpath : false;
-}
-
-/**
- * Check whether cache options datastore file is writable or not, if not
- * we try to set the right permissions and check again the success of the operation.
- *
- * @return string|bool Path to the storage file if writable, false otherwise.
- */
-function sucuriscan_cacheoptions_datastore_is_writable()
-{
-    $datastore_filepath = sucuriscan_cacheoptions_datastore_filepath();
-
-    if ($datastore_filepath) {
-        if (!is_writable($datastore_filepath)) {
-            @chmod($datastore_filepath, 0644);
-        }
-
-        if (is_writable($datastore_filepath)) {
-            return $datastore_filepath;
-        }
-    }
-
-    return false;
-}
-
-/**
- * Check whether the cache options datastore file is readable or not, if not
- * we try to set the right permissions and check again the success of the operation.
- *
- * @return string|bool Path to the storage file if readable, false otherwise.
- */
-function sucuriscan_cacheoptions_datastore_is_readable()
-{
-    $datastore_filepath = sucuriscan_cacheoptions_datastore_exists();
-
-    if ($datastore_filepath && is_readable($datastore_filepath)) {
-        return $datastore_filepath;
-    }
-
-    return false;
-}
-
-/**
- * Returns the HTML to configure cache options.
- * TODO: Update this comment.
- * By default the plugin sends the email notifications about the security events
- * to the first email address used during the installation of the website. This
- * is usually the email of the website owner. The plugin allows to add more
- * emails to the list so the alerts are sent to other people.
- *
- * @param bool $nonce True if the CSRF protection worked, false otherwise.
- * @return string      HTML for the email alert recipients.
+ * @param   bool    $nonce  True if the CSRF protection worked, false otherwise.
+ * @return  string          HTML for the email alert recipients.
  */
 function sucuriscan_settings_cache_options($nonce)
 {
-    $is_woo_active = in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')));
+    $isWooCommerceActive = in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')));
 
     $params = array(
         'CacheOptions.Options' => '',
@@ -112,18 +42,14 @@ function sucuriscan_settings_cache_options($nonce)
     );
 
     $availableSettings = array('disabled', 'static', 'occasional', 'frequent', 'busy', 'custom');
-
     $headersCacheControlOptions = SucuriScanOption::getOption(':headers_cache_control_options');
-
 
     foreach ($availableSettings as $mode) {
         $params['CacheOptions.Modes'] .= sprintf('<option value="%s">%s</option>', $mode, ucfirst($mode));
     }
 
-
     if (SucuriScanInterface::checkNonce() && SucuriScanRequest::post(':update_cache_options')) {
-        $headerCacheControl = SucuriScanRequest::post(':cache_options_mode');
-
+        $headerCacheControlMode = sanitize_text_field(SucuriScanRequest::post(':cache_options_mode'));
         $newOptions = array();
 
         foreach ($headersCacheControlOptions as $pageType => $options) {
@@ -131,44 +57,38 @@ function sucuriscan_settings_cache_options($nonce)
 
             foreach ($options as $optionName => $defaultValue) {
                 $postKey = 'sucuriscan_' . $pageType . '_' . $optionName;
-                $postValue = SucuriScanRequest::post($postKey);
+                $postValue = sanitize_text_field(SucuriScanRequest::post($postKey));
 
                 if (isset($_POST[$postKey])) {
                     if ($postValue === 'unavailable' || $postValue === '') {
                         $newOptions[$pageType][$optionName] = 'unavailable';
-                        continue;
+                    } else {
+                        $newOptions[$pageType][$optionName] = intval($postValue);
                     }
-
-                    $newOptions[$pageType][$optionName] = intval($postValue);
                 } else {
                     $newOptions[$pageType][$optionName] = $defaultValue;
                 }
             }
         }
 
-//        echo '<pre>' . var_export($newOptions, true) . '</pre>';
+        if (in_array($headerCacheControlMode, $availableSettings)) {
+            SucuriScanOption::updateOption(':headers_cache_control', $headerCacheControlMode);
+            SucuriScanOption::updateOption(':headers_cache_control_options', $newOptions);
 
-
-        // stop progress if the options are not valid
-//        if (empty($headerCacheControl) || !in_array($headerCacheControl, $availableSettings)) {
-//            SucuriScanInterface::error(__('No frequency selected for the automatic secret key updater.',
-//                'sucuri-scanner'));
-//        }
-
-        SucuriScanOption::updateOption(':headers_cache_control', $headerCacheControl);
-        SucuriScanOption::updateOption(':headers_cache_control_options', $newOptions);
-
-        if (SucuriScanOption::getOption(':headers_cache_control') === 'disabled') {
-            SucuriScanInterface::info(__('Cache-Control header was deactivated.', 'sucuri-scanner'));
+            if ($headerCacheControlMode === 'disabled') {
+                SucuriScanInterface::info(__('Cache-Control header was deactivated.', 'sucuri-scanner'));
+            } else {
+                SucuriScanInterface::info(__('Cache-Control header was activated.', 'sucuri-scanner'));
+            }
         } else {
-            SucuriScanInterface::info(__('Cache-Control header was activated.', 'sucuri-scanner'));
+            SucuriScanInterface::error(__('Invalid cache control mode selected.', 'sucuri-scanner'));
         }
     }
 
     $latestHeadersCacheControlOptions = SucuriScanOption::getOption(':headers_cache_control_options');
 
     foreach ($latestHeadersCacheControlOptions as $option) {
-        if (!$is_woo_active && ($option['id'] === 'woocommerce_products' || $option['id'] === 'woocommerce_categories')) {
+        if (!$isWooCommerceActive && in_array($option['id'], array('woocommerce_products', 'woocommerce_categories'))) {
             continue;
         }
 
@@ -191,6 +111,7 @@ function sucuriscan_settings_cache_options($nonce)
 
     $headersCacheControlMode = SucuriScanOption::getOption(':headers_cache_control');
     $isCacheControlHeaderDisabled = $headersCacheControlMode === 'disabled';
+
     $params['CacheOptions.NoItemsVisibility'] = 'hidden';
     $params['CacheOptions.CacheControl'] = $isCacheControlHeaderDisabled ? 0 : 1;
     $params['CacheOptions.Status'] = $isCacheControlHeaderDisabled ? 'Disabled' : 'Enabled';
