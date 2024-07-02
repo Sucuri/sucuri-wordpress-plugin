@@ -214,7 +214,7 @@ require_once 'src/wordpress-recommendations.lib.php';
 require_once 'src/integrity.lib.php';
 require_once 'src/firewall.lib.php';
 require_once 'src/installer-skin.lib.php';
-require_once 'src/cacheoptions.lib.php';
+require_once 'src/cachecontrol.lib.php';
 
 /* Load page and ajax handlers */
 require_once 'src/pagehandler.php';
