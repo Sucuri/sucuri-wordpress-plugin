@@ -1,8 +1,16 @@
 <?php
 /**
- * Cache options library
+ * Code related to the cache control headers settings.
  *
- * @package Sucuri
+ * PHP version 5
+ *
+ * @category   Library
+ * @package    Sucuri
+ * @subpackage SucuriScanner
+ * @author     Daniel Cid <dcid@sucuri.net>
+ * @copyright  2010-2018 Sucuri Inc.
+ * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
+ * @link       https://wordpress.org/plugins/sucuri-scanner
  */
 
 if ( ! defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
@@ -20,183 +28,160 @@ if ( ! defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  */
 class SucuriScanCacheHeaders extends SucuriScan
 {
-    public function __construct()
-    {
-        //$this->setCacheHeaders();
-    }
-
-    private function getCacheControlStaleFactorer($factor, $max_age)
+    protected function getCacheControlStaleFactor($factor, $maxAge)
     {
         if (is_paged() && is_int($factor) && $factor > 0) {
             $multiplier = get_query_var('paged') - 1;
 
             if ($multiplier > 0) {
-                $factored_max_age = $factor * $multiplier;
+                $factoredMaxAge = $factor * $multiplier;
 
-                if ($factored_max_age >= ($max_age * 10)) {
-                    return $max_age * 10;
+                if ($factoredMaxAge >= ($maxAge * 10)) {
+                    return $maxAge * 10;
                 }
 
-                return $factored_max_age;
+                return $factoredMaxAge;
             }
         }
 
         return 0;
     }
 
-    // TODO: Verify how we can improve this query.
-    private function getIsFutureNowMaxTime($max_time_future)
+    protected function getFuturePostMaxTime($maxTimeFuture)
     {
-        $future_post = new WP_Query(array(
-            'post_status'         => 'future',
-            'posts_per_page'      => 1,
-            'orderby'             => 'date',
-            'order'               => 'ASC',
+        $futurePostQuery = new WP_Query(array(
+            'post_status' => 'future',
+            'posts_per_page' => 1,
+            'orderby' => 'date',
+            'order' => 'ASC',
             'ignore_sticky_posts' => 1
         ));
 
-        if ($future_post->have_posts()) {
-            $local_nowtime = intval(current_time('timestamp', 0));
+        if ($futurePostQuery->have_posts()) {
+            $localNowTime = intval(current_time('timestamp', 0));
 
-            while ($future_post->have_posts()) {
-                $future_post->the_post();
-                $local_futuretime = get_the_time('U');
+            while ($futurePostQuery->have_posts()) {
+                $futurePostQuery->the_post();
+                $localFutureTime = get_the_time('U');
 
-                if (($local_nowtime + $max_time_future) > $local_futuretime) {
-                    $max_time_future = $local_futuretime - $local_nowtime + rand(2, 32);
+                if (($localNowTime + $maxTimeFuture) > $localFutureTime) {
+                    $maxTimeFuture = $localFutureTime - $localNowTime + rand(2, 32);
                 }
             }
 
             wp_reset_postdata();
         }
 
-        return $max_time_future;
+        return $maxTimeFuture;
     }
 
-    private function getCacheDirectives($max_age, $s_maxage, $staleerror, $stalereval)
+    protected function getCacheDirectives($maxAge, $sMaxAge, $staleError, $staleRevalidate)
     {
         $directive = "";
 
-        if (!empty($max_age) && is_int($max_age) && $max_age > 0) {
-            $directive = "max-age=$max_age";
+        if (!empty($maxAge) && is_int($maxAge) && $maxAge > 0) {
+            $directive = "max-age=$maxAge";
         }
 
-        if (!empty($s_maxage) && is_int($s_maxage) && $s_maxage > 0 && $s_maxage != $max_age) {
-            if ( ! $directive != "") {
+        if (!empty($sMaxAge) && is_int($sMaxAge) && $sMaxAge > 0 && $sMaxAge != $maxAge) {
+            if ($directive != "") {
                 $directive = "public";
             }
-
-            $directive = "$directive, s-maxage=$s_maxage";
+            $directive .= ", s-maxage=$sMaxAge";
         }
 
-        // append RFC 5861 headers only if the request is cacheable
+        // Append RFC 5861 headers only if the request is cacheable
         if ($directive != "") {
-
-            if (!empty($staleerror) && is_int($staleerror) && $staleerror > 0) {
-                $directive = "$directive, stale-if-error=$staleerror";
+            if (!empty($staleError) && is_int($staleError) && $staleError > 0) {
+                $directive .= ", stale-if-error=$staleError";
             }
 
-            if (!empty($stalereval) && is_int($stalereval) && $stalereval > 0) {
-                $directive = "$directive, stale-while-revalidate=$stalereval";
+            if (!empty($staleRevalidate) && is_int($staleRevalidate) && $staleRevalidate > 0) {
+                $directive .= ", stale-while-revalidate=$staleRevalidate";
             }
 
-            $directive = apply_filters('cache_control_cachedirective', $directive);
+            $directive = apply_filters('cache_control_cache_directive', $directive);
 
             return $directive;
-
         }
 
-        // request isn't cacheable
+        // Request isn't cacheable
         return "no-cache, no-store, must-revalidate";
     }
 
-    private function getCacheDirectiveFromOption($option_name)
+    protected function getCacheDirectiveFromOption($optionName)
     {
-        $cache_options = SucuriScanOption::getOption(':headers_cache_control_options');
+        $cacheOptions = SucuriScanOption::getOption(':headers_cache_control_options');
+        $option = $cacheOptions[$optionName];
 
-        $option = $cache_options[$option_name];
+        $maxAge = intval($option['max_age']);
+        $sMaxAge = intval($option['s_maxage']);
+        $staleError = intval($option['stale_if_error']);
+        $staleRevalidate = intval($option['stale_while_revalidate']);
 
-        $max_age    = intval($option['max_age']);
-        $s_maxage   = intval($option['s_maxage']);
-        $staleerror = intval($option['stale_if_error']);
-        $stalereval = intval($option['stale_while_revalidate']);
-
-        // dynamically shorten caching time when a scheduled post is imminent
-        if ($option_name != 'attachment' &&
-            $option_name != 'dates' &&
-            $option_name != 'pages' &&
-            $option_name != 'singles' &&
-            $option_name != 'notfound') {
-            $max_age  = $this->getIsFutureNowMaxTime($max_age);
-            $s_maxage = $this->getIsFutureNowMaxTime($s_maxage);
+        // Dynamically shorten caching time when a scheduled post is imminent
+        if (!in_array($optionName, array('attachment_pages', 'dates', 'pages', 'singles', '404_not_found'))) {
+            $maxAge = $this->getFuturePostMaxTime($maxAge);
+            $sMaxAge = $this->getFuturePostMaxTime($sMaxAge);
         }
 
         if (is_paged() && isset($option['paged'])) {
-            $page_factor = intval(get_option('cache_control_' . $option['id'] . '_paged', $option['paged']));
-            $max_age     += $this->getCacheControlStaleFactorer($page_factor, $max_age);
-            $s_maxage    += $this->getCacheControlStaleFactorer($page_factor, $s_maxage);
+            $pageFactor = intval(get_option('cache_control_' . $option['id'] . '_paged', $option['paged']));
+            $maxAge += $this->getCacheControlStaleFactor($pageFactor, $maxAge);
+            $sMaxAge += $this->getCacheControlStaleFactor($pageFactor, $sMaxAge);
         }
 
-        // TODO: Get rid of that get_option call
-        if ($option_name == 'singles' && get_option('cache_control_singles_mmulti') == 1) {
-            $date_now = new DateTime();
-            $date_mod = new DateTime(get_the_modified_date('c'));
+        if ($optionName == 'singles') {
+            $dateNow = new DateTime();
+            $dateModified = new DateTime(get_the_modified_date('c'));
 
-            $last_com = get_comments('post_id=' . get_the_ID() . '&number=1&include_unapproved=1&number=1&orderby=comment_date');
-            if ($last_com != null) {
-                $last_com = new DateTime($last_com[0]->comment_date);
-                $date_mod = max(array($date_mod, $last_com));
+            $lastComment = get_comments(array(
+                'post_id' => get_the_ID(),
+                'number' => 1,
+                'include_unapproved' => 1,
+                'orderby' => 'comment_date'
+            ));
+
+            if ($lastComment != null) {
+                $lastCommentDate = new DateTime($lastComment[0]->comment_date);
+                $dateModified = max(array($dateModified, $lastCommentDate));
             }
 
-            $date_diff    = $date_now->diff($date_mod);
-            $months_stale = $date_diff->m + ($date_diff->y * 12);
+            $dateDiff = $dateNow->diff($dateModified);
+            $monthsStale = $dateDiff->m + ($dateDiff->y * 12);
 
-            if ($months_stale > 0) {
-                $max_age  = intval($max_age * (($months_stale + 12) / 12));
-                $s_maxage = intval($s_maxage * (($months_stale + 12) / 12));
+            if ($monthsStale > 0) {
+                $maxAge = intval($maxAge * (($monthsStale + 12) / 12));
+                $sMaxAge = intval($sMaxAge * (($monthsStale + 12) / 12));
             }
         }
 
-        return $this->getCacheDirectives($max_age, $s_maxage, $staleerror, $stalereval);
+        return $this->getCacheDirectives($maxAge, $sMaxAge, $staleError, $staleRevalidate);
     }
 
-    private function isNoCacheable()
+    protected function isNoCacheable()
     {
         global $wp_query;
 
-        $noncacheable = (is_preview() ||
-                         is_user_logged_in() ||
-                         is_trackback() ||
-                         is_admin()
-        );
+        $nonCacheable = is_preview() || is_user_logged_in() || is_trackback() || is_admin();
 
         // Requires post password, and post has been unlocked.
-        if ( ! $noncacheable &&
-             isset($wp_query) &&
-             isset($wp_query->posts) &&
-             count($wp_query->posts) >= 1 &&
-             ! empty($wp_query->posts[0]->post_password) &&
-             ! post_password_required()) {
-            $noncacheable = true;
-        } elseif ( ! $noncacheable && function_exists('is_woocommerce')) {
-            $noncacheable = (is_cart() ||
-                             is_checkout() ||
-                             is_account_page());
+        if (!$nonCacheable && isset($wp_query->posts) && count($wp_query->posts) >= 1 &&
+            !empty($wp_query->posts[0]->post_password) && !post_password_required()) {
+            $nonCacheable = true;
+        } elseif (!$nonCacheable && function_exists('is_woocommerce')) {
+            $nonCacheable = is_cart() || is_checkout() || is_account_page();
         }
 
-        // TODO: Investigate this filter
-        // $noncacheable = apply_filters('cache_control_nocacheables', $noncacheable);
-
-        return $noncacheable;
+        return $nonCacheable;
     }
 
-    private function isWoocommerceInstalled()
+    protected function isWooCommerceInstalled()
     {
-        return (function_exists('is_woocommerce') ||
-                file_exists(WP_PLUGIN_DIR . '/woocommerce/woocommerce.php'));
+        return in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')));
     }
 
-    private function selectCacheDirective()
+    protected function selectCacheDirective()
     {
         if ($this->isNoCacheable()) {
             return $this->getCacheDirectives(false, false, false, false);
@@ -230,7 +215,7 @@ class SucuriScanCacheHeaders extends SucuriScan
             } else {
                 return $this->getCacheDirectiveFromOption('home');
             }
-        } elseif ($this->isWoocommerceInstalled()) {
+        } elseif ($this->isWooCommerceInstalled()) {
             if (function_exists('is_product') && is_product()) {
                 return $this->getCacheDirectiveFromOption('woocommerce_product');
             } elseif (function_exists('is_product_category') && is_product_category()) {
@@ -241,31 +226,21 @@ class SucuriScanCacheHeaders extends SucuriScan
         return $this->getCacheDirectives(false, false, false, false);
     }
 
-    private function cache_control_merge_http_header($directives)
+    protected function mergeHttpHeader($directives)
     {
-        if ( ! empty($directives)) {
-            header("Cache-Control: $directives", false);
+        if (!empty($directives)) {
+            header("Cache-Control: $directives", true);
         }
-    }
-
-    private function cache_control_send_headers()
-    {
-        cache_control_send_http_header(cache_control_select_directive());
     }
 
     public function setCacheHeaders()
     {
-        // Headers are already sent; Nothing to do here.
-//		if (headers_sent()) {
-//			return false;
-//		}
+        if (headers_sent()) {
+            // Headers are already sent; nothing to do here.
+            return;
+        }
 
         $header = $this->selectCacheDirective();
-
-        $cacheHeader = 'Cache-Control: ' . $header;
-
-        header($cacheHeader);
-
-        var_dump($cacheHeader);
+        $this->mergeHttpHeader($header);
     }
 }

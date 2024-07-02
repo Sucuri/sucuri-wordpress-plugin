@@ -761,6 +761,8 @@ describe("Run e2e tests", () => {
     });
     cy.get(".sucuriscan-alert").contains("Cache-Control header was activated.");
 
+    cy.visit("/wp-admin/admin.php?page=sucuriscan_lastlogins#allusers");
+
     cy.clearCookies();
 
     // main page
@@ -883,5 +885,35 @@ describe("Run e2e tests", () => {
 
     // Meaning that the box is now green and the status is now marked as Enabled
     cy.get(".sucuriscan-hstatus-1").contains("Enabled");
+  });
+
+  it("Cache-Control header functionality pages protected by log in", () => {
+    cy.visit("/wp-admin/admin.php?page=sucuriscan_settings#headers");
+
+    cy.get("[data-cy=sucuriscan_headers_cache_control_dropdown]").select(
+      "Frequent",
+    );
+    cy.get("[data-cy=sucuriscan_headers_cache_control_submit_btn]").click({
+      force: true,
+    });
+    cy.get(".sucuriscan-alert").contains("Cache-Control header was activated.");
+
+    cy.visit("/wp-admin/admin.php?page=sucuriscan_lastlogins#allusers");
+
+    // main page
+    cy.request("/wp-admin/index.php").then((response) => {
+      expect(response.headers["cache-control"]).to.exist;
+      expect(response.headers["cache-control"]).to.equal(
+        "no-cache, must-revalidate, max-age=0, no-store, private",
+      );
+    });
+
+    cy.clearCookies();
+
+    // main page
+    cy.request("/").then((response) => {
+      expect(response.headers["cache-control"]).to.exist;
+      expect(response.headers["cache-control"]).to.equal("max-age=1800");
+    });
   });
 });
