@@ -1,4 +1,3 @@
-
 <div class="sucuriscan-tabs">
     <ul class="sucuriscan-clearfix sucuriscan-tabs-buttons">
         <li><a href="%%SUCURI.URL.Settings%%#general">{{General Settings}}</a></li>

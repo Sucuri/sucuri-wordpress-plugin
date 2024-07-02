@@ -2,28 +2,37 @@
     <td>%%SUCURI.name%%</td>
     <td class="sucuriscan-headers-max-age">
         <span class="sucuriscan-monospace sucuriscan-headers-cache-value">%%SUCURI.maxAge%%</span>
-        <input type="number" class="sucuriscan-hidden sucuriscan-headers-cache-input" name="sucuriscan_%%SUCURI.id%%_max_age" value="%%SUCURI.maxAge%%">
+        <input type="number" class="sucuriscan-hidden sucuriscan-headers-cache-input"
+               name="sucuriscan_%%SUCURI.id%%_max_age" value="%%SUCURI.maxAge%%">
     </td>
     <td class="sucuriscan-headers-s-max-age">
         <span class="sucuriscan-monospace sucuriscan-headers-cache-value">%%SUCURI.sMaxAge%%</span>
-        <input type="number" class="sucuriscan-hidden sucuriscan-headers-cache-input" name="sucuriscan_%%SUCURI.id%%_s_maxage" value="%%SUCURI.sMaxAge%%">
+        <input type="number" class="sucuriscan-hidden sucuriscan-headers-cache-input"
+               name="sucuriscan_%%SUCURI.id%%_s_maxage" value="%%SUCURI.sMaxAge%%">
     </td>
     <td class="sucuriscan-headers-stale-if-error">
         <span class="sucuriscan-monospace sucuriscan-headers-cache-value">%%SUCURI.staleIfError%%</span>
-        <input type="number" class="sucuriscan-hidden sucuriscan-headers-cache-input" name="sucuriscan_%%SUCURI.id%%_stale_if_error" value="%%SUCURI.staleIfError%%">
+        <input type="number" class="sucuriscan-hidden sucuriscan-headers-cache-input"
+               name="sucuriscan_%%SUCURI.id%%_stale_if_error" value="%%SUCURI.staleIfError%%">
     </td>
     <td class="sucuriscan-headers-stale-while-revalidate">
         <span class="sucuriscan-monospace sucuriscan-headers-cache-value">%%SUCURI.staleWhileRevalidate%%</span>
-        <input type="number" class="sucuriscan-hidden sucuriscan-headers-cache-input" name="sucuriscan_%%SUCURI.id%%_stale_while_revalidate" value="%%SUCURI.staleWhileRevalidate%%">
+        <input type="number" class="sucuriscan-hidden sucuriscan-headers-cache-input"
+               name="sucuriscan_%%SUCURI.id%%_stale_while_revalidate" value="%%SUCURI.staleWhileRevalidate%%">
     </td>
     <td class="sucuriscan-headers-pagination-factor">
         <span class="sucuriscan-monospace sucuriscan-headers-cache-value sucuriscan-%%SUCURI.paginationFactorVisibility%% sucuriscan-%%SUCURI.paginationFactor%%">%%SUCURI.paginationFactor%%</span>
-        <input type="number" class="sucuriscan-hidden sucuriscan-headers-cache-input sucuriscan-%%SUCURI.paginationFactorVisibility%% sucuriscan-%%SUCURI.paginationFactor%%" name="sucuriscan_%%SUCURI.id%%_pagination_factor" value="%%SUCURI.paginationFactor%%">
+        <input type="number"
+               class="sucuriscan-hidden sucuriscan-headers-cache-input sucuriscan-%%SUCURI.paginationFactorVisibility%% sucuriscan-%%SUCURI.paginationFactor%%"
+               name="sucuriscan_%%SUCURI.id%%_pagination_factor" value="%%SUCURI.paginationFactor%%">
     </td>
     <td class="sucuriscan-headers-old-age-multiplier">
-        <input type="checkbox" class="sucuriscan-headers-cache-input sucuriscan-%%SUCURI.oldAgeMultiplierVisibility%% sucuriscan-%%SUCURI.oldAgeMultiplier%%" name="sucuriscan_%%SUCURI.id%%_old_age_multiplier" value="%%SUCURI.oldAgeMultiplier%%" disabled>
-        <span class="sucuriscan-tooltip sucuriscan-%%SUCURI.oldAgeMultiplierVisibility%% sucuriscan-%%SUCURI.oldAgeMultiplier%%" content="Set by last modified/comment date.">
-            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="14" height="14">
+        <input type="checkbox"
+               class="sucuriscan-headers-cache-input sucuriscan-%%SUCURI.oldAgeMultiplierVisibility%% sucuriscan-%%SUCURI.oldAgeMultiplier%%"
+               name="sucuriscan_%%SUCURI.id%%_old_age_multiplier" value="%%SUCURI.oldAgeMultiplier%%" disabled>
+        <span class="sucuriscan-tooltip sucuriscan-%%SUCURI.oldAgeMultiplierVisibility%% sucuriscan-%%SUCURI.oldAgeMultiplier%%"
+              content="Set by last modified/comment date.">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14">
                 <path fill="#000000" d="m6.998315,0.033333c-3.846307,0 -6.964982,
                 3.118675 -6.964982,6.964982s3.118675,6.965574 6.964982,6.965574s6.965574,
                 -3.119267 6.965574,-6.965574s-3.119267,-6.964982 -6.965574,-6.964982zm1.449957,
@@ -57,7 +66,8 @@
         </span>
     </td>
     <td>
-        <a href="#" class="sucuriscan-header-cache-control-edit-btn sucuriscan-edit-headers-cache-control-%%SUCURI.id%%" data-cy="sucuriscan-row-%%SUCURI.id%%">
+        <a href="#" class="sucuriscan-header-cache-control-edit-btn sucuriscan-edit-headers-cache-control-%%SUCURI.id%%"
+           data-cy="sucuriscan-row-%%SUCURI.id%%">
             Edit
         </a>
     </td>

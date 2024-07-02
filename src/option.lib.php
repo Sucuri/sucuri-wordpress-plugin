@@ -117,7 +117,7 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_headers_cache_control_options' => array(
                 'front_page' => array(
                     'id' => 'front_page',
-                    'title' => 'Front Page',
+                    'title' => __('Front Page', 'sucuri-scanner'),
                     'max_age' => 21600,
                     's_maxage' => 0,
                     'stale_if_error' => 0,
@@ -128,7 +128,7 @@ class SucuriScanOption extends SucuriScanRequest
 
                 'posts' => array(
                     'id' => 'posts',
-                    'title' => 'Posts',
+                    'title' => __('Posts', 'sucuri-scanner'),
                     'max_age' => 43200,
                     's_maxage' => 0,
                     'stale_if_error' => 0,
@@ -139,7 +139,7 @@ class SucuriScanOption extends SucuriScanRequest
 
                 'pages' => array(
                     'id' => 'pages',
-                    'title' => 'Pages',
+                    'title' => __('Pages', 'sucuri-scanner'),
                     'max_age' => 86400,
                     's_maxage' => 0,
                     'stale_if_error' => 0,
@@ -150,7 +150,7 @@ class SucuriScanOption extends SucuriScanRequest
 
                 'main_index' => array(
                     'id' => 'main_index',
-                    'title' => 'Main Index',
+                    'title' => __('Main Index', 'sucuri-scanner'),
                     'max_age' => 21600,
                     's_maxage' => 0,
                     'stale_if_error' => 0,
@@ -161,7 +161,7 @@ class SucuriScanOption extends SucuriScanRequest
 
                 'categories' => array(
                     'id' => 'categories',
-                    'title' => 'Categories',
+                    'title' => __('Categories', 'sucuri-scanner'),
                     'max_age' => 86400,
                     's_maxage' => 0,
                     'stale_if_error' => 0,
@@ -172,7 +172,7 @@ class SucuriScanOption extends SucuriScanRequest
 
                 'tags' => array(
                     'id' => 'tags',
-                    'title' => 'Tags',
+                    'title' => __('Tags', 'sucuri-scanner'),
                     'max_age' => 86400,
                     's_maxage' => 0,
                     'stale_if_error' => 0,
@@ -183,7 +183,7 @@ class SucuriScanOption extends SucuriScanRequest
 
                 'authors' => array(
                     'id' => 'authors',
-                    'title' => 'Authors',
+                    'title' => __('Authors', 'sucuri-scanner'),
                     'max_age' => 86400,
                     's_maxage' => 0,
                     'stale_if_error' => 0,
@@ -194,7 +194,7 @@ class SucuriScanOption extends SucuriScanRequest
 
                 'archives' => array(
                     'id' => 'archives',
-                    'title' => 'Archives',
+                    'title' => __('Archives', 'sucuri-scanner'),
                     'max_age' => 86400,
                     's_maxage' => 0,
                     'stale_if_error' => 0,
@@ -205,7 +205,7 @@ class SucuriScanOption extends SucuriScanRequest
 
                 'feeds' => array(
                     'id' => 'feeds',
-                    'title' => 'Feeds',
+                    'title' => __('Feeds', 'sucuri-scanner'),
                     'max_age' => 21600,
                     's_maxage' => 0,
                     'stale_if_error' => 0,
@@ -216,7 +216,7 @@ class SucuriScanOption extends SucuriScanRequest
 
                 'attachment_pages' => array(
                     'id' => 'attachment_pages',
-                    'title' => 'Attachment Pages',
+                    'title' => __('Attachment Pages', 'sucuri-scanner'),
                     'max_age' => 86400,
                     's_maxage' => 0,
                     'stale_if_error' => 0,
@@ -227,7 +227,7 @@ class SucuriScanOption extends SucuriScanRequest
 
                 'search_results' => array(
                     'id' => 'search_results',
-                    'title' => 'Search Results',
+                    'title' => __('Search Results', 'sucuri-scanner'),
                     'max_age' => 86400,
                     's_maxage' => 0,
                     'stale_if_error' => 0,
@@ -238,7 +238,7 @@ class SucuriScanOption extends SucuriScanRequest
 
                 '404_not_found' => array(
                     'id' => '404_not_found',
-                    'title' => '404 Not Found',
+                    'title' => __('404 Not Found', 'sucuri-scanner'),
                     'max_age' => 86400,
                     's_maxage' => 0,
                     'stale_if_error' => 0,
@@ -249,7 +249,7 @@ class SucuriScanOption extends SucuriScanRequest
 
                 'redirects' => array(
                     'id' => 'attachment',
-                    'title' => 'Redirects',
+                    'title' => __('Redirects', 'sucuri-scanner'),
                     'max_age' => 86400,
                     's_maxage' => 0,
                     'stale_if_error' => 0,
@@ -260,7 +260,7 @@ class SucuriScanOption extends SucuriScanRequest
 
                 'woocommerce_products' => array(
                     'id' => 'woocommerce_products',
-                    'title' => 'Woocommerce Products',
+                    'title' => __('Woocommerce Products', 'sucuri-scanner'),
                     'max_age' => 86400,
                     's_maxage' => 0,
                     'stale_if_error' => 0,
@@ -271,7 +271,7 @@ class SucuriScanOption extends SucuriScanRequest
 
                 'woocommerce_categories' => array(
                     'id' => 'woocommerce_categories',
-                    'title' => 'Woocommerce Categories',
+                    'title' => __('Woocommerce Categories', 'sucuri-scanner'),
                     'max_age' => 86400,
                     's_maxage' => 0,
                     'stale_if_error' => 0,
@@ -313,7 +313,8 @@ class SucuriScanOption extends SucuriScanRequest
             $admin_email = get_option('admin_email');
             $default['sucuriscan_account'] = $admin_email;
             $default['sucuriscan_notify_to'] = $admin_email;
-            $default['sucuriscan_email_subject'] = sprintf(__('Sucuri Alert, %s, %s, %s', 'sucuri-scanner'), ':domain', ':event', ':remoteaddr');
+            $default['sucuriscan_email_subject'] = sprintf(__('Sucuri Alert, %s, %s, %s', 'sucuri-scanner'),
+                ':domain', ':event', ':remoteaddr');
         }
 
         return @$default[$option];

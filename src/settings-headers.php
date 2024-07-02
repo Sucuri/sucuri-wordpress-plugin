@@ -29,19 +29,27 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  * used by WAFs and CDNs and that are useful to both improve performance
  * and reduce bandwidth and other resources demand on the hosting server.
  *
- * @param   bool    $nonce  True if the CSRF protection worked, false otherwise.
+ * @param bool $nonce True if the CSRF protection worked, false otherwise.
  * @return  string          HTML for the email alert recipients.
  */
 function sucuriscan_settings_cache_options($nonce)
 {
-    $isWooCommerceActive = in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')));
+    $isWooCommerceActive = in_array('woocommerce/woocommerce.php',
+        apply_filters('active_plugins', get_option('active_plugins')));
 
     $params = array(
         'CacheOptions.Options' => '',
         'CacheOptions.Modes' => '',
     );
 
-    $availableSettings = array('disabled', 'static', 'occasional', 'frequent', 'busy', 'custom');
+    $availableSettings = array(
+        __('disabled', 'sucuri-scanner'),
+        __('static', 'sucuri-scanner'),
+        __('occasional', 'sucuri-scanner'),
+        __('frequent', 'sucuri-scanner'),
+        __('busy', 'sucuri-scanner'),
+        __('custom', 'sucuri-scanner'),
+    );
     $headersCacheControlOptions = SucuriScanOption::getOption(':headers_cache_control_options');
 
     foreach ($availableSettings as $mode) {
@@ -88,7 +96,8 @@ function sucuriscan_settings_cache_options($nonce)
     $latestHeadersCacheControlOptions = SucuriScanOption::getOption(':headers_cache_control_options');
 
     foreach ($latestHeadersCacheControlOptions as $option) {
-        if (!$isWooCommerceActive && in_array($option['id'], array('woocommerce_products', 'woocommerce_categories'))) {
+        if (!$isWooCommerceActive && in_array($option['id'],
+                array('woocommerce_products', 'woocommerce_categories'))) {
             continue;
         }
 
@@ -114,8 +123,10 @@ function sucuriscan_settings_cache_options($nonce)
 
     $params['CacheOptions.NoItemsVisibility'] = 'hidden';
     $params['CacheOptions.CacheControl'] = $isCacheControlHeaderDisabled ? 0 : 1;
-    $params['CacheOptions.Status'] = $isCacheControlHeaderDisabled ? 'Disabled' : 'Enabled';
-    $params['CacheOptions.Modes'] = str_replace('option value="' . $headersCacheControlMode . '"', 'option value="' . $headersCacheControlMode . '" selected', $params['CacheOptions.Modes']);
+    $params['CacheOptions.Status'] = $isCacheControlHeaderDisabled ? __('Disabled', 'sucuri-scanner') : __('Enabled',
+        'sucuri-scanner');
+    $params['CacheOptions.Modes'] = str_replace('option value="' . $headersCacheControlMode . '"',
+        'option value="' . $headersCacheControlMode . '" selected', $params['CacheOptions.Modes']);
 
     return SucuriScanTemplate::getSection('settings-headers-cache', $params);
 }

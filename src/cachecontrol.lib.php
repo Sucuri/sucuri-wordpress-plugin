@@ -13,8 +13,8 @@
  * @link       https://wordpress.org/plugins/sucuri-scanner
  */
 
-if ( ! defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
-    if ( ! headers_sent()) {
+if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
+    if (!headers_sent()) {
         /* Report invalid access if possible. */
         header('HTTP/1.1 403 Forbidden');
     }
@@ -178,7 +178,8 @@ class SucuriScanCacheHeaders extends SucuriScan
 
     protected function isWooCommerceInstalled()
     {
-        return in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')));
+        return in_array('woocommerce/woocommerce.php',
+            apply_filters('active_plugins', get_option('active_plugins')));
     }
 
     protected function selectCacheDirective()

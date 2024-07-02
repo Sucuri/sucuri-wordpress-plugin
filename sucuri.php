@@ -190,6 +190,7 @@ function sucuriscan_load_plugin_textdomain()
 {
     load_plugin_textdomain('sucuri-scanner', false, basename(dirname(__FILE__)) . '/lang/');
 }
+
 add_action('plugins_loaded', 'sucuriscan_load_plugin_textdomain');
 
 /* Load all classes before anything else. */
@@ -244,16 +245,17 @@ if (defined('WP_CLI') && WP_CLI) {
     include_once 'src/cli.lib.php';
 }
 
-add_action( 'send_headers', 'sucuriscanSetCacheHeaders' );
-function sucuriscanSetCacheHeaders() {
-	$isCacheControlHeaderDisabled = SucuriScanOption::getOption(':headers_cache_control') === 'disabled';
+add_action('send_headers', 'sucuriscanSetCacheHeaders');
+function sucuriscanSetCacheHeaders()
+{
+    $isCacheControlHeaderDisabled = SucuriScanOption::getOption(':headers_cache_control') === 'disabled';
 
-	if ($isCacheControlHeaderDisabled) {
-		return;
-	}
+    if ($isCacheControlHeaderDisabled) {
+        return;
+    }
 
-	$sucuriScanCacheHeaders = new SucuriScanCacheHeaders();
-	$sucuriScanCacheHeaders->setCacheHeaders();
+    $sucuriScanCacheHeaders = new SucuriScanCacheHeaders();
+    $sucuriScanCacheHeaders->setCacheHeaders();
 }
 
 /**
@@ -288,7 +290,7 @@ function sucuriscanUninstall()
         /* Delete all plugin related options from the database */
         $options = $GLOBALS['wpdb']->get_results(
             'SELECT option_id, option_name FROM ' . $GLOBALS['wpdb']->options
-                . ' WHERE option_name LIKE "' . SUCURISCAN . '%"'
+            . ' WHERE option_name LIKE "' . SUCURISCAN . '%"'
         );
 
         foreach ($options as $option) {
