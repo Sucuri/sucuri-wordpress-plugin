@@ -112,9 +112,177 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_sitecheck_target' => '',
             'sucuriscan_timezone' => 'UTC+00.00',
             'sucuriscan_use_wpmail' => 'enabled',
+
+            'sucuriscan_headers_cache_control' => 'disabled',
+            'sucuriscan_headers_cache_control_options' => array(
+                'front_page' => array(
+                    'id' => 'front_page',
+                    'title' => __('Front Page', 'sucuri-scanner'),
+                    'max_age' => 21600,
+                    's_maxage' => 0,
+                    'stale_if_error' => 0,
+                    'stale_while_revalidate' => 0,
+                    'pagination_factor' => 'unavailable',
+                    'old_age_multiplier' => 'unavailable',
+                ),
+
+                'posts' => array(
+                    'id' => 'posts',
+                    'title' => __('Posts', 'sucuri-scanner'),
+                    'max_age' => 43200,
+                    's_maxage' => 0,
+                    'stale_if_error' => 0,
+                    'stale_while_revalidate' => 0,
+                    'pagination_factor' => 'unavailable',
+                    'old_age_multiplier' => true,
+                ),
+
+                'pages' => array(
+                    'id' => 'pages',
+                    'title' => __('Pages', 'sucuri-scanner'),
+                    'max_age' => 86400,
+                    's_maxage' => 0,
+                    'stale_if_error' => 0,
+                    'stale_while_revalidate' => 0,
+                    'pagination_factor' => 'unavailable',
+                    'old_age_multiplier' => 'unavailable',
+                ),
+
+                'main_index' => array(
+                    'id' => 'main_index',
+                    'title' => __('Main Index', 'sucuri-scanner'),
+                    'max_age' => 21600,
+                    's_maxage' => 0,
+                    'stale_if_error' => 0,
+                    'stale_while_revalidate' => 0,
+                    'pagination_factor' => 5,
+                    'old_age_multiplier' => 'unavailable',
+                ),
+
+                'categories' => array(
+                    'id' => 'categories',
+                    'title' => __('Categories', 'sucuri-scanner'),
+                    'max_age' => 86400,
+                    's_maxage' => 0,
+                    'stale_if_error' => 0,
+                    'stale_while_revalidate' => 0,
+                    'pagination_factor' => 8,
+                    'old_age_multiplier' => 'unavailable',
+                ),
+
+                'tags' => array(
+                    'id' => 'tags',
+                    'title' => __('Tags', 'sucuri-scanner'),
+                    'max_age' => 86400,
+                    's_maxage' => 0,
+                    'stale_if_error' => 0,
+                    'stale_while_revalidate' => 0,
+                    'pagination_factor' => 10,
+                    'old_age_multiplier' => 'unavailable',
+                ),
+
+                'authors' => array(
+                    'id' => 'authors',
+                    'title' => __('Authors', 'sucuri-scanner'),
+                    'max_age' => 86400,
+                    's_maxage' => 0,
+                    'stale_if_error' => 0,
+                    'stale_while_revalidate' => 0,
+                    'pagination_factor' => 10,
+                    'old_age_multiplier' => 'unavailable',
+                ),
+
+                'archives' => array(
+                    'id' => 'archives',
+                    'title' => __('Archives', 'sucuri-scanner'),
+                    'max_age' => 86400,
+                    's_maxage' => 0,
+                    'stale_if_error' => 0,
+                    'stale_while_revalidate' => 0,
+                    'pagination_factor' => 'unavailable',
+                    'old_age_multiplier' => 'unavailable',
+                ),
+
+                'feeds' => array(
+                    'id' => 'feeds',
+                    'title' => __('Feeds', 'sucuri-scanner'),
+                    'max_age' => 21600,
+                    's_maxage' => 0,
+                    'stale_if_error' => 0,
+                    'stale_while_revalidate' => 0,
+                    'pagination_factor' => 'unavailable',
+                    'old_age_multiplier' => 'unavailable',
+                ),
+
+                'attachment_pages' => array(
+                    'id' => 'attachment_pages',
+                    'title' => __('Attachment Pages', 'sucuri-scanner'),
+                    'max_age' => 86400,
+                    's_maxage' => 0,
+                    'stale_if_error' => 0,
+                    'stale_while_revalidate' => 0,
+                    'pagination_factor' => 'unavailable',
+                    'old_age_multiplier' => 'unavailable',
+                ),
+
+                'search_results' => array(
+                    'id' => 'search_results',
+                    'title' => __('Search Results', 'sucuri-scanner'),
+                    'max_age' => 86400,
+                    's_maxage' => 0,
+                    'stale_if_error' => 0,
+                    'stale_while_revalidate' => 0,
+                    'pagination_factor' => 'unavailable',
+                    'old_age_multiplier' => 'unavailable',
+                ),
+
+                '404_not_found' => array(
+                    'id' => '404_not_found',
+                    'title' => __('404 Not Found', 'sucuri-scanner'),
+                    'max_age' => 86400,
+                    's_maxage' => 0,
+                    'stale_if_error' => 0,
+                    'stale_while_revalidate' => 0,
+                    'pagination_factor' => 'unavailable',
+                    'old_age_multiplier' => 'unavailable',
+                ),
+
+                'redirects' => array(
+                    'id' => 'attachment',
+                    'title' => __('Redirects', 'sucuri-scanner'),
+                    'max_age' => 86400,
+                    's_maxage' => 0,
+                    'stale_if_error' => 0,
+                    'stale_while_revalidate' => 0,
+                    'pagination_factor' => 'unavailable',
+                    'old_age_multiplier' => 'unavailable',
+                ),
+
+                'woocommerce_products' => array(
+                    'id' => 'woocommerce_products',
+                    'title' => __('Woocommerce Products', 'sucuri-scanner'),
+                    'max_age' => 86400,
+                    's_maxage' => 0,
+                    'stale_if_error' => 0,
+                    'stale_while_revalidate' => 0,
+                    'pagination_factor' => 'unavailable',
+                    'old_age_multiplier' => 'unavailable',
+                ),
+
+                'woocommerce_categories' => array(
+                    'id' => 'woocommerce_categories',
+                    'title' => __('Woocommerce Categories', 'sucuri-scanner'),
+                    'max_age' => 86400,
+                    's_maxage' => 0,
+                    'stale_if_error' => 0,
+                    'stale_while_revalidate' => 0,
+                    'pagination_factor' => 'unavailable',
+                    'old_age_multiplier' => 'unavailable',
+                ),
+            )
         );
 
-        return (array) apply_filters('sucuriscan_option_defaults', $defaults);
+        return (array)apply_filters('sucuriscan_option_defaults', $defaults);
     }
 
     /**
@@ -133,7 +301,7 @@ class SucuriScanOption extends SucuriScanRequest
     /**
      * Retrieve the default values for some specific options.
      *
-     * @param  string $option List of options, or single option name.
+     * @param string $option List of options, or single option name.
      * @return mixed          The default values for the specified options.
      */
     private static function getDefaultOptions($option = '')
@@ -145,7 +313,8 @@ class SucuriScanOption extends SucuriScanRequest
             $admin_email = get_option('admin_email');
             $default['sucuriscan_account'] = $admin_email;
             $default['sucuriscan_notify_to'] = $admin_email;
-            $default['sucuriscan_email_subject'] = sprintf(__('Sucuri Alert, %s, %s, %s', 'sucuri-scanner'), ':domain', ':event', ':remoteaddr');
+            $default['sucuriscan_email_subject'] = sprintf(__('Sucuri Alert, %s, %s, %s', 'sucuri-scanner'),
+                ':domain', ':event', ':remoteaddr');
         }
 
         return @$default[$option];
@@ -211,7 +380,7 @@ class SucuriScanOption extends SucuriScanRequest
     /**
      * Write new options into the external options file.
      *
-     * @param  array $options Array with plugins options.
+     * @param array $options Array with plugins options.
      * @return bool           True if the new options were saved, false otherwise.
      */
     public static function writeNewOptions($options = array())
@@ -222,7 +391,7 @@ class SucuriScanOption extends SucuriScanRequest
         $content = "<?php exit(0); ?>\n";
         $content .= @json_encode($options) . "\n";
 
-        return (bool) @file_put_contents($fpath, $content);
+        return (bool)@file_put_contents($fpath, $content);
     }
 
     /**
@@ -241,7 +410,7 @@ class SucuriScanOption extends SucuriScanRequest
      *
      * @see https://developer.wordpress.org/reference/functions/get_option/
      *
-     * @param  string $option Name of the option.
+     * @param string $option Name of the option.
      * @return mixed          Value associated to the option.
      */
     public static function getOption($option = '')
@@ -313,8 +482,8 @@ class SucuriScanOption extends SucuriScanRequest
      *
      * @see https://developer.wordpress.org/reference/functions/update_option/
      *
-     * @param  string $option Name of the option.
-     * @param  mixed  $value  New value for the option.
+     * @param string $option Name of the option.
+     * @param mixed $value New value for the option.
      * @return bool           True if option has been updated, false otherwise.
      */
     public static function updateOption($option = '', $value = '')
@@ -337,7 +506,7 @@ class SucuriScanOption extends SucuriScanRequest
      *
      * @see https://developer.wordpress.org/reference/functions/delete_option/
      *
-     * @param  string $option Name of the option to be deleted.
+     * @param string $option Name of the option to be deleted.
      * @return bool           True if option is successfully deleted, false otherwise.
      */
     public static function deleteOption($option = '')
@@ -360,23 +529,23 @@ class SucuriScanOption extends SucuriScanRequest
     /**
      * Check whether a setting is enabled or not.
      *
-     * @param  string $option Name of the option to be deleted.
+     * @param string $option Name of the option to be deleted.
      * @return bool           True if the option is enabled, false otherwise.
      */
     public static function isEnabled($option = '')
     {
-        return (bool) (self::getOption($option) === 'enabled');
+        return (bool)(self::getOption($option) === 'enabled');
     }
 
     /**
      * Check whether a setting is disabled or not.
      *
-     * @param  string $option Name of the option to be deleted.
+     * @param string $option Name of the option to be deleted.
      * @return bool           True if the option is disabled, false otherwise.
      */
     public static function isDisabled($option = '')
     {
-        return (bool) (self::getOption($option) === 'disabled');
+        return (bool)(self::getOption($option) === 'disabled');
     }
 
     /**
@@ -414,7 +583,7 @@ class SucuriScanOption extends SucuriScanRequest
      * Check what Wordpress options were changed comparing the values in the database
      * with the values sent through a simple request using a GET or POST method.
      *
-     * @param  array $request The content of the global variable GET or POST considering SERVER[REQUEST_METHOD].
+     * @param array $request The content of the global variable GET or POST considering SERVER[REQUEST_METHOD].
      * @return array          A list of all the options that were changes through this request.
      */
     public static function whatOptionsWereChanged($request = array())
@@ -428,10 +597,10 @@ class SucuriScanOption extends SucuriScanRequest
 
         foreach ($request as $req_name => $req_value) {
             if (array_key_exists($req_name, $site_options)
-                && $site_options[ $req_name ] != $req_value
+                && $site_options[$req_name] != $req_value
             ) {
-                $options_changed['original'][ $req_name ] = $site_options[ $req_name ];
-                $options_changed['changed'][ $req_name ] = $req_value;
+                $options_changed['original'][$req_name] = $site_options[$req_name];
+                $options_changed['changed'][$req_name] = $req_value;
             }
         }
 
@@ -475,7 +644,7 @@ class SucuriScanOption extends SucuriScanRequest
         }
 
         /* check the nonce validity */
-        return (bool) (
+        return (bool)(
             !empty($action)
             && isset($_REQUEST[$nonce])
             && wp_verify_nonce($_REQUEST[$nonce], $action)
@@ -536,7 +705,7 @@ class SucuriScanOption extends SucuriScanRequest
     /**
      * Check whether an event is being ignored to send alerts or not.
      *
-     * @param  string $event Unique post-type name.
+     * @param string $event Unique post-type name.
      * @return bool          Whether an event is being ignored or not.
      */
     public static function isIgnoredEvent($event = '')
@@ -561,7 +730,7 @@ class SucuriScanOption extends SucuriScanRequest
             $post_types = @json_decode($post_types, true);
         }
 
-        return (array) $post_types;
+        return (array)$post_types;
     }
 
     /**
@@ -593,12 +762,12 @@ class SucuriScanOption extends SucuriScanRequest
                 $key_value = constant($key_name);
 
                 if (stripos($key_value, 'unique phrase') !== false) {
-                    $response['bad'][ $key_name ] = $key_value;
+                    $response['bad'][$key_name] = $key_value;
                 } else {
-                    $response['good'][ $key_name ] = $key_value;
+                    $response['good'][$key_name] = $key_value;
                 }
             } else {
-                $response['missing'][ $key_name ] = false;
+                $response['missing'][$key_name] = false;
             }
         }
 
@@ -614,8 +783,8 @@ class SucuriScanOption extends SucuriScanRequest
      * firewall page is activated as it assumes that the proxy is creating a
      * custom HTTP header for the real IP.
      *
-     * @param  string $action Enable or disable the reverse proxy.
-     * @param  bool   $silent Hide admin notices on success.
+     * @param string $action Enable or disable the reverse proxy.
+     * @param bool $silent Hide admin notices on success.
      * @return void
      */
     public static function setRevProxy($action = 'disable', $silent = false)
@@ -647,8 +816,8 @@ class SucuriScanOption extends SucuriScanRequest
     /**
      * Change the HTTP header to retrieve the real IP address.
      *
-     * @param  string $header Valid HTTP header name.
-     * @param  bool   $silent Hide admin notices on success.
+     * @param string $header Valid HTTP header name.
+     * @param bool $silent Hide admin notices on success.
      * @return void
      */
     public static function setAddrHeader($header = 'REMOTE_ADDR', $silent = false)
