@@ -50,7 +50,7 @@ function sucuriscan_page()
     $params['SiteCheck.Malware'] = '<div id="sucuriscan-malware"></div>';
     $params['SiteCheck.Blocklist'] = '<div id="sucuriscan-blocklist"></div>';
     $params['SiteCheck.Recommendations'] = '<div id="sucuriscan-recommendations"></div>';
-    
+
     /* load data for the WordPress best practices section */
     $params['WordPress.Recommendations'] = SucuriWordPressRecommendations::pageWordPressRecommendations();
 
@@ -172,8 +172,8 @@ function sucuriscan_settings_page()
     $params['Settings.Alerts.IgnorePosts'] = sucuriscan_settings_alerts_ignore_posts();
     $params['Settings.Alerts.TrustedIPs'] = sucuriscan_settings_alerts_trustedips();
 
-	/* settings - cache options */
-	$params['Settings.Headers.Cache'] = sucuriscan_settings_cache_options($nonce);
+    /* settings - cache options */
+    $params['Settings.Headers.Cache'] = sucuriscan_settings_cache_options($nonce);
 
     /* settings - api service */
     $params['Settings.APIService.Status'] = sucuriscan_settings_apiservice_status($nonce);
