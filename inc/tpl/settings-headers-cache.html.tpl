@@ -241,6 +241,7 @@
 
     <form action="%%SUCURI.URL.Settings%%#headers" method="post">
         <div class="inside">
+            <p>{{Please enable site caching on your WAF to use these settings. If you are a Sucuri client and require assistance, please <a href="https://docs.sucuri.net/billing/how-do-i-open-a-general-support-ticket/" target="_blank" rel="noopener">{{create a ticket}}</a> and reach out to the firewall team for support.}}</p>
             <p>{{Here you can see all the cache options available.}}</p>
 
             <table class="wp-list-table widefat sucuriscan-table sucuriscan-table-fixed-layout sucuriscan-table-double-title sucuriscan-last-logins">

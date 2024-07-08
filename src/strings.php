@@ -620,6 +620,8 @@ __('Disabled', 'sucuri-scanner');
 __('Mode:', 'sucuri-scanner');
 __('Update', 'sucuri-scanner');
 __('Edit', 'sucuri-scanner');
+__('Please enable site caching on your WAF to use these settings. If you are a Sucuri client and require assistance, please <a href="https://docs.sucuri.net/billing/how-do-i-open-a-general-support-ticket/" target="_blank" rel="noopener">{{create a ticket}}</a> and reach out to the firewall team for support.',
+    'sucuri-scanner');
 
 // settings-headers-cache-option.snippet.tpl
 __('Edit', 'sucuri-scanner');

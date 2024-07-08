@@ -22,9 +22,26 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
 }
 
 /**
- * Cache options library
+ * Cache-Control library.
  *
- * @package Sucuri
+ * We use this library to set the cache control headers based on the user's
+ * settings. The cache control headers are used to control how the browser
+ * and proxies cache the content of the website.
+ *
+ * Please enable site caching on your WAF to use these settings.
+ *
+ * Please note that this is an advanced feature, and we took some inspiration
+ * from another WordPress plugin called "cache-control", which hasn't been updated
+ * in a long time. We've made some improvements and added some new features,
+ * but we still want to give credit to the original author.
+ *
+ * @category   Library
+ * @package    Sucuri
+ * @subpackage SucuriScanner
+ * @author     Daniel Cid <dcid@sucuri.net>
+ * @copyright  2010-2018 Sucuri Inc.
+ * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL2
+ * @link       https://wordpress.org/plugins/sucuri-scanner
  */
 class SucuriScanCacheHeaders extends SucuriScan
 {
