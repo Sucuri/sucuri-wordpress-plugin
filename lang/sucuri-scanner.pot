@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Sucuri Security - Auditing, Malware Scanner and Hardening 1.8.44\n"
+"Project-Id-Version: Sucuri Security - Auditing, Malware Scanner and Hardening 1.9.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/sucuri-wordpress-plugin\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-04-30T06:15:50+00:00\n"
+"POT-Creation-Date: 2024-07-08T05:20:40+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: sucuri-scanner\n"
@@ -329,7 +329,7 @@ msgstr ""
 
 #: src/globals.php:90
 #: src/strings.php:39
-#: src/strings.php:291
+#: src/strings.php:327
 msgid "Dashboard"
 msgstr ""
 
@@ -344,8 +344,8 @@ msgstr ""
 
 #: src/globals.php:93
 #: src/strings.php:41
-#: src/strings.php:97
-#: src/strings.php:292
+#: src/strings.php:106
+#: src/strings.php:328
 msgid "Settings"
 msgstr ""
 
@@ -662,8 +662,8 @@ msgid "The plugin has no permission to restore this file because its directory i
 msgstr ""
 
 #: src/integrity.lib.php:405
-#: src/strings.php:473
-#: src/strings.php:475
+#: src/strings.php:536
+#: src/strings.php:539
 msgid "WordPress Integrity Diff Utility"
 msgstr ""
 
@@ -697,11 +697,11 @@ msgstr ""
 
 #: src/lastlogins-failed.php:349
 #: src/lastlogins-failed.php:373
-#: src/strings.php:156
-#: src/strings.php:169
-#: src/strings.php:182
-#: src/strings.php:194
-#: src/strings.php:404
+#: src/strings.php:175
+#: src/strings.php:188
+#: src/strings.php:202
+#: src/strings.php:214
+#: src/strings.php:457
 msgid "Username"
 msgstr ""
 
@@ -712,12 +712,12 @@ msgstr ""
 
 #: src/lastlogins-failed.php:351
 #: src/lastlogins-failed.php:375
-#: src/strings.php:83
-#: src/strings.php:162
-#: src/strings.php:170
-#: src/strings.php:183
-#: src/strings.php:197
-#: src/strings.php:276
+#: src/strings.php:89
+#: src/strings.php:181
+#: src/strings.php:189
+#: src/strings.php:203
+#: src/strings.php:217
+#: src/strings.php:308
 msgid "IP Address"
 msgstr ""
 
@@ -759,7 +759,67 @@ msgstr ""
 msgid "Sucuri Alert"
 msgstr ""
 
-#: src/option.lib.php:148
+#: src/option.lib.php:120
+msgid "Front Page"
+msgstr ""
+
+#: src/option.lib.php:131
+msgid "Posts"
+msgstr ""
+
+#: src/option.lib.php:142
+msgid "Pages"
+msgstr ""
+
+#: src/option.lib.php:153
+msgid "Main Index"
+msgstr ""
+
+#: src/option.lib.php:164
+msgid "Categories"
+msgstr ""
+
+#: src/option.lib.php:175
+msgid "Tags"
+msgstr ""
+
+#: src/option.lib.php:186
+msgid "Authors"
+msgstr ""
+
+#: src/option.lib.php:197
+msgid "Archives"
+msgstr ""
+
+#: src/option.lib.php:208
+msgid "Feeds"
+msgstr ""
+
+#: src/option.lib.php:219
+msgid "Attachment Pages"
+msgstr ""
+
+#: src/option.lib.php:230
+msgid "Search Results"
+msgstr ""
+
+#: src/option.lib.php:241
+msgid "404 Not Found"
+msgstr ""
+
+#: src/option.lib.php:252
+msgid "Redirects"
+msgstr ""
+
+#: src/option.lib.php:263
+msgid "Woocommerce Products"
+msgstr ""
+
+#: src/option.lib.php:274
+msgid "Woocommerce Categories"
+msgstr ""
+
+#: src/option.lib.php:316
 #: src/settings-alerts.php:209
 #: src/settings-alerts.php:210
 #: src/settings-alerts.php:211
@@ -782,15 +842,15 @@ msgstr ""
 #: src/pagehandler.php:48
 #: src/pagehandler.php:49
 #: src/strings.php:26
-#: src/strings.php:54
-#: src/strings.php:66
-#: src/strings.php:77
-#: src/strings.php:110
-#: src/strings.php:145
-#: src/strings.php:391
-#: src/strings.php:401
-#: src/strings.php:412
-#: src/strings.php:447
+#: src/strings.php:55
+#: src/strings.php:67
+#: src/strings.php:81
+#: src/strings.php:121
+#: src/strings.php:164
+#: src/strings.php:442
+#: src/strings.php:453
+#: src/strings.php:465
+#: src/strings.php:508
 msgid "Loading..."
 msgstr ""
 
@@ -1088,12 +1148,12 @@ msgstr ""
 #: src/settings-scanner.php:179
 #: src/settings-scanner.php:239
 #: src/strings.php:47
-#: src/strings.php:161
-#: src/strings.php:173
-#: src/strings.php:186
-#: src/strings.php:279
-#: src/strings.php:374
-#: src/strings.php:469
+#: src/strings.php:180
+#: src/strings.php:192
+#: src/strings.php:206
+#: src/strings.php:311
+#: src/strings.php:423
+#: src/strings.php:532
 msgid "no data available"
 msgstr ""
 
@@ -1113,7 +1173,9 @@ msgstr ""
 #: src/settings-general.php:211
 #: src/settings-general.php:277
 #: src/settings-general.php:324
+#: src/settings-headers.php:126
 #: src/settings-integrity.php:80
+#: src/strings.php:618
 msgid "Enabled"
 msgstr ""
 
@@ -1129,6 +1191,8 @@ msgstr ""
 #: src/settings-general.php:254
 #: src/settings-general.php:298
 #: src/settings-general.php:359
+#: src/settings-headers.php:126
+#: src/strings.php:619
 msgid "Disabled"
 msgstr ""
 
@@ -1236,7 +1300,7 @@ msgid "Exists"
 msgstr ""
 
 #: src/settings-general.php:149
-#: src/strings.php:322
+#: src/strings.php:364
 msgid "Writable"
 msgstr ""
 
@@ -1533,6 +1597,42 @@ msgstr ""
 msgid "Selected files have been removed"
 msgstr ""
 
+#: src/settings-headers.php:46
+msgid "disabled"
+msgstr ""
+
+#: src/settings-headers.php:47
+msgid "static"
+msgstr ""
+
+#: src/settings-headers.php:48
+msgid "occasional"
+msgstr ""
+
+#: src/settings-headers.php:49
+msgid "frequent"
+msgstr ""
+
+#: src/settings-headers.php:50
+msgid "busy"
+msgstr ""
+
+#: src/settings-headers.php:51
+msgid "custom"
+msgstr ""
+
+#: src/settings-headers.php:87
+msgid "Cache-Control header was deactivated."
+msgstr ""
+
+#: src/settings-headers.php:89
+msgid "Cache-Control header was activated."
+msgstr ""
+
+#: src/settings-headers.php:92
+msgid "Invalid cache control mode selected."
+msgstr ""
+
 #: src/settings-integrity.php:65
 msgid "Your hosting provider has blocked the execution of external commands."
 msgstr ""
@@ -1768,7 +1868,7 @@ msgid "Help & More"
 msgstr ""
 
 #: src/strings.php:48
-#: src/strings.php:98
+#: src/strings.php:107
 msgid "Audit Logs"
 msgstr ""
 
@@ -1780,1037 +1880,1088 @@ msgstr ""
 msgid "The firewall logs every request involved in an attack and separates them from the legitimate requests. You can analyze the data from the latest entries in the logs using this tool and take action either enabling the advanced features of the IDS <em>(Intrusion Detection System)</em> from the <a href=\"https://waf.sucuri.net/?settings\" target=\"_blank\" rel=\"noopener\">Firewall Dashboard</a> and/or blocking IP addresses and URL paths directly from the <a href=\"https://waf.sucuri.net/?audit\" target=\"_blank\" rel=\"noopener\">Firewall Audit Trails</a> page."
 msgstr ""
 
-#: src/strings.php:53
+#: src/strings.php:54
 msgid "Non-blocked requests are hidden from the logs, this is intentional."
 msgstr ""
 
-#: src/strings.php:55
-#: src/strings.php:76
-#: src/strings.php:130
-#: src/strings.php:217
-#: src/strings.php:223
-#: src/strings.php:230
-#: src/strings.php:238
-#: src/strings.php:250
-#: src/strings.php:257
-#: src/strings.php:267
-#: src/strings.php:274
-#: src/strings.php:286
-#: src/strings.php:299
-#: src/strings.php:329
-#: src/strings.php:347
-#: src/strings.php:357
-#: src/strings.php:363
-#: src/strings.php:369
-#: src/strings.php:408
-#: src/strings.php:421
-#: src/strings.php:435
-#: src/strings.php:449
-#: src/strings.php:456
-#: src/strings.php:525
+#: src/strings.php:56
+#: src/strings.php:80
+#: src/strings.php:145
+#: src/strings.php:241
+#: src/strings.php:248
+#: src/strings.php:256
+#: src/strings.php:266
+#: src/strings.php:279
+#: src/strings.php:287
+#: src/strings.php:298
+#: src/strings.php:306
+#: src/strings.php:320
+#: src/strings.php:336
+#: src/strings.php:372
+#: src/strings.php:392
+#: src/strings.php:404
+#: src/strings.php:411
+#: src/strings.php:418
+#: src/strings.php:461
+#: src/strings.php:477
+#: src/strings.php:493
+#: src/strings.php:510
+#: src/strings.php:518
+#: src/strings.php:596
 msgid "Submit"
 msgstr ""
 
-#: src/strings.php:58
-#: src/strings.php:204
+#: src/strings.php:59
+#: src/strings.php:224
 msgid "Date/Time:"
 msgstr ""
 
-#: src/strings.php:59
+#: src/strings.php:60
 msgid "Signature:"
 msgstr ""
 
-#: src/strings.php:60
+#: src/strings.php:61
 msgid "Request:"
 msgstr ""
 
-#: src/strings.php:61
+#: src/strings.php:62
 msgid "U-Agent:"
 msgstr ""
 
-#: src/strings.php:62
+#: src/strings.php:63
 msgid "Target:"
 msgstr ""
 
-#: src/strings.php:63
+#: src/strings.php:64
 msgid "Referer:"
 msgstr ""
 
-#: src/strings.php:67
+#: src/strings.php:68
 msgid "Clear cache when a post or page is updated (Loading...)"
 msgstr ""
 
-#: src/strings.php:68
+#: src/strings.php:69
 msgid "Clear cache when a post or page is updated"
 msgstr ""
 
-#: src/strings.php:69
-#: src/strings.php:100
+#: src/strings.php:70
+#: src/strings.php:109
 msgid "Clear Cache"
 msgstr ""
 
-#: src/strings.php:70
+#: src/strings.php:71
 msgid "The firewall offers multiple options to configure the cache level applied to your website. You can either enable the full cache which is the recommended setting, or you can set the cache level to minimal which will keep the pages static for a couple of minutes, or force the usage of the website headers <em>(only for advanced users)</em>, or in extreme cases where you do not need the cache you can simply disable it. Find more information about it in the <a href=\"https://kb.sucuri.net/firewall/Performance/caching-options\" target=\"_blank\" rel=\"noopener\">Sucuri Knowledge Base</a> website."
 msgstr ""
 
-#: src/strings.php:71
+#: src/strings.php:73
 msgid "Note that the firewall has <a href=\"https://kb.sucuri.net/firewall/Performance/cache-exceptions\" target=\"_blank\" rel=\"noopener\">special caching rules</a> for Images, CSS, PDF, TXT, JavaScript, media files and a few more extensions that are stored on our <a href=\"https://en.wikipedia.org/wiki/Edge_device\" target=\"_blank\" rel=\"noopener\">edge</a>. The only way to flush the cache for these files is by clearing the firewall’s cache completely <em>(for the whole website)</em>. Due to our caching of JavaScript and CSS files, often, as is best practice, the use of versioning during development will ensure updates going live as expected. This is done by adding a query string such as <code>?ver=1.2.3</code> and incrementing on each update."
 msgstr ""
 
-#: src/strings.php:72
+#: src/strings.php:75
 msgid "A web cache (or HTTP cache) is an information technology for the temporary storage (caching) of web documents, such as HTML pages and images, to reduce bandwidth usage, server load, and perceived lag. A web cache system stores copies of documents passing through it; subsequent requests may be satisfied from the cache if certain conditions are met. A web cache system can refer either to an appliance, or to a computer program. &mdash; <a href=\"https://en.wikipedia.org/wiki/Web_cache\" target=\"_blank\" rel=\"noopener\">WikiPedia - Web Cache</a>"
 msgstr ""
 
-#: src/strings.php:75
-#: src/strings.php:90
-#: src/strings.php:260
-#: src/strings.php:280
-#: src/strings.php:323
-#: src/strings.php:375
+#: src/strings.php:79
+#: src/strings.php:98
+#: src/strings.php:290
+#: src/strings.php:312
+#: src/strings.php:365
+#: src/strings.php:424
 msgid "Delete"
 msgstr ""
 
-#: src/strings.php:78
+#: src/strings.php:82
 msgid "IP Address Access"
 msgstr ""
 
-#: src/strings.php:79
+#: src/strings.php:83
 msgid "This tool allows you to add one or more IP addresses to the blocklist and stop them from accessing your website."
 msgstr ""
 
-#: src/strings.php:80
+#: src/strings.php:85
 msgid "To delete an IP from the blocklist you can use the form below or you can log into the Firewall dashboard."
 msgstr ""
 
-#: src/strings.php:81
+#: src/strings.php:87
 msgid "Add IP to the Blocklist:"
 msgstr ""
 
-#: src/strings.php:82
+#: src/strings.php:88
 msgid "e.g. 192.168.1.54"
 msgstr ""
 
-#: src/strings.php:86
+#: src/strings.php:92
 msgid "Firewall Settings"
 msgstr ""
 
-#: src/strings.php:87
+#: src/strings.php:93
 msgid "A powerful Web Application Firewall and <b>Intrusion Detection System</b> for any WordPress user and many other platforms. This page will help you to configure and monitor your site through the <b>Sucuri Firewall</b>. Once enabled, our firewall will act as a shield, protecting your site from attacks and preventing malware infections and reinfections. It will block SQL injection attempts, brute force attacks, XSS, RFI, backdoors and many other threats against your site."
 msgstr ""
 
-#: src/strings.php:88
+#: src/strings.php:95
 msgid "Add your <a href=\"https://waf.sucuri.net/?settings&panel=api\" target=\"_blank\" rel=\"noopener\">Firewall API key</a> in the form below to start communicating with the firewall API service."
 msgstr ""
 
-#: src/strings.php:89
+#: src/strings.php:97
 msgid "Firewall API Key:"
 msgstr ""
 
-#: src/strings.php:91
+#: src/strings.php:99
 msgid "Save"
 msgstr ""
 
-#: src/strings.php:92
-#: src/strings.php:379
-#: src/strings.php:387
-#: src/strings.php:417
-#: src/strings.php:428
-#: src/strings.php:443
+#: src/strings.php:100
+#: src/strings.php:429
+#: src/strings.php:438
+#: src/strings.php:473
+#: src/strings.php:485
+#: src/strings.php:504
 msgid "Name"
 msgstr ""
 
-#: src/strings.php:93
-#: src/strings.php:429
+#: src/strings.php:101
+#: src/strings.php:486
 msgid "Value"
 msgstr ""
 
-#: src/strings.php:94
+#: src/strings.php:102
 msgid "<em>[1]</em> More information about the <a href=\"https://sucuri.net/website-firewall/\" target=\"_blank\" rel=\"noopener\">Sucuri Firewall</a>, features and pricing.<br><em>[2]</em> Instructions and videos in the official <a href=\"https://kb.sucuri.net/firewall\" target=\"_blank\" rel=\"noopener\">Knowledge Base</a> site.<br><em>[3]</em> <a href=\"https://sucuri.net/website-security-platform/signup/\" target=\"_blank\" rel=\"noopener\">Sign up</a> for a new account and start protecting your site."
 msgstr ""
 
-#: src/strings.php:99
+#: src/strings.php:108
 msgid "IP Access"
 msgstr ""
 
-#: src/strings.php:103
-#: src/strings.php:114
-#: src/strings.php:143
+#: src/strings.php:112
+#: src/strings.php:126
+#: src/strings.php:161
 msgid "WordPress Integrity"
 msgstr ""
 
-#: src/strings.php:104
-#: src/strings.php:115
-#: src/strings.php:144
+#: src/strings.php:113
+#: src/strings.php:127
+#: src/strings.php:162
 msgid "We inspect your WordPress installation and look for modifications on the core files as provided by WordPress.org. Files located in the root directory, wp-admin and wp-includes will be compared against the files distributed with v%%SUCURI.WordPressVersion%%; all files with inconsistencies will be listed here. Any changes might indicate a hack."
 msgstr ""
 
-#: src/strings.php:105
+#: src/strings.php:115
 msgid "All Core WordPress Files Are Correct"
 msgstr ""
 
-#: src/strings.php:106
+#: src/strings.php:116
 msgid "We have not identified additional files, deleted files, or relevant changes to the core files in your WordPress installation. If you are experiencing other malware issues, please use a <a href=\"https://sucuri.net/website-security/malware-removal\" target=\"_blank\" rel=\"noopener\">Server Side Scanner</a>."
 msgstr ""
 
-#: src/strings.php:107
 #: src/strings.php:118
+#: src/strings.php:132
 msgid "Review False Positives"
 msgstr ""
 
-#: src/strings.php:111
+#: src/strings.php:122
 msgid "Lines with a <b>minus</b> sign as the prefix <em>(here in red)</em> show the original code. Lines with a <b>plus</b> sign as the prefix <em>(here in green)</em> show the modified code. You can read more about the DIFF format from the WikiPedia article about the <a target=\"_blank\" href=\"https://en.wikipedia.org/wiki/Diff_utility\" rel=\"noopener\">Unix Diff Utility</a>."
 msgstr ""
 
-#: src/strings.php:116
+#: src/strings.php:129
 msgid "Core WordPress Files Were Modified"
 msgstr ""
 
-#: src/strings.php:117
-#: src/strings.php:134
+#: src/strings.php:130
+#: src/strings.php:150
 msgid "We identified that some of your WordPress core files were modified. That might indicate a hack or a broken file on your installation. If you are experiencing other malware issues, please use a <a href=\"https://sucuri.net/website-security/malware-removal\" target=\"_blank\" rel=\"noopener\">Server Side Scanner</a>."
 msgstr ""
 
-#: src/strings.php:119
-#: src/strings.php:135
+#: src/strings.php:133
+#: src/strings.php:152
 msgid "WordPress Integrity (%%SUCURI.Integrity.ListCount%%)"
 msgstr ""
 
-#: src/strings.php:120
+#: src/strings.php:134
 msgid "The Unix Diff Utility is enabled. You can click the files in the table to see the differences detected by the scanner. If you consider the differences to be harmless you can mark the file as fixed, otherwise it is advised to restore the original content immediately."
 msgstr ""
 
-#: src/strings.php:121
-#: src/strings.php:228
-#: src/strings.php:241
-#: src/strings.php:258
-#: src/strings.php:275
-#: src/strings.php:318
-#: src/strings.php:370
-#: src/strings.php:403
-#: src/strings.php:416
-#: src/strings.php:442
-#: src/strings.php:457
-#: src/strings.php:465
+#: src/strings.php:136
+#: src/strings.php:254
+#: src/strings.php:269
+#: src/strings.php:288
+#: src/strings.php:307
+#: src/strings.php:360
+#: src/strings.php:419
+#: src/strings.php:456
+#: src/strings.php:472
+#: src/strings.php:503
+#: src/strings.php:519
+#: src/strings.php:528
 msgid "Select All"
 msgstr ""
 
-#: src/strings.php:122
 #: src/strings.php:137
-#: src/strings.php:320
+#: src/strings.php:154
+#: src/strings.php:362
 msgid "File Size"
 msgstr ""
 
-#: src/strings.php:123
 #: src/strings.php:138
+#: src/strings.php:155
 msgid "Modified At"
 msgstr ""
 
-#: src/strings.php:124
 #: src/strings.php:139
-#: src/strings.php:319
-#: src/strings.php:371
-#: src/strings.php:458
-#: src/strings.php:468
+#: src/strings.php:156
+#: src/strings.php:361
+#: src/strings.php:420
+#: src/strings.php:520
+#: src/strings.php:531
 msgid "File Path"
 msgstr ""
 
-#: src/strings.php:125
-#: src/strings.php:328
-#: src/strings.php:346
-#: src/strings.php:430
+#: src/strings.php:140
+#: src/strings.php:371
+#: src/strings.php:391
+#: src/strings.php:487
 msgid "I understand that this operation cannot be reverted."
 msgstr ""
 
-#: src/strings.php:126
-#: src/strings.php:448
+#: src/strings.php:141
+#: src/strings.php:509
 msgid "Action:"
 msgstr ""
 
-#: src/strings.php:127
+#: src/strings.php:142
 msgid "Mark as Fixed"
 msgstr ""
 
-#: src/strings.php:128
+#: src/strings.php:143
 msgid "Restore File"
 msgstr ""
 
-#: src/strings.php:129
+#: src/strings.php:144
 msgid "Delete File"
 msgstr ""
 
-#: src/strings.php:131
-#: src/strings.php:140
+#: src/strings.php:146
+#: src/strings.php:157
 msgid "Marking one or more files as fixed will force the plugin to ignore them during the next scan, very useful when you find false positives. Additionally you can restore the original content of the core files that appear as modified or deleted, this will tell the plugin to download a copy of the original files from the official WordPress repository. Deleting a file is an irreversible action, be careful."
 msgstr ""
 
-#: src/strings.php:136
-#: src/strings.php:321
-#: src/strings.php:420
-#: src/strings.php:427
-#: src/strings.php:459
+#: src/strings.php:153
+#: src/strings.php:363
+#: src/strings.php:476
+#: src/strings.php:484
+#: src/strings.php:521
 msgid "Status"
 msgstr ""
 
-#: src/strings.php:148
+#: src/strings.php:167
 msgid "All Users"
 msgstr ""
 
-#: src/strings.php:149
+#: src/strings.php:168
 msgid "Admins"
 msgstr ""
 
-#: src/strings.php:150
+#: src/strings.php:169
 msgid "Logged-in Users"
 msgstr ""
 
-#: src/strings.php:151
+#: src/strings.php:170
 msgid "Failed Logins"
 msgstr ""
 
-#: src/strings.php:154
+#: src/strings.php:173
 msgid "Successful Logins (admins)"
 msgstr ""
 
-#: src/strings.php:155
+#: src/strings.php:174
 msgid "Here you can see a list of all the successful logins of accounts with admin privileges."
 msgstr ""
 
-#: src/strings.php:157
+#: src/strings.php:176
 msgid "Registration"
 msgstr ""
 
-#: src/strings.php:158
+#: src/strings.php:177
 msgid "Newest To Oldest"
 msgstr ""
 
-#: src/strings.php:163
-#: src/strings.php:172
-#: src/strings.php:184
+#: src/strings.php:182
+#: src/strings.php:191
+#: src/strings.php:204
 msgid "Date/Time"
 msgstr ""
 
-#: src/strings.php:164
-#: src/strings.php:200
+#: src/strings.php:183
+#: src/strings.php:220
 msgid "Edit User Profile"
 msgstr ""
 
-#: src/strings.php:167
+#: src/strings.php:186
 msgid "Successful Logins (all)"
 msgstr ""
 
-#: src/strings.php:168
+#: src/strings.php:187
 msgid "Here you can see a list of all the successful user logins."
 msgstr ""
 
-#: src/strings.php:171
+#: src/strings.php:190
 msgid "Hostname"
 msgstr ""
 
-#: src/strings.php:174
+#: src/strings.php:193
 msgid "Delete All Successful Logins"
 msgstr ""
 
-#: src/strings.php:177
+#: src/strings.php:196
+#: src/strings.php:622
+#: src/strings.php:627
 msgid "Edit"
 msgstr ""
 
-#: src/strings.php:180
+#: src/strings.php:199
 msgid "Failed logins"
 msgstr ""
 
-#: src/strings.php:181
+#: src/strings.php:200
 msgid "This information will be used to determine if your site is being victim of <a href=\"https://kb.sucuri.net/definitions/attacks/brute-force/password-guessing\" target=\"_blank\" rel=\"noopener\">Password Guessing Brute Force Attacks</a>. These logs will be accumulated and the plugin will send a report via email if there are more than <code>%%SUCURI.FailedLogins.MaxFailedLogins%%</code> failed login attempts during the same hour, you can change this number from <a href=\"%%SUCURI.URL.Settings%%#alerts\">here</a>. <b>NOTE:</b> Some <em>\"Two-Factor Authentication\"</em> plugins do not follow the same rules that WordPress have to report failed login attempts, so you may not see all the attempts in this panel if you have one of these plugins installed."
 msgstr ""
 
-#: src/strings.php:185
+#: src/strings.php:205
 msgid "Web Browser"
 msgstr ""
 
-#: src/strings.php:187
+#: src/strings.php:207
 msgid "Block"
 msgstr ""
 
-#: src/strings.php:188
+#: src/strings.php:208
 msgid "Delete All Failed Logins"
 msgstr ""
 
-#: src/strings.php:191
+#: src/strings.php:211
 msgid "Logged-in Users}"
 msgstr ""
 
-#: src/strings.php:192
+#: src/strings.php:212
 msgid "Here you can see a list of the users that are currently logged-in."
 msgstr ""
 
-#: src/strings.php:193
+#: src/strings.php:213
 msgid "ID"
 msgstr ""
 
-#: src/strings.php:195
+#: src/strings.php:215
 msgid "Last Activity"
 msgstr ""
 
-#: src/strings.php:196
-#: src/strings.php:406
+#: src/strings.php:216
+#: src/strings.php:459
 msgid "Registered"
 msgstr ""
 
-#: src/strings.php:201
-#: src/strings.php:210
-#: src/strings.php:337
+#: src/strings.php:221
+#: src/strings.php:232
+#: src/strings.php:381
 msgid "Website:"
 msgstr ""
 
-#: src/strings.php:202
-#: src/strings.php:272
+#: src/strings.php:222
+#: src/strings.php:304
 msgid "IP Address:"
 msgstr ""
 
-#: src/strings.php:203
+#: src/strings.php:223
 msgid "Reverse IP:"
 msgstr ""
 
-#: src/strings.php:205
+#: src/strings.php:225
 msgid "Message:"
 msgstr ""
 
-#: src/strings.php:208
+#: src/strings.php:228
 msgid "An API key is required to activate some additional tools available in this plugin. The keys are free and you can virtually generate an unlimited number of them as long as the domain name and email address are unique. The key is used to authenticate the HTTP requests sent by the plugin to an API service managed by Sucuri Inc."
 msgstr ""
 
-#: src/strings.php:209
+#: src/strings.php:230
 msgid "If you experience issues generating the API key you can request one by sending the domain name and email address that you want to use to <a href=\"mailto:info@sucuri.net\">info@sucuri.net</a>. Note that generating a key for a website that is not facing the Internet is not possible because the API service needs to validate that the domain name exists."
 msgstr ""
 
-#: src/strings.php:211
-#: src/strings.php:255
+#: src/strings.php:233
+#: src/strings.php:285
 msgid "E-mail:"
 msgstr ""
 
-#: src/strings.php:212
+#: src/strings.php:234
 msgid "DNS Lookups"
 msgstr ""
 
-#: src/strings.php:213
+#: src/strings.php:235
 msgid "Check the box if your website is behind a known firewall service, this guarantees that the IP address of your visitors will be detected correctly for the security logs. You can change this later from the settings."
 msgstr ""
 
-#: src/strings.php:214
+#: src/strings.php:237
 msgid "Enable DNS Lookups On Startup"
 msgstr ""
 
-#: src/strings.php:215
+#: src/strings.php:238
 msgid "I agree to the <a target=\"_blank\" href=\"https://sucuri.net/terms\">Terms of Service</a>."
 msgstr ""
 
-#: src/strings.php:216
+#: src/strings.php:239
 msgid "I have read and understand the <a target=\"_blank\" href=\"https://sucuri.net/privacy\">Privacy Policy</a>."
 msgstr ""
 
-#: src/strings.php:220
+#: src/strings.php:244
 msgid "Password Guessing Brute Force Attacks"
 msgstr ""
 
-#: src/strings.php:221
+#: src/strings.php:245
 msgid "<a href=\"https://kb.sucuri.net/definitions/attacks/brute-force/password-guessing\" target=\"_blank\" rel=\"noopener\">Password guessing brute force attacks</a> are very common against web sites and web servers. They are one of the most common vectors used to compromise web sites. The process is very simple and the attackers basically try multiple combinations of usernames and passwords until they find one that works. Once they get in, they can compromise the web site with malware, spam , phishing or anything else they want."
 msgstr ""
 
-#: src/strings.php:222
+#: src/strings.php:247
 msgid "Consider Brute-Force Attack After:"
 msgstr ""
 
-#: src/strings.php:226
+#: src/strings.php:251
 msgid "Security Alerts"
 msgstr ""
 
-#: src/strings.php:227
+#: src/strings.php:252
 msgid "You have installed a plugin or theme that is not fully compatible with our plugin, some of the security alerts (like the successful and failed logins) will not be sent to you. To prevent an infinite loop while detecting these changes in the website and sending the email alerts via a custom SMTP plugin, we have decided to stop any attempt to send the emails to prevent fatal errors."
 msgstr ""
 
-#: src/strings.php:229
+#: src/strings.php:255
 msgid "Event"
 msgstr ""
 
-#: src/strings.php:233
+#: src/strings.php:259
 msgid "Post-Type Alerts"
 msgstr ""
 
-#: src/strings.php:234
+#: src/strings.php:260
 msgid "It seems that you disabled the email alerts for <b>new site content</b>, this panel is intended to provide a way to ignore specific events in your site and with that the alerts reported to your email. Since you have deactivated the <b>new site content</b> alerts, this panel will be disabled too."
 msgstr ""
 
-#: src/strings.php:235
+#: src/strings.php:262
 msgid "This is a list of registered <a href=\"https://codex.wordpress.org/Post_Types\" target=\"_blank\" rel=\"noopener\">Post Types</a>. You will receive an email alert when a custom page or post associated to any of these types is created or updated. If you don’t want to receive one or more of these alerts, feel free to uncheck the boxes in the table below. If you are receiving alerts for post types that are not listed in this table, it may be because there is an add-on that that is generating a custom post-type on runtime, you will have to find out by yourself what is the unique ID of that post-type and type it in the form below. The plugin will do its best to ignore these alerts as long as the unique ID is valid."
 msgstr ""
 
-#: src/strings.php:236
+#: src/strings.php:264
 msgid "Stop Alerts For This Post-Type:"
 msgstr ""
 
-#: src/strings.php:237
+#: src/strings.php:265
 msgid "e.g. unique_post_type_id"
 msgstr ""
 
-#: src/strings.php:239
+#: src/strings.php:267
 msgid "Show Post-Types Table"
 msgstr ""
 
-#: src/strings.php:240
+#: src/strings.php:268
 msgid "Hide Post-Types Table"
 msgstr ""
 
-#: src/strings.php:242
+#: src/strings.php:270
 msgid "Post Type"
 msgstr ""
 
-#: src/strings.php:243
+#: src/strings.php:271
 msgid "Post Type ID"
 msgstr ""
 
-#: src/strings.php:244
+#: src/strings.php:272
 msgid "Ignored At (optional)"
 msgstr ""
 
-#: src/strings.php:247
+#: src/strings.php:275
 msgid "Alerts Per Hour"
 msgstr ""
 
-#: src/strings.php:248
+#: src/strings.php:276
 msgid "Configure the maximum number of email alerts per hour. If the number is exceeded and the plugin detects more events during the same hour, it will still log the events into the audit logs but will not send the email alerts. Be careful with this as you will miss important information."
 msgstr ""
 
-#: src/strings.php:249
+#: src/strings.php:278
 msgid "Maximum Alerts Per Hour:"
 msgstr ""
 
-#: src/strings.php:253
+#: src/strings.php:282
 msgid "Alerts Recipient"
 msgstr ""
 
-#: src/strings.php:254
+#: src/strings.php:283
 msgid "By default, the plugin will send the email alerts to the primary admin account, the same account created during the installation of WordPress in your web server. You can add more people to the list, they will receive a copy of the same security alerts."
 msgstr ""
 
-#: src/strings.php:256
+#: src/strings.php:286
 msgid "e.g. user@example.com"
 msgstr ""
 
-#: src/strings.php:259
-#: src/strings.php:405
+#: src/strings.php:289
+#: src/strings.php:458
 msgid "E-mail"
 msgstr ""
 
-#: src/strings.php:261
+#: src/strings.php:291
 msgid "Test Alerts"
 msgstr ""
 
-#: src/strings.php:264
+#: src/strings.php:294
 msgid "Alert Subject"
 msgstr ""
 
-#: src/strings.php:265
+#: src/strings.php:295
 msgid "Format of the subject for the email alerts, by default the plugin will use the website name and the event identifier that is being reported, you can use this panel to include the IP address of the user that triggered the event and some additional data. You can create filters in your email client creating a custom email subject using the pseudo-tags shown below."
 msgstr ""
 
-#: src/strings.php:266
+#: src/strings.php:297
 msgid "Custom Format"
 msgstr ""
 
-#: src/strings.php:270
+#: src/strings.php:301
 msgid "Trusted IP Addresses"
 msgstr ""
 
-#: src/strings.php:271
+#: src/strings.php:302
 msgid "If you are working in a LAN <em>(Local Area Network)</em> you may want to include the IP addresses of all the nodes in the subnet, this will force the plugin to stop sending email alerts about actions executed from trusted IP addresses. Use the CIDR <em>(Classless Inter Domain Routing)</em> format to specify ranges of IP addresses <em>(only 8, 16, and 24)</em>."
 msgstr ""
 
-#: src/strings.php:273
+#: src/strings.php:305
 msgid "e.g. 182.120.56.0/24"
 msgstr ""
 
-#: src/strings.php:277
+#: src/strings.php:309
 msgid "CIDR Format"
 msgstr ""
 
-#: src/strings.php:278
+#: src/strings.php:310
 msgid "IP Added At"
 msgstr ""
 
-#: src/strings.php:283
+#: src/strings.php:315
 msgid "If this operation was successful you will receive a message in the email used during the registration of the API key <em>(usually the email of the main admin user)</em>. This message contains the key in plain text, copy and paste the key in the form field below. The plugin will verify the authenticity of the key sending an initial HTTP request to the API service, if this fails the key will be removed automatically and you will have to start the process all over again."
 msgstr ""
 
-#: src/strings.php:284
+#: src/strings.php:317
 msgid "There are cases where this operation may fail, an example would be when the email address is not associated with the domain anymore, this happens when the base URL changes <em>(from www to none or viceversa)</em>. If you are having issues recovering the key please send an email explaining the situation to <a href=\"mailto:info@sucuri.net\">info@sucuri.net</a>"
 msgstr ""
 
-#: src/strings.php:285
+#: src/strings.php:319
 msgid "API Key:"
 msgstr ""
 
-#: src/strings.php:289
+#: src/strings.php:323
 msgid "Congratulations! The rest of the features available in the plugin have been enabled. This product is designed to supplement existing security products. It’s not a silver bullet for your security needs, but it’ll give you greater security awareness and better posture, all with the intent of reducing risk."
 msgstr ""
 
-#: src/strings.php:290
+#: src/strings.php:325
 msgid "Your website has been granted a new API key and it was associated to the email address that you chose during the registration process. You can use the same email to recover the key if you happen to lose it sometime. We encourage you to check the rest of the settings page and configure the plugin to your own needs."
 msgstr ""
 
-#: src/strings.php:295
-#: src/strings.php:297
+#: src/strings.php:331
+#: src/strings.php:334
 msgid "WordPress Checksums API"
 msgstr ""
 
-#: src/strings.php:296
+#: src/strings.php:332
 msgid "The WordPress integrity tool uses a remote API service maintained by the WordPress organization to determine which files in the installation were added, removed or modified. The API returns a list of files with their respective checksums, this information guarantees that the installation is not corrupt. You can, however, point the integrity tool to a GitHub repository in case that you are using a custom version of WordPress like the <a href=\"https://github.com/WordPress/WordPress\" target=\"_blank\" rel=\"noopener\">development version of the code</a>."
 msgstr ""
 
-#: src/strings.php:298
+#: src/strings.php:335
 msgid "e.g. URL — or — user/repo"
 msgstr ""
 
-#: src/strings.php:302
+#: src/strings.php:339
 msgid "API Communication via Proxy"
 msgstr ""
 
-#: src/strings.php:303
+#: src/strings.php:340
 msgid "All the HTTP requests used to communicate with the API service are being sent using the WordPress built-in functions, so (almost) all its official features are inherited, this is useful if you need to pass these HTTP requests through a proxy. According to the <a href=\"https://developer.wordpress.org/reference/classes/wp_http_proxy/\" target=\"_blank\" rel=\"noopener\">official documentation</a> you have to add some constants to the main configuration file: <em>WP_PROXY_HOST, WP_PROXY_PORT, WP_PROXY_USERNAME, WP_PROXY_PASSWORD</em>."
 msgstr ""
 
-#: src/strings.php:304
+#: src/strings.php:342
 msgid "HTTP Proxy Hostname"
 msgstr ""
 
-#: src/strings.php:305
+#: src/strings.php:343
 msgid "HTTP Proxy Port num"
 msgstr ""
 
-#: src/strings.php:306
+#: src/strings.php:344
 msgid "HTTP Proxy Username"
 msgstr ""
 
-#: src/strings.php:307
+#: src/strings.php:345
 msgid "HTTP Proxy Password"
 msgstr ""
 
-#: src/strings.php:310
-#: src/strings.php:495
+#: src/strings.php:348
+#: src/strings.php:562
 msgid "API Service Communication"
 msgstr ""
 
-#: src/strings.php:311
+#: src/strings.php:349
 msgid "Once the API key is generate the plugin will communicate with a remote API service that will act as a safe data storage for the audit logs generated when the website triggers certain events that the plugin monitors. If the website is hacked the attacker will not have access to these logs and that way you can investigate what was modified <em>(for malware infaction)</em> and/or how the malicious person was able to gain access to the website."
 msgstr ""
 
-#: src/strings.php:312
+#: src/strings.php:351
 msgid "Disabling the API service communication will stop the event monitoring, consider to enable the <a href=\"%%SUCURI.URL.Settings%%#general\">Log Exporter</a> to keep the monitoring working while the HTTP requests are ignored, otherwise an attacker may execute an action that will not be registered in the security logs and you will not have a way to investigate the attack in the future."
 msgstr ""
 
-#: src/strings.php:313
+#: src/strings.php:353
 msgid "<strong>Are you a developer?</strong> You may be interested in our API. Feel free to use the URL shown below to access the latest 50 entries in your security log, change the value for the parameter <code>l=N</code> if you need more. Be aware that the API doesn’t provides an offset parameter, so if you have the intention to query specific sections of the log you will need to wrap the HTTP request around your own cache mechanism. We <strong>DO NOT</strong> take feature requests for the API, this is a semi-private service tailored for the specific needs of the plugin and not intended to be used by 3rd-party apps, we may change the behavior of each API endpoint without previous notice, use it at your own risk."
 msgstr ""
 
-#: src/strings.php:316
+#: src/strings.php:357
 msgid "Data Storage"
 msgstr ""
 
-#: src/strings.php:317
+#: src/strings.php:358
 msgid "This is the directory where the plugin will store the security logs, the list of files marked as fixed in the core integrity tool, the cache for the malware scanner and 3rd-party plugin metadata. The plugin requires write permissions in this directory as well as the files contained in it. If you prefer to keep these files in a non-public directory <em>(one level up the document root)</em> please define a constant in the <em>\"wp-config.php\"</em> file named <em>\"SUCURI_DATA_STORAGE\"</em> with the absolute path to the new directory."
 msgstr ""
 
-#: src/strings.php:326
+#: src/strings.php:368
 msgid "Import &amp; Export Settings"
 msgstr ""
 
-#: src/strings.php:327
+#: src/strings.php:369
 msgid "Copy the JSON-encoded data from the box below, go to your other websites and click the <em>\"Import\"</em> button in the settings page. The plugin will start using the same settings from this website. Notice that some options are omitted as they contain values specific to this website. To import the settings from another website into this one, replace the JSON-encoded data in the box below with the JSON-encoded data exported from the other website, then click the button <em>\"Import\"</em>. Notice that some options will not be imported to reduce the security risk of writing arbitrary data into the disk."
 msgstr ""
 
-#: src/strings.php:332
+#: src/strings.php:375
 msgid "IP Address Discoverer"
 msgstr ""
 
-#: src/strings.php:333
+#: src/strings.php:376
 msgid "IP address discoverer will use DNS lookups to automatically detect if the website is behind the <a href=\"https://sucuri.net/website-firewall/\" target=\"_blank\" rel=\"noopener\">Sucuri Firewall</a>, in which case it will modify the global server variable <em>Remote-Addr</em> to set the real IP of the website’s visitors. This check runs on every WordPress init action and that is why it may slow down your website as some hosting providers rely on slow DNS servers which makes the operation take more time than it should."
 msgstr ""
 
-#: src/strings.php:334
+#: src/strings.php:378
 msgid "HTTP Header:"
 msgstr ""
 
-#: src/strings.php:335
+#: src/strings.php:379
 msgid "Proceed"
 msgstr ""
 
-#: src/strings.php:336
+#: src/strings.php:380
 msgid "Sucuri Firewall"
 msgstr ""
 
-#: src/strings.php:338
+#: src/strings.php:382
 msgid "Top Level Domain:"
 msgstr ""
 
-#: src/strings.php:339
+#: src/strings.php:383
 msgid "Hostname:"
 msgstr ""
 
-#: src/strings.php:340
+#: src/strings.php:384
 msgid "IP Address (Hostname):"
 msgstr ""
 
-#: src/strings.php:341
+#: src/strings.php:385
 msgid "IP Address (Username):"
 msgstr ""
 
-#: src/strings.php:344
+#: src/strings.php:388
 msgid "Reset Security Logs, Hardening and Settings"
 msgstr ""
 
-#: src/strings.php:345
+#: src/strings.php:389
 msgid "This action will trigger the deactivation / uninstallation process of the plugin. All local security logs, hardening and settings will be deleted. Notice that the security logs stored in the API service will not be deleted, this is to prevent tampering from a malicious user. You can request a new API key if you want to start from scratch."
 msgstr ""
 
-#: src/strings.php:350
+#: src/strings.php:395
 msgid "Reverse Proxy"
 msgstr ""
 
-#: src/strings.php:351
+#: src/strings.php:396
 msgid "The event monitor uses the API address of the origin of the request to track the actions. The plugin uses two methods to retrieve this: the main method uses the global server variable <em>Remote-Addr</em> available in most modern web servers, and an alternative method uses custom HTTP headers <em>(which are unsafe by default)</em>. You should not worry about this option unless you know what a reverse proxy is. Services like the <a href=\"https://sucuri.net/website-firewall/\" target=\"_blank\" rel=\"noopener\">Sucuri Firewall</a> &mdash; once active &mdash; force the network traffic to pass through them to filter any security threat that may affect the original server. A side effect of this is that the real IP address is no longer available in the global server variable <em>Remote-Addr</em> but in a custom HTTP header with a name provided by the service."
 msgstr ""
 
-#: src/strings.php:354
+#: src/strings.php:400
 msgid "Log Exporter"
 msgstr ""
 
-#: src/strings.php:355
+#: src/strings.php:401
 msgid "This option allows you to export the WordPress audit logs to a local log file that can be read by a SIEM or any log analysis software <em>(we recommend OSSEC)</em>. That will give visibility from within WordPress to complement your log monitoring infrastructure. <b>NOTE:</b> Do not use a publicly accessible file, you must use a file at least one level up the document root to prevent leaks of information."
 msgstr ""
 
-#: src/strings.php:356
-#: src/strings.php:368
+#: src/strings.php:403
+#: src/strings.php:417
 msgid "File Path:"
 msgstr ""
 
-#: src/strings.php:360
+#: src/strings.php:407
 msgid "Timezone Override"
 msgstr ""
 
-#: src/strings.php:361
+#: src/strings.php:408
 msgid "This option defines the timezone that will be used through out the entire plugin to print the dates and times whenever is necessary. This option also affects the date and time of the logs visible in the audit logs panel which is data that comes from a remote server configured to use Eastern Daylight Time (EDT). WordPress offers an option in the general settings page to allow you to configure the timezone for the entire website, however, if you are experiencing problems with the time in the audit logs, this option will help you fix them."
 msgstr ""
 
-#: src/strings.php:362
+#: src/strings.php:410
 msgid "Timezone:"
 msgstr ""
 
-#: src/strings.php:366
+#: src/strings.php:414
 msgid "Allow Blocked PHP Files"
 msgstr ""
 
-#: src/strings.php:367
+#: src/strings.php:415
 msgid "After you apply the hardening in either the includes, content, and/or uploads directories, the plugin will add a rule in the access control file to deny access to any PHP file located in these folders. This is a good precaution in case an attacker is able to upload a shell script. With a few exceptions the <em>\"index.php\"</em> file is the only one that should be publicly accessible, however many theme/plugin developers decide to use these folders to process some operations. In this case applying the hardening <strong>may break</strong> their functionality."
 msgstr ""
 
-#: src/strings.php:372
+#: src/strings.php:421
 msgid "Directory"
 msgstr ""
 
-#: src/strings.php:373
+#: src/strings.php:422
 msgid "Pattern"
 msgstr ""
 
-#: src/strings.php:378
-#: src/strings.php:386
+#: src/strings.php:427
+#: src/strings.php:436
 msgid "WordPress has a big user base in the public Internet, which brings interest to attackers to find vulnerabilities in the code, 3rd-party extensions, and themes that other companies develop. You should keep every piece of code installed in your website updated to prevent attacks as soon as disclosed vulnerabilities are patched."
 msgstr ""
 
-#: src/strings.php:380
-#: src/strings.php:388
-#: src/strings.php:418
+#: src/strings.php:430
+#: src/strings.php:439
+#: src/strings.php:474
 msgid "Version"
 msgstr ""
 
-#: src/strings.php:381
-#: src/strings.php:389
+#: src/strings.php:431
+#: src/strings.php:440
+#: src/strings.php:621
 msgid "Update"
 msgstr ""
 
-#: src/strings.php:382
-#: src/strings.php:390
+#: src/strings.php:432
+#: src/strings.php:441
 msgid "Tested With"
 msgstr ""
 
-#: src/strings.php:385
+#: src/strings.php:435
 msgid "Available Plugin and Theme Updates"
 msgstr ""
 
-#: src/strings.php:394
+#: src/strings.php:445
 msgid "Download"
 msgstr ""
 
-#: src/strings.php:397
+#: src/strings.php:448
 msgid "WordPress has invalidated the password for your account <b>%%SUCURI.ResetPassword.UserName%%</b> at <a target=\"_blank\" href=\"http://%%SUCURI.ResetPassword.Website%%\" rel=\"noopener\">%%SUCURI.ResetPassword.Website%%</a>. The change has been requested by one of the admins in this website for security reasons. You can set a new password at &mdash; <span style=\"font-family:Menlo, Monaco, monospace, serif;font-weight:700\"><a target=\"_blank\" href=\"%%%SUCURI.ResetPassword.ResetURL%%%\" rel=\"noopener\">%%%SUCURI.ResetPassword.ResetURL%%%</a></span> &mdash;."
 msgstr ""
 
-#: src/strings.php:400
+#: src/strings.php:452
 msgid "Reset User Password"
 msgstr ""
 
-#: src/strings.php:402
+#: src/strings.php:454
 msgid "Select users from the list in order to change their passwords, terminate their sessions and email them a password reset link. Please be aware that the plugin will change the passwords before sending the emails, meaning that if your web server is unable to send emails, your users will be locked out of the site."
 msgstr ""
 
-#: src/strings.php:407
+#: src/strings.php:460
 msgid "Roles"
 msgstr ""
 
-#: src/strings.php:411
+#: src/strings.php:464
 msgid "Reset Installed Plugins"
 msgstr ""
 
-#: src/strings.php:413
+#: src/strings.php:466
 msgid "In case you suspect having an infection in your site, or after you got rid of a malicious code, it’s recommended to reinstall all the plugins installed in your site, including the ones you are not using. Notice that premium plugins will not be automatically reinstalled to prevent backward compatibility issues and problems with licenses."
 msgstr ""
 
-#: src/strings.php:414
+#: src/strings.php:468
 msgid "The information shown here is cached for %%SUCURI.ResetPlugin.CacheLifeTime%% seconds. This is necessary to reduce the quantity of HTTP requests sent to the WordPress servers and the bandwidth of your site. Currently there is no option to recreate this cache."
 msgstr ""
 
-#: src/strings.php:415
+#: src/strings.php:470
 msgid "<b>WARNING!</b> This procedure can break your website. The reset will not affect the database nor the settings of each plugin, but depending on how they were written the reset action might break them. Be sure to create a backup of the plugins directory before the execution of this tool."
 msgstr ""
 
-#: src/strings.php:419
+#: src/strings.php:475
 msgid "Type"
 msgstr ""
 
-#: src/strings.php:424
+#: src/strings.php:480
 msgid "Update Secret Keys"
 msgstr ""
 
-#: src/strings.php:425
+#: src/strings.php:481
 msgid "The secret or security keys are a list of constants added to your site to ensure better encryption of information stored in the user’s cookies. A secret key makes your site harder to hack by adding random elements to the password. You do not have to remember the keys, just write a random, complicated, and long string in the <code>wp-config.php</code> file. You can change these keys at any point in time. Changing them will invalidate all existing cookies, forcing all logged in users to login again."
 msgstr ""
 
-#: src/strings.php:426
+#: src/strings.php:483
 msgid "Your current session will expire once the form is submitted."
 msgstr ""
 
-#: src/strings.php:431
+#: src/strings.php:488
 msgid "Generate New Security Keys"
 msgstr ""
 
-#: src/strings.php:432
+#: src/strings.php:489
 msgid "Automatic Secret Keys Updater"
 msgstr ""
 
-#: src/strings.php:433
+#: src/strings.php:490
 msgid "Changing the Secret Keys frequently will decrease the chances of misuse of sessions left open on unprotected devices."
 msgstr ""
 
-#: src/strings.php:434
+#: src/strings.php:492
 msgid "Frequency:"
 msgstr ""
 
-#: src/strings.php:438
+#: src/strings.php:496
 msgid "Scheduled Tasks"
 msgstr ""
 
-#: src/strings.php:439
+#: src/strings.php:497
 msgid "The plugin scans your entire website looking for changes which are later reported via the API in the audit logs page. By default the scanner runs daily but you can change the frequency to meet your requirements. Notice that scanning your project files too frequently may affect the performance of your website. Be sure to have enough server resources before changing this option. The memory limit and maximum execution time are two of the PHP options that your server will set to stop your website from consuming too much resources."
 msgstr ""
 
-#: src/strings.php:440
+#: src/strings.php:499
 msgid "The scanner uses the <a href=\"http://php.net/manual/en/class.splfileobject.php\" target=\"_blank\" rel=\"noopener\">PHP SPL library</a> and the <a target=\"_blank\" href=\"http://php.net/manual/en/class.filesystemiterator.php\" rel=\"noopener\">Filesystem Iterator</a> class to scan the directory tree where your website is located in the server. This library is only available on PHP 5 >= 5.3.0 &mdash; OR &mdash; PHP 7; if you have an older version of PHP the plugin will not work as expected. Please ask your hosting provider to advise you on this matter."
 msgstr ""
 
-#: src/strings.php:441
+#: src/strings.php:501
 msgid "Scheduled tasks are rules registered in your database by a plugin, theme, or the base system itself; they are used to automatically execute actions defined in the code every certain amount of time. A good use of these rules is to generate backup files of your site, execute a security scanner, or remove unused elements like drafts. <b>Note:</b> Scheduled tasks can be re-installed by any plugin/theme automatically."
 msgstr ""
 
-#: src/strings.php:444
+#: src/strings.php:505
 msgid "Schedule"
 msgstr ""
 
-#: src/strings.php:445
+#: src/strings.php:506
 msgid "Next Due"
 msgstr ""
 
-#: src/strings.php:446
+#: src/strings.php:507
 msgid "Arguments"
 msgstr ""
 
-#: src/strings.php:452
+#: src/strings.php:513
 msgid "Ignore Files And Folders During The Scans"
 msgstr ""
 
-#: src/strings.php:453
+#: src/strings.php:514
 msgid "Use this tool to select the files and/or folders that are too heavy for the scanner to process. These are usually folders with images, media files like videos and audios, backups and &mdash; in general &mdash; anything that is not code-related. Ignoring these files or folders will reduce the memory consumption of the PHP script."
 msgstr ""
 
-#: src/strings.php:454
+#: src/strings.php:516
 msgid "Ignore a file or directory:"
 msgstr ""
 
-#: src/strings.php:455
+#: src/strings.php:517
 msgid "e.g. /private/directory/"
 msgstr ""
 
-#: src/strings.php:460
+#: src/strings.php:522
 msgid "Unignore Selected Directories"
 msgstr ""
 
-#: src/strings.php:463
+#: src/strings.php:525
 msgid "WordPress Integrity (False Positives)"
 msgstr ""
 
-#: src/strings.php:464
+#: src/strings.php:526
 msgid "Since the scanner doesn’t read the files during the execution of the integrity check, it is possible to find false positives. Files listed here have been marked as false positives and will be ignored by the scanner in subsequent scans."
 msgstr ""
 
-#: src/strings.php:466
+#: src/strings.php:529
 msgid "Reason"
 msgstr ""
 
-#: src/strings.php:467
+#: src/strings.php:530
 msgid "Ignored At"
 msgstr ""
 
-#: src/strings.php:470
+#: src/strings.php:533
 msgid "Stop Ignoring the Selected Files"
 msgstr ""
 
-#: src/strings.php:474
+#: src/strings.php:537
 msgid "If your server allows the execution of system commands, you can configure the plugin to use the <a href=\"https://en.wikipedia.org/wiki/Diff_utility\" target=\"_blank\" rel=\"noopener\">Unix Diff Utility</a> to compare the actual content of the file installed in the website and the original file provided by WordPress. This will show the differences between both files and then you can act upon the information provided."
 msgstr ""
 
-#: src/strings.php:478
+#: src/strings.php:542
 msgid "Environment Variables"
 msgstr ""
 
-#: src/strings.php:481
+#: src/strings.php:545
 msgid "Access File Integrity"
 msgstr ""
 
-#: src/strings.php:482
+#: src/strings.php:546
 msgid "The <code>.htaccess</code> file is a distributed configuration file, and is how the Apache web server handles configuration changes on a per-directory basis. WordPress uses this file to manipulate how Apache serves files from its root directory and subdirectories thereof; most notably, it modifies this file to be able to handle pretty permalinks."
 msgstr ""
 
-#: src/strings.php:483
+#: src/strings.php:548
 msgid "Htaccess file found in"
 msgstr ""
 
-#: src/strings.php:484
+#: src/strings.php:549
 msgid "Your website has no <code>.htaccess</code> file or it was not found in the default location."
 msgstr ""
 
-#: src/strings.php:485
+#: src/strings.php:551
 msgid "Your web server does not support .htaccess files."
 msgstr ""
 
-#: src/strings.php:486
+#: src/strings.php:552
 msgid "The main <code>.htaccess</code> file in your site has the standard rules for a WordPress installation. You can customize it to improve the performance and change the behaviour of the redirections for pages and posts in your site. To get more information visit the official documentation at <a target=\"_blank\" rel=\"noopener\" href=\"https://codex.wordpress.org/Using_Permalinks#Creating_and_editing_.28.htaccess.29\"> Codex WordPress - Creating and editing (.htaccess)</a>"
 msgstr ""
 
-#: src/strings.php:487
+#: src/strings.php:554
 msgid "Codex WordPress HTAccess"
 msgstr ""
 
-#: src/strings.php:490
+#: src/strings.php:557
 msgid "General Settings"
 msgstr ""
 
-#: src/strings.php:491
+#: src/strings.php:558
 msgid "Scanner"
 msgstr ""
 
-#: src/strings.php:492
+#: src/strings.php:559
 msgid "Hardening"
 msgstr ""
 
-#: src/strings.php:493
+#: src/strings.php:560
 msgid "Post-Hack"
 msgstr ""
 
-#: src/strings.php:494
+#: src/strings.php:561
 msgid "Alerts"
 msgstr ""
 
-#: src/strings.php:496
+#: src/strings.php:563
 msgid "Website Info"
 msgstr ""
 
-#: src/strings.php:497
+#: src/strings.php:564
 msgid "Hardening Options"
 msgstr ""
 
-#: src/strings.php:500
+#: src/strings.php:567
 msgid "This information will be updated %%SUCURI.SiteCheck.Lifetime%%"
 msgstr ""
 
-#: src/strings.php:501
+#: src/strings.php:568
 msgid "Refresh Malware Scan"
 msgstr ""
 
-#: src/strings.php:504
+#: src/strings.php:571
 msgid "Request Malware Cleanup"
 msgstr ""
 
-#: src/strings.php:505
+#: src/strings.php:572
 msgid "No malicious JavaScript"
 msgstr ""
 
-#: src/strings.php:506
+#: src/strings.php:573
 msgid "No malicious iFrames"
 msgstr ""
 
-#: src/strings.php:507
+#: src/strings.php:574
 msgid "No suspicious redirections"
 msgstr ""
 
-#: src/strings.php:508
+#: src/strings.php:575
 msgid "No blackhat SEO spam"
 msgstr ""
 
-#: src/strings.php:509
+#: src/strings.php:576
 msgid "No anomaly detection"
 msgstr ""
 
-#: src/strings.php:510
+#: src/strings.php:577
 msgid "This is a free website security scanner. Some types of malware and security issues cannot be detected by this scanner. If no issues are detected but you suspect a problem still exists, <a href=\"https://sucuri.net/website-security-platform/signup/\" target=\"_blank\" rel=\"noopener\">sign up</a> for a complete and in depth website scan with malware cleanup."
 msgstr ""
 
-#: src/strings.php:511
+#: src/strings.php:579
 msgid "The Sucuri Security Plugin&apos;s automated scanner has detected malware in your WordPress environment."
 msgstr ""
 
-#: src/strings.php:512
+#: src/strings.php:581
 msgid "Log in to the <a href=\"https://dashboard.sucuri.net/login\" target=\"_blank\" rel=\"noopener\">Sucuri Platform</a> dashboard for a complete scan of your website files and guaranteed malware removal. You can <a href=\"https://sucuri.net/website-security-platform/signup/\" target=\"_blank\" rel=\"noopener\">sign up here</a> if you don&apos;t have an account yet."
 msgstr ""
 
-#: src/strings.php:515
+#: src/strings.php:585
 msgid "Hover to see the Payload"
 msgstr ""
 
-#: src/strings.php:518
+#: src/strings.php:588
 msgid "Recommendations"
 msgstr ""
 
-#: src/strings.php:521
-#: src/strings.php:523
+#: src/strings.php:591
+#: src/strings.php:594
 msgid "Malware Scan Target"
 msgstr ""
 
-#: src/strings.php:522
+#: src/strings.php:592
 msgid "The remote malware scanner provided by the plugin is powered by <a href=\"https://sitecheck.sucuri.net/\" target=\"_blank\" rel=\"noopener\">Sucuri SiteCheck</a>, a service that takes a publicly accessible URL and scans it for malicious code. If your website is not visible to the Internet, for example, if it is hosted in a local development environment or a restricted network, the scanner will not be able to work on it. Additionally, if the website was installed in a non-standard directory the scanner will report a \"404 Not Found\" error. You can use this option to change the URL that will be scanned."
 msgstr ""
 
-#: src/strings.php:524
+#: src/strings.php:595
 msgid "Malware Scan Target:"
 msgstr ""
 
-#: src/strings.php:528
+#: src/strings.php:599
 msgid "WordPress Security Recommendations"
+msgstr ""
+
+#: src/strings.php:602
+msgid "The max-age setting tells your browser how long, in seconds, it can keep a copy of a web page before it needs to check for a new version. This is the basic setting needed to make caching work on most devices."
+msgstr ""
+
+#: src/strings.php:604
+msgid "The s-maxage setting tells shared caches, like those used by multiple visitors or devices (such as CDNs or web accelerators), how long they can keep a copy of a web page. It allows you to control how often these shared caches update their content compared to private caches."
+msgstr ""
+
+#: src/strings.php:606
+msgid "The stale-if-error setting allows a cached page to be served even after it has expired if the original web server returns an error. This helps keep your website available by showing an older version of the page instead of an error message. You need to set a private or shared cache duration to use this option, and it can be set for hours or days."
+msgstr ""
+
+#: src/strings.php:608
+msgid "The stale-while-revalidate setting lets shared caches serve an old version of a web page while they update the cached copy in the background. This improves loading times because visitors don’t have to wait for the updated content. Like stale-if-error, it requires a private or shared cache duration, and can be used together with stale-if-error. This setting is useful for ensuring quick page loads while keeping content reasonably fresh."
+msgstr ""
+
+#: src/strings.php:610
+msgid "When this option is set, older pages will be cached for longer than newer pages (determined by page number). The configured pagination factor is added to the main maxage and s-maxage options. This allows less popular archives to be served as stale for longer."
+msgstr ""
+
+#: src/strings.php:612
+msgid "When this option is set, the max-age and s-maxage values will be multiplied by the number of years since the last edit or comment (the Last Modified time). This allows posts that were published a long time ago to be cached longer than newer posts."
+msgstr ""
+
+#: src/strings.php:614
+msgid "Here you can see all the cache options available."
+msgstr ""
+
+#: src/strings.php:615
+msgid "Option"
+msgstr ""
+
+#: src/strings.php:616
+msgid "No options available"
+msgstr ""
+
+#: src/strings.php:617
+msgid "Cache Control Header"
+msgstr ""
+
+#: src/strings.php:620
+msgid "Mode:"
+msgstr ""
+
+#: src/strings.php:623
+msgid "Please enable site caching on your WAF to use these settings. If you are a Sucuri client and require assistance, please <a href=\"https://docs.sucuri.net/billing/how-do-i-open-a-general-support-ticket/\" target=\"_blank\" rel=\"noopener\">{{create a ticket}}</a> and reach out to the firewall team for support."
 msgstr ""
 
 #: src/template.lib.php:277
@@ -2909,6 +3060,6 @@ msgstr ""
 msgid "Your WordPress install is following <a href=\"https://sucuri.net/guides/wordpress-security\" target=\"_blank\" rel=\"noopener\">the security best practices</a>."
 msgstr ""
 
-#: sucuri.php:309
+#: sucuri.php:325
 msgid "Sucuri plugin has been uninstalled"
 msgstr ""

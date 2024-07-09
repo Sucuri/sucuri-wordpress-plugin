@@ -1,4 +1,3 @@
-
 <div class="sucuriscan-tabs">
     <ul class="sucuriscan-clearfix sucuriscan-tabs-buttons">
         <li><a href="%%SUCURI.URL.Settings%%#general">{{General Settings}}</a></li>
@@ -6,6 +5,7 @@
         <li><a href="%%SUCURI.URL.Settings%%#hardening">{{Hardening}}</a></li>
         <li><a href="%%SUCURI.URL.Settings%%#posthack">{{Post-Hack}}</a></li>
         <li><a href="%%SUCURI.URL.Settings%%#alerts">{{Alerts}}</a></li>
+        <li><a href="%%SUCURI.URL.Settings%%#headers">{{Headers}}</a></li>
         <li><a href="%%SUCURI.URL.Settings%%#apiservice">{{API Service Communication}}</a></li>
         <li><a href="%%SUCURI.URL.Settings%%#webinfo">{{Website Info}}</a></li>
     </ul>
@@ -93,6 +93,10 @@
             %%%SUCURI.Settings.Alerts.Events%%%
 
             %%%SUCURI.Settings.Alerts.IgnorePosts%%%
+        </div>
+
+        <div id="sucuriscan-tabs-headers">
+            %%%SUCURI.Settings.Headers.Cache%%%
         </div>
 
         <div id="sucuriscan-tabs-apiservice">

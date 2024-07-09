@@ -1230,4 +1230,49 @@ h3.lead {
     margin-bottom: 5px !important;
 }
 
+.vertical-align-middle {
+    vertical-align: middle;
+}
+
+.sucuriscan-double-box-update p {
+    vertical-align: middle;
+}
+
+.sucuriscan-double-box-update div {
+    display: inline-block;
+    vertical-align: middle;
+    text-align: right;
+    width: 29%;
+}
+
+.sucuriscan-headers-cache-input {
+    width: 120px;
+    height: auto;
+    padding: 0;
+    font-size: 1em;
+}
+
+.sucuriscan-headers-cache-is-editing {
+    td {
+        padding: 3px 10px;
+    }
+}
+
+.sucuriscan-table-fixed-layout {
+    table-layout: fixed;
+}
+
+.sucuriscan-table-fixed-layout .sucuriscan-tooltip > svg {
+    vertical-align: middle;
+}
+
+.sucuriscan-table-fixed-layout .manage-column svg {
+    width: 14px;
+    height: 14px;
+}
+
+.sucuriscan-table-fixed-layout td {
+    vertical-align: middle;
+}
+
 
