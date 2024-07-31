@@ -249,7 +249,7 @@ class SucuriScanIntegrity
         );
     }
 
-    public static function getTotalAffectedFiles($latest_hashes)
+    public static function getTotalAffectedFiles($latest_hashes, $ignored_files)
     {
         $affected_files = 0;
 
@@ -259,7 +259,17 @@ class SucuriScanIntegrity
                     continue;
                 }
 
-                $affected_files += count($file_list);
+                foreach ($file_list as $file_info) {
+                    $file_path = $file_info['filepath'];
+
+                    if ($ignored_files /* skip files marked as fixed */
+                        && array_key_exists(md5($file_path), $ignored_files)
+                    ) {
+                        continue;
+                    }
+
+                    $affected_files += 1;
+                }
             }
         }
 
@@ -321,14 +331,14 @@ class SucuriScanIntegrity
         }
 
         // Check if there are added, removed, or modified files.
+        $cache = new SucuriScanCache('integrity');
+        $ignored_files = $cache->getAll();
         $latest_hashes = self::checkIntegrityIntegrity();
-        $affected_files = self::getTotalAffectedFiles($latest_hashes);
+        $affected_files = self::getTotalAffectedFiles($latest_hashes, $ignored_files);
 
         $params['Integrity.RemoteChecksumsURL'] = SucuriScanAPI::checksumAPI();
 
         if ($latest_hashes) {
-            $cache = new SucuriScanCache('integrity');
-            $ignored_files = $cache->getAll();
             $counter = 0;
             $processed_files = 0;
 
@@ -344,16 +354,6 @@ class SucuriScanIntegrity
                 }
 
                 foreach ($file_list as $file_info) {
-                    // Pagination conditions
-                    if ($counter < $iterator_start) {
-                        $counter++;
-                        continue;
-                    }
-
-                    if ($processed_files >= $maxPerPage) {
-                        break;
-                    }
-
                     $file_path = $file_info['filepath'];
                     $full_filepath = sprintf('%s/%s', rtrim(ABSPATH, '/'), $file_path);
 
@@ -362,6 +362,16 @@ class SucuriScanIntegrity
                     ) {
                         $params['Integrity.FalsePositivesVisibility'] = 'visible';
                         continue;
+                    }
+
+                    // Pagination conditions
+                    if ($counter < $iterator_start) {
+                        $counter++;
+                        continue;
+                    }
+
+                    if ($processed_files >= $maxPerPage) {
+                        break;
                     }
 
                     // Add extra information to the file list.
