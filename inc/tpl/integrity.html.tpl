@@ -3,7 +3,7 @@
     /* jshint camelcase: false */
 
     jQuery(document).ready(function ($) {
-        var sucuriscanLoadIntegrityStatus = function (page, filesPerPage) {
+        var sucuriscanLoadIntegrityStatus = function (page, scroll) {
             var url = '%%SUCURI.AjaxURL.Dashboard%%';
 
             if (page !== undefined && page > 0) {
@@ -29,21 +29,23 @@
                     $('.sucuriscan-pagination-integrity').toggleClass('sucuriscan-hidden', false);
                 }
 
-                $('#sucuriscan-integrity-response')[0].scrollIntoView({
-                    behavior: 'smooth',
-                });
+                if (scroll) {
+                    $('#sucuriscan-integrity-response')[0].scrollIntoView({
+                        behavior: 'smooth',
+                    });
+                }
             });
         }
 
         $('#sucuriscan-integrity-response').on('click', '.sucuriscan-pagination-link', function (event) {
             event.preventDefault();
             var filesPerPage = $(this).val();
-            sucuriscanLoadIntegrityStatus($(this).attr('data-page'), filesPerPage);
+            sucuriscanLoadIntegrityStatus($(this).attr('data-page'), true);
         });
 
         $(document).on('change', '#sucuriscan_integrity_files_per_page', function () {
             var filesPerPage = $(this).val();
-            sucuriscanLoadIntegrityStatus(1, filesPerPage);
+            sucuriscanLoadIntegrityStatus(1, true);
         });
 
         sucuriscanLoadIntegrityStatus();
