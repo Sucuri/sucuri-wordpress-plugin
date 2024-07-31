@@ -146,6 +146,11 @@ define('SUCURISCAN_AUDITLOGS_LIFETIME', 600);
 define('SUCURISCAN_AUDITLOGS_PER_PAGE', 50);
 
 /**
+ * The maximum quantity of entries that will be displayed in the integrity section.
+ */
+define('SUCURISCAN_INTEGRITY_FILES_PER_PAGE', 10);
+
+/**
  * The maximum quantity of buttons in the paginations.
  */
 define('SUCURISCAN_MAX_PAGINATION_BUTTONS', 16);

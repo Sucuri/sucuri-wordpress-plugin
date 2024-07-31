@@ -4,7 +4,8 @@
   "description": "=== Sucuri Security - Auditing, Malware Scanner and Security Hardening === Contributors: dd@sucuri.net Donate Link: https://sucuri.net/ Tags: malware, security, firewall, scan, spam, virus, sucuri, protection, blocklisting, detection, hardening, file integrity Requires at least: 3.6 Tested up to: 5.3.2 Stable tag: 1.8.23",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "npx wp-env start",
+    "stop": "npx wp-env stop"
   },
   "repository": {
     "type": "git",

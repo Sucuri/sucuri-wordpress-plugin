@@ -2,9 +2,9 @@
     font-family: 'Titillium Web';
     font-weight: 600;
     font-display: swap;
-    src:  url('../fonts/TitilliumWeb-SemiBold.woff2') format('woff2'),
-        url('../fonts/TitilliumWeb-SemiBold.woff') format('woff'),
-        url('../fonts/TitilliumWeb-SemiBold.ttf') format('truetype');
+    src: url('../fonts/TitilliumWeb-SemiBold.woff2') format('woff2'),
+    url('../fonts/TitilliumWeb-SemiBold.woff') format('woff'),
+    url('../fonts/TitilliumWeb-SemiBold.ttf') format('truetype');
 }
 
 @font-face {
@@ -12,9 +12,9 @@
     font-weight: 700;
     font-style: normal;
     font-display: swap;
-    src:  url('../fonts/TitilliumWeb-Bold.woff2') format('woff2'),
-        url('../fonts/TitilliumWeb-Bold.woff') format('woff'),
-        url('../fonts/TitilliumWeb-Bold.ttf') format('truetype');
+    src: url('../fonts/TitilliumWeb-Bold.woff2') format('woff2'),
+    url('../fonts/TitilliumWeb-Bold.woff') format('woff'),
+    url('../fonts/TitilliumWeb-Bold.ttf') format('truetype');
 }
 
 @font-face {
@@ -22,18 +22,18 @@
     font-weight: 900;
     font-style: normal;
     font-display: swap;
-    src:  url('../fonts/TitilliumWeb-Black.woff2') format('woff2'),
-        url('../fonts/TitilliumWeb-Black.woff') format('woff'),
-        url('../fonts/TitilliumWeb-Black.ttf') format('truetype');
+    src: url('../fonts/TitilliumWeb-Black.woff2') format('woff2'),
+    url('../fonts/TitilliumWeb-Black.woff') format('woff'),
+    url('../fonts/TitilliumWeb-Black.ttf') format('truetype');
 }
 
 @font-face {
     font-family: 'Open Sans';
     font-weight: normal;
     font-display: swap;
-    src:  url('../fonts/OpenSans-Regular.woff2') format('woff2'),
-        url('../fonts/OpenSans-Regular.woff') format('woff'),
-        url('../fonts/OpenSans-Regular.ttf') format('truetype');
+    src: url('../fonts/OpenSans-Regular.woff2') format('woff2'),
+    url('../fonts/OpenSans-Regular.woff') format('woff'),
+    url('../fonts/OpenSans-Regular.ttf') format('truetype');
 }
 
 @font-face {
@@ -41,9 +41,9 @@
     font-weight: 500;
     font-style: normal;
     font-display: swap;
-    src:  url('../fonts/OpenSans-Medium.woff2') format('woff2'),
-        url('../fonts/OpenSans-Medium.woff') format('woff'),
-        url('../fonts/OpenSans-Medium.ttf') format('truetype');
+    src: url('../fonts/OpenSans-Medium.woff2') format('woff2'),
+    url('../fonts/OpenSans-Medium.woff') format('woff'),
+    url('../fonts/OpenSans-Medium.ttf') format('truetype');
 }
 
 @font-face {
@@ -51,9 +51,9 @@
     font-weight: 600;
     font-style: normal;
     font-display: swap;
-    src:  url('../fonts/OpenSans-SemiBold.woff2') format('woff2'),
-        url('../fonts/OpenSans-SemiBold.woff') format('woff'),
-        url('../fonts/OpenSans-SemiBold.ttf') format('truetype');
+    src: url('../fonts/OpenSans-SemiBold.woff2') format('woff2'),
+    url('../fonts/OpenSans-SemiBold.woff') format('woff'),
+    url('../fonts/OpenSans-SemiBold.ttf') format('truetype');
 }
 
 @font-face {
@@ -61,9 +61,9 @@
     font-weight: 700;
     font-style: normal;
     font-display: swap;
-    src:  url('../fonts/OpenSans-Bold.woff2') format('woff2'),
-        url('../fonts/OpenSans-Bold.woff') format('woff'),
-        url('../fonts/OpenSans-Bold.ttf') format('truetype');
+    src: url('../fonts/OpenSans-Bold.woff2') format('woff2'),
+    url('../fonts/OpenSans-Bold.woff') format('woff'),
+    url('../fonts/OpenSans-Bold.ttf') format('truetype');
 }
 
 body.toplevel_page_sucuriscan,
@@ -77,6 +77,7 @@ body.sucuri-security_page_sucuriscan_hardening {
     color: #1A272C;
     -webkit-font-smoothing: antialiased;
 }
+
 .sucuriscan-container h1,
 .sucuriscan-container h2,
 .sucuriscan-container h3,
@@ -87,26 +88,32 @@ body.sucuri-security_page_sucuriscan_hardening {
     font-weight: 700 !important;
     line-height: 1 !important;
 }
+
 .sucuriscan-container b,
 .sucuriscan-container strong {
     font-weight: 700;
 }
+
 .sucuriscan-container a {
     color: #028673;
 }
+
 .sucuriscan-container a:hover {
     color: #26BA9E;
 }
+
 .sucuriscan-container a:focus {
     box-shadow: 0 0 0 1px rgba(3, 134, 115, .32), 0 0 2px 1px rgba(3, 134, 115, .38);
     border-color: #26BA9E;
 }
+
 .sucuriscan-container {
     margin: 0;
     margin-left: 9px;
     margin-right: 28px;
     margin-top: 10px;
 }
+
 .sucuriscan-container *,
 .sucuriscan-container::after,
 .sucuriscan-container::before {
@@ -114,47 +121,59 @@ body.sucuri-security_page_sucuriscan_hardening {
     -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
+
 .sucuriscan-clearfix::after,
 .sucuriscan-clearfix::before {
     content: ' ';
     display: table;
 }
+
 .sucuriscan-clearfix::after {
     clear: both;
 }
+
 .sucuriscan-pull-left {
     float: left;
 }
+
 .sucuriscan-pull-right {
     float: right;
 }
+
 .sucuriscan-hidden {
     display: none !important;
 }
+
 .sucuriscan-monospace {
     font-family: Menlo, Monaco, monospace, serif;
 }
+
 .sucuriscan-wraptext {
     word-break: break-all;
 }
+
 .sucuriscan-container select {
     margin: 0;
     padding: 0 30px 0 8px;
     height: 30px;
     line-height: normal;
 }
+
 .sucuriscan-container input[type='text'] {
     margin: 0;
     padding: 0 7px;
     line-height: 28px;
     font-weight: 400;
 }
+
 .sucuriscan-container fieldset {
     margin-bottom: 10px;
 }
+
 .sucuriscan-container fieldset:last-child {
     margin-bottom: 0;
 }
+
 .sucuriscan-container fieldset label {
     display: inline-block;
     text-transform: uppercase;
@@ -163,10 +182,12 @@ body.sucuri-security_page_sucuriscan_hardening {
     cursor: initial;
     margin-left: 0;
 }
+
 .sucuriscan-container fieldset span {
     line-height: 30px;
     display: inline-block;
 }
+
 .sucuriscan-container fieldset span,
 .sucuriscan-container fieldset label,
 .sucuriscan-container fieldset select,
@@ -180,10 +201,12 @@ body.sucuri-security_page_sucuriscan_hardening {
     float: left;
     margin-left: 5px;
 }
+
 .sucuriscan-container fieldset input[type='checkbox'] {
     margin-top: 7px;
     margin-bottom: 7px;
 }
+
 .sucuriscan-container .sucuriscan-full-textarea {
     width: 100%;
     min-height: 400px;
@@ -192,20 +215,25 @@ body.sucuri-security_page_sucuriscan_hardening {
     padding: 20px;
     margin: 0;
 }
+
 #adminmenu li.toplevel_page_sucuriscan .wp-menu-image img {
     width: 18px;
     height: 18px;
 }
+
 #adminmenu li.toplevel_page_sucuriscan div.wp-menu-image.svg {
     background-size: 16px;
 }
+
 .sucuriscan-header {
     margin-top: 4px;
 }
+
 .sucuriscan-logo-wrapper {
     display: flex;
     align-items: center;
 }
+
 .sucuriscan-header .sucuriscan-logo {
     display: inline-block;
     height: 50px;
@@ -213,14 +241,17 @@ body.sucuri-security_page_sucuriscan_hardening {
     margin-right: 15px;
     text-decoration: none;
 }
+
 .sucuriscan-header .sucuriscan-logo img {
     height: 50px;
 }
+
 .sucuriscan-header .sucuriscan-subtitle {
     color: #727376;
     font-size: 30px;
     font-weight: 200;
 }
+
 .sucuriscan-header .sucuriscan-version {
     color: #727376;
     font-size: 11px;
@@ -228,16 +259,19 @@ body.sucuri-security_page_sucuriscan_hardening {
     margin-top: auto;
     margin-bottom: 5px;
 }
+
 .sucuriscan-header .sucuriscan-navbar ul {
     margin: 0;
     padding: 0;
     list-style: none;
 }
+
 .sucuriscan-header .sucuriscan-navbar li {
     float: left;
     margin-bottom: 0;
     margin-left: 5px;
 }
+
 .sucuriscan-container .button {
     -moz-box-shadow: none;
     -webkit-box-shadow: none;
@@ -250,16 +284,19 @@ body.sucuri-security_page_sucuriscan_hardening {
     text-shadow: none;
     padding: 6px 20px;
 }
+
 .sucuriscan-container .button-primary {
     background: #028673;
     border-color: #028673;
     color: #fff;
 }
+
 .sucuriscan-container .button-secondary {
     background: transparent;
     border-color: #028673;
     color: #028673;
 }
+
 .wp-core-ui .sucuriscan-container .button-primary:focus,
 .wp-core-ui .sucuriscan-container .button-primary:hover,
 .wp-core-ui .sucuriscan-container .button-primary:active,
@@ -272,34 +309,41 @@ body.sucuri-security_page_sucuriscan_hardening {
     text-shadow: none !important;
     box-shadow: none !important;
 }
+
 .wp-core-ui .sucuriscan-container .button-primary:disabled,
 .wp-core-ui .sucuriscan-container .button-primary[disabled] {
     color: #a0a5aa !important;
     border-color: #ddd !important;
     background: #f7f7f7 !important;
 }
+
 .sucuriscan-container .sucuriscan-register-site-button {
     background: #676767;
     border-color: #676767;
 }
+
 .wp-core-ui .sucuriscan-container .sucuriscan-register-site-button:focus,
 .wp-core-ui .sucuriscan-container .sucuriscan-register-site-button:hover,
 .wp-core-ui .sucuriscan-container .sucuriscan-register-site-button:active {
     background: #5e5f62;
     border-color: #5e5f62;
 }
+
 .sucuriscan-container .sucuriscan-register-site-modal fieldset label {
     min-width: 160px;
 }
+
 .sucuriscan-content {
     /* plugin content */
 }
+
 .sucuriscan-footer {
     color: #555d66;
     font-size: 11px;
     text-align: center;
     margin-top: 30px;
 }
+
 .sucuriscan-panel {
     background: #fff;
     border-radius: 10px;
@@ -308,24 +352,30 @@ body.sucuri-security_page_sucuriscan_hardening {
     margin-top: 30px;
     padding: 30px;
 }
+
 .sucuriscan-panel .sucuriscan-title {
     font-size: 30px;
     margin: 0;
     margin-bottom: 24px;
 }
+
 .sucuriscan-panel p {
     margin: 0;
     margin-bottom: 10px;
 }
+
 .sucuriscan-panel p:last-child {
     margin-bottom: 0;
 }
+
 .sucuriscan-panel hr {
     margin: 20px 0;
 }
+
 .sucuriscan-tooltip {
     position: relative;
 }
+
 .sucuriscan-tooltip-object {
     width: 300px;
     position: absolute;
@@ -337,6 +387,7 @@ body.sucuri-security_page_sucuriscan_hardening {
     color: #fff;
     z-index: 10;
 }
+
 .sucuriscan-tooltip-object::before {
     left: 50%;
     content: ' ';
@@ -347,6 +398,7 @@ body.sucuri-security_page_sucuriscan_hardening {
     margin-left: -10px;
     bottom: -10px;
 }
+
 .sucuriscan-overlay {
     background: #666;
     background: rgba(0, 0, 0, 0.8);
@@ -357,6 +409,7 @@ body.sucuri-security_page_sucuriscan_hardening {
     top: 0;
     z-index: 9990;
 }
+
 .sucuriscan-modal {
     left: 15%;
     position: absolute;
@@ -364,25 +417,31 @@ body.sucuri-security_page_sucuriscan_hardening {
     width: 65%;
     z-index: 9990;
 }
+
 .sucuriscan-modal-outside {
     background: #fff;
     border-top: 10px solid #028673;
     left: 0;
     position: relative;
 }
+
 .sucuriscan-modal-header,
 .sucuriscan-modal-inside {
     padding: 30px;
 }
+
 .sucuriscan-modal-header {
     padding-bottom: 0;
 }
+
 .sucuriscan-modal-inside {
     padding-top: 10px;
 }
+
 .sucuriscan-modal-inside p {
     margin-top: 0;
 }
+
 .sucuriscan-modal-header .sucuriscan-modal-title {
     border-bottom: 0;
     font-size: 30px;
@@ -392,6 +451,7 @@ body.sucuri-security_page_sucuriscan_hardening {
     font-weight: 800;
     letter-spacing: 0.1px;
 }
+
 .sucuriscan-modal-header .sucuriscan-modal-close {
     background: #028673;
     border-radius: 50%;
@@ -406,28 +466,35 @@ body.sucuri-security_page_sucuriscan_hardening {
     text-decoration: none;
     top: -21px;
 }
+
 .sucuriscan-tabs {
     margin-top: 30px;
 }
+
 .sucuriscan-tabs .sucuriscan-tabs-buttons {
     margin: 0;
     padding: 0;
     border-bottom: 1px solid #ccc;
 }
+
 .sucuriscan-tabs .sucuriscan-tabs-buttons li {
     float: left;
     margin: 0;
 }
+
 .sucuriscan-tabs .sucuriscan-tabs-buttons li:first-child {
     margin-left: 12px;
 }
+
 .sucuriscan-tabs .sucuriscan-tabs-buttons li:first-child a {
     border-top-left-radius: 6px;
 }
+
 .sucuriscan-tabs .sucuriscan-tabs-buttons li:last-child a {
     border-right: 1px solid #ccc;
     border-top-right-radius: 6px;
 }
+
 .sucuriscan-tabs .sucuriscan-tabs-buttons a {
     background: #f1f1f1;
     border: 1px solid #dfdfdf;
@@ -439,6 +506,7 @@ body.sucuri-security_page_sucuriscan_hardening {
     text-decoration: none;
     color: #1A272C;
 }
+
 .sucuriscan-tabs .sucuriscan-tabs-buttons .sucuriscan-tab-active {
     background: #fff;
     font-weight: 700;
@@ -447,18 +515,22 @@ body.sucuri-security_page_sucuriscan_hardening {
     padding-top: 4px;
     margin-top: -4px;
 }
+
 .sucuriscan-tabs .sucuriscan-tabs-buttons a:hover {
     background: #fff;
 }
+
 .sucuriscan-pagination {
     border-radius: 4px;
     display: inline-block;
     margin: 0;
     padding: 0;
 }
+
 .sucuriscan-pagination > li {
     display: inline;
 }
+
 .sucuriscan-pagination > li > a,
 .sucuriscan-pagination > li > span {
     background: #fff;
@@ -471,24 +543,29 @@ body.sucuri-security_page_sucuriscan_hardening {
     position: relative;
     text-decoration: none;
 }
+
 .sucuriscan-pagination > li:first-child > a,
 .sucuriscan-pagination > li:first-child > span {
     border-radius: 4px 0 0 4px;
     margin-left: 0;
 }
+
 .sucuriscan-pagination > li:last-child > a,
 .sucuriscan-pagination > li:last-child > span {
     border-radius: 0 4px 4px 0;
 }
+
 .sucuriscan-pagination > li > a.sucuriscan-pagination-active,
 .sucuriscan-pagination > li > a:hover {
     background: #4F6CB5;
     color: #fff;
 }
+
 .wrap div.sucuriscan-alert {
     margin: 0;
     position: relative;
 }
+
 .wrap .sucuriscan-alert > .close {
     color: #fff;
     font-size: 18px;
@@ -498,6 +575,7 @@ body.sucuri-security_page_sucuriscan_hardening {
     right: 20px;
     top: 20px;
 }
+
 .wrap .sucuriscan-alert.info,
 .wrap .sucuriscan-alert.error,
 .wrap .sucuriscan-alert.success,
@@ -512,19 +590,23 @@ body.sucuri-security_page_sucuriscan_hardening {
     color: #fff;
     padding: 0;
 }
+
 .wrap .sucuriscan-alert.info,
 .sucuriscan-inline-alert-info {
     background: #4F6CB5;
 }
+
 .wrap .sucuriscan-alert.error,
 .sucuriscan-inline-alert-error {
     background: #CE3030;
 }
+
 .wrap .sucuriscan-alert.success,
 .wrap .sucuriscan-alert.updated,
 .sucuriscan-inline-alert-success {
     background: #028673;
 }
+
 .wrap .sucuriscan-alert.info,
 .wrap .sucuriscan-alert.error,
 .wrap .sucuriscan-alert.success,
@@ -536,6 +618,7 @@ body.sucuri-security_page_sucuriscan_hardening {
 .sucuriscan-inline-alert-updated {
     margin-bottom: 20px;
 }
+
 .wrap .sucuriscan-alert.info:last-child,
 .wrap .sucuriscan-alert.error:last-child,
 .wrap .sucuriscan-alert.success:last-child,
@@ -547,6 +630,7 @@ body.sucuri-security_page_sucuriscan_hardening {
 .sucuriscan-inline-alert-updated:last-child {
     margin-bottom: 0;
 }
+
 .wrap .sucuriscan-alert.info a,
 .wrap .sucuriscan-alert.error a,
 .wrap .sucuriscan-alert.success a,
@@ -559,6 +643,7 @@ body.sucuri-security_page_sucuriscan_hardening {
     color: #fff;
     text-decoration: none;
 }
+
 .wrap .sucuriscan-alert.info p,
 .wrap .sucuriscan-alert.error p,
 .wrap .sucuriscan-alert.success p,
@@ -572,6 +657,7 @@ body.sucuri-security_page_sucuriscan_hardening {
     padding: 20px;
     padding-bottom: 0;
 }
+
 .wrap .sucuriscan-alert.info p a,
 .wrap .sucuriscan-alert.error p a,
 .wrap .sucuriscan-alert.success p a,
@@ -582,6 +668,7 @@ body.sucuri-security_page_sucuriscan_hardening {
 .sucuriscan-inline-alert-success p a {
     text-decoration: underline;
 }
+
 .wrap .sucuriscan-alert.info p:last-child,
 .wrap .sucuriscan-alert.error p:last-child,
 .wrap .sucuriscan-alert.success p:last-child,
@@ -592,6 +679,7 @@ body.sucuri-security_page_sucuriscan_hardening {
 .sucuriscan-inline-alert-success p:last-child {
     padding-bottom: 20px;
 }
+
 .sucuriscan-hstatus {
     margin: 0;
     padding: 20px;
@@ -599,19 +687,23 @@ body.sucuri-security_page_sucuriscan_hardening {
     border: 1px solid transparent;
     margin-bottom: 20px;
 }
+
 .sucuriscan-hstatus:last-child {
     margin-bottom: 0;
 }
+
 .sucuriscan-hstatus-0 {
     background-color: rgba(206, 48, 48, .2);
     border-color: rgba(206, 48, 48, .4);
     color: #CE3030;
 }
+
 .sucuriscan-hstatus-0 .button-primary,
 .wp-core-ui .sucuriscan-container .sucuriscan-hstatus-0 .button-primary:visited {
     background: #9b2b27;
     border-color: #9b2b27;
 }
+
 .wp-core-ui .sucuriscan-hstatus-0 .button-primary:focus,
 .wp-core-ui .sucuriscan-hstatus-0 .button-primary:hover,
 .wp-core-ui .sucuriscan-hstatus-0 .button-primary:active,
@@ -620,20 +712,24 @@ body.sucuri-security_page_sucuriscan_hardening {
     background: #872522;
     border-color: #872522;
 }
+
 .sucuriscan-hstatus-1 {
     background-color: rgba(2, 134, 115, .2);
     border-color: rgba(2, 134, 115, .4);
     color: #028673;
 }
+
 .sucuriscan-hstatus-2 {
     background-color: rgba(79, 108, 181, .2);
     border-color: rgba(79, 108, 181, .4);
     color: #4F6CB5;
 }
+
 .sucuriscan-hstatus-2 .button-primary {
     background: #4F6CB5;
     border-color: #4F6CB5;
 }
+
 .wp-core-ui .sucuriscan-hstatus-2 .button-primary:focus,
 .wp-core-ui .sucuriscan-hstatus-2 .button-primary:hover,
 .wp-core-ui .sucuriscan-hstatus-2 .button-primary:active,
@@ -642,83 +738,102 @@ body.sucuri-security_page_sucuriscan_hardening {
     background: #3f6890;
     border-color: #3f6890;
 }
+
 .sucuriscan-hstatus form {
     position: absolute;
     right: 20px;
     top: 14px;
 }
+
 .apiservice .sucuriscan-hstatus form {
     position: relative;
     right: 0;
     top: 0;
     margin-top: 14px;
 }
+
 .sucuriscan-flag-bar {
     fill: #fff !important;
 }
+
 .sucuriscan-flag-icon-green path,
 .sucuriscan-auditlog-success path,
 .sucuriscan-integrity-added path {
     fill: #028673;
 }
+
 .sucuriscan-flag-icon-red path,
 .sucuriscan-auditlog-error path,
 .sucuriscan-integrity-removed path {
     fill: #CE3030;
 }
+
 .sucuriscan-flag-icon-purple path,
 .sucuriscan-auditlog-debug path,
 .sucuriscan-integrity-modified path {
     fill: #b406dc;
 }
+
 .sucuriscan-flag-icon-orange path,
 .sucuriscan-auditlog-warning path {
     fill: #F7BE17;
 }
+
 .sucuriscan-flag-icon-blue path,
 .sucuriscan-auditlog-notice path {
     fill: #4F6CB5;
 }
+
 .sucuriscan-flag-icon-white path,
 .sucuriscan-auditlog-info path {
     fill: #f3f3f3;
 }
+
 .sucuriscan-flag-icon-black path,
 .sucuriscan-auditlog-critical path {
     fill: #1A272C;
 }
+
 .sucuriscan-container .sucuriscan-table,
 .sucuriscan-container .sucuriscan-panel table.sucuriscan-last-logins,
-.sucuriscan-container .sucuriscan-panel table.sucuriscan-lastlogins-failed
-{
+.sucuriscan-container .sucuriscan-panel table.sucuriscan-lastlogins-failed {
     margin-bottom: 20px;
 }
+
 .sucuriscan-container .sucuriscan-table:last-child {
     margin-bottom: 0;
 }
+
 .sucuriscan-container .sucuriscan-table tbody tr:nth-child(odd) {
     background: #f5f5f5;
 }
+
 .sucuriscan-dashboard-left {
     width: 68%;
     padding-right: 25px;
 }
+
 .sucuriscan-dashboard-right {
     width: 32%;
 }
+
 .sucuriscan-dashboard-left .sucuriscan-tabs {
     margin-top: 0;
 }
+
 .sucuriscan-dashboard-left .sucuriscan-tabs-containers {
     margin-top: 30px;
 }
+
 .sucuriscan-integrity .sucuriscan-integrity-left,
 .sucuriscan-integrity .sucuriscan-integrity-right {
     width: 50%;
 }
+
 .sucuriscan-integrity .sucuriscan-integrity-right {
     padding-left: 80px;
 }
+
 .sucuriscan-integrity .sucuriscan-subtitle {
     margin: 0;
     border-bottom: 1px solid #ddd;
@@ -726,42 +841,52 @@ body.sucuri-security_page_sucuriscan_hardening {
     margin-bottom: 12px;
     padding-bottom: 11px;
 }
+
 .sucuriscan-integrity hr {
     margin: 20px 0;
 }
+
 .sucuriscan-integrity-correct .sucuriscan-integrity-right {
     background-image: url("data:image/svg+xml,%3Csvg id='Layer_1' data-name='Layer 1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Cdefs%3E%3Cstyle%3E .cls-1 %7B fill: %231b262c; %7D .cls-2 %7B fill: none; stroke: %23008673; stroke-width: 6px; %7D %3C/style%3E%3C/defs%3E%3Cg id='Ellipse_33' data-name='Ellipse 33'%3E%3Cpath class='cls-1' d='M30,6c13.23,0,24,10.77,24,24s-10.77,24-24,24S6,43.23,6,30,16.77,6,30,6M30,0C13.43,0,0,13.43,0,30s13.43,30,30,30,30-13.43,30-30S46.57,0,30,0h0Z'/%3E%3C/g%3E%3Cpath id='Path_310' data-name='Path 310' class='cls-2' d='M18.36,28.89l7.91,7.91,16.09-15.54'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-size: 62px 62px;
 }
+
 .sucuriscan-integrity-incorrect .sucuriscan-integrity-right {
     background-image: url("data:image/svg+xml,%3Csvg id='Layer_1' data-name='Layer 1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Cdefs%3E%3Cstyle%3E .cls-1 %7B fill: %23ce3030; %7D %3C/style%3E%3C/defs%3E%3Cg id='Ellipse_33' data-name='Ellipse 33'%3E%3Cpath class='cls-1' d='M30,6c13.23,0,24,10.77,24,24s-10.77,24-24,24S6,43.23,6,30,16.77,6,30,6M30,0C13.43,0,0,13.43,0,30s13.43,30,30,30,30-13.43,30-30S46.57,0,30,0h0Z'/%3E%3C/g%3E%3Cg%3E%3Crect class='cls-1' x='27.43' y='17.26' width='5.14' height='25.49' transform='translate(-12.43 30) rotate(-45)'/%3E%3Crect class='cls-1' x='17.26' y='27.43' width='25.49' height='5.14' transform='translate(-12.43 30) rotate(-45)'/%3E%3C/g%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-size: 62px 62px;
 }
+
 .sucuriscan-integrity-loading .sucuriscan-integrity-missing {
     height: 147px;
     background: #E9E7E7;
     border: 3px dotted #ddd;
     border-radius: 14px;
 }
+
 .sucuriscan-integrity-correct .sucuriscan-subtitle {
     color: #028673;
 }
+
 .sucuriscan-integrity-incorrect .sucuriscan-subtitle {
     color: #CE3030;
 }
+
 .sucuriscan-integrity-incorrect .sucuriscan-table .sucuriscan-tooltip {
     left: 5px;
     position: relative;
     top: 3px;
 }
+
 .sucuriscan-container .sucuriscan-integrity-diff-utility {
     margin-bottom: 20px;
 }
+
 .sucuriscan-diff-utility-modal .sucuriscan-modal-inside p {
     margin-bottom: 20px;
 }
+
 .sucuriscan-container .sucuriscan-diff-content {
     background: #003140;
     font-family: Menlo, Monaco, monospace, serif;
@@ -771,21 +896,26 @@ body.sucuri-security_page_sucuriscan_hardening {
     padding: 20px 0;
     margin: 0;
 }
+
 .sucuriscan-container .sucuriscan-diff-line {
     color: #fff;
     white-space: pre-wrap;
     padding: 0 20px;
     margin: 0;
 }
+
 .sucuriscan-container .sucuriscan-diff-header {
     color: #999;
 }
+
 .sucuriscan-container .sucuriscan-diff-minus {
     color: #ff304b;
 }
+
 .sucuriscan-container .sucuriscan-diff-plus {
     color: #83e600;
 }
+
 .sucuriscan-sitecheck-details {
     margin-top: 20px;
     margin-bottom: 20px;
@@ -795,44 +925,54 @@ body.sucuri-security_page_sucuriscan_hardening {
     border-top: 1px solid #dedede;
     border-bottom: 1px solid #dedede;
 }
+
 .sucuriscan-sitecheck-details ul {
     margin: 0;
 }
+
 .sucuriscan-sitecheck-details li {
     display: inline-block;
     margin-bottom: 20px;
     margin-right: 20px;
 }
+
 .sucuriscan-sitecheck-details .sucuriscan-details-title {
     display: block;
     font-weight: bold;
 }
+
 .sucuriscan-sitecheck-details .sucuriscan-details-value {
     display: block;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
 .sucuriscan-sitecheck-details .sucuriscan-pull-left {
     width: 80%;
 }
+
 .sucuriscan-sitecheck-details .sucuriscan-pull-right {
     width: 20%;
 }
+
 .sucuriscan-sitecheck-list ul {
     margin-top: 20px;
     margin-bottom: 0;
 }
+
 .sucuriscan-sitecheck-list li {
     margin-top: 10px;
     margin-bottom: 0;
     position: relative;
     padding-left: 30px;
 }
+
 .sucuriscan-sitecheck-list a {
     font-size: 14px;
     text-decoration: none;
 }
+
 .sucuriscan-sitecheck-list-INFO:before {
     content: "";
     position: absolute;
@@ -846,6 +986,7 @@ body.sucuri-security_page_sucuriscan_hardening {
     background-size: contain;
     margin-right: 10px;
 }
+
 .sucuriscan-sitecheck-list-WARN:before {
     content: "";
     position: absolute;
@@ -859,6 +1000,7 @@ body.sucuri-security_page_sucuriscan_hardening {
     background-size: contain;
     margin-right: 10px;
 }
+
 .sucuriscan-sitecheck-list-NOTICE:before {
     content: "";
     position: absolute;
@@ -872,25 +1014,30 @@ body.sucuri-security_page_sucuriscan_hardening {
     background-size: contain;
     margin-right: 10px;
 }
+
 .sucuriscan-sitecheck-list-INFO a,
 .sucuriscan-sitecheck-list-NOTICE a {
     color: #1A272C;
 }
+
 .sucuriscan-sitecheck-list-WARN a {
     color: #CE3030;
     font-weight: bold;
 }
+
 .sucuriscan-sitecheck-footnote {
     color: #989898;
     padding-top: 20px;
     border-top: 1px solid #ddd;
     margin-top: 20px;
 }
+
 .sucuriscan-sitecheck-footnote a,
 .sucuriscan-sitecheck-footnote p {
     font-size: 11px;
     margin: 0;
 }
+
 .sucuriscan-tag-title {
     color: #fff;
     display: table;
@@ -901,15 +1048,19 @@ body.sucuri-security_page_sucuriscan_hardening {
     position: relative;
     border-radius: 4px;
 }
+
 .sucuriscan-tag-green {
     background-color: #028673;
 }
+
 .sucuriscan-tag-red {
     background-color: #CE3030;
 }
+
 .sucuriscan-tag-blue {
     background-color: #4F6CB5;
 }
+
 .sucuriscan-auditlog-date {
     color: #676767;
     padding: 30px 0;
@@ -917,13 +1068,16 @@ body.sucuri-security_page_sucuriscan_hardening {
     font-weight: 200;
     border-bottom: 1px solid #dbdbdb;
 }
+
 .sucuriscan-auditlog-date:first-child {
     padding-top: 0;
 }
+
 .sucuriscan-auditlog-entry {
     padding: 10px 0;
     border-bottom: 1px solid #dbdbdb;
 }
+
 .sucuriscan-auditlog-entry-title,
 .sucuriscan-auditlog-entry-address,
 .sucuriscan-auditlog-entry-extra li {
@@ -931,64 +1085,81 @@ body.sucuri-security_page_sucuriscan_hardening {
     white-space: nowrap;
     text-overflow: ellipsis;
 }
+
 .sucuriscan-auditlog-entry-time {
     width: 45px;
     color: #676767;
 }
+
 .sucuriscan-auditlog-entry-event {
     width: 28px;
 }
+
 .sucuriscan-auditlog-entry-message {
     width: 64.3111%;
     color: #1A272C;
 }
+
 .sucuriscan-auditlog-entry-title strong {
     font-size: 14px;
 }
+
 .sucuriscan-auditlog-entry-title span {
     font-size: 14px;
 }
+
 .sucuriscan-auditlog-entry-extra {
     color: #717171;
     font-size: 11px;
 }
+
 .sucuriscan-auditlog-entry-extra ul {
     margin-top: 5px;
 }
+
 .sucuriscan-auditlog-entry-extra li {
     margin-bottom: 0;
 }
+
 .sucuriscan-auditlog-entry-address {
     width: 19.4311%;
     color: #676767;
     text-align: right;
     font-size: 14px;
 }
+
 .sucuriscan-auditlog-table .sucuriscan-pagination-loading {
     line-height: 32px;
     margin-left: 10px;
 }
+
 .sucuriscan-pagination-panel,
 .sucuriscan-auditlog-footer {
     margin-top: 30px;
 }
+
 .sucuriscan-hardening-option {
     margin-bottom: 8px;
 }
+
 .sucuriscan-hardening-option .button {
     min-width: 150px;
 }
+
 .sucuriscan-hardening-option > span {
     font-size: 16px;
 }
+
 .sucuriscan-hardening-option .sucuriscan-hardening-help {
     display: inline-block;
     padding: 8px 0;
     width: 14px;
 }
+
 .sucuriscan-hardening-option .sucuriscan-hardening-help svg {
     float: left;
 }
+
 .sucuriscan-accesslog-datetime,
 .sucuriscan-accesslog-signature,
 .sucuriscan-accesslog-request,
@@ -997,76 +1168,97 @@ body.sucuri-security_page_sucuriscan_hardening {
 .sucuriscan-accesslog-referer {
     margin-left: 24px;
 }
+
 .sucuriscan-accesslog-label {
     font-weight: 700;
 }
+
 .sucuriscan-ipaccess-form,
 .sucuriscan-ipaccess-table {
     margin-top: 20px;
 }
+
 .sucuriscan-ipaccess-table tbody td + td {
     text-align: right;
 }
+
 .sucuriscan-ipaccess-table .sucuriscan-monospace {
     line-height: 30px;
 }
+
 .sucuriscan-settings-alerts .dashicons-before::before {
     padding-right: 10px;
 }
+
 #firewall-clear-cache-auto {
     margin-bottom: 15px;
 }
+
 .sucuriscan-firewall-accesslog {
     word-break: break-all;
 }
+
 .sucuriscan-double-box {
     margin-top: 20px;
 }
+
 .sucuriscan-double-box p {
     display: inline-block;
     width: 70%;
     margin: 0;
 }
+
 .sucuriscan-double-box form {
     margin-top: 10px;
     width: 30%;
     text-align: right;
 }
+
 .sucuriscan-double-box select {
     padding: 5px 25px 5px 10px;
     margin-right: 5px;
 }
+
 .rtl .sucuriscan-header .sucuriscan-pull-left {
     float: right;
 }
+
 .rtl .sucuriscan-header .sucuriscan-pull-right {
     float: left;
 }
+
 .rtl .sucuriscan-header .sucuriscan-navbar li {
     float: right;
 }
+
 .rtl .sucuriscan-tabs .sucuriscan-tabs-buttons li {
     float: right;
 }
+
 .rtl .sucuriscan-tabs .sucuriscan-tabs-buttons li:first-child {
     margin-left: 0;
     margin-right: 12px;
 }
+
 .rtl .sucuriscan-tabs .sucuriscan-tabs-buttons a {
     border-right: 1px solid #dfdfdf;
     border-left: 0;
 }
+
 .rtl .sucuriscan-tabs .sucuriscan-tabs-buttons li:first-child a {
     border-top-right-radius: 6px;
 }
+
 .rtl .sucuriscan-tabs .sucuriscan-tabs-buttons li:last-child a {
     border-left: 1px solid #ccc;
     border-top-left-radius: 6px;
 }
+
 .rtl .sucuriscan-hstatus form {
     left: 20px;
     right: initial;
 }
+
 .rtl .sucuriscan-container fieldset span,
 .rtl .sucuriscan-container fieldset label,
 .rtl .sucuriscan-container fieldset select,
@@ -1080,6 +1272,7 @@ body.sucuri-security_page_sucuriscan_hardening {
     margin-left: 0;
     margin-right: 5px;
 }
+
 .rtl .wrap .sucuriscan-alert > .close {
     right: initial;
     left: 20px;
@@ -1094,13 +1287,13 @@ body.sucuri-security_page_sucuriscan_hardening {
     display: flex;
     flex-direction: row;
     align-items: flex-end;
-} 
+}
 
 .firewall-clear-cache-path fieldset input {
     min-width: 300px;
 }
 
-.firewall-clear-cache-path fieldset label{
+.firewall-clear-cache-path fieldset label {
     display: flex;
     flex-direction: column;
     margin: 0;
@@ -1147,7 +1340,7 @@ h3.lead {
     position: absolute;
     background-color: #ffffff;
     min-width: 200px;
-    box-shadow: 0 2px 15px rgba(0,0,0,.1);
+    box-shadow: 0 2px 15px rgba(0, 0, 0, .1);
     border-radius: 6px;
     z-index: 1;
     margin-top: 15px;
@@ -1273,6 +1466,22 @@ h3.lead {
 
 .sucuriscan-table-fixed-layout td {
     vertical-align: middle;
+}
+
+.sucuriscan-pagination-integrity {
+    margin-top: 0;
+}
+
+.sucuriscan-pagination-integrity > ul {
+    margin-bottom: 15px;
+}
+
+.sucuriscan-is-loading {
+    padding: 15px;
+}
+
+#sucuriscan_integrity_files_per_page {
+    margin-left: 10px;
 }
 
 
