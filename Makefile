@@ -14,7 +14,7 @@ e2e-prepare:
 
 	npx wp-env run tests-cli touch .htaccess
 	npx wp-env run tests-cli touch wp-config-test.php
-	npx wp-env run tests-cli touch {wp-test-file-{1..100}.php}
+	npx wp-env run tests-cli touch wp-test-file-{1..100}.php
 
 e2e-scanner:
 	npx cypress run --spec cypress/e2e/sucuri-scanner.cy.js
