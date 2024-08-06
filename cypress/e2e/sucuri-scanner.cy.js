@@ -245,6 +245,68 @@ describe("Run e2e tests", () => {
     );
   });
 
+  it("can use new dropdown in integrity diff utility", () => {
+    cy.intercept("POST", "/wp-admin/admin-ajax.php?page=sucuriscan", (req) => {
+      if (req.body.includes("check_wordpress_integrity")) {
+        req.alias = "integrityCheck";
+      }
+    });
+
+    cy.visit("/wp-admin/admin.php?page=sucuriscan#auditlogs");
+
+    cy.wait("@integrityCheck");
+
+    cy.get(
+      ".sucuriscan-pagination-integrity .sucuriscan-pagination-link",
+    ).should("have.length", 7);
+
+    cy.get("#sucuriscan_integrity_files_per_page").select("200");
+    cy.get(".sucuriscan-is-loading").contains("Loading...");
+    cy.get(".sucuriscan-integrity-filepath").should("have.length", 101);
+
+    cy.get("#sucuriscan_integrity_files_per_page").select("15");
+    cy.get(".sucuriscan-is-loading").contains("Loading...");
+    cy.get(".sucuriscan-integrity-filepath").should("have.length", 15);
+
+    cy.get("#sucuriscan_integrity_files_per_page").select("50");
+    cy.get(".sucuriscan-is-loading").contains("Loading...");
+    cy.get(".sucuriscan-integrity-filepath").should("have.length", 50);
+
+    cy.get("#cb-select-all-1").click();
+
+    cy.get("[data-cy=sucuriscan_integrity_incorrect_checkbox]").click();
+    cy.get("[data-cy=sucuriscan_integrity_incorrect_submit]").click();
+
+    cy.get(".sucuriscan-alert").contains(
+      "50 out of 50 files were successfully processed.",
+    );
+
+    cy.visit("/wp-admin/admin.php?page=sucuriscan_settings#scanner");
+
+    cy.get('*[class^="sucuriscan-integrity"]').should("have.length", 50);
+
+    cy.get(
+      "[data-cy=sucuriscan_integrity_diff_false_positive_table] #cb-select-all-1",
+    ).click();
+
+    cy.get("[data-cy=sucuriscan_integrity_diff_false_positive_submit]").click();
+
+    cy.get(".sucuriscan-alert").contains(
+      "The selected files have been successfully processed.",
+    );
+    cy.get("[data-cy=sucuriscan_integrity_diff_false_positive_table]").contains(
+      "no data available",
+    );
+
+    cy.visit("/wp-admin/admin.php?page=sucuriscan#auditlogs");
+
+    cy.wait("@integrityCheck");
+
+    cy.get("#sucuriscan_integrity_files_per_page").select("200");
+    cy.get(".sucuriscan-is-loading").contains("Loading...");
+    cy.get(".sucuriscan-integrity-filepath").should("have.length", 101);
+  });
+
   it("can activate and deactivate the WordPress integrity diff utility", () => {
     cy.visit("wp-admin/admin.php?page=sucuriscan_settings#scanner");
 
