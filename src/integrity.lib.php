@@ -110,7 +110,8 @@ class SucuriScanIntegrity
 
         /* skip if the user didn't confirm the operation */
         if (SucuriScanRequest::post(':process_form') != 1) {
-            return SucuriScanInterface::error(__('You need to confirm that you understand the risk of this operation.', 'sucuri-scanner'));
+            return SucuriScanInterface::error(__('You need to confirm that you understand the risk of this operation.',
+                'sucuri-scanner'));
         }
 
         /* skip if the requested action is not currently supported */
@@ -138,10 +139,10 @@ class SucuriScanIntegrity
         /* process files until the maximum execution time is reached */
         $startTime = microtime(true);
         $displayTimeoutAlert = false;
-        $maxtime = (int) SucuriScan::iniGet('max_execution_time');
+        $maxtime = (int)SucuriScan::iniGet('max_execution_time');
         $timeout = ($maxtime > 1) ? ($maxtime - 6) : 30;
 
-        foreach ((array) $core_files as $file_meta) {
+        foreach ((array)$core_files as $file_meta) {
             if (strpos($file_meta, '@') === false) {
                 continue;
             }
@@ -225,7 +226,8 @@ class SucuriScanIntegrity
         }
 
         if ($displayTimeoutAlert) {
-            SucuriScanInterface::error(__('Server is not fast enough to process this action; maximum execution time reached', 'sucuri-scanner'));
+            SucuriScanInterface::error(__('Server is not fast enough to process this action; maximum execution time reached',
+                'sucuri-scanner'));
         }
 
         if ($files_processed != $files_selected) {
@@ -247,6 +249,33 @@ class SucuriScanIntegrity
         );
     }
 
+    public static function getTotalAffectedFiles($latest_hashes, $ignored_files)
+    {
+        $affected_files = 0;
+
+        if ($latest_hashes) {
+            foreach ($latest_hashes as $list_type => $file_list) {
+                if ($list_type == 'stable' || empty($file_list)) {
+                    continue;
+                }
+
+                foreach ($file_list as $file_info) {
+                    $file_path = $file_info['filepath'];
+
+                    if ($ignored_files /* skip files marked as fixed */
+                        && array_key_exists(md5($file_path), $ignored_files)
+                    ) {
+                        continue;
+                    }
+
+                    $affected_files += 1;
+                }
+            }
+        }
+
+        return $affected_files;
+    }
+
     /**
      * Checks if the WordPress integrity is correct or not.
      *
@@ -259,13 +288,24 @@ class SucuriScanIntegrity
      *
      * The website owner will receive an email alert with this information.
      *
-     * @param  bool $send_email Send an email alert to the admins.
+     * @param bool $send_email Send an email alert to the admins.
      * @return string|bool      HTML with information about the integrity.
      */
     public static function getIntegrityStatus($send_email = false)
     {
         $params = array();
-        $affected_files = 0;
+
+        /* initialize the values for the pagination */
+        $maxPerPage = SUCURISCAN_INTEGRITY_FILES_PER_PAGE;
+        $pageNumber = SucuriScanTemplate::pageNumber();
+
+        if (isset($_POST['files_per_page'])) {
+            $filesPerPage = intval(SucuriScanRequest::post('files_per_page'));
+
+            if ($filesPerPage > 0) {
+                $maxPerPage = $filesPerPage;
+            }
+        }
 
         $params['Version'] = SucuriScan::siteVersion();
         $params['Integrity.List'] = '';
@@ -276,19 +316,37 @@ class SucuriScanIntegrity
         $params['Integrity.FailureVisibility'] = 'visible';
         $params['Integrity.FalsePositivesVisibility'] = 'hidden';
         $params['Integrity.DiffUtility'] = '';
+        $params['Integrity.Pagination'] = '';
+        $params['Integrity.PaginationVisibility'] = 'hidden';
+
+        $itemsToLoad = array(
+            15,
+            50,
+            200,
+            1000
+        );
+
+        foreach ($itemsToLoad as $items) {
+            $params['Integrity.Items'] .= sprintf('<option value="%s">%s</option>', $items, ucfirst($items));
+        }
 
         // Check if there are added, removed, or modified files.
+        $cache = new SucuriScanCache('integrity');
+        $ignored_files = $cache->getAll();
         $latest_hashes = self::checkIntegrityIntegrity();
+        $affected_files = self::getTotalAffectedFiles($latest_hashes, $ignored_files);
+
         $params['Integrity.RemoteChecksumsURL'] = SucuriScanAPI::checksumAPI();
 
         if ($latest_hashes) {
-            $cache = new SucuriScanCache('integrity');
-            $ignored_files = $cache->getAll();
             $counter = 0;
+            $processed_files = 0;
 
             $params['Integrity.BadVisibility'] = 'hidden';
             $params['Integrity.GoodVisibility'] = 'visible';
             $params['Integrity.FailureVisibility'] = 'hidden';
+
+            $iterator_start = ($pageNumber - 1) * $maxPerPage;
 
             foreach ($latest_hashes as $list_type => $file_list) {
                 if ($list_type == 'stable' || empty($file_list)) {
@@ -306,6 +364,16 @@ class SucuriScanIntegrity
                         continue;
                     }
 
+                    // Pagination conditions
+                    if ($counter < $iterator_start) {
+                        $counter++;
+                        continue;
+                    }
+
+                    if ($processed_files >= $maxPerPage) {
+                        break;
+                    }
+
                     // Add extra information to the file list.
                     $file_size = @filesize($full_filepath);
                     $file_size_human = ''; /* empty */
@@ -318,11 +386,14 @@ class SucuriScanIntegrity
                         $visibility = 'visible';
 
                         if ($list_type === 'added') {
-                            $error = __('The plugin has no permission to delete this file because it was created by a different system user who has more privileges than your account. Please use FTP to delete it.', 'sucuri-scanner');
+                            $error = __('The plugin has no permission to delete this file because it was created by a different system user who has more privileges than your account. Please use FTP to delete it.',
+                                'sucuri-scanner');
                         } elseif ($list_type === 'modified') {
-                            $error = __('The plugin has no permission to restore this file because it was modified by a different system user who has more privileges than your account. Please use FTP to restore it.', 'sucuri-scanner');
+                            $error = __('The plugin has no permission to restore this file because it was modified by a different system user who has more privileges than your account. Please use FTP to restore it.',
+                                'sucuri-scanner');
                         } elseif ($list_type === 'removed') {
-                            $error = __('The plugin has no permission to restore this file because its directory is owned by a different system user who has more privileges than your account. Please use FTP to restore it.', 'sucuri-scanner');
+                            $error = __('The plugin has no permission to restore this file because its directory is owned by a different system user who has more privileges than your account. Please use FTP to restore it.',
+                                'sucuri-scanner');
                         }
                     }
 
@@ -347,13 +418,13 @@ class SucuriScanIntegrity
                             'Integrity.ErrorMessage' => $error,
                         )
                     );
-                    $affected_files++;
+                    $processed_files++;
                     $counter++;
                 }
             }
 
             if ($counter > 0) {
-                $params['Integrity.ListCount'] = $counter;
+                $params['Integrity.ListCount'] = $affected_files;
                 $params['Integrity.BadVisibility'] = 'visible';
                 $params['Integrity.GoodVisibility'] = 'hidden';
             }
@@ -373,11 +444,28 @@ class SucuriScanIntegrity
         ob_start();
         $details = SucuriScanSiteCheck::details();
         $errors = ob_get_clean(); /* capture possible errors */
-        $params['SiteCheck.Details'] = empty($errors) ? $details : '<br>'.$errors;
+        $params['SiteCheck.Details'] = empty($errors) ? $details : '<br>' . $errors;
 
         $params['Integrity.DiffUtility'] = SucuriScanIntegrity::diffUtility();
 
+        if ($affected_files > 1) {
+            $maxpages = ceil($affected_files / $maxPerPage);
+
+            if ($maxpages > 1) {
+                $params['Integrity.PaginationVisibility'] = 'visible';
+                $params['Integrity.Pagination'] = SucuriScanTemplate::pagination(
+                    SucuriScanTemplate::getUrl(),
+                    $affected_files,
+                    $maxPerPage
+                );
+            }
+        }
+
+        $params['Integrity.Items'] = str_replace('option value="' . $maxPerPage . '"',
+            'option value="' . $maxPerPage . '" selected', $params['Integrity.Items']);
+
         $template = ($affected_files === 0) ? 'correct' : 'incorrect';
+
         return SucuriScanTemplate::getSection('integrity-' . $template, $params);
     }
 
@@ -447,8 +535,8 @@ class SucuriScanIntegrity
      * Retrieve a list of md5sum and last modification time of all the files in the
      * folder specified. This is a recursive function.
      *
-     * @param  string $dir       The base path where the scanning will start.
-     * @param  bool   $recursive Either TRUE or FALSE if the scan should be performed recursively.
+     * @param string $dir The base path where the scanning will start.
+     * @param bool $recursive Either TRUE or FALSE if the scan should be performed recursively.
      * @return array             List of arrays containing the md5sum and last modification time of the files found.
      */
     private static function integrityTree($dir = './', $recursive = false)
@@ -470,7 +558,7 @@ class SucuriScanIntegrity
      *
      * <ul>
      *   <li>modified: Files with a different checksum according to the official WordPress archives,</li>
-     *   <li>stable: Files with the same checksums than the official files,</li>
+     *   <li>stable: Files with the same checksums as the official files,</li>
      *   <li>removed: Official files which are not present in the local project,</li>
      *   <li>added: Files present in the local project but not in the official WordPress packages.</li>
      * </ul>
@@ -548,7 +636,7 @@ class SucuriScanIntegrity
                     );
                 } else {
                     $modified_at = @filemtime($full_filepath);
-                    $is_fixable = (bool) is_writable($full_filepath);
+                    $is_fixable = (bool)is_writable($full_filepath);
                     $output['modified'][] = array(
                         'filepath' => $file_path,
                         'is_fixable' => $is_fixable,
@@ -577,7 +665,7 @@ class SucuriScanIntegrity
             if (!array_key_exists($file_path, $latest_hashes)) {
                 $full_filepath = ABSPATH . '/' . $file_path;
                 $modified_at = @filemtime($full_filepath);
-                $is_fixable = (bool) is_writable($full_filepath);
+                $is_fixable = (bool)is_writable($full_filepath);
                 $output['added'][] = array(
                     'filepath' => $file_path,
                     'is_fixable' => $is_fixable,
@@ -596,7 +684,7 @@ class SucuriScanIntegrity
     /**
      * Ignore irrelevant files and directories from the integrity checking.
      *
-     * @param  string $path File path that will be compared.
+     * @param string $path File path that will be compared.
      * @return bool         True if the file should be ignored, false otherwise.
      */
     private static function ignoreIntegrityFilepath($path = '')
@@ -674,7 +762,7 @@ class SucuriScanIntegrity
         );
 
         foreach ($irrelevant as $pattern) {
-            if (@preg_match('/'.$pattern.'/', $path)) {
+            if (@preg_match('/' . $pattern . '/', $path)) {
                 $ignore = true;
                 break;
             }

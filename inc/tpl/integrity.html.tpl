@@ -1,17 +1,55 @@
-
 <script type="text/javascript">
-/* global jQuery */
-/* jshint camelcase: false */
-jQuery(document).ready(function ($) {
-    $.post('%%SUCURI.AjaxURL.Dashboard%%', {
-        action: 'sucuriscan_ajax',
-        sucuriscan_page_nonce: '%%SUCURI.PageNonce%%',
-        sucuriscan_sitecheck_refresh: '%%SUCURI.SiteCheck.Refresh%%',
-        form_action: 'check_wordpress_integrity',
-    }, function (data) {
-        $('#sucuriscan-integrity-response').html(data);
+    /* global jQuery */
+    /* jshint camelcase: false */
+
+    jQuery(document).ready(function ($) {
+        var sucuriscanLoadIntegrityStatus = function (page, scroll) {
+            var url = '%%SUCURI.AjaxURL.Dashboard%%';
+
+            if (page !== undefined && page > 0) {
+                url += '&paged=' + page;
+            }
+
+            $('[data-cy=sucuriscan_integrity_list_table]').html('<div class="sucuriscan-is-loading">{{Loading...}}</div>');
+
+            if (!$('.sucuriscan-pagination-integrity').hasClass('sucuriscan-hidden')) {
+                $('.sucuriscan-pagination-integrity').toggleClass('sucuriscan-hidden');
+            }
+
+            $.post(url, {
+                action: 'sucuriscan_ajax',
+                sucuriscan_page_nonce: '%%SUCURI.PageNonce%%',
+                sucuriscan_sitecheck_refresh: '%%SUCURI.SiteCheck.Refresh%%',
+                form_action: 'check_wordpress_integrity',
+                files_per_page: $('#sucuriscan_integrity_files_per_page').val(),
+            }, function (data) {
+                $('#sucuriscan-integrity-response').html(data);
+
+                if (!$('.sucuriscan-pagination-integrity').hasClass('sucuriscan-hidden')) {
+                    $('.sucuriscan-pagination-integrity').toggleClass('sucuriscan-hidden', false);
+                }
+
+                if (scroll) {
+                    $('#sucuriscan-integrity-response')[0].scrollIntoView({
+                        behavior: 'smooth',
+                    });
+                }
+            });
+        }
+
+        $('#sucuriscan-integrity-response').on('click', '.sucuriscan-pagination-link', function (event) {
+            event.preventDefault();
+            var filesPerPage = $(this).val();
+            sucuriscanLoadIntegrityStatus($(this).attr('data-page'), true);
+        });
+
+        $(document).on('change', '#sucuriscan_integrity_files_per_page', function () {
+            var filesPerPage = $(this).val();
+            sucuriscanLoadIntegrityStatus(1, true);
+        });
+
+        sucuriscanLoadIntegrityStatus();
     });
-});
 </script>
 
 <div id="sucuriscan-integrity-response">

@@ -167,6 +167,8 @@ describe("Run e2e tests", () => {
 
     cy.wait("@integrityCheck");
 
+    cy.get("[data-cy=sucuriscan_integrity_files_per_page]").select("1000");
+
     cy.get('input[value="added@wp-config-test.php"]').click();
     cy.get("[data-cy=sucuriscan_integrity_incorrect_checkbox]").click();
     cy.get("[data-cy=sucuriscan_integrity_incorrect_submit]").click();
@@ -180,7 +182,7 @@ describe("Run e2e tests", () => {
     cy.get("[data-cy=sucuriscan_integrity_diff_false_positive_table]").contains(
       "wp-config-test.php",
     );
-    cy.get('input[value="wp-config-test.php"').click();
+    cy.get('input[value="wp-config-test.php"]').click();
     cy.get("[data-cy=sucuriscan_integrity_diff_false_positive_submit]").click();
 
     cy.get(".sucuriscan-alert").contains(
@@ -196,6 +198,112 @@ describe("Run e2e tests", () => {
 
     cy.get("[data-cy=sucuriscan_integrity_list_table]").contains(
       "wp-config-test.php",
+    );
+  });
+
+  it("can use new dropdown in integrity diff utility", () => {
+    cy.intercept("POST", "/wp-admin/admin-ajax.php?page=sucuriscan", (req) => {
+      if (req.body.includes("check_wordpress_integrity")) {
+        req.alias = "integrityCheck";
+      }
+    });
+
+    cy.visit("/wp-admin/admin.php?page=sucuriscan#auditlogs");
+
+    cy.wait("@integrityCheck");
+
+    cy.get(
+      ".sucuriscan-pagination-integrity .sucuriscan-pagination-link",
+    ).should("have.length", 7);
+
+    cy.get("#sucuriscan_integrity_files_per_page").select("200");
+    cy.get(".sucuriscan-is-loading").contains("Loading...");
+    cy.get(".sucuriscan-integrity-filepath").should("have.length", 101);
+
+    cy.get("#sucuriscan_integrity_files_per_page").select("15");
+    cy.get(".sucuriscan-is-loading").contains("Loading...");
+    cy.get(".sucuriscan-integrity-filepath").should("have.length", 15);
+
+    cy.get("#sucuriscan_integrity_files_per_page").select("50");
+    cy.get(".sucuriscan-is-loading").contains("Loading...");
+    cy.get(".sucuriscan-integrity-filepath").should("have.length", 50);
+
+    cy.get("#cb-select-all-1").click();
+
+    cy.get("[data-cy=sucuriscan_integrity_incorrect_checkbox]").click();
+    cy.get("[data-cy=sucuriscan_integrity_incorrect_submit]").click();
+
+    cy.get(".sucuriscan-alert").contains(
+      "50 out of 50 files were successfully processed.",
+    );
+
+    cy.visit("/wp-admin/admin.php?page=sucuriscan_settings#scanner");
+
+    cy.get('*[class^="sucuriscan-integrity"]').should("have.length", 50);
+
+    cy.get(
+      "[data-cy=sucuriscan_integrity_diff_false_positive_table] #cb-select-all-1",
+    ).click();
+
+    cy.get("[data-cy=sucuriscan_integrity_diff_false_positive_submit]").click();
+
+    cy.get(".sucuriscan-alert").contains(
+      "The selected files have been successfully processed.",
+    );
+    cy.get("[data-cy=sucuriscan_integrity_diff_false_positive_table]").contains(
+      "no data available",
+    );
+
+    cy.visit("/wp-admin/admin.php?page=sucuriscan#auditlogs");
+
+    cy.wait("@integrityCheck");
+
+    cy.get("#sucuriscan_integrity_files_per_page").select("200");
+    cy.get(".sucuriscan-is-loading").contains("Loading...");
+    cy.get(".sucuriscan-integrity-filepath").should("have.length", 101);
+  });
+
+  it("can use pagination in integrity diff utility", () => {
+    cy.intercept("POST", "/wp-admin/admin-ajax.php?page=sucuriscan", (req) => {
+      if (req.body.includes("check_wordpress_integrity")) {
+        req.alias = "integrityCheck";
+      }
+    });
+
+    cy.visit("/wp-admin/admin.php?page=sucuriscan#auditlogs");
+
+    cy.wait("@integrityCheck");
+
+    cy.get(
+      ".sucuriscan-pagination-integrity .sucuriscan-pagination-link",
+    ).should("have.length", 7);
+
+    cy.get(".sucuriscan-pagination-integrity [data-page=2]").click();
+
+    cy.get("[data-cy=sucuriscan_integrity_list_table]").contains(
+      "wp-test-file-21.php",
+    );
+
+    cy.get("#cb-select-all-1").click();
+    cy.get("[data-cy=sucuriscan_integrity_incorrect_checkbox]").click();
+    cy.get("[data-cy=sucuriscan_integrity_incorrect_submit]").click();
+
+    cy.get(".sucuriscan-alert").contains(
+      "15 out of 15 files were successfully processed.",
+    );
+
+    cy.get(".sucuriscan-pagination-integrity [data-page=2]").click();
+
+    cy.wait("@integrityCheck");
+
+    cy.get("[data-cy=sucuriscan_integrity_list_table]").contains(
+      "wp-test-file-35.php",
+    );
+
+    cy.get(".sucuriscan-pagination-integrity [data-page=6]").click();
+
+    cy.get("[data-cy=sucuriscan_integrity_list_table]").contains(
+      "wp-test-file-99.php",
     );
   });
 
