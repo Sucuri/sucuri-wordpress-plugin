@@ -91,14 +91,19 @@ function sucuriscan_settings_alerts_recipients($nonce)
         // Debug ability of the plugin to send email alerts correctly.
         if (SucuriScanRequest::post(':debug_email')) {
             $recipients = SucuriScanOption::getOption(':notify_to');
-            SucuriScanMail::sendMail(
+            $mailSentSuccess = SucuriScanMail::sendMail(
                 $recipients,
                 __('Test Email Alert', 'sucuri-scanner'),
                 sprintf(__('Test email alert sent at %s', 'sucuri-scanner'), SucuriScan::datetime()),
                 array('Force' => true)
             );
 
-            SucuriScanInterface::info(__('A test alert was sent to your email, check your inbox', 'sucuri-scanner'));
+            if ($mailSentSuccess) {
+                SucuriScanInterface::info(__('A test alert was sent to your email, check your inbox', 'sucuri-scanner'));
+            }else {
+                SucuriScanInterface::error(__('An error occurred sending email - please check your server mail configuration.', 'sucuri-scanner'));
+            }
+
         }
     }
 
