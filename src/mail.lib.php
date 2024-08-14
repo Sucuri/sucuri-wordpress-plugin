@@ -87,29 +87,34 @@ class SucuriScanMail extends SucuriScanOption
 
         $subject = self::getEmailSubject($subject);
 
-        /**
-         * WordPress uses a library named PHPMailer to send emails through the
-         * provided method wp_mail, unfortunately the debug information is
-         * completely removed and this makes it difficult to troubleshoots
-         * issues reported by users when the SMTP server in their sites is
-         * misconfigured. To reduce the number of tickets related with this
-         * issue we will provide an option to allow the users to choose which
-         * technique will be used to send the alerts.
-         *
-         * @see https://github.com/PHPMailer/PHPMailer
-         * @see https://developer.wordpress.org/reference/functions/wp_mail/
-         */
-        if (SucuriScanOption::isEnabled(':use_wpmail')) {
-            wp_mail($email, $subject, $message, $headers);
-        } else {
-            @mail($email, $subject, $message, implode("\r\n", $headers));
+        try {
+            /**
+             * WordPress uses a library named PHPMailer to send emails through the
+             * provided method wp_mail, unfortunately the debug information is
+             * completely removed and this makes it difficult to troubleshoots
+             * issues reported by users when the SMTP server in their sites is
+             * misconfigured. To reduce the number of tickets related with this
+             * issue we will provide an option to allow the users to choose which
+             * technique will be used to send the alerts.
+             *
+             * @see https://github.com/PHPMailer/PHPMailer
+             * @see https://developer.wordpress.org/reference/functions/wp_mail/
+             */
+            if (SucuriScanOption::isEnabled(':use_wpmail')) {
+                wp_mail($email, $subject, $message, $headers);
+            } else {
+                @mail($email, $subject, $message, implode("\r\n", $headers));
+            }
+
+            $mails_sent = (int) self::getOption(':emails_sent');
+            self::updateOption(':emails_sent', $mails_sent + 1);
+            self::updateOption(':last_email_at', time());
+
+            return true; /* assume mail delivery */
+        } catch ( Throwable $e ) {
+            SucuriScanEvent::reportErrorEvent('An error occurred sending email - please check your server mail configuration.');
+            return false;
         }
-
-        $mails_sent = (int) self::getOption(':emails_sent');
-        self::updateOption(':emails_sent', $mails_sent + 1);
-        self::updateOption(':last_email_at', time());
-
-        return true; /* assume mail delivery */
     }
 
     /**
