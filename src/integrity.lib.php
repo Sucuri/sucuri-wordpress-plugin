@@ -318,6 +318,7 @@ class SucuriScanIntegrity
         $params['Integrity.DiffUtility'] = '';
         $params['Integrity.Pagination'] = '';
         $params['Integrity.PaginationVisibility'] = 'hidden';
+        $params['Integrity.Items'] = '';
 
         $itemsToLoad = array(
             15,

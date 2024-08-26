@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Sucuri Security - Auditing, Malware Scanner and Hardening 1.9.3\n"
+"Project-Id-Version: Sucuri Security - Auditing, Malware Scanner and Hardening 1.9.4\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/sucuri-wordpress-plugin\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-08-14T15:18:39+00:00\n"
+"POT-Creation-Date: 2024-08-26T11:58:13+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: sucuri-scanner\n"
@@ -649,19 +649,19 @@ msgstr ""
 msgid "<b>%d</b> out of <b>%d</b> files were successfully processed."
 msgstr ""
 
-#: src/integrity.lib.php:389
+#: src/integrity.lib.php:390
 msgid "The plugin has no permission to delete this file because it was created by a different system user who has more privileges than your account. Please use FTP to delete it."
 msgstr ""
 
-#: src/integrity.lib.php:392
+#: src/integrity.lib.php:393
 msgid "The plugin has no permission to restore this file because it was modified by a different system user who has more privileges than your account. Please use FTP to restore it."
 msgstr ""
 
-#: src/integrity.lib.php:395
+#: src/integrity.lib.php:396
 msgid "The plugin has no permission to restore this file because its directory is owned by a different system user who has more privileges than your account. Please use FTP to restore it."
 msgstr ""
 
-#: src/integrity.lib.php:493
+#: src/integrity.lib.php:494
 #: src/strings.php:536
 #: src/strings.php:539
 msgid "WordPress Integrity Diff Utility"
@@ -751,11 +751,11 @@ msgstr ""
 msgid "Maximum number of emails per hour reached"
 msgstr ""
 
-#: src/mail.lib.php:184
+#: src/mail.lib.php:189
 msgid "User: %s (%s)"
 msgstr ""
 
-#: src/mail.lib.php:210
+#: src/mail.lib.php:215
 msgid "Sucuri Alert"
 msgstr ""
 
@@ -820,9 +820,9 @@ msgid "Woocommerce Categories"
 msgstr ""
 
 #: src/option.lib.php:316
-#: src/settings-alerts.php:209
-#: src/settings-alerts.php:210
-#: src/settings-alerts.php:211
+#: src/settings-alerts.php:214
+#: src/settings-alerts.php:215
+#: src/settings-alerts.php:216
 msgid "Sucuri Alert, %s, %s, %s"
 msgstr ""
 
@@ -890,261 +890,265 @@ msgstr ""
 msgid "Test email alert sent at %s"
 msgstr ""
 
-#: src/settings-alerts.php:101
+#: src/settings-alerts.php:102
 msgid "A test alert was sent to your email, check your inbox"
 msgstr ""
 
-#: src/settings-alerts.php:146
-msgid "The IP specified address was already added."
-msgstr ""
-
-#: src/settings-alerts.php:148
-msgid "IP has been trusted: %s"
-msgstr ""
-
-#: src/settings-alerts.php:149
-msgid "Events generated from this IP will be ignored: <code>%s</code>"
+#: src/settings-alerts.php:104
+msgid "An error occurred sending email - please check your server mail configuration."
 msgstr ""
 
 #: src/settings-alerts.php:151
+msgid "The IP specified address was already added."
+msgstr ""
+
+#: src/settings-alerts.php:153
+msgid "IP has been trusted: %s"
+msgstr ""
+
+#: src/settings-alerts.php:154
+msgid "Events generated from this IP will be ignored: <code>%s</code>"
+msgstr ""
+
+#: src/settings-alerts.php:156
 msgid "The IP address could not be added to the trusted list"
 msgstr ""
 
-#: src/settings-alerts.php:164
+#: src/settings-alerts.php:169
 msgid "The selected IP addresses were successfully deleted."
 msgstr ""
 
-#: src/settings-alerts.php:173
+#: src/settings-alerts.php:178
 msgid "n/a"
 msgstr ""
 
-#: src/settings-alerts.php:208
-#: src/settings-alerts.php:212
 #: src/settings-alerts.php:213
+#: src/settings-alerts.php:217
+#: src/settings-alerts.php:218
 msgid "Sucuri Alert, %s, %s"
 msgstr ""
 
-#: src/settings-alerts.php:214
+#: src/settings-alerts.php:219
 msgid "Sucuri Alert, %s"
 msgstr ""
 
-#: src/settings-alerts.php:242
+#: src/settings-alerts.php:247
 msgid "Invalid characters in the email subject."
 msgstr ""
 
-#: src/settings-alerts.php:250
+#: src/settings-alerts.php:255
 msgid "Email subject set to <code>%s</code>"
 msgstr ""
 
-#: src/settings-alerts.php:255
+#: src/settings-alerts.php:260
 msgid "The email subject has been successfully updated"
 msgstr ""
 
-#: src/settings-alerts.php:304
+#: src/settings-alerts.php:309
 msgid "Maximum 5 per hour"
 msgstr ""
 
-#: src/settings-alerts.php:305
+#: src/settings-alerts.php:310
 msgid "Maximum 10 per hour"
 msgstr ""
 
-#: src/settings-alerts.php:306
+#: src/settings-alerts.php:311
 msgid "Maximum 20 per hour"
 msgstr ""
 
-#: src/settings-alerts.php:307
+#: src/settings-alerts.php:312
 msgid "Maximum 40 per hour"
 msgstr ""
 
-#: src/settings-alerts.php:308
+#: src/settings-alerts.php:313
 msgid "Maximum 80 per hour"
 msgstr ""
 
-#: src/settings-alerts.php:309
+#: src/settings-alerts.php:314
 msgid "Maximum 160 per hour"
 msgstr ""
 
-#: src/settings-alerts.php:310
+#: src/settings-alerts.php:315
 msgid "Unlimited alerts per hour"
 msgstr ""
 
-#: src/settings-alerts.php:320
+#: src/settings-alerts.php:325
 msgid "Maximum alerts per hour set to <code>%s</code>"
 msgstr ""
 
-#: src/settings-alerts.php:325
+#: src/settings-alerts.php:330
 msgid "The maximum number of alerts per hour has been updated"
 msgstr ""
 
-#: src/settings-alerts.php:327
+#: src/settings-alerts.php:332
 msgid "Error updating the maximum number of alerts per hour"
 msgstr ""
 
-#: src/settings-alerts.php:351
+#: src/settings-alerts.php:356
 msgid "30 failed logins per hour"
 msgstr ""
 
-#: src/settings-alerts.php:352
+#: src/settings-alerts.php:357
 msgid "60 failed logins per hour"
 msgstr ""
 
-#: src/settings-alerts.php:353
+#: src/settings-alerts.php:358
 msgid "120 failed logins per hour"
 msgstr ""
 
-#: src/settings-alerts.php:354
+#: src/settings-alerts.php:359
 msgid "240 failed logins per hour"
 msgstr ""
 
-#: src/settings-alerts.php:355
+#: src/settings-alerts.php:360
 msgid "480 failed logins per hour"
 msgstr ""
 
-#: src/settings-alerts.php:364
+#: src/settings-alerts.php:369
 msgid "Consider brute-force attack after <code>%s</code> failed logins per hour"
 msgstr ""
 
-#: src/settings-alerts.php:369
+#: src/settings-alerts.php:374
 msgid "The plugin will assume that your website is under a brute-force attack after %s failed logins are detected during the same hour"
 msgstr ""
 
-#: src/settings-alerts.php:371
+#: src/settings-alerts.php:376
 msgid "Invalid number of failed logins per hour"
 msgstr ""
 
-#: src/settings-alerts.php:396
+#: src/settings-alerts.php:401
 msgid "Receive email alerts for changes in the settings of the plugin"
 msgstr ""
 
-#: src/settings-alerts.php:397
+#: src/settings-alerts.php:402
 msgid "Receive email alerts in HTML <em>(there may be issues with some mail services)</em>"
 msgstr ""
 
-#: src/settings-alerts.php:398
+#: src/settings-alerts.php:403
 msgid "Use WordPress functions to send mails <em>(uncheck to use native PHP functions)</em>"
 msgstr ""
 
-#: src/settings-alerts.php:399
+#: src/settings-alerts.php:404
 msgid "Allow redirection after login to report the last-login information"
 msgstr ""
 
-#: src/settings-alerts.php:400
+#: src/settings-alerts.php:405
 msgid "Receive email alerts for core integrity checks"
 msgstr ""
 
-#: src/settings-alerts.php:401
+#: src/settings-alerts.php:406
 msgid "Receive email alerts for available updates"
 msgstr ""
 
-#: src/settings-alerts.php:402
+#: src/settings-alerts.php:407
 msgid "Receive email alerts for new user registration"
 msgstr ""
 
-#: src/settings-alerts.php:403
+#: src/settings-alerts.php:408
 msgid "Receive email alerts for successful login attempts"
 msgstr ""
 
-#: src/settings-alerts.php:404
+#: src/settings-alerts.php:409
 msgid "Receive email alerts for failed login attempts <em>(you may receive tons of emails)</em>"
 msgstr ""
 
-#: src/settings-alerts.php:405
+#: src/settings-alerts.php:410
 msgid "Receive email alerts for password guessing attacks <em>(summary of failed logins per hour)</em>"
 msgstr ""
 
-#: src/settings-alerts.php:406
+#: src/settings-alerts.php:411
 msgid "Receive email alerts for changes in the post status <em>(configure from Ignore Posts Changes)</em>"
 msgstr ""
 
-#: src/settings-alerts.php:407
+#: src/settings-alerts.php:412
 msgid "Receive email alerts when the WordPress version is updated"
 msgstr ""
 
-#: src/settings-alerts.php:408
+#: src/settings-alerts.php:413
 msgid "Receive email alerts when your website settings are updated"
 msgstr ""
 
-#: src/settings-alerts.php:409
+#: src/settings-alerts.php:414
 msgid "Receive email alerts when a file is modified with theme/plugin editor"
 msgstr ""
 
-#: src/settings-alerts.php:410
+#: src/settings-alerts.php:415
 msgid "Receive email alerts when a <b>plugin is installed</b>"
 msgstr ""
 
-#: src/settings-alerts.php:411
+#: src/settings-alerts.php:416
 msgid "Receive email alerts when a <b>plugin is activated</b>"
 msgstr ""
 
-#: src/settings-alerts.php:412
+#: src/settings-alerts.php:417
 msgid "Receive email alerts when a <b>plugin is deactivated</b>"
 msgstr ""
 
-#: src/settings-alerts.php:413
+#: src/settings-alerts.php:418
 msgid "Receive email alerts when a <b>plugin is updated</b>"
 msgstr ""
 
-#: src/settings-alerts.php:414
+#: src/settings-alerts.php:419
 msgid "Receive email alerts when a <b>plugin is deleted</b>"
 msgstr ""
 
-#: src/settings-alerts.php:415
+#: src/settings-alerts.php:420
 msgid "Receive email alerts when a <b>widget is added</b> to a sidebar"
 msgstr ""
 
-#: src/settings-alerts.php:416
+#: src/settings-alerts.php:421
 msgid "Receive email alerts when a <b>widget is deleted</b> from a sidebar"
 msgstr ""
 
-#: src/settings-alerts.php:417
+#: src/settings-alerts.php:422
 msgid "Receive email alerts when a <b>theme is installed</b>"
 msgstr ""
 
-#: src/settings-alerts.php:418
+#: src/settings-alerts.php:423
 msgid "Receive email alerts when a <b>theme is activated</b>"
 msgstr ""
 
-#: src/settings-alerts.php:419
+#: src/settings-alerts.php:424
 msgid "Receive email alerts when a <b>theme is updated</b>"
 msgstr ""
 
-#: src/settings-alerts.php:420
+#: src/settings-alerts.php:425
 msgid "Receive email alerts when a <b>theme is deleted</b>"
 msgstr ""
 
-#: src/settings-alerts.php:464
+#: src/settings-alerts.php:469
 msgid "A total of %s alert events were changed"
 msgstr ""
 
-#: src/settings-alerts.php:468
+#: src/settings-alerts.php:473
 msgid "The alert settings have been updated"
 msgstr ""
 
-#: src/settings-alerts.php:542
+#: src/settings-alerts.php:547
 msgid "Only lowercase letters, numbers, underscores and hyphens are allowed. Post Types cannot exceed 20 characters as well."
 msgstr ""
 
-#: src/settings-alerts.php:544
+#: src/settings-alerts.php:549
 msgid "The post-type is already being ignored (duplicate)."
 msgstr ""
 
-#: src/settings-alerts.php:548
+#: src/settings-alerts.php:553
 msgid "Post-type has been successfully ignored."
 msgstr ""
 
-#: src/settings-alerts.php:550
+#: src/settings-alerts.php:555
 msgid "Changes in <code>%s</code> post-type will be ignored"
 msgstr ""
 
-#: src/settings-alerts.php:565
+#: src/settings-alerts.php:570
 msgid "List of monitored post-types has been updated."
 msgstr ""
 
-#: src/settings-alerts.php:567
+#: src/settings-alerts.php:572
 msgid "List of monitored post-types has been updated"
 msgstr ""
 
-#: src/settings-alerts.php:574
+#: src/settings-alerts.php:579
 #: src/settings-scanner.php:179
 #: src/settings-scanner.php:239
 #: src/strings.php:47
