@@ -10,6 +10,9 @@ define('BASE_DIR', __DIR__ . '/..');
 // TODO: Copy fixtures to a temporary location in the future,
 // so they can be mutated when needed.
 define('SUCURI_DATA_STORAGE', BASE_DIR . '/tests/fixtures');
+define('ABSPATH', __DIR__ . '/../');
 
 require BASE_DIR . '/src/base.lib.php';
+require BASE_DIR . '/src/fileinfo.lib.php';
 require BASE_DIR . '/src/cache.lib.php';
+require BASE_DIR . '/src/hardening.lib.php';
