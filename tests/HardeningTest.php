@@ -15,7 +15,7 @@ final class HardeningTest extends TestCase
         Monkey\setUp();
 
         Functions\when('get_home_path')->justReturn(__DIR__);
-        Functions\when('__')->returnArg(1);
+        Functions\when('__')->returnArg();
 
         $_SERVER['SERVER_SOFTWARE'] = 'apache';
     }
@@ -68,7 +68,11 @@ final class HardeningTest extends TestCase
 
         $hardening->hardenDirectory(SUCURI_DATA_STORAGE);
 
-        $hardening->allow('archive.php', SUCURI_DATA_STORAGE);
+        try {
+            $hardening->allow('archive.php', SUCURI_DATA_STORAGE);
+        } catch (Exception $e) {
+            $this->fail($e->getMessage());
+        }
 
         $this->assertFileExists($this->getHtaccessPath());
 
@@ -91,8 +95,12 @@ final class HardeningTest extends TestCase
 
         $hardening->hardenDirectory(SUCURI_DATA_STORAGE);
 
-        $hardening->allow('archive.php', SUCURI_DATA_STORAGE);
-        $hardening->allow('export.php', SUCURI_DATA_STORAGE);
+        try {
+            $hardening->allow('archive.php', SUCURI_DATA_STORAGE);
+            $hardening->allow('export.php', SUCURI_DATA_STORAGE);
+        } catch (Exception $e) {
+            $this->fail($e->getMessage());
+        }
 
         $this->assertFileExists($this->getHtaccessPath());
 
@@ -116,7 +124,11 @@ final class HardeningTest extends TestCase
 
         $hardening->hardenDirectory(SUCURI_DATA_STORAGE);
 
-        $hardening->allow('archive.php', SUCURI_DATA_STORAGE);
+        try {
+            $hardening->allow('archive.php', SUCURI_DATA_STORAGE);
+        } catch (Exception $e) {
+            $this->fail($e->getMessage());
+        }
 
         $this->assertFileExists($this->getHtaccessPath());
 
@@ -132,8 +144,12 @@ final class HardeningTest extends TestCase
 
         $hardening->hardenDirectory(SUCURI_DATA_STORAGE);
 
-        $hardening->allow('archive.php', SUCURI_DATA_STORAGE);
-        $hardening->allow('export.php', SUCURI_DATA_STORAGE);
+        try {
+            $hardening->allow('archive.php', SUCURI_DATA_STORAGE);
+            $hardening->allow('export.php', SUCURI_DATA_STORAGE);
+        } catch (Exception $e) {
+            $this->fail($e->getMessage());
+        }
 
         $this->assertFileExists($this->getHtaccessPath());
 
@@ -150,9 +166,8 @@ final class HardeningTest extends TestCase
 
     private function getHtaccessContentWithBasicHardening(): string
     {
-        $baseRules = "";
 
-        $baseRules .= "<FilesMatch \"\.(?i:php)$\">\n";
+        $baseRules = "<FilesMatch \"\.(?i:php)$\">\n";
         $baseRules .= "  <IfModule !mod_authz_core.c>\n";
         $baseRules .= "    Order allow,deny\n";
         $baseRules .= "    Deny from all\n";
