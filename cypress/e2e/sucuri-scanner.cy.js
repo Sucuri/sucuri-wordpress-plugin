@@ -218,7 +218,7 @@ describe("Run e2e tests", () => {
 
     cy.get("#sucuriscan_integrity_files_per_page").select("200");
     cy.get(".sucuriscan-is-loading").contains("Loading...");
-    cy.get(".sucuriscan-integrity-filepath").should("have.length", 101);
+    cy.get(".sucuriscan-integrity-filepath").should("have.length", 104);
 
     cy.get("#sucuriscan_integrity_files_per_page").select("15");
     cy.get(".sucuriscan-is-loading").contains("Loading...");
@@ -260,7 +260,7 @@ describe("Run e2e tests", () => {
 
     cy.get("#sucuriscan_integrity_files_per_page").select("200");
     cy.get(".sucuriscan-is-loading").contains("Loading...");
-    cy.get(".sucuriscan-integrity-filepath").should("have.length", 101);
+    cy.get(".sucuriscan-integrity-filepath").should("have.length", 104);
   });
 
   it("can use pagination in integrity diff utility", () => {
@@ -413,7 +413,7 @@ describe("Run e2e tests", () => {
     );
   });
 
-  it("can unblock PHP files", () => {
+  it("allow blocked PHP files do not allow files that do not exist", () => {
     cy.visit("/wp-admin/admin.php?page=sucuriscan_settings#hardening");
 
     cy.get("[data-cy=sucuriscan_hardening_allowlist_input]").type("ok.php");
@@ -422,9 +422,133 @@ describe("Run e2e tests", () => {
     );
     cy.get("[data-cy=sucuriscan_hardening_allowlist_submit]").click();
 
-    cy.get(".sucuriscan-alert-error").contains(
-      "Access control file does not exists",
+    cy.get(".sucuriscan-alert-error").contains("File does not exists");
+  });
+
+  it("can remove legacy rules from allow blocked PHP files", () => {
+    cy.visit("/wp-content/archive-legacy.php").contains("Hello, world!");
+
+    cy.visit("/wp-admin/admin.php?page=sucuriscan_settings#hardening");
+
+    cy.get(".sucuriscan-hardening-allowlist-table")
+      .contains("archive-legacy.php")
+      .parent()
+      .find('input[type="checkbox"]')
+      .click();
+
+    // The /*/ means is using the legacy rule.
+    cy.get(".sucuriscan-hardening-allowlist-table").contains(
+      "/var/www/html/wp-content/.*/archive-legacy.php",
     );
+
+    cy.get("[data-cy=sucuriscan_hardening_remove_allowlist_submit]").click();
+
+    cy.get(".sucuriscan-alert").contains("Selected files have been removed");
+
+    // Now it should be a 403: Forbidden. Check 403 status code.
+    cy.request(
+      {
+        url: "/wp-content/archive-legacy.php",
+        failOnStatusCode: false,
+      },
+      (response) => {
+        expect(response.status).to.eq(403);
+        expect(response.body).contains("Forbidden");
+      },
+    );
+  });
+
+  it("can add and remove from allowlist of blocked PHP files", () => {
+    cy.request(
+      {
+        url: "/wp-content/archive.php",
+        failOnStatusCode: false,
+      },
+      (response) => {
+        expect(response.status).to.eq(403);
+        expect(response.body).contains("Forbidden");
+      },
+    );
+
+    cy.visit("/wp-admin/admin.php?page=sucuriscan_settings#hardening");
+
+    cy.get("[data-cy=sucuriscan_hardening_allowlist_input]").type(
+      "archive.php",
+    );
+    cy.get("[data-cy=sucuriscan_hardening_allowlist_select]").select(
+      "/var/www/html/wp-content",
+    );
+    cy.get("[data-cy=sucuriscan_hardening_allowlist_submit]").click();
+
+    cy.get(".sucuriscan-alert").contains("The file has been allowed");
+
+    cy.request(
+      {
+        url: "/wp-content/archive.php",
+      },
+      (response) => {
+        expect(response.status).to.eq(200);
+        expect(response.body).contains("Hello, world!");
+      },
+    );
+
+    cy.get(".sucuriscan-hardening-allowlist-table")
+      .contains("archive.php")
+      .parent()
+      .find('input[type="checkbox"]')
+      .click();
+
+    cy.get("[data-cy=sucuriscan_hardening_remove_allowlist_submit]").click();
+
+    cy.get(".sucuriscan-alert").contains("Selected files have been removed");
+
+    cy.request(
+      {
+        url: "/wp-content/archive.php",
+        failOnStatusCode: false,
+      },
+      (response) => {
+        expect(response.status).to.eq(403);
+        expect(response.body).contains("Forbidden");
+      },
+    );
+  });
+
+  it("Can add and remove multiple files from the allowlist of blocked PHP files", () => {
+    cy.visit("/wp-admin/admin.php?page=sucuriscan_settings#hardening");
+
+    cy.get("[data-cy=sucuriscan_hardening_allowlist_input]").type(
+      "test-1/test-1.php",
+    );
+    cy.get("[data-cy=sucuriscan_hardening_allowlist_select]").select(
+      "/var/www/html/wp-includes",
+    );
+    cy.get("[data-cy=sucuriscan_hardening_allowlist_submit]").click();
+    cy.get(".sucuriscan-alert").contains("The file has been allowed");
+
+    cy.get("[data-cy=sucuriscan_hardening_allowlist_input]").type(
+      "test-1/test-2.php",
+    );
+    cy.get("[data-cy=sucuriscan_hardening_allowlist_select]").select(
+      "/var/www/html/wp-includes",
+    );
+    cy.get("[data-cy=sucuriscan_hardening_allowlist_submit]").click();
+    cy.get(".sucuriscan-alert").contains("The file has been allowed");
+
+    cy.get("[data-cy=sucuriscan_hardening_allowlist_input]").type(
+      "test-1/test-3.php",
+    );
+    cy.get("[data-cy=sucuriscan_hardening_allowlist_select]").select(
+      "/var/www/html/wp-includes",
+    );
+    cy.get("[data-cy=sucuriscan_hardening_allowlist_submit]").click();
+    cy.get(".sucuriscan-alert").contains("The file has been allowed");
+
+    cy.get("[data-cy=sucuriscan_hardening_select_all]").click();
+
+    cy.get("[data-cy=sucuriscan_hardening_remove_allowlist_submit]").click();
+
+    cy.get(".sucuriscan-alert").contains("Selected files have been removed");
   });
 
   it("can update the secret keys", () => {
