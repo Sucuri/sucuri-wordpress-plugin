@@ -254,7 +254,7 @@ class SucuriScanHardening extends SucuriScan
      */
     private static function allowlistRule($filepath = '', $folder = '')
     {
-        $filepath = str_replace(['<', '>', '..'], '', $filepath);
+        $filepath = str_replace(array('<', '>', '..'), '', $filepath);
         $relative_folder = str_replace(ABSPATH, '/', $folder);
         $relative_folder = '/' . ltrim($relative_folder, '/');
 
@@ -290,7 +290,7 @@ class SucuriScanHardening extends SucuriScan
      */
     private static function allowlistRuleLegacy($filepath = '', $folder = '')
     {
-        $filepath = str_replace(['<', '>', '..'], '', $filepath);
+        $filepath = str_replace(array('<', '>', '..'), '', $filepath);
 
         return sprintf(
             "<Files %s>\n"
@@ -334,10 +334,11 @@ class SucuriScanHardening extends SucuriScan
             throw new Exception(__('Access control file is not writable', 'sucuri-scanner'));
         }
 
-        $fpath = realpath($folder . '/' . $filepath);
+        $rules = self::allowlistRule($filepath, $folder);
+        $content = SucuriScanFileInfo::fileContent($htaccess);
 
-        if (!$fpath) {
-            throw new Exception(__('File does not exists', 'sucuri-scanner'));
+        if (strpos($content, $rules) !== false) {
+            throw new Exception(__('File is already in the allowlist', 'sucuri-scanner'));
         }
 
         return (bool)@file_put_contents(
@@ -383,6 +384,105 @@ class SucuriScanHardening extends SucuriScan
         return (bool)@file_put_contents($htaccess, $content);
     }
 
+    /*
+     * This method is used to get the list of files in the allowlist in a folder.
+     * This returns the list of files with both the old and new patterns.
+     *
+     * @param string $content Content of the .htaccess file.
+     *
+     * @return array List of files in the allowlist.
+     */
+    private static function getFiles($content = '')
+    {
+        preg_match_all('/<Files (\S+)>/', $content, $matches);
+
+        return isset($matches[1]) ? $matches[1] : array();
+    }
+
+    /*
+     * This method is used to get the list of all files with new pattern in the .htaccess file
+     * introduced in version 1.9.5. This pattern is based on the relative URL from the root directory
+     * that the user selected.
+     *
+     * @param string $content Content of the .htaccess file.
+     *
+     * @return array List of files with new pattern in the .htaccess file.
+     */
+    private static function getFilesWithNewPattern($content = '', $folder = '')
+    {
+        preg_match_all('/m#\^(\S+\/(\S+))\$\#/', $content, $newMatches, PREG_SET_ORDER, 0);
+
+        $filesWithNewPattern = array();
+
+        if (empty($newMatches)) {
+            return array();
+        }
+
+        foreach ($newMatches as $match) {
+            $uri = $match[0];
+
+            if (empty($uri)) {
+                continue;
+            }
+
+            $cleaned_uri = str_replace(array('m#^', '$#'), '', $uri);
+
+            $relative_folder_uri = str_replace(ABSPATH, '', $folder);
+            $relative_path = str_replace($relative_folder_uri, '', $cleaned_uri);
+            $relative_path = ltrim($relative_path, '/');
+
+            $filesWithNewPattern[] = array(
+                'file' => basename($cleaned_uri),
+                'relative_path' => $relative_path,
+            );
+        }
+
+        return $filesWithNewPattern;
+    }
+
+    /* This method is used to build the allowlist from the list of files and files with new pattern.
+     *
+     * @param array $files List of files in the allowlist.
+     * @param array $filesWithNewPattern List of files with new pattern in the .htaccess file.
+     *
+     * @return array List of files in the allowlist.
+     */
+    private static function buildAllowlist($files = [], $filesWithNewPattern = [])
+    {
+        if (empty($files)) {
+            return array();
+        }
+
+        $processed_files = array();
+        foreach ($files as $file) {
+            $wildcard_pattern = true;
+            $relative_path = '';
+
+            // If this file is found in newPatternFiles, it should not be marked as a wildcard pattern
+            foreach ($filesWithNewPattern as $patternFile) {
+                if ($patternFile['file'] === $file) {
+                    if (isset($processed_files[$file])) {
+                        continue;
+                    }
+
+                    $wildcard_pattern = false;
+                    $relative_path = $patternFile['relative_path'];
+                    break;
+                }
+            }
+
+            $processed_files[$file] = true;
+
+            $allowlist[] = array(
+                'file' => $file,
+                'relative_path' => $relative_path ?: $file,
+                'wildcard_pattern' => $wildcard_pattern,
+            );
+        }
+
+        return $allowlist;
+    }
+
     /**
      * Returns a list of files in the allowlist in folder.
      *
@@ -397,75 +497,10 @@ class SucuriScanHardening extends SucuriScan
         $htaccess = self::htaccess($folder);
         $content = SucuriScanFileInfo::fileContent($htaccess);
 
-        $allowlist = [];
+        $matches = self::getFiles($content);
+        $filesWithNewPattern = self::getFilesWithNewPattern($content, $folder);
 
-        // Match all explicitly allowed files (old pattern)
-        preg_match_all('/<Files (\S+)>/', $content, $matches);
-
-        // Match new pattern with REQUEST_URI condition
-        preg_match_all('/m#\^(\S+\/(\S+))\$\#/', $content, $newMatches, PREG_SET_ORDER, 0);
-
-        $newPatternFiles = [];
-        if (!empty($newMatches)) {
-            foreach ($newMatches as $match) {
-                $uri = $match[0];
-
-                if (empty($uri)) {
-                    continue;
-                }
-
-                // Clean up the URI pattern
-                $cleaned_uri = str_replace(['m#^', '$#'], '', $uri);
-
-                // Extract the relative folder URI from the folder (make relative to web root)
-                $relative_folder_uri = str_replace(ABSPATH, '', $folder);
-
-                // Extract the relative path from the cleaned URI
-                $relative_path = str_replace($relative_folder_uri, '', $cleaned_uri);
-
-                // Ensure there is no leading slash
-                $relative_path = ltrim($relative_path, '/');
-
-                // Add file and relative path to the newPatternFiles array
-                $newPatternFiles[] = [
-                    'file' => basename($cleaned_uri),
-                    'relative_path' => $relative_path,
-                ];
-            }
-        }
-
-        $processed_files = []; // Keep track of processed files
-
-        if (!empty($matches[1])) {
-            foreach ($matches[1] as $file) {
-                $wildcard_pattern = true;
-                $relative_path = '';
-
-                // If this file is found in newPatternFiles, it should not be marked as a wildcard pattern
-                foreach ($newPatternFiles as $patternFile) {
-                    if ($patternFile['file'] === $file) {
-                        // Check if this file has already been processed without a REQUEST_URI match
-                        if (isset($processed_files[$file])) {
-                            continue;
-                        }
-
-                        $wildcard_pattern = false;
-                        $relative_path = $patternFile['relative_path'];
-                        break;
-                    }
-                }
-
-                // Mark the file as processed
-                $processed_files[$file] = true;
-
-                // Add to allowlist
-                $allowlist[] = [
-                    'file' => $file,
-                    'relative_path' => $relative_path ?: $file,
-                    'wildcard_pattern' => $wildcard_pattern,
-                ];
-            }
-        }
+        $allowlist = self::buildAllowlist($matches, $filesWithNewPattern);
 
         return $allowlist;
     }
