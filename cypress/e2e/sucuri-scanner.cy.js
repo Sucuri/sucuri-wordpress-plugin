@@ -413,16 +413,27 @@ describe("Run e2e tests", () => {
     );
   });
 
-  it("allow blocked PHP files do not allow files that do not exist", () => {
+  it("cannot add the same file twice to the allowlist", () => {
     cy.visit("/wp-admin/admin.php?page=sucuriscan_settings#hardening");
 
-    cy.get("[data-cy=sucuriscan_hardening_allowlist_input]").type("ok.php");
+    cy.get("[data-cy=sucuriscan_hardening_allowlist_input]").type(
+      "test-1/testing.php",
+    );
     cy.get("[data-cy=sucuriscan_hardening_allowlist_select]").select(
       "/var/www/html/wp-includes",
     );
     cy.get("[data-cy=sucuriscan_hardening_allowlist_submit]").click();
+    cy.get(".sucuriscan-alert").contains("The file has been allowed");
 
-    cy.get(".sucuriscan-alert-error").contains("File does not exists");
+    cy.get("[data-cy=sucuriscan_hardening_allowlist_input]").type(
+      "test-1/testing.php",
+    );
+
+    cy.get("[data-cy=sucuriscan_hardening_allowlist_select]").select(
+      "/var/www/html/wp-includes",
+    );
+    cy.get("[data-cy=sucuriscan_hardening_allowlist_submit]").click();
+    cy.get(".sucuriscan-alert").contains("File is already in the allowlist");
   });
 
   it("can remove legacy rules from allow blocked PHP files", () => {
