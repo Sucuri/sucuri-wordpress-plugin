@@ -762,7 +762,7 @@ class SucuriScanHardeningPage extends SucuriScan
                     }
 
                     if ($pattern === false) {
-                        $pattern = 'File does not exist';
+                        $pattern = $folder . '/' . $file['relative_path'];
                     }
 
                     $html = SucuriScanTemplate::getSnippet(

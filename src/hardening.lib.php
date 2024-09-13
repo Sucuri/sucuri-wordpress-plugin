@@ -447,11 +447,13 @@ class SucuriScanHardening extends SucuriScan
      *
      * @return array List of files in the allowlist.
      */
-    private static function buildAllowlist($files = [], $filesWithNewPattern = [])
+    private static function buildAllowlist($files = array(), $filesWithNewPattern = array())
     {
         if (empty($files)) {
             return array();
         }
+
+        $allowlist = array();
 
         $processed_files = array();
         foreach ($files as $file) {
