@@ -724,20 +724,31 @@ class SucuriScanHardeningPage extends SucuriScan
 
             // Remove a file from the hardening allowlist.
             $rmfwhite = SucuriScanRequest::post(':hardening_rmfwhite', '_array');
+            $rmferror = false;
 
             if ($rmfwhite) {
                 foreach ($rmfwhite as $fpath) {
                     $is_legacy = strpos($fpath, '/.*/') !== false;
                     $finfo = SucuriScanHardening::getFolderAndFilePath($fpath, $allowed_folders);
 
+                    // File is not in the $allowed_folders.
+                    if ($finfo === false) {
+                        $rmferror = true;
+                        continue;
+                    }
+
                     SucuriScanHardening::removeFromAllowlist(
                         $finfo['relative_path'],
-                        $finfo['root_directory'],
+                        $finfo['base_directory'],
                         $is_legacy
                     );
                 }
 
-                SucuriScanInterface::info(__('Selected files have been removed', 'sucuri-scanner'));
+                if ($rmferror) {
+                    SucuriScanInterface::error(__('Some files could not be removed', 'sucuri-scanner'));
+                } else {
+                    SucuriScanInterface::info(__('Selected files have been removed', 'sucuri-scanner'));
+                }
             }
         }
 

@@ -60,26 +60,27 @@ class SucuriScanHardening extends SucuriScan
      * @return array|false  Array with the root directory and relative path
      *                      or null if the file is not in an allowed folder.
      */
-    public static function getFolderAndFilePath($fullPath, $allowed_folders)
+    public static function getFolderAndFilePath($path = '', $allowed_folders = array())
     {
-        $bestMatch = false;
+        $best_match = false;
 
-        foreach ($allowed_folders as $rootDirectory) {
-            if (strpos($fullPath, $rootDirectory . DIRECTORY_SEPARATOR) === 0) {
-                if ($bestMatch === false || substr_count(
-                    $rootDirectory,
+        foreach ($allowed_folders as $base_directory) {
+            if (strpos($path, $base_directory . DIRECTORY_SEPARATOR) === 0) {
+                if ($best_match === false || substr_count(
+                    $base_directory,
                     DIRECTORY_SEPARATOR
-                ) > substr_count($bestMatch['root_directory'], DIRECTORY_SEPARATOR)) {
-                    $relativePath = str_replace($rootDirectory . DIRECTORY_SEPARATOR, '', $fullPath);
-                    $bestMatch = array(
-                        'root_directory' => $rootDirectory,
-                        'relative_path' => $relativePath
+                ) > substr_count($best_match['base_directory'], DIRECTORY_SEPARATOR)) {
+                    $relative_path = str_replace($base_directory . DIRECTORY_SEPARATOR, '', $path);
+
+                    $best_match = array(
+                        'base_directory' => $base_directory,
+                        'relative_path' => $relative_path
                     );
                 }
             }
         }
 
-        return $bestMatch;
+        return $best_match;
     }
 
     /**
@@ -410,15 +411,15 @@ class SucuriScanHardening extends SucuriScan
      */
     private static function getFilesWithNewPattern($content = '', $folder = '')
     {
-        preg_match_all('/m#\^(\S+\/(\S+))\$\#/', $content, $newMatches, PREG_SET_ORDER, 0);
+        preg_match_all('/m#\^(\S+\/(\S+))\$\#/', $content, $new_matches, PREG_SET_ORDER, 0);
 
-        $filesWithNewPattern = array();
+        $files_with_new_pattern = array();
 
-        if (empty($newMatches)) {
+        if (empty($new_matches)) {
             return array();
         }
 
-        foreach ($newMatches as $match) {
+        foreach ($new_matches as $match) {
             $uri = $match[0];
 
             if (empty($uri)) {
@@ -431,13 +432,13 @@ class SucuriScanHardening extends SucuriScan
             $relative_path = str_replace($relative_folder_uri, '', $cleaned_uri);
             $relative_path = ltrim($relative_path, '/');
 
-            $filesWithNewPattern[] = array(
+            $files_with_new_pattern[] = array(
                 'file' => basename($cleaned_uri),
                 'relative_path' => $relative_path,
             );
         }
 
-        return $filesWithNewPattern;
+        return $files_with_new_pattern;
     }
 
     /* This method is used to build the allowlist from the list of files and files with new pattern.
@@ -447,28 +448,28 @@ class SucuriScanHardening extends SucuriScan
      *
      * @return array List of files in the allowlist.
      */
-    private static function buildAllowlist($files = array(), $filesWithNewPattern = array())
+    private static function buildAllowlist($files = array(), $files_with_new_pattern = array())
     {
         if (empty($files)) {
             return array();
         }
 
         $allowlist = array();
-
         $processed_files = array();
+
         foreach ($files as $file) {
             $wildcard_pattern = true;
             $relative_path = '';
 
-            // If this file is found in newPatternFiles, it should not be marked as a wildcard pattern
-            foreach ($filesWithNewPattern as $patternFile) {
-                if ($patternFile['file'] === $file) {
+            // If this file is found in $files_with_new_pattern, it should not be marked as a wildcard pattern
+            foreach ($files_with_new_pattern as $file_new_pattern) {
+                if ($file_new_pattern['file'] === $file) {
                     if (isset($processed_files[$file])) {
                         continue;
                     }
 
                     $wildcard_pattern = false;
-                    $relative_path = $patternFile['relative_path'];
+                    $relative_path = $file_new_pattern['relative_path'];
                     break;
                 }
             }
@@ -499,10 +500,10 @@ class SucuriScanHardening extends SucuriScan
         $htaccess = self::htaccess($folder);
         $content = SucuriScanFileInfo::fileContent($htaccess);
 
-        $matches = self::getFiles($content);
-        $filesWithNewPattern = self::getFilesWithNewPattern($content, $folder);
+        $files = self::getFiles($content);
+        $files_with_new_pattern = self::getFilesWithNewPattern($content, $folder);
 
-        $allowlist = self::buildAllowlist($matches, $filesWithNewPattern);
+        $allowlist = self::buildAllowlist($files, $files_with_new_pattern);
 
         return $allowlist;
     }

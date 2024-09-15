@@ -257,4 +257,47 @@ final class HardeningTest extends TestCase
 
         return trim($baseContent);
     }
+
+    public function testGetFolderAndFilePath()
+    {
+        $allowed_folders = [
+            '/var/www/html/wp-includes',
+            '/var/www/html/wp-content',
+            '/var/www/html/wp-content/uploads'
+        ];
+
+        // Test case 1: File in wp-includes
+        $path = '/var/www/html/wp-includes/class-wp.php';
+        $expected = [
+            'base_directory' => '/var/www/html/wp-includes',
+            'relative_path' => 'class-wp.php'
+        ];
+
+        $this->assertSame($expected, SucuriScanHardening::getFolderAndFilePath($path, $allowed_folders));
+
+        // Test case 2: File in wp-content
+        $path = '/var/www/html/wp-content/plugins/plugin.php';
+        $expected = [
+            'base_directory' => '/var/www/html/wp-content',
+            'relative_path' => 'plugins/plugin.php'
+        ];
+        $this->assertSame($expected, SucuriScanHardening::getFolderAndFilePath($path, $allowed_folders));
+
+        // Test case 3: File in wp-content/uploads
+        $path = '/var/www/html/wp-content/uploads/inside-folder/inside-folder/archive.php';
+        $expected = [
+            'base_directory' => '/var/www/html/wp-content/uploads',
+            'relative_path' => 'inside-folder/inside-folder/archive.php'
+        ];
+
+        $this->assertSame($expected, SucuriScanHardening::getFolderAndFilePath($path, $allowed_folders));
+
+        // Test case 4: Directory boundary - should not match
+        $path = '/var/www/html/wp-content2/plugins/plugin.php';
+        $this->assertFalse(SucuriScanHardening::getFolderAndFilePath($path, $allowed_folders));
+
+        // Test case 5: File not in allowed folders
+        $path = '/var/www/html/wp-admin/admin.php';
+        $this->assertFalse(SucuriScanHardening::getFolderAndFilePath($path, $allowed_folders));
+    }
 }
