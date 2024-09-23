@@ -1,7 +1,7 @@
 name: Unit tests
 
 # Triggers the workflow on push or pull request events
-on: [push, pull_request]
+on: [ push, pull_request ]
 
 jobs:
   # Runs the unit test suite.
@@ -23,7 +23,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.4'
+          php-version: '8.3'
           tools: composer
 
       - name: Install dependencies

@@ -50,6 +50,39 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  */
 class SucuriScanHardening extends SucuriScan
 {
+    /*
+     * This method is used to extract the folder and relative path (from one of the allowed folders)
+     * given a full path and a list of allowed folders.
+     *
+     * @param string $fullPath Full path to the file.
+     * @param array $allowed_folders List of allowed folders.
+     *
+     * @return array|false  Array with the root directory and relative path
+     *                      or null if the file is not in an allowed folder.
+     */
+    public static function getFolderAndFilePath($path = '', $allowed_folders = array())
+    {
+        $best_match = false;
+
+        foreach ($allowed_folders as $base_directory) {
+            if (strpos($path, $base_directory . DIRECTORY_SEPARATOR) === 0) {
+                if ($best_match === false || substr_count(
+                    $base_directory,
+                    DIRECTORY_SEPARATOR
+                ) > substr_count($best_match['base_directory'], DIRECTORY_SEPARATOR)) {
+                    $relative_path = str_replace($base_directory . DIRECTORY_SEPARATOR, '', $path);
+
+                    $best_match = array(
+                        'base_directory' => $base_directory,
+                        'relative_path' => $relative_path
+                    );
+                }
+            }
+        }
+
+        return $best_match;
+    }
+
     /**
      * Returns a list of access control rules for the Apache web server that can be
      * used to deny and allow certain files to be accessed by certain network nodes.
@@ -79,7 +112,7 @@ class SucuriScanHardening extends SucuriScan
      * The permissions to modify the file are checked before anything else, this
      * method is self-contained.
      *
-     * @param  string $directory Valid directory path where to place the access rules.
+     * @param string $directory Valid directory path where to place the access rules.
      * @return bool              True if the rules are successfully added, false otherwise.
      */
     public static function hardenDirectory($directory = '')
@@ -111,7 +144,7 @@ class SucuriScanHardening extends SucuriScan
         $written = @fwrite($fhandle, "\n" . $rules_text . "\n");
         @fclose($fhandle);
 
-        return (bool) ($written !== false);
+        return (bool)($written !== false);
     }
 
     /**
@@ -119,7 +152,7 @@ class SucuriScanHardening extends SucuriScan
      * all files with certain extension in any mixed case. The file is truncated if
      * after the operation its size is equals to zero.
      *
-     * @param  string $directory Valid directory path where to access rules are.
+     * @param string $directory Valid directory path where to access rules are.
      * @return bool              True if the rules are successfully deleted, false otherwise.
      */
     public static function unhardenDirectory($directory = '')
@@ -140,13 +173,13 @@ class SucuriScanHardening extends SucuriScan
             @unlink($fpath);
         }
 
-        return (bool) ($written !== false);
+        return (bool)($written !== false);
     }
 
     /**
      * Remove the hardening applied in previous versions.
      *
-     * @param  string $directory Valid directory path.
+     * @param string $directory Valid directory path.
      * @return bool              True if the access control file was fixed.
      */
     private static function fixPreviousHardening($directory = '')
@@ -163,13 +196,13 @@ class SucuriScanHardening extends SucuriScan
         $content = str_replace($rules, '', $content);
         $written = @file_put_contents($fpath, $content);
 
-        return (bool) ($written !== false);
+        return (bool)($written !== false);
     }
 
     /**
      * Check whether a directory is hardened or not.
      *
-     * @param  string $directory Valid directory path.
+     * @param string $directory Valid directory path.
      * @return bool              True if the directory is hardened, false otherwise.
      */
     public static function isHardened($directory = '')
@@ -183,13 +216,13 @@ class SucuriScanHardening extends SucuriScan
         $deny_rules = self::getRules();
         $rules_text = implode("\n", $deny_rules);
 
-        return (bool) (strpos($content, $rules_text) !== false);
+        return (bool)(strpos($content, $rules_text) !== false);
     }
 
     /**
      * Returns the path to the Apache access control file.
      *
-     * @param  string $folder Folder where the htaccess file is supposed to be.
+     * @param string $folder Folder where the htaccess file is supposed to be.
      * @return string         Path to the htaccess file in the specified folder.
      */
     private static function htaccess($folder = '')
@@ -206,19 +239,59 @@ class SucuriScanHardening extends SucuriScan
     /**
      * Generates Apache access control rules for a file.
      *
-     * Assumming that the directory hosting the specified file is hardened, this
+     * Assuming that the directory hosting the specified file is hardened, this
+     * method will generate the necessary rules to allowlist such file so anyone
+     * can send a direct request to it. The method will generate both the rules
+     * for Apache 2.4.
+     *
+     * Please note that since v1.9.5 we allow relatives paths to be used in the
+     * REQUEST_URI condition. This is useful when the file is located in a subfolder
+     * of the folder being hardened.
+     *
+     * @param string $filepath File path to be ignored by the hardening.
+     * @param string $folder Folder hosting the specified file.
+     *
+     * @return string       Access control rules to allowlist the file.
+     */
+    private static function allowlistRule($filepath = '', $folder = '')
+    {
+        $filepath = str_replace(array('<', '>', '..'), '', $filepath);
+        $relative_folder = str_replace(ABSPATH, '/', $folder);
+        $relative_folder = '/' . ltrim($relative_folder, '/');
+
+        $path = sprintf(
+            "<Files %s>\n"
+            . "  <If \"%%{REQUEST_URI} =~ m#^%s/%s$#\">\n"
+            . "    <IfModule !mod_authz_core.c>\n"
+            . "      Allow from all\n"
+            . "    </IfModule>\n"
+            . "    <IfModule mod_authz_core.c>\n"
+            . "      Require all granted\n"
+            . "    </IfModule>\n"
+            . "  </If>\n"
+            . "</Files>\n",
+            basename($filepath),
+            rtrim($relative_folder, '/'),
+            $filepath
+        );
+
+        return $path;
+    }
+
+    /**
+     * Generates Apache access control rules for a file (legacy).
+     *
+     * Assuming that the directory hosting the specified file is hardened, this
      * method will generate the necessary rules to allowlist such file so anyone
      * can send a direct request to it. The method will generate both the rules
      * for Apache 2.4 and a compatibility conditional for older versions.
      *
-     * @param  string $file File to be ignored by the hardening.
+     * @param string $filepath File to be ignored by the hardening.
      * @return string       Access control rules to allowlist the file.
      */
-    private static function allowlistRule($file = '')
+    private static function allowlistRuleLegacy($filepath = '', $folder = '')
     {
-        $file = str_replace('/', '', $file);
-        $file = str_replace('<', '', $file);
-        $file = str_replace('>', '', $file);
+        $filepath = str_replace(array('<', '>', '..'), '', $filepath);
 
         return sprintf(
             "<Files %s>\n"
@@ -228,8 +301,8 @@ class SucuriScanHardening extends SucuriScan
             . "  <IfModule mod_authz_core.c>\n"
             . "    Require all granted\n"
             . "  </IfModule>\n"
-            . "</Files>\n",
-            $file
+            . "</Files>",
+            basename($filepath)
         );
     }
 
@@ -242,11 +315,11 @@ class SucuriScanHardening extends SucuriScan
      * admin can ignore this hardening in one or more files if direct access to
      * it is required, as is the case with some 3rd-party plugins and themes.
      *
-     * @param  string $file   File to be ignored by the hardening.
-     * @param  string $folder Folder hosting the specified file.
+     * @param string $filepath File to be ignored by the hardening.
+     * @param string $folder Folder hosting the specified file.
      * @return bool           True if the file has been added to the allowlist, false otherwise.
      */
-    public static function allow($file = '', $folder = '')
+    public static function allow($filepath = '', $folder = '')
     {
         if (SucuriScan::isNginxServer() || SucuriScan::isIISServer()) {
             throw new Exception(__('Access control file is not supported', 'sucuri-scanner'));
@@ -262,9 +335,16 @@ class SucuriScanHardening extends SucuriScan
             throw new Exception(__('Access control file is not writable', 'sucuri-scanner'));
         }
 
-        return (bool) @file_put_contents(
+        $rules = self::allowlistRule($filepath, $folder);
+        $content = SucuriScanFileInfo::fileContent($htaccess);
+
+        if (strpos($content, $rules) !== false) {
+            throw new Exception(__('File is already in the allowlist', 'sucuri-scanner'));
+        }
+
+        return (bool)@file_put_contents(
             $htaccess,
-            "\n" . self::allowlistRule($file),
+            "\n" . self::allowlistRule($filepath, $folder),
             FILE_APPEND
         );
     }
@@ -279,12 +359,15 @@ class SucuriScanHardening extends SucuriScan
      * theme required it, they can decide to remove this file from the allowlist using this
      * method which is executed by one of the tools in the settings page.
      *
-     * @param  string $file   File to stop ignoring from the hardening.
-     * @param  string $folder Folder hosting the specified file.
-     * @return bool           True if the file has been removed from the allowlist, false otherwise.
+     * @param string $filepath File to stop ignoring from the hardening.
+     * @param string $folder Folder hosting the specified file.
+     * @param bool $is_legacy Whether to use the legacy allowlist rule.
+     *
+     * @return bool          True if the file has been removed from the allowlist, false otherwise.
      */
-    public static function removeFromAllowlist($file = '', $folder = '')
+    public static function removeFromAllowlist($filepath = '', $folder = '', $is_legacy = false)
     {
+        $rules = self::allowlistRule($filepath, $folder);
         $htaccess = self::htaccess($folder);
         $content = SucuriScanFileInfo::fileContent($htaccess);
 
@@ -292,25 +375,136 @@ class SucuriScanHardening extends SucuriScan
             return self::throwException(__('Cannot remove file from the allowlist; no permissions.', 'sucuri-scanner'));
         }
 
-        $rules = self::allowlistRule($file);
+        if ($is_legacy) {
+            $rules = self::allowlistRuleLegacy($filepath, $folder);
+        }
+
         $content = str_replace($rules, '', $content);
         $content = rtrim($content) . "\n";
 
-        return (bool) @file_put_contents($htaccess, $content);
+        return (bool)@file_put_contents($htaccess, $content);
+    }
+
+    /*
+     * This method is used to get the list of files in the allowlist in a folder.
+     * This returns the list of files with both the old and new patterns.
+     *
+     * @param string $content Content of the .htaccess file.
+     *
+     * @return array List of files in the allowlist.
+     */
+    private static function getFiles($content = '')
+    {
+        preg_match_all('/<Files (\S+)>/', $content, $matches);
+
+        return isset($matches[1]) ? $matches[1] : array();
+    }
+
+    /*
+     * This method is used to get the list of all files with new pattern in the .htaccess file
+     * introduced in version 1.9.5. This pattern is based on the relative URL from the root directory
+     * that the user selected.
+     *
+     * @param string $content Content of the .htaccess file.
+     *
+     * @return array List of files with new pattern in the .htaccess file.
+     */
+    private static function getFilesWithNewPattern($content = '', $folder = '')
+    {
+        preg_match_all('/m#\^(\S+\/(\S+))\$\#/', $content, $new_matches, PREG_SET_ORDER, 0);
+
+        $files_with_new_pattern = array();
+
+        if (empty($new_matches)) {
+            return array();
+        }
+
+        foreach ($new_matches as $match) {
+            $uri = $match[0];
+
+            if (empty($uri)) {
+                continue;
+            }
+
+            $cleaned_uri = str_replace(array('m#^', '$#'), '', $uri);
+
+            $relative_folder_uri = str_replace(ABSPATH, '', $folder);
+            $relative_path = str_replace($relative_folder_uri, '', $cleaned_uri);
+            $relative_path = ltrim($relative_path, '/');
+
+            $files_with_new_pattern[] = array(
+                'file' => basename($cleaned_uri),
+                'relative_path' => $relative_path,
+            );
+        }
+
+        return $files_with_new_pattern;
+    }
+
+    /* This method is used to build the allowlist from the list of files and files with new pattern.
+     *
+     * @param array $files List of files in the allowlist.
+     * @param array $filesWithNewPattern List of files with new pattern in the .htaccess file.
+     *
+     * @return array List of files in the allowlist.
+     */
+    private static function buildAllowlist($files = array(), $files_with_new_pattern = array())
+    {
+        if (empty($files)) {
+            return array();
+        }
+
+        $allowlist = array();
+        $processed_files = array();
+
+        foreach ($files as $file) {
+            $wildcard_pattern = true;
+            $relative_path = '';
+
+            // If this file is found in $files_with_new_pattern, it should not be marked as a wildcard pattern
+            foreach ($files_with_new_pattern as $file_new_pattern) {
+                if ($file_new_pattern['file'] === $file) {
+                    if (isset($processed_files[$file])) {
+                        continue;
+                    }
+
+                    $wildcard_pattern = false;
+                    $relative_path = $file_new_pattern['relative_path'];
+                    break;
+                }
+            }
+
+            $processed_files[$file] = true;
+
+            $allowlist[] = array(
+                'file' => $file,
+                'relative_path' => $relative_path ?: $file,
+                'wildcard_pattern' => $wildcard_pattern,
+            );
+        }
+
+        return $allowlist;
     }
 
     /**
      * Returns a list of files in the allowlist in folder.
      *
-     * @param  string $folder Directory to scan for files in the allowlist.
-     * @return array          List of files in the allowlist, false on failure.
+     * @param string $folder Directory to scan for files in the allowlist.
+     * @return array         List of files in the allowlist. Each file is an array with the keys:
+     *                       - file: The name of the file.
+     *                       - relative_path: The relative path of the file.
+     *                       - wildcard_pattern: Whether the file is a wildcard pattern.
      */
     public static function getAllowlist($folder = '')
     {
         $htaccess = self::htaccess($folder);
         $content = SucuriScanFileInfo::fileContent($htaccess);
-        @preg_match_all('/<Files (\S+)>/', $content, $matches);
 
-        return $matches[1];
+        $files = self::getFiles($content);
+        $files_with_new_pattern = self::getFilesWithNewPattern($content, $folder);
+
+        $allowlist = self::buildAllowlist($files, $files_with_new_pattern);
+
+        return $allowlist;
     }
 }
