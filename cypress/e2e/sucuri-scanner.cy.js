@@ -529,7 +529,7 @@ describe("Run e2e tests", () => {
     cy.visit("/wp-admin/admin.php?page=sucuriscan_settings#hardening");
 
     cy.get("[data-cy=sucuriscan_hardening_allowlist_input]").type(
-      "test-1/test-1.php",
+      "/test-1/test-1.php",
     );
     cy.get("[data-cy=sucuriscan_hardening_allowlist_select]").select(
       "/var/www/html/wp-includes",
