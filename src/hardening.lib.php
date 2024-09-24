@@ -272,7 +272,7 @@ class SucuriScanHardening extends SucuriScan
             . "</Files>\n",
             basename($filepath),
             rtrim($relative_folder, '/'),
-            $filepath
+            ltrim($filepath, '/')
         );
 
         return $path;
