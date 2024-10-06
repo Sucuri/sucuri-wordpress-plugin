@@ -1484,4 +1484,23 @@ h3.lead {
     margin-left: 10px;
 }
 
+#sucuriscan-filters {
+    margin-bottom: 30px;
+}
 
+#sucuriscan-filters .filter-container {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    row-gap: 5px;
+}
+
+#sucuriscan-filters select,
+#sucuriscan-filters input,
+#sucuriscan-filters button {
+    margin-right: 7px;
+}
+
+#clear-filter-button {
+    display: none;
+}

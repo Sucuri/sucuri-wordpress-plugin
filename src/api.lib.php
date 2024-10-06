@@ -57,7 +57,7 @@ class SucuriScanAPI extends SucuriScanOption
      * URL, because of this we decided to write our own URL query builder to
      * keep control of the output.
      *
-     * @param  array $params May be an array or object containing properties.
+     * @param array $params May be an array or object containing properties.
      * @return string        Returns a URL-encoded string.
      */
     private static function buildQuery($params = array())
@@ -79,10 +79,10 @@ class SucuriScanAPI extends SucuriScanOption
      * @see https://secure.php.net/manual/en/book.curl.php
      * @see https://developer.wordpress.org/reference/classes/wp_http/request/
      *
-     * @param  string $url    The target URL where the request will be sent.
-     * @param  string $method HTTP method that will be used to send the request.
-     * @param  array  $params Parameters for the request defined in an associative array.
-     * @param  array  $args   Request arguments like the timeout, headers, cookies, etc.
+     * @param string $url The target URL where the request will be sent.
+     * @param string $method HTTP method that will be used to send the request.
+     * @param array $params Parameters for the request defined in an associative array.
+     * @param array $args Request arguments like the timeout, headers, cookies, etc.
      * @return mixed          HTTP response, JSON-decoded array, or false on failure.
      */
     public static function apiCall($url = '', $method = 'GET', $params = array(), $args = array())
@@ -100,7 +100,7 @@ class SucuriScanAPI extends SucuriScanOption
         $args = is_array($args) ? $args : array();
 
         if (isset($args['timeout'])) {
-            $timeout = (int) $args['timeout'];
+            $timeout = (int)$args['timeout'];
         }
 
         /* include request arguments */
@@ -161,19 +161,19 @@ class SucuriScanAPI extends SucuriScanOption
     /**
      * Check whether the plugin API key is valid or not.
      *
-     * @param  string $api_key An unique string to identify this installation.
+     * @param string $api_key An unique string to identify this installation.
      * @return bool            True if the API key is valid, false otherwise.
      */
     private static function isValidKey($api_key = '')
     {
-        return (bool) @preg_match('/^[a-z0-9]{32}$/', $api_key);
+        return (bool)@preg_match('/^[a-z0-9]{32}$/', $api_key);
     }
 
     /**
      * Store the API key locally.
      *
-     * @param  string $api_key  An unique string of characters to identify this installation.
-     * @param  bool   $validate Whether the format of the key should be validated before store it.
+     * @param string $api_key An unique string of characters to identify this installation.
+     * @param bool $validate Whether the format of the key should be validated before store it.
      * @return bool             Either true or false if the key was saved successfully or not respectively.
      */
     public static function setPluginKey($api_key = '', $validate = false)
@@ -183,7 +183,10 @@ class SucuriScanAPI extends SucuriScanOption
         }
 
         if (!empty($api_key)) {
-            SucuriScanEvent::notifyEvent('plugin_change', sprintf(__('API key was successfully set: %s', 'sucuri-scanner'), $api_key));
+            SucuriScanEvent::notifyEvent(
+                'plugin_change',
+                sprintf(__('API key was successfully set: %s', 'sucuri-scanner'), $api_key)
+            );
         }
 
         return self::updateOption(':api_key', $api_key);
@@ -208,10 +211,10 @@ class SucuriScanAPI extends SucuriScanOption
     /**
      * Call an action from the remote API interface of our WordPress service.
      *
-     * @param  string $method       HTTP method that will be used to send the request.
-     * @param  array  $params       Parameters for the request defined in an associative array of key-value.
-     * @param  bool   $send_api_key Whether the API key should be added to the request parameters or not.
-     * @param  array  $args         Request arguments like the timeout, redirections, headers, cookies, etc.
+     * @param string $method HTTP method that will be used to send the request.
+     * @param array $params Parameters for the request defined in an associative array of key-value.
+     * @param bool $send_api_key Whether the API key should be added to the request parameters or not.
+     * @param array $args Request arguments like the timeout, redirections, headers, cookies, etc.
      * @return array|bool           Response object after the HTTP request is executed.
      */
     public static function apiCallWordpress($method = 'GET', $params = array(), $send_api_key = true, $args = array())
@@ -254,7 +257,7 @@ class SucuriScanAPI extends SucuriScanOption
      * address of the site administrator was changed so the data is not valid
      * anymore.
      *
-     * @param  array $res HTTP response after API endpoint execution.
+     * @param array $res HTTP response after API endpoint execution.
      * @return bool       False if the API call failed, true otherwise.
      */
     public static function handleResponse($res = array())
@@ -288,7 +291,7 @@ class SucuriScanAPI extends SucuriScanOption
         if (stripos($raw, 'log file not found') !== false) {
             $key = SucuriScanOption::getOption(':api_key');
             $msg .= '; this generally happens when you use an invalid API key,'
-            . ' or when the connection with the API service suddently closes.';
+                . ' or when the connection with the API service suddently closes.';
 
             SucuriScanEvent::reportCriticalEvent($msg);
         }
@@ -311,9 +314,9 @@ class SucuriScanAPI extends SucuriScanOption
             || stripos($raw, 'SSL connect error')
         ) {
             $msg .= '. The website seems to be using an old version of the Ope'
-            . 'nSSL library or the CURL extension was compiled without support'
-            . ' for the algorithm used in the certificate installed in the API'
-            . ' service. Contact your hosting provider to fix this issue.';
+                . 'nSSL library or the CURL extension was compiled without support'
+                . ' for the algorithm used in the certificate installed in the API'
+                . ' service. Contact your hosting provider to fix this issue.';
         }
 
         // Check if the MX records as missing for API registration.
@@ -327,7 +330,7 @@ class SucuriScanAPI extends SucuriScanOption
     /**
      * Send a request to the API to register this site.
      *
-     * @param  string $email Optional email address for the registration.
+     * @param string $email Optional email address for the registration.
      * @return bool          True if the API key was generated, false otherwise.
      */
     public static function registerSite($email = '')
@@ -381,7 +384,10 @@ class SucuriScanAPI extends SucuriScanOption
             return false;
         }
 
-        SucuriScanEvent::notifyEvent('plugin_change', sprintf(__('API key recovery for domain: %s', 'sucuri-scanner'), $domain));
+        SucuriScanEvent::notifyEvent(
+            'plugin_change',
+            sprintf(__('API key recovery for domain: %s', 'sucuri-scanner'), $domain)
+        );
 
         return SucuriScanInterface::info($res['output']['message']);
     }
@@ -389,7 +395,7 @@ class SucuriScanAPI extends SucuriScanOption
     /**
      * Retrieve the event logs registered by the API service.
      *
-     * @param  int $lines Maximum number of logs to return.
+     * @param int $lines Maximum number of logs to return.
      * @return array|bool The data structure with the logs.
      */
     public static function getAuditLogs($lines = 50)
@@ -417,10 +423,10 @@ class SucuriScanAPI extends SucuriScanOption
      * Returns the security logs from the system queue.
      * In case the logs comes from the queue, set key "from_queue" to true,
      * as the parse function later will need to prevent timezone conflicts.
-     * 
+     *
      * @return array The data structure with the logs.
      */
-    public static function getAuditLogsFromQueue()
+    public static function getAuditLogsFromQueue($filters = array())
     {
         $auditlogs = array();
         $cache = new SucuriScanCache('auditqueue');
@@ -456,16 +462,186 @@ class SucuriScanAPI extends SucuriScanOption
             'from_queue' => '1',
         );
 
-        return self::parseAuditLogs($res);
+        return self::parseAuditLogs($res, $filters);
+    }
+
+    /**
+     * Retrieves the available filters for the audit logs.
+     *
+     * @return array An associative array containing the filters for the auditlogs.
+     */
+    public static function getFilters()
+    {
+        $utc = new DateTimeZone('UTC');
+
+        // Create DateTime objects
+        $today = new DateTime('today', $utc);
+        $yesterday = new DateTime('yesterday', $utc);
+        $thisWeek = new DateTime('monday this week', $utc);
+        $last7Days = new DateTime('-7 days', $utc);
+        $lastWeek = new DateTime('monday last week', $utc);
+        $last14Days = new DateTime('-14 days', $utc);
+        $thisMonth = new DateTime('first day of this month', $utc);
+        $last30Days = new DateTime('-30 days', $utc);
+        $lastMonth = new DateTime('first day of last month', $utc);
+        $thisYear = new DateTime('first day of January this year', $utc);
+        $lastYear = new DateTime('first day of January last year', $utc);
+
+        return array(
+            'time' => array(
+                'all time' => null,
+                'today' => $today->format('Y-m-d'),
+                'yesterday' => $yesterday->format('Y-m-d'),
+                'this week' => $thisWeek->format('Y-m-d'),
+                'last 7 days' => $last7Days->format('Y-m-d'),
+                'last week' => $lastWeek->format('Y-m-d'),
+                'last 14 days' => $last14Days->format('Y-m-d'),
+                'this month' => $thisMonth->format('Y-m-d'),
+                'last 30 days' => $last30Days->format('Y-m-d'),
+                'last month' => $lastMonth->format('Y-m-d'),
+                'this year' => $thisYear->format('Y-m-d'),
+                'last year' => $lastYear->format('Y-m-d'),
+                'custom' => null,
+            ),
+            'startDate' => '',
+            'endDate' => '',
+            'posts' => array(
+                'all posts' => null,
+                'created' => 'Post was created',
+                'updated' => 'Post was updated',
+                'deleted' => 'Post moved to trash',
+            ),
+            'logins' => array(
+                'all logins' => '',
+                'failed' => 'authentication failed',
+                'succeeded' => 'authentication succeeded',
+            ),
+            'users' => array(
+                'all users' => '',
+                'created' => 'User account created',
+                'edited' => 'User account edited',
+                'deleted' => 'User account deleted',
+            ),
+            'plugins' => array(
+                'all plugins' => '',
+                'installed' => 'Plugin installed',
+                'activated' => 'Plugin activated',
+                'deactivated' => 'Plugin deactivated',
+            ),
+        );
+    }
+
+    /**
+     * Filters a log entry based on the frontend filters provided.
+     * Returns true if the log matches the time filter (if applied) and any of the other filters.
+     *
+     * @param array $log The log entry to be filtered.
+     * @param array $frontend_filters The filters applied from the frontend.
+     *
+     * @return bool True if the log passes the filters, false otherwise.
+     */
+    private static function filterAuditLog($log, $frontend_filters)
+    {
+        $filters = self::getFilters();
+
+        // Check the time filter first
+        if (isset($frontend_filters['time']) && $frontend_filters['time'] !== 'all time') {
+            if (!self::filterByTime($log, $frontend_filters['time'], $filters, $frontend_filters)) {
+                return false;
+            }
+        }
+
+        $other_filters = $frontend_filters;
+        unset($other_filters['time'], $other_filters['startDate'], $other_filters['endDate']);
+
+        if (empty($other_filters)) {
+            return true;
+        }
+
+        // Check if the log matches any of the other filters
+        foreach ($other_filters as $active_filter => $value_filter) {
+            if (isset($filters[$active_filter][$value_filter])) {
+                $search_term = $filters[$active_filter][$value_filter];
+
+                if (strpos($log['message'], $search_term) !== false) {
+                    return true; // Log matches one of the filters
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Checks if a log entry matches the specified time filter.
+     *
+     * @param array $log The log entry to check.
+     * @param string $time_option The time filter option selected.
+     * @param array $filters The array of all filters.
+     * @param array $frontend_filters The filters applied from the frontend.
+     *
+     * @return bool True if the log matches the time filter, false otherwise.
+     */
+    private static function filterByTime($log, $time_option, $filters, $frontend_filters)
+    {
+        $time = $filters['time'];
+        $utc = new DateTimeZone('UTC');
+
+        // Create DateTime object for the log date
+        $logDate = new DateTime($log['date'], $utc);
+
+        switch ($time_option) {
+            case 'today':
+            case 'yesterday':
+                $filterDate = new DateTime($time[$time_option], $utc);
+                return $logDate->format('Y-m-d') === $filterDate->format('Y-m-d');
+
+            case 'last week':
+                $filterDate = new DateTime($time[$time_option], $utc);
+                $endDate = new DateTime('sunday last week', $utc);
+                $endDate->setTime(23, 59, 59);
+                return $logDate >= $filterDate && $logDate <= $endDate;
+
+            case 'last month':
+                $filterDate = new DateTime($time[$time_option], $utc);
+                $endDate = new DateTime('last day of last month', $utc);
+                $endDate->setTime(23, 59, 59);
+                return $logDate >= $filterDate && $logDate <= $endDate;
+
+            case 'last year':
+                $filterDate = new DateTime($time[$time_option], $utc);
+                $endDate = new DateTime('last day of December last year', $utc);
+                $endDate->setTime(23, 59, 59);
+                return $logDate >= $filterDate && $logDate <= $endDate;
+
+            case 'this week':
+            case 'last 7 days':
+            case 'last 14 days':
+            case 'this month':
+            case 'last 30 days':
+            case 'this year':
+                $filterDate = new DateTime($time[$time_option], $utc);
+                return $logDate >= $filterDate;
+
+            case 'custom':
+                $startDate = new DateTime($frontend_filters['startDate'], $utc);
+                $endDate = new DateTime($frontend_filters['endDate'], $utc);
+                $endDate->setTime(23, 59, 59);
+                return $logDate >= $startDate && $logDate <= $endDate;
+
+            default:
+                // Unrecognized time option; don't consider it a match.
+                return false;
+        }
     }
 
     /**
      * Reads, parses and extracts relevant data from the security logs.
      *
-     * @param  array $res JSON-decoded logs.
+     * @param array $res JSON-decoded logs.
      * @return array|null      Full data extracted from the logs.
      */
-    private static function parseAuditLogs($res)
+    private static function parseAuditLogs($res, $filters = array())
     {
         if (!is_array($res) || !isset($res['output'])) {
             return null;
@@ -473,7 +649,7 @@ class SucuriScanAPI extends SucuriScanOption
 
         $res['output_data'] = array();
 
-        foreach ((array) @$res['output'] as $log) {
+        foreach ((array)@$res['output'] as $log) {
             /* YYYY-MM-dd HH:ii:ss EMAIL : MESSAGE: (multiple entries): a,b,c */
             if (strpos($log, "\x20:\x20") === false) {
                 continue; /* ignore; invalid format */
@@ -514,7 +690,7 @@ class SucuriScanAPI extends SucuriScanOption
                 if (empty($wpTimezone)) {
                     $wpTimezone = get_option('gmt_offset');
                 }
-                
+
                 /* set wpTimezone to UTC if was previously unset */
                 if ($wpTimezone == "0") {
                     $wpTimezone = "UTC";
@@ -524,7 +700,7 @@ class SucuriScanAPI extends SucuriScanOption
                 $tz_override_replace_to = array(":", "");
                 $wpTimezone = str_replace($tz_override_replace_from, $tz_override_replace_to, $tz_override);
             }
-            
+
             /**
              * When the audit logs comes from the audit logs server, it will
              * be using EDT timezone, however due to the seasonal nature of the
@@ -537,7 +713,7 @@ class SucuriScanAPI extends SucuriScanOption
             } else {
                 $datetime = sprintf('%s %s America/New_York', $dateAndEmail[0], $dateAndEmail[1]);
             }
-            
+
             $log_data['timestamp'] = strtotime($datetime);
             $log_data['datetime'] = SucuriScan::datetime($log_data['timestamp'], 'Y-m-d H:i:s');
             $log_data['date'] = SucuriScan::datetime($log_data['timestamp'], 'Y-m-d');
@@ -617,6 +793,11 @@ class SucuriScanAPI extends SucuriScanOption
 
             $log_data = self::getLogsHotfix($log_data);
 
+            // Based on filters, evaluate if should skip.
+            if (self::filterAuditLog($log_data, $filters) === false) {
+                continue;
+            }
+
             if ($log_data) {
                 $res['output_data'][] = $log_data;
             }
@@ -628,7 +809,7 @@ class SucuriScanAPI extends SucuriScanOption
     /**
      * Modifies some of the security logs to detail the information.
      *
-     * @param  array $data Valid security log data structure.
+     * @param array $data Valid security log data structure.
      * @return array|bool  Modified security log.
      */
     private static function getLogsHotfix($data)
@@ -682,7 +863,7 @@ class SucuriScanAPI extends SucuriScanOption
     /**
      * Parse the event logs with multiple entries.
      *
-     * @param  string $event_log Event log that will be processed.
+     * @param string $event_log Event log that will be processed.
      * @return string|array      List of parts of the event log.
      */
     public static function parseMultipleEntries($event_log = '')
@@ -702,7 +883,7 @@ class SucuriScanAPI extends SucuriScanOption
      * information of the audit logs alerting the administrator of suspicious
      * changes in the system.
      *
-     * @param  string $hashes The information gathered after the scanning of the site's files.
+     * @param string $hashes The information gathered after the scanning of the site's files.
      * @return bool           True if the hashes were stored, false otherwise.
      */
     public static function sendHashes($hashes = '')
@@ -793,8 +974,8 @@ class SucuriScanAPI extends SucuriScanOption
      *
      * @see https://git-scm.com/book/en/v2/Git-Internals-Git-Objects#_object_storage
      *
-     * @param  string $algorithm Either md5 or sha1.
-     * @param  string $filename  Absolute path to the given file.
+     * @param string $algorithm Either md5 or sha1.
+     * @param string $filename Absolute path to the given file.
      * @return string            Hash of the given file.
      */
     public static function checksum($algorithm, $filename)
@@ -929,7 +1110,7 @@ class SucuriScanAPI extends SucuriScanOption
             $plugins[$path]['Repository'] = $repository;
             $plugins[$path]['RepositoryName'] = $repository_name;
             $plugins[$path]['InstallationPath'] = sprintf('%s/%s', WP_PLUGIN_DIR, $repository_name);
-            $plugins[$path]['PluginType'] = ( $is_free_plugin ? 'free' : 'premium' );
+            $plugins[$path]['PluginType'] = ($is_free_plugin ? 'free' : 'premium');
             $plugins[$path]['IsPluginInstalled'] = is_dir($plugins[$path]['InstallationPath']);
             $plugins[$path]['IsPluginActive'] = is_plugin_active($path);
             $plugins[$path]['IsFreePlugin'] = $is_free_plugin;
@@ -955,7 +1136,7 @@ class SucuriScanAPI extends SucuriScanOption
      *
      * The second filter, 'plugins_api', is the result that would be returned.
      *
-     * @param  string $plugin Frienly name of the plugin.
+     * @param string $plugin Frienly name of the plugin.
      * @return array|bool     Object on success, WP_Error on failure.
      */
     public static function getRemotePluginData($plugin = '')
@@ -973,7 +1154,7 @@ class SucuriScanAPI extends SucuriScanOption
      * @see https://i18n.svn.wordpress.org/
      * @see https://core.svn.wordpress.org/tags/VERSION_NUMBER/
      *
-     * @param  string $filename Relative path of a core file.
+     * @param string $filename Relative path of a core file.
      * @return string|bool      Original code for the core file, false otherwise.
      */
     public static function getOriginalCoreFile($filename)

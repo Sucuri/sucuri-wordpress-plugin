@@ -143,7 +143,7 @@ define('SUCURISCAN_AUDITLOGS_LIFETIME', 600);
 /**
  * The maximum quantity of entries that will be displayed in the audit logs page.
  */
-define('SUCURISCAN_AUDITLOGS_PER_PAGE', 50);
+define('SUCURISCAN_AUDITLOGS_PER_PAGE', 25);
 
 /**
  * The maximum quantity of entries that will be displayed in the integrity section.
