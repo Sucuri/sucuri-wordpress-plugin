@@ -472,64 +472,148 @@ class SucuriScanAPI extends SucuriScanOption
      */
     public static function getFilters()
     {
-        $utc = new DateTimeZone('UTC');
+        $format = 'Y-m-d';
 
-        // Create DateTime objects
-        $today = new DateTime('today', $utc);
-        $yesterday = new DateTime('yesterday', $utc);
-        $thisWeek = new DateTime('monday this week', $utc);
-        $last7Days = new DateTime('-7 days', $utc);
-        $lastWeek = new DateTime('monday last week', $utc);
-        $last14Days = new DateTime('-14 days', $utc);
-        $thisMonth = new DateTime('first day of this month', $utc);
-        $last30Days = new DateTime('-30 days', $utc);
-        $lastMonth = new DateTime('first day of last month', $utc);
-        $thisYear = new DateTime('first day of January this year', $utc);
-        $lastYear = new DateTime('first day of January last year', $utc);
+        $today = strtotime('today');
+        $yesterday = strtotime('yesterday');
+        $thisWeek = strtotime('monday this week');
+        $last7Days = strtotime('-7 days');
+        $lastWeek = strtotime('monday last week');
+        $last14Days = strtotime('-14 days');
+        $thisMonth = strtotime('first day of this month');
+        $last30Days = strtotime('-30 days');
+        $lastMonth = strtotime('first day of last month');
+        $thisYear = strtotime('first day of January this year');
+        $lastYear = strtotime('first day of January last year');
 
         return array(
             'time' => array(
-                'all time' => null,
-                'today' => $today->format('Y-m-d'),
-                'yesterday' => $yesterday->format('Y-m-d'),
-                'this week' => $thisWeek->format('Y-m-d'),
-                'last 7 days' => $last7Days->format('Y-m-d'),
-                'last week' => $lastWeek->format('Y-m-d'),
-                'last 14 days' => $last14Days->format('Y-m-d'),
-                'this month' => $thisMonth->format('Y-m-d'),
-                'last 30 days' => $last30Days->format('Y-m-d'),
-                'last month' => $lastMonth->format('Y-m-d'),
-                'this year' => $thisYear->format('Y-m-d'),
-                'last year' => $lastYear->format('Y-m-d'),
-                'custom' => null,
+                'all time' => array(
+                    'label' => __('All Time', 'sucuri-scanner'),
+                    'date' => null,
+                ),
+                'today' => array(
+                    'label' => __('Today', 'sucuri-scanner'),
+                    'date' => SucuriScan::datetime($today, $format),
+                ),
+                'yesterday' => array(
+                    'label' => __('Yesterday', 'sucuri-scanner'),
+                    'date' => SucuriScan::datetime($yesterday, $format),
+                ),
+                'this week' => array(
+                    'label' => __('This Week', 'sucuri-scanner'),
+                    'date' => SucuriScan::datetime($thisWeek, $format),
+                ),
+                'last 7 days' => array(
+                    'label' => __('Last 7 Days', 'sucuri-scanner'),
+                    'date' => SucuriScan::datetime($last7Days, $format),
+                ),
+                'last week' => array(
+                    'label' => __('Last Week', 'sucuri-scanner'),
+                    'date' => SucuriScan::datetime($lastWeek, $format),
+                ),
+                'last 14 days' => array(
+                    'label' => __('Last 14 Days', 'sucuri-scanner'),
+                    'date' => SucuriScan::datetime($last14Days, $format),
+                ),
+                'this month' => array(
+                    'label' => __('This Month', 'sucuri-scanner'),
+                    'date' => SucuriScan::datetime($thisMonth, $format),
+                ),
+                'last 30 days' => array(
+                    'label' => __('Last 30 Days', 'sucuri-scanner'),
+                    'date' => SucuriScan::datetime($last30Days, $format),
+                ),
+                'last month' => array(
+                    'label' => __('Last Month', 'sucuri-scanner'),
+                    'date' => SucuriScan::datetime($lastMonth, $format),
+                ),
+                'this year' => array(
+                    'label' => __('This Year', 'sucuri-scanner'),
+                    'date' => SucuriScan::datetime($thisYear, $format),
+                ),
+                'last year' => array(
+                    'label' => __('Last Year', 'sucuri-scanner'),
+                    'date' => SucuriScan::datetime($lastYear, $format),
+                ),
+                'custom' => array(
+                    'label' => __('Custom', 'sucuri-scanner'),
+                    'date' => null,
+                ),
             ),
             'startDate' => '',
             'endDate' => '',
             'posts' => array(
-                'all posts' => null,
-                'created' => 'Post was created',
-                'updated' => 'Post was updated',
-                'deleted' => 'Post moved to trash',
+                'all posts' => array(
+                    'label' => __('All Posts', 'sucuri-scanner'),
+                    'value' => null,
+                ),
+                'created' => array(
+                    'label' => __('Created', 'sucuri-scanner'),
+                    'value' => 'Post was created',
+                ),
+                'updated' => array(
+                    'label' => __('Updated', 'sucuri-scanner'),
+                    'value' => 'Post was updated',
+                ),
+                'deleted' => array(
+                    'label' => __('Deleted', 'sucuri-scanner'),
+                    'value' => 'Post moved to trash',
+                ),
             ),
             'logins' => array(
-                'all logins' => '',
-                'failed' => 'authentication failed',
-                'succeeded' => 'authentication succeeded',
+                'all logins' => array(
+                    'label' => __('All Logins', 'sucuri-scanner'),
+                    'value' => '',
+                ),
+                'failed' => array(
+                    'label' => __('Failed', 'sucuri-scanner'),
+                    'value' => 'authentication failed',
+                ),
+                'succeeded' => array(
+                    'label' => __('Succeeded', 'sucuri-scanner'),
+                    'value' => 'authentication succeeded',
+                ),
             ),
             'users' => array(
-                'all users' => '',
-                'created' => 'User account created',
-                'edited' => 'User account edited',
-                'deleted' => 'User account deleted',
+                'all users' => array(
+                    'label' => __('All Users', 'sucuri-scanner'),
+                    'value' => '',
+                ),
+                'created' => array(
+                    'label' => __('Created', 'sucuri-scanner'),
+                    'value' => 'User account created',
+                ),
+                'edited' => array(
+                    'label' => __('Edited', 'sucuri-scanner'),
+                    'value' => 'User account edited',
+                ),
+                'deleted' => array(
+                    'label' => __('Deleted', 'sucuri-scanner'),
+                    'value' => 'User account deleted',
+                ),
             ),
             'plugins' => array(
-                'all plugins' => '',
-                'installed' => 'Plugin installed',
-                'activated' => 'Plugin activated',
-                'deactivated' => 'Plugin deactivated',
+                'all plugins' => array(
+                    'label' => __('All Plugins', 'sucuri-scanner'),
+                    'value' => '',
+                ),
+                'installed' => array(
+                    'label' => __('Installed', 'sucuri-scanner'),
+                    'value' => 'Plugin installed',
+                ),
+                'activated' => array(
+                    'label' => __('Activated', 'sucuri-scanner'),
+                    'value' => 'Plugin activated',
+                ),
+                'deactivated' => array(
+                    'label' => __('Deactivated', 'sucuri-scanner'),
+                    'value' => 'Plugin deactivated',
+                ),
             ),
         );
     }
+
 
     /**
      * Filters a log entry based on the frontend filters provided.
@@ -546,7 +630,7 @@ class SucuriScanAPI extends SucuriScanOption
 
         // Check the time filter first
         if (isset($frontend_filters['time']) && $frontend_filters['time'] !== 'all time') {
-            if (!self::filterByTime($log, $frontend_filters['time'], $filters, $frontend_filters)) {
+            if (!self::filterByTime($log['date'], $frontend_filters)) {
                 return false;
             }
         }
@@ -561,7 +645,7 @@ class SucuriScanAPI extends SucuriScanOption
         // Check if the log matches any of the other filters
         foreach ($other_filters as $active_filter => $value_filter) {
             if (isset($filters[$active_filter][$value_filter])) {
-                $search_term = $filters[$active_filter][$value_filter];
+                $search_term = $filters[$active_filter][$value_filter]['value'];
 
                 if (strpos($log['message'], $search_term) !== false) {
                     return true; // Log matches one of the filters
@@ -575,44 +659,41 @@ class SucuriScanAPI extends SucuriScanOption
     /**
      * Checks if a log entry matches the specified time filter.
      *
-     * @param array $log The log entry to check.
-     * @param string $time_option The time filter option selected.
-     * @param array $filters The array of all filters.
+     * @param array $log_date The date of the log.
      * @param array $frontend_filters The filters applied from the frontend.
      *
      * @return bool True if the log matches the time filter, false otherwise.
      */
-    private static function filterByTime($log, $time_option, $filters, $frontend_filters)
+    private static function filterByTime($log_date, $frontend_filters)
     {
-        $time = $filters['time'];
-        $utc = new DateTimeZone('UTC');
+        $filters = self::getFilters();
+        $today = strtotime('today');
+        $time_option = $frontend_filters['time'];
+        $filter_date = SucuriScan::datetime($today, 'Y-m-d');
 
-        // Create DateTime object for the log date
-        $logDate = new DateTime($log['date'], $utc);
+        if (isset($filters['time'][$time_option]['date'])) {
+            $filter_date = $filters['time'][$time_option]['date'];
+        }
 
         switch ($time_option) {
             case 'today':
             case 'yesterday':
-                $filterDate = new DateTime($time[$time_option], $utc);
-                return $logDate->format('Y-m-d') === $filterDate->format('Y-m-d');
+                return $log_date === $filter_date;
 
             case 'last week':
-                $filterDate = new DateTime($time[$time_option], $utc);
-                $endDate = new DateTime('sunday last week', $utc);
-                $endDate->setTime(23, 59, 59);
-                return $logDate >= $filterDate && $logDate <= $endDate;
+                $endDate = strtotime('sunday last week');
+                $endDate = SucuriScan::datetime($endDate, 'Y-m-d');
+                return $log_date >= $filter_date && $log_date <= $endDate;
 
             case 'last month':
-                $filterDate = new DateTime($time[$time_option], $utc);
-                $endDate = new DateTime('last day of last month', $utc);
-                $endDate->setTime(23, 59, 59);
-                return $logDate >= $filterDate && $logDate <= $endDate;
+                $endDate = strtotime('last day of last month');
+                $endDate = SucuriScan::datetime($endDate, 'Y-m-d');
+                return $log_date >= $filter_date && $log_date <= $endDate;
 
             case 'last year':
-                $filterDate = new DateTime($time[$time_option], $utc);
-                $endDate = new DateTime('last day of December last year', $utc);
-                $endDate->setTime(23, 59, 59);
-                return $logDate >= $filterDate && $logDate <= $endDate;
+                $endDate = strtotime('last day of December last year');
+                $endDate = SucuriScan::datetime($endDate, 'Y-m-d');
+                return $log_date >= $filter_date && $log_date <= $endDate;
 
             case 'this week':
             case 'last 7 days':
@@ -620,14 +701,14 @@ class SucuriScanAPI extends SucuriScanOption
             case 'this month':
             case 'last 30 days':
             case 'this year':
-                $filterDate = new DateTime($time[$time_option], $utc);
-                return $logDate >= $filterDate;
+                return $log_date >= $filter_date;
 
             case 'custom':
-                $startDate = new DateTime($frontend_filters['startDate'], $utc);
-                $endDate = new DateTime($frontend_filters['endDate'], $utc);
-                $endDate->setTime(23, 59, 59);
-                return $logDate >= $startDate && $logDate <= $endDate;
+                $startDate = strtotime($frontend_filters['startDate']);
+                $startDate = SucuriScan::datetime($startDate, 'Y-m-d');
+                $endDate = strtotime($frontend_filters['endDate']);
+                $endDate = SucuriScan::datetime($endDate, 'Y-m-d');
+                return $log_date >= $startDate && $log_date <= $endDate;
 
             default:
                 // Unrecognized time option; don't consider it a match.

@@ -1160,7 +1160,7 @@ describe("Run e2e tests", () => {
         });
     });
 
-    it.only('can filter auditlogs', () => {
+    it('can filter auditlogs', () => {
         cy.visit('/wp-admin/admin.php?page=sucuriscan#auditlogs');
 
         cy.get('.sucuriscan-auditlog-response').should('exist');
@@ -1178,25 +1178,27 @@ describe("Run e2e tests", () => {
         // Clear filters and also verify clear filter functionality
         cy.get('[data-cy=sucuriscan_auditlogs_clear_filter_button]').click();
 
-        // Test users filter
-        cy.get('#users').select('Created');
-        cy.get('[data-cy=sucuriscan_auditlogs_filter_button]').click();
-
         cy.wait(200);
 
-        // Verify that all logs are user account creations
+        // Test users filter
+        cy.get('#logins').select('Succeeded');
+        cy.get('[data-cy=sucuriscan_auditlogs_filter_button]').click();
+
+        // Verify that all logs are user account updates
         cy.get('.sucuriscan-auditlog-entry').each(($row) => {
-            cy.wrap($row).find('.sucuriscan-auditlog-entry-title').should('contain.text', 'User account created');
+            cy.wrap($row).find('.sucuriscan-auditlog-entry-title').should('contain.text', 'User authentication succeeded');
         });
+
+        cy.get('[data-cy=sucuriscan_auditlogs_clear_filter_button]').click();
 
         // Combine plugins and users filters
         cy.get('#plugins').select('Activated');
-        cy.get('#users').select('Created');
+        cy.get('#logins').select('Succeeded');
         cy.get('[data-cy=sucuriscan_auditlogs_filter_button]').click();
 
         cy.get('.sucuriscan-auditlog-entry').each(($row) => {
             cy.wrap($row).find('.sucuriscan-auditlog-entry-title').invoke('text').then((text) => {
-                expect(text).to.match(/Plugin activated|User account created/);
+                expect(text).to.match(/Plugin activated|User authentication succeeded/);
             });
         });
 
@@ -1213,10 +1215,14 @@ describe("Run e2e tests", () => {
             });
         });
 
+        cy.get('[data-cy=sucuriscan_auditlogs_clear_filter_button]').click();
+
+        cy.wait(200);
+
         // Test 'Custom' date range filter
         cy.get('#time').select('Custom');
-        cy.get('#startDateFilter').should('be.visible').type('2021-01-01');
-        cy.get('#endDateFilter').should('be.visible').type('2021-12-31');
+        cy.get('#startDate').should('be.visible').type('2021-01-01');
+        cy.get('#endDate').should('be.visible').type('2021-12-31');
         cy.get('[data-cy=sucuriscan_auditlogs_filter_button]').click();
 
         // Verify there are no logs:
@@ -1225,8 +1231,8 @@ describe("Run e2e tests", () => {
 
         cy.get('[data-cy=sucuriscan_auditlogs_clear_filter_button]').click();
 
-        cy.get('#startDateFilter').should('not.be.visible');
-        cy.get('#endDateFilter').should('not.be.visible');
+        cy.get('#startDate').should('not.be.visible');
+        cy.get('#endDate').should('not.be.visible');
 
         cy.get('.sucuriscan-auditlog-entry').should('have.length.greaterThan', 0);
     });

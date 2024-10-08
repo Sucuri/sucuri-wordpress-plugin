@@ -1504,3 +1504,16 @@ h3.lead {
 #clear-filter-button {
     display: none;
 }
+
+.sucuriscan-sitecheck-promo {
+    color: #989898;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+    margin-top: 20px;
+}
+
+.sucuriscan-sitecheck-promo a,
+.sucuriscan-sitecheck-promo p {
+    font-size: 13px;
+    margin: 0;
+}

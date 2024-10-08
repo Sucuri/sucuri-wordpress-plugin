@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Sucuri Security - Auditing, Malware Scanner and Hardening 1.9.5\n"
+"Project-Id-Version: Sucuri Security - Auditing, Malware Scanner and Hardening 1.9.6\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/sucuri-wordpress-plugin\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-09-09T00:50:55+00:00\n"
+"POT-Creation-Date: 2024-10-08T04:57:05+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: sucuri-scanner\n"
@@ -51,56 +51,160 @@ msgstr ""
 msgid "Invalid API key format"
 msgstr ""
 
-#: src/api.lib.php:186
+#: src/api.lib.php:188
 msgid "API key was successfully set: %s"
 msgstr ""
 
-#: src/api.lib.php:281
+#: src/api.lib.php:284
 msgid "Unknown error, there is no information"
 msgstr ""
 
-#: src/api.lib.php:321
+#: src/api.lib.php:324
 msgid "Invalid email format or the host is missing MX records."
 msgstr ""
 
-#: src/api.lib.php:356
+#: src/api.lib.php:359
 msgid "API key was generated and set"
 msgstr ""
 
-#: src/api.lib.php:358
+#: src/api.lib.php:361
 msgid "API key successfully generated and saved."
 msgstr ""
 
-#: src/api.lib.php:384
+#: src/api.lib.php:389
 msgid "API key recovery for domain: %s"
 msgstr ""
 
-#: src/api.lib.php:656
-msgid "WP Engine PHP Compatibility Checker: %s (created post #%d as cache)"
+#: src/api.lib.php:492
+msgid "All Time"
 msgstr ""
 
-#: src/api.lib.php:999
-#: src/api.lib.php:1004
-msgid "WordPress version is not supported anymore"
-msgstr ""
-
-#: src/auditlogs.lib.php:112
-msgid "API is not available; using local queue"
-msgstr ""
-
-#: src/auditlogs.lib.php:114
-msgid "API %s secs"
-msgstr ""
-
-#: src/auditlogs.lib.php:159
-msgid "There are no logs."
-msgstr ""
-
-#: src/auditlogs.lib.php:204
+#: src/api.lib.php:496
+#: src/auditlogs.lib.php:392
 msgid "Today"
 msgstr ""
 
-#: src/auditlogs.lib.php:227
+#: src/api.lib.php:500
+msgid "Yesterday"
+msgstr ""
+
+#: src/api.lib.php:504
+msgid "This Week"
+msgstr ""
+
+#: src/api.lib.php:508
+msgid "Last 7 Days"
+msgstr ""
+
+#: src/api.lib.php:512
+msgid "Last Week"
+msgstr ""
+
+#: src/api.lib.php:516
+msgid "Last 14 Days"
+msgstr ""
+
+#: src/api.lib.php:520
+msgid "This Month"
+msgstr ""
+
+#: src/api.lib.php:524
+msgid "Last 30 Days"
+msgstr ""
+
+#: src/api.lib.php:528
+msgid "Last Month"
+msgstr ""
+
+#: src/api.lib.php:532
+msgid "This Year"
+msgstr ""
+
+#: src/api.lib.php:536
+msgid "Last Year"
+msgstr ""
+
+#: src/api.lib.php:540
+msgid "Custom"
+msgstr ""
+
+#: src/api.lib.php:548
+msgid "All Posts"
+msgstr ""
+
+#: src/api.lib.php:552
+#: src/api.lib.php:584
+msgid "Created"
+msgstr ""
+
+#: src/api.lib.php:556
+msgid "Updated"
+msgstr ""
+
+#: src/api.lib.php:560
+#: src/api.lib.php:592
+msgid "Deleted"
+msgstr ""
+
+#: src/api.lib.php:566
+msgid "All Logins"
+msgstr ""
+
+#: src/api.lib.php:570
+msgid "Failed"
+msgstr ""
+
+#: src/api.lib.php:574
+msgid "Succeeded"
+msgstr ""
+
+#: src/api.lib.php:580
+#: src/strings.php:167
+msgid "All Users"
+msgstr ""
+
+#: src/api.lib.php:588
+msgid "Edited"
+msgstr ""
+
+#: src/api.lib.php:598
+msgid "All Plugins"
+msgstr ""
+
+#: src/api.lib.php:602
+msgid "Installed"
+msgstr ""
+
+#: src/api.lib.php:606
+msgid "Activated"
+msgstr ""
+
+#: src/api.lib.php:610
+msgid "Deactivated"
+msgstr ""
+
+#: src/api.lib.php:918
+msgid "WP Engine PHP Compatibility Checker: %s (created post #%d as cache)"
+msgstr ""
+
+#: src/api.lib.php:1261
+#: src/api.lib.php:1266
+msgid "WordPress version is not supported anymore"
+msgstr ""
+
+#: src/auditlogs.lib.php:199
+msgid "API is not available; using local queue"
+msgstr ""
+
+#: src/auditlogs.lib.php:201
+msgid "API %s secs"
+msgstr ""
+
+#: src/auditlogs.lib.php:247
+msgid "There are no logs."
+msgstr ""
+
+#: src/auditlogs.lib.php:303
 msgid "status has been changed"
 msgstr ""
 
@@ -355,32 +459,32 @@ msgstr ""
 msgid "Sucuri Security"
 msgstr ""
 
-#: src/hardening.lib.php:120
+#: src/hardening.lib.php:121
 msgid "Directory is not usable"
 msgstr ""
 
-#: src/hardening.lib.php:124
-#: src/hardening.lib.php:324
+#: src/hardening.lib.php:125
+#: src/hardening.lib.php:325
 msgid "Access control file is not supported"
 msgstr ""
 
-#: src/hardening.lib.php:160
+#: src/hardening.lib.php:161
 msgid "Directory is not hardened"
 msgstr ""
 
-#: src/hardening.lib.php:330
+#: src/hardening.lib.php:331
 msgid "Access control file does not exists"
 msgstr ""
 
-#: src/hardening.lib.php:334
+#: src/hardening.lib.php:335
 msgid "Access control file is not writable"
 msgstr ""
 
-#: src/hardening.lib.php:340
-msgid "File does not exists"
+#: src/hardening.lib.php:342
+msgid "File is already in the allowlist"
 msgstr ""
 
-#: src/hardening.lib.php:373
+#: src/hardening.lib.php:375
 msgid "Cannot remove file from the allowlist; no permissions."
 msgstr ""
 
@@ -1601,7 +1705,11 @@ msgstr ""
 msgid "Specified folder is not hardened by this plugin"
 msgstr ""
 
-#: src/settings-hardening.php:740
+#: src/settings-hardening.php:748
+msgid "Some files could not be removed"
+msgstr ""
+
+#: src/settings-hardening.php:750
 msgid "Selected files have been removed"
 msgstr ""
 
@@ -1790,39 +1898,36 @@ msgstr ""
 msgid "Version: %s"
 msgstr ""
 
-#: src/sitecheck.lib.php:190
+#: src/sitecheck.lib.php:191
 msgid "Hosting: %s"
 msgstr ""
 
-#: src/sitecheck.lib.php:194
+#: src/sitecheck.lib.php:197
 msgid "CMS: %s"
 msgstr ""
 
-#: src/sitecheck.lib.php:272
-msgid "Site is Clean"
-msgstr ""
-
-#: src/sitecheck.lib.php:278
+#: src/sitecheck.lib.php:275
+#: src/sitecheck.lib.php:292
 msgid "Site is not Clean"
 msgstr ""
 
-#: src/sitecheck.lib.php:317
+#: src/sitecheck.lib.php:331
 msgid "Not blocklisted"
 msgstr ""
 
-#: src/sitecheck.lib.php:342
+#: src/sitecheck.lib.php:356
 msgid "In the blocklist"
 msgstr ""
 
-#: src/sitecheck.lib.php:396
+#: src/sitecheck.lib.php:410
 msgid "iFrames: %d"
 msgstr ""
 
-#: src/sitecheck.lib.php:411
+#: src/sitecheck.lib.php:425
 msgid "Links: %d"
 msgstr ""
 
-#: src/sitecheck.lib.php:432
+#: src/sitecheck.lib.php:446
 msgid "Scripts: %d"
 msgstr ""
 
@@ -2157,10 +2262,6 @@ msgstr ""
 #: src/strings.php:484
 #: src/strings.php:521
 msgid "Status"
-msgstr ""
-
-#: src/strings.php:167
-msgid "All Users"
 msgstr ""
 
 #: src/strings.php:168

@@ -73,14 +73,16 @@ class SucuriScanAuditLogs
             if ($filter === 'startDate' || $filter === 'endDate') {
                 $date = isset($frontend_filter[$filter]) ? $frontend_filter[$filter] : '';
 
-                $filters_snippet .= '<input type="date" id="' . esc_attr($filter . 'Filter') . '" name="' . esc_attr($filter . 'Filter') . '" value="' . esc_attr($date) . '">';
+                $filters_snippet .= '<input type="date" id="' . esc_attr($filter) . '" name="' . esc_attr($filter . 'Filter') . '" value="' . esc_attr($date) . '">';
                 continue;
             }
 
-            foreach ($options as $label => $value) {
-                $selected = (isset($frontend_filter[$filter]) && $frontend_filter[$filter] === $label) ? ' selected' : '';
+            foreach ($options as $value => $option) {
+                $label = $option['label'];
 
-                $filter_options .= '<option value="' . esc_attr($label) . '" ' . $selected . '>' . esc_html(ucwords($label)) . '</option>';
+                $selected = (isset($frontend_filter[$filter]) && $frontend_filter[$filter] === $value) ? ' selected' : '';
+
+                $filter_options .= '<option value="' . esc_attr($value) . '" ' . $selected . '>' . esc_html($label) . '</option>';
             }
 
             $option_data = array(
@@ -155,18 +157,9 @@ class SucuriScanAuditLogs
 
         $filter_keys = array('posts', 'logins', 'users', 'plugins');
 
-        if (SucuriScanRequest::get('time')) {
-            $filters['time'] = sanitize_text_field(SucuriScanRequest::get('time'));
-
-            if ($filters['time'] === 'custom') {
-                $filters['startDate'] = sanitize_text_field(SucuriScanRequest::get('startDate'));
-                $filters['endDate'] = sanitize_text_field(SucuriScanRequest::get('endDate'));
-            }
-        }
-
         foreach ($filter_keys as $key) {
             if (SucuriScanRequest::get($key)) {
-                $filters[$key] = sanitize_text_field(SucuriScanRequest::get($key));
+                $filters[$key] = SucuriScanRequest::get($key);
             }
         }
 

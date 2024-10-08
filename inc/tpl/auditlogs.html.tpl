@@ -2,12 +2,12 @@
     /* global jQuery */
     /* jshint camelcase:false */
     jQuery(document).ready(function ($) {
-        function parseFilteredDataToQueryParams(filteredData) {
+        function parseFiltersToQueryParams(filters) {
             const queryParams = new URLSearchParams();
 
-            for (const key in filteredData) {
-                if (filteredData.hasOwnProperty(key) && filteredData[key] !== null && filteredData[key] !== undefined) {
-                    queryParams.append(key, filteredData[key]);
+            for (const key in filters) {
+                if (filters.hasOwnProperty(key) && filters[key] !== null && filters[key] !== undefined) {
+                    queryParams.append(key, filters[key]);
                 }
             }
 
@@ -33,7 +33,7 @@
             }
 
             if (filters !== undefined && Object.keys(filters).length > 0) {
-                url += '&' + parseFilteredDataToQueryParams(filters);
+                url += '&' + parseFiltersToQueryParams(filters);
             }
 
             $('.sucuriscan-auditlog-response').html('<em>{{Loading...}}</em>');
@@ -57,12 +57,12 @@
                 if (data.filters !== undefined) {
                     $('#sucuriscan-filters').html(data.filters);
 
-                    $('#startDateFilter').hide();
-                    $('#endDateFilter').hide();
+                    $('#startDate').hide();
+                    $('#endDate').hide();
 
                     if (filters.time === 'custom') {
-                        $('#startDateFilter').show();
-                        $('#endDateFilter').show();
+                        $('#startDate').show();
+                        $('#endDate').show();
                     }
                 }
 
@@ -97,28 +97,24 @@
             event.preventDefault();
             window.scrollTo(0, $('#sucuriscan-integrity-response').height() + 100);
 
-            // Get the filters from the URL
             var url = new URL(event.target.href);
             var page = url.searchParams.get('paged');
-            var filters = {};
-            // time, posts, logins, users, plugins
-            var time = url.searchParams.get('time');
-            var posts = url.searchParams.get('posts');
-            var logins = url.searchParams.get('logins');
-            var users = url.searchParams.get('users');
-            var plugins = url.searchParams.get('plugins');
 
-            if (time !== null) filters.time = time;
-            // handle date pickers
-            if (time === 'custom') {
+            var filters = {
+                time: url.searchParams.get('time'),
+                posts: url.searchParams.get('posts'),
+                logins: url.searchParams.get('logins'),
+                users: url.searchParams.get('users'),
+                plugins: url.searchParams.get('plugins'),
+            };
+
+            if (url.searchParams.get('startDate') !== null) {
                 filters.startDate = url.searchParams.get('startDate');
-                filters.endDate = url.searchParams.get('endDate');
             }
 
-            if (posts !== null) filters.posts = posts;
-            if (logins !== null) filters.logins = logins;
-            if (users !== null) filters.users = users;
-            if (plugins !== null) filters.plugins = plugins;
+            if (url.searchParams.get('endDate') !== null) {
+                filters.endDate = url.searchParams.get('endDate');
+            }
 
             sucuriscanLoadAuditLogs($(this).attr('data-page'), filters);
         });
@@ -160,12 +156,6 @@
                 var filters = {};
 
                 var time = $('#time').val();
-
-                if (time === 'custom') {
-                    filters.startDate = $('#startDateFilter').val();
-                    filters.endDate = $('#endDateFilter').val();
-                }
-
                 var posts = $('#posts').val();
                 var logins = $('#logins').val();
                 var users = $('#users').val();
@@ -177,6 +167,14 @@
                 if (users !== 'all users') filters.users = users;
                 if (plugins !== 'all plugins') filters.plugins = plugins;
 
+                if (time === 'custom') {
+                    var startDate = $('#startDate').val();
+                    var endDate = $('#endDate').val();
+
+                    if (startDate !== '') filters.startDate = startDate;
+                    if (endDate !== '') filters.endDate = endDate;
+                }
+
                 sucuriscanLoadAuditLogs(0, filters);
             }
 
@@ -184,25 +182,25 @@
                 if (e.target.id == 'clear-filter-button') {
                     sucuriscanLoadAuditLogs(0);
 
-                    // update dropdown values for filters
                     $('#time').val('all time');
                     $('#posts').val('all posts');
                     $('#logins').val('all logins');
                     $('#users').val('all users');
                     $('#plugins').val('all plugins');
+                    $('#startDate').val('');
+                    $('#endDate').val('');
                 }
             });
         });
 
         document.body.addEventListener('change', function (e) {
             if (e.target.id === 'time') {
-
                 if ($(e.target).val() === 'custom') {
-                    $('#startDateFilter').show();
-                    $('#endDateFilter').show();
+                    $('#startDate').show();
+                    $('#endDate').show();
                 } else {
-                    $('#startDateFilter').hide();
-                    $('#endDateFilter').hide();
+                    $('#startDate').hide();
+                    $('#endDate').hide();
                 }
             }
         });

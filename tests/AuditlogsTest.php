@@ -40,7 +40,6 @@ final class AuditlogsTest extends TestCase
 
         $this->assertEquals(0, count($auditlogs['output_data']));
 
-
         // test custom date
         $filters = array(
             'time' => 'custom',
@@ -50,7 +49,6 @@ final class AuditlogsTest extends TestCase
         );
 
         $auditlogs = SucuriScanAPI::getAuditLogsFromQueue($filters);
-
 
         $this->assertEquals(2, count($auditlogs['output_data']));
 
