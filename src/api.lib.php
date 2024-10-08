@@ -396,9 +396,10 @@ class SucuriScanAPI extends SucuriScanOption
      * Retrieve the event logs registered by the API service.
      *
      * @param int $lines Maximum number of logs to return.
+     * @param array $filters Filters to apply to the logs.
      * @return array|bool The data structure with the logs.
      */
-    public static function getAuditLogs($lines = 50)
+    public static function getAuditLogs($lines = 50, $filters = array())
     {
         if (SucuriScanOption::isDisabled(':api_service') || SucuriScan::issetScanApiUrl()) {
             return self::parseAuditLogs(array());
@@ -416,7 +417,7 @@ class SucuriScanAPI extends SucuriScanOption
             return false;
         }
 
-        return self::parseAuditLogs($res);
+        return self::parseAuditLogs($res, $filters);
     }
 
     /**

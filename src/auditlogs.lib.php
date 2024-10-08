@@ -180,7 +180,7 @@ class SucuriScanAuditLogs
             ob_start();
             $start = microtime(true);
             $cacheTheResponse = true;
-            $auditlogs = SucuriScanAPI::getAuditLogs($logsLimit);
+            $auditlogs = SucuriScanAPI::getAuditLogs($logsLimit, $filters);
             $errors = ob_get_contents(); /* capture errors */
             $duration = microtime(true) - $start;
             ob_end_clean();
