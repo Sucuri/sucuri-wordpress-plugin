@@ -1484,4 +1484,36 @@ h3.lead {
     margin-left: 10px;
 }
 
+#sucuriscan-filters {
+    margin-bottom: 30px;
+}
 
+#sucuriscan-filters .filter-container {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    row-gap: 5px;
+}
+
+#sucuriscan-filters select,
+#sucuriscan-filters input,
+#sucuriscan-filters button {
+    margin-right: 7px;
+}
+
+#clear-filter-button {
+    display: none;
+}
+
+.sucuriscan-sitecheck-promo {
+    color: #989898;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+    margin-top: 20px;
+}
+
+.sucuriscan-sitecheck-promo a,
+.sucuriscan-sitecheck-promo p {
+    font-size: 13px;
+    margin: 0;
+}

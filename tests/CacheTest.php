@@ -1,4 +1,5 @@
 <?php declare(strict_types=1);
+
 use PHPUnit\Framework\TestCase;
 
 final class CacheTest extends TestCase
@@ -19,7 +20,7 @@ final class CacheTest extends TestCase
     {
         $cache = new SucuriScanCache('auditqueue', false);
         $entries = $cache->getAll();
-        $this->assertSame(20, count($entries));
+        $this->assertSame(24, count($entries));
     }
 
     public function testDatastoreAddToMissingFile()

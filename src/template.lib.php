@@ -431,7 +431,7 @@ class SucuriScanTemplate extends SucuriScanRequest
      * @param int $max_per_page Maximum number of items that will be shown per page.
      * @return string               HTML code for a pagination generated using the provided data.
      */
-    public static function pagination($base_url = '', $total_items = 0, $max_per_page = 1)
+    public static function pagination($base_url = '', $total_items = 0, $max_per_page = 1, $query_params = array())
     {
         /* calculate the number of links for the pagination */
         $html_links = '';
@@ -466,6 +466,12 @@ class SucuriScanTemplate extends SucuriScanRequest
             }
         } else {
             $final_page = $max_pages;
+        }
+
+        $query_params_str = http_build_query($query_params);
+
+        if (!empty($query_params) && !empty($query_params_str)) {
+            $extra_url .= '&' . $query_params_str;
         }
 
         /* generate the HTML links for the pagination */

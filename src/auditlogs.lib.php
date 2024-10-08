@@ -50,6 +50,56 @@ class SucuriScanAuditLogs
         return SucuriScanTemplate::getSection('auditlogs', $params);
     }
 
+
+    /**
+     * Generates the HTML snippet for the audit log filters.
+     *
+     * This method constructs the HTML code for the audit log filters, including
+     * select dropdowns for various filter options and date input fields for custom date ranges.
+     *
+     * @param array $frontend_filter The currently applied filters from the frontend.
+     *
+     * @return string The HTML code containing the filters.
+     */
+    private static function getFiltersSnippet($frontend_filter)
+    {
+        $filters_snippet = '';
+
+        $filters = SucuriScanAPI::getFilters();
+
+        foreach ($filters as $filter => $options) {
+            $filter_options = '';
+
+            if ($filter === 'startDate' || $filter === 'endDate') {
+                $date = isset($frontend_filter[$filter]) ? $frontend_filter[$filter] : '';
+
+                $filters_snippet .= '<input type="date" id="' . esc_attr($filter) . '" name="' . esc_attr($filter . 'Filter') . '" value="' . esc_attr($date) . '">';
+                continue;
+            }
+
+            foreach ($options as $value => $option) {
+                $label = $option['label'];
+
+                $selected = (isset($frontend_filter[$filter]) && $frontend_filter[$filter] === $value) ? ' selected' : '';
+
+                $filter_options .= '<option value="' . esc_attr($value) . '" ' . $selected . '>' . esc_html($label) . '</option>';
+            }
+
+            $option_data = array(
+                'AuditLog.FilterName' => esc_attr($filter),
+                'AuditLog.FilterOptions' => $filter_options,
+            );
+
+            $filters_snippet .= SucuriScanTemplate::getSnippet('auditlogs-filter', $option_data);
+        }
+
+        $filters_data = array(
+            'AuditLog.Filters' => $filters_snippet,
+        );
+
+        return SucuriScanTemplate::getSnippet('auditlogs-filters', $filters_data);
+    }
+
     /**
      * Gets the security logs from the API service.
      *
@@ -85,11 +135,39 @@ class SucuriScanAuditLogs
         $response['queueSize'] = 0;
         $response['pagination'] = '';
         $response['selfhosting'] = false;
+        $response['filters'] = '';
+        $response['filtersStatus'] = '';
 
         /* initialize the values for the pagination */
         $maxPerPage = SUCURISCAN_AUDITLOGS_PER_PAGE;
         $pageNumber = SucuriScanTemplate::pageNumber();
         $logsLimit = ($pageNumber * $maxPerPage);
+
+        /* Initialize filter values */
+        $filters = array();
+
+        if (SucuriScanRequest::get('time')) {
+            $filters['time'] = SucuriScanRequest::get('time');
+
+            if ($filters['time'] === 'custom') {
+                $filters['startDate'] = SucuriScanRequest::get('startDate');
+                $filters['endDate'] = SucuriScanRequest::get('endDate');
+            }
+        }
+
+        $filter_keys = array('posts', 'logins', 'users', 'plugins');
+
+        foreach ($filter_keys as $key) {
+            if (SucuriScanRequest::get($key)) {
+                $filters[$key] = SucuriScanRequest::get($key);
+            }
+        }
+
+        if (!empty($filters)) {
+            $response['filtersStatus'] = 'active';
+        }
+
+        $response['filters'] = self::getFiltersSnippet($filters);
 
         /* Get data from the cache if possible. */
         $errors = ''; /* no errors so far */
@@ -102,7 +180,7 @@ class SucuriScanAuditLogs
             ob_start();
             $start = microtime(true);
             $cacheTheResponse = true;
-            $auditlogs = SucuriScanAPI::getAuditLogs($logsLimit);
+            $auditlogs = SucuriScanAPI::getAuditLogs($logsLimit, $filters);
             $errors = ob_get_contents(); /* capture errors */
             $duration = microtime(true) - $start;
             ob_end_clean();
@@ -126,7 +204,7 @@ class SucuriScanAuditLogs
         }
 
         /* merge the logs from the queue system */
-        $queuelogs = SucuriScanAPI::getAuditLogsFromQueue();
+        $queuelogs = SucuriScanAPI::getAuditLogsFromQueue($filters);
 
         if (is_array($queuelogs) && !empty($queuelogs)) {
             if (!$auditlogs || empty($auditlogs)) {
@@ -155,6 +233,7 @@ class SucuriScanAuditLogs
             || !isset($auditlogs['total_entries'])
             || !is_array($auditlogs['output_data'])
             || !is_numeric($auditlogs['total_entries'])
+            || empty($auditlogs['output_data'])
         ) {
             $response['content'] = __('There are no logs.', 'sucuri-scanner');
             wp_send_json($response, 200);
@@ -163,7 +242,7 @@ class SucuriScanAuditLogs
 
         $counter_i = 0;
         $previousDate = '';
-        $outdata = (array) $auditlogs['output_data'];
+        $outdata = (array)$auditlogs['output_data'];
         $todaysDate = SucuriScan::datetime(null, 'M d, Y');
         $iterator_start = ($pageNumber - 1) * $maxPerPage;
         $total_items = count($outdata);
@@ -179,7 +258,7 @@ class SucuriScanAuditLogs
                 continue;
             }
 
-            $audit_log = (array) $outdata[$i];
+            $audit_log = (array)$outdata[$i];
 
             if (strpos($audit_log['message'], ";\x20password:")) {
                 $idx = strpos($audit_log['message'], ";\x20password:");
@@ -196,21 +275,9 @@ class SucuriScanAuditLogs
                 'AuditLog.Extra' => '',
             );
 
-            /* determine if we need to print the date */
-            if ($snippet_data['AuditLog.Date'] === $previousDate) {
-                $snippet_data['AuditLog.Date'] = '';
-            } elseif ($snippet_data['AuditLog.Date'] === $todaysDate) {
-                $previousDate = $snippet_data['AuditLog.Date'];
-                $snippet_data['AuditLog.Date'] = __('Today', 'sucuri-scanner');
-            } else {
-                $previousDate = $snippet_data['AuditLog.Date'];
-            }
-
-            /* decorate date if necessary */
-            if (!empty($snippet_data['AuditLog.Date'])) {
-                $snippet_data['AuditLog.Date'] = '<div class="sucuriscan-aud'
-                . 'itlog-date">' . $snippet_data['AuditLog.Date'] . '</div>';
-            }
+            $date_data = self::getAuditLogDate($snippet_data['AuditLog.Date'], $previousDate, $todaysDate);
+            $snippet_data['AuditLog.Date'] = $date_data['date'];
+            $previousDate = $date_data['previousDate'];
 
             /* print every file_list information item in a separate table */
             if ($audit_log['file_list']) {
@@ -235,7 +302,7 @@ class SucuriScanAuditLogs
         $response['count'] = $counter_i;
 
         if ($total_items > 1) {
-            $maxpages = ceil($auditlogs['total_entries'] / $maxPerPage);
+            $maxpages = ceil($total_items / $maxPerPage);
 
             if ($maxpages > SUCURISCAN_MAX_PAGINATION_BUTTONS) {
                 $maxpages = SUCURISCAN_MAX_PAGINATION_BUTTONS;
@@ -245,7 +312,8 @@ class SucuriScanAuditLogs
                 $response['pagination'] = SucuriScanTemplate::pagination(
                     SucuriScanTemplate::getUrl(),
                     ($maxPerPage * $maxpages),
-                    $maxPerPage
+                    $maxPerPage,
+                    $filters
                 );
             }
         }
@@ -284,8 +352,8 @@ class SucuriScanAuditLogs
      * queue is emptied, we will have to sort the entries in the list to keep
      * the dates in sync.
      *
-     * @param  array $a Data associated to a single log.
-     * @param  array $b Data associated to another log.
+     * @param array $a Data associated to a single log.
+     * @param array $b Data associated to another log.
      * @return int      Comparison between the dates of both logs.
      */
     public static function sortByDate($a, $b)
@@ -295,5 +363,35 @@ class SucuriScanAuditLogs
         }
 
         return ($a['timestamp'] > $b['timestamp']) ? -1 : 1;
+    }
+
+    /**
+     * @param array $snippet_data
+     * @param mixed $previousDate
+     * @param mixed $todaysDate
+     * @return array
+     */
+    public static function getAuditLogDate($date = '', $previousDate = '', $todaysDate = '')
+    {
+        // Since we're iterating over the logs, we need to keep track of the
+        // previous date to determine if we need to print the date again.
+        // This serves as a visual separator between the logs.
+        if ($date === $previousDate) {
+            $date = '';
+        } elseif ($date === $todaysDate) {
+            $previousDate = $date;
+            $date = __('Today', 'sucuri-scanner');
+        } else {
+            $previousDate = $date;
+        }
+
+        if (!empty($date)) {
+            $date = '<div class="sucuriscan-auditlog-date">' . $date . '</div>';
+        }
+
+        return array(
+            'date' => $date,
+            'previousDate' => $previousDate,
+        );
     }
 }
