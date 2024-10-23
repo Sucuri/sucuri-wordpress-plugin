@@ -52,9 +52,7 @@ This is perhaps the most underutilized security function. It’s the act of moni
 
 This is important because it gives you, the website owner, the ability to keep a good eye on the various changes occurring within your environment. Who is logging in? What changes are being made?
 
-This feature is logging all activity to the Sucuri cloud, for safe keeping. This ensures that an attacker is not able to wipe your forensic data and prevent further security analysis after a compromise. If an attacker is able to bypass your security controls, your security logs will be kept safe within the Sucuri Security Operations Center (SOC).
-
-This feature is particularly important to website / system administrators and security experts looking to understand what is going on with their website and when it’s happening.
+Since version 1.9.6, we have added support for filters in the audit logs, allowing you to filter by various event types and dates.
 
 = What is the file integrity monitoring =
 
