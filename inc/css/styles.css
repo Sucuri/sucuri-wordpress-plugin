@@ -216,6 +216,15 @@ body.sucuri-security_page_sucuriscan_hardening {
     margin: 0;
 }
 
+.sucuriscan-container .sucuriscan-small-textarea {
+    width: 100%;
+    min-height: 50px;
+    /*background: #E9E7E7;*/
+    word-break: break-all;
+    padding: 20px;
+    margin: 0;
+}
+
 #adminmenu li.toplevel_page_sucuriscan .wp-menu-image img {
     width: 18px;
     height: 18px;
@@ -1516,4 +1525,10 @@ h3.lead {
 .sucuriscan-sitecheck-promo p {
     font-size: 13px;
     margin: 0;
+}
+
+.csp-table .check-column {
+    vertical-align: middle !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
 }

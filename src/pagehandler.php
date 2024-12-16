@@ -174,6 +174,7 @@ function sucuriscan_settings_page()
 
     /* settings - cache options */
     $params['Settings.Headers.Cache'] = sucuriscan_settings_cache_options($nonce);
+    $params['Settings.Headers.CSP'] = sucuriscan_settings_csp_options($nonce);
 
     /* settings - api service */
     $params['Settings.APIService.Status'] = sucuriscan_settings_apiservice_status($nonce);

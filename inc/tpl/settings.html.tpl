@@ -97,6 +97,8 @@
 
         <div id="sucuriscan-tabs-headers">
             %%%SUCURI.Settings.Headers.Cache%%%
+
+            %%%SUCURI.Settings.Headers.CSP%%%
         </div>
 
         <div id="sucuriscan-tabs-apiservice">

@@ -198,6 +198,8 @@
             });
         });
     });
+
+
 </script>
 
 <!-- In order to avoid re-using the same SVG over and over again: -->

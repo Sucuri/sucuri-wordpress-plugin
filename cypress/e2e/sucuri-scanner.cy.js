@@ -1236,4 +1236,102 @@ describe("Run e2e tests", () => {
 
         cy.get('.sucuriscan-auditlog-entry').should('have.length.greaterThan', 0);
     });
+
+    it.only("Toggling enforce checkbox enables/disables inputs interactively", () => {
+        cy.visit("/wp-admin/admin.php?page=sucuriscan_settings#headers");
+
+        cy.get("input[name='sucuriscan_enforced_default_src']").should("not.be.checked");
+        cy.get("input[name='sucuriscan_csp_default_src']").should("be.disabled");
+
+        cy.get("input[name='sucuriscan_enforced_default_src']").check({force: true});
+        cy.get("input[name='sucuriscan_csp_default_src']").should("not.be.disabled");
+
+        cy.get("input[name='sucuriscan_enforced_default_src']").uncheck({force: true});
+        cy.get("input[name='sucuriscan_csp_default_src']").should("be.disabled");
+    });
+
+
+    it.only("Saves enforced state and value changes and persists after reload", () => {
+        cy.visit("/wp-admin/admin.php?page=sucuriscan_settings#headers");
+
+        cy.get("input[name='sucuriscan_enforced_default_src']").check({force: true});
+        cy.get("input[name='sucuriscan_csp_default_src']").clear().type("'none'");
+
+        cy.get("[data-cy=sucuriscan_csp_options_mode_button]").select(
+            "Report Only",
+        );
+        cy.get("[data-cy=sucuriscan_headers_csp_control_submit_btn]").click({force: true});
+
+
+        cy.get("input[name='sucuriscan_csp_default_src']").should("have.value", "'none'").and("not.be.disabled");
+
+        cy.request("/").then((response) => {
+            expect(response.headers["content-security-policy-report-only"]).to.exist;
+            expect(response.headers["content-security-policy-report-only"]).to.equal("default-src 'none'");
+        });
+
+        cy.get("[data-cy=sucuriscan_csp_options_mode_button]").select(
+            "Disabled",
+        );
+        cy.get("[data-cy=sucuriscan_headers_csp_control_submit_btn]").click({force: true});
+
+        cy.request("/").then((response) => {
+            expect(response.headers["content-security-policy-report-only"]).to.not.exist;
+        });
+    });
+
+    it.only("Test multi_checkbox directive (sandbox)", () => {
+        cy.visit("/wp-admin/admin.php?page=sucuriscan_settings#headers");
+
+        cy.get("input[name='sucuriscan_enforced_sandbox']").check({force: true});
+        cy.get("input[name='sucuriscan_csp_sandbox[]'][value='allow-forms']").check({force: true});
+        cy.get("input[name='sucuriscan_csp_sandbox[]'][value='allow-popups']").check({force: true});
+        cy.get("input[name='sucuriscan_csp_sandbox[]'][value='allow-orientation-lock']").check({force: true});
+
+        cy.get("[data-cy=sucuriscan_csp_options_mode_button]").select(
+            "Report Only",
+        );
+        cy.get("[data-cy=sucuriscan_headers_csp_control_submit_btn]").click({force: true});
+
+        cy.request("/").then((response) => {
+            expect(response.headers["content-security-policy-report-only"]).to.exist;
+            // default-src 'none' should be present because set in previous test case.
+            expect(response.headers["content-security-policy-report-only"]).to.equal("default-src 'none'; sandbox allow-forms allow-orientation-lock allow-popups");
+        });
+
+        cy.get("input[name='sucuriscan_csp_sandbox[]'][value='allow-forms']").uncheck({force: true});
+        cy.get("input[name='sucuriscan_csp_sandbox[]'][value='allow-popups']").uncheck({force: true});
+        cy.get("input[name='sucuriscan_csp_sandbox[]'][value='allow-orientation-lock']").uncheck({force: true});
+        cy.get("input[name='sucuriscan_csp_sandbox[]'][value='allow-same-origin']").check({force: true});
+
+        cy.get("[data-cy=sucuriscan_headers_csp_control_submit_btn]").click({force: true});
+
+        cy.request("/").then((response) => {
+            expect(response.headers["content-security-policy-report-only"]).to.exist;
+            // default-src 'none' should be present because set in previous test case.
+            expect(response.headers["content-security-policy-report-only"]).to.equal("default-src 'none'; sandbox allow-same-origin");
+        });
+    });
+
+    it.only("Upgrade Insecure Requests directive should not appear unless enforced", () => {
+        cy.visit("/wp-admin/admin.php?page=sucuriscan_settings#headers");
+
+        cy.get("input[name='sucuriscan_enforced_upgrade_insecure_requests']").should("not.be.checked");
+        cy.get("input[name='sucuriscan_csp_upgrade_insecure_requests[]']").should("be.disabled");
+
+        cy.request("/").then((response) => {
+            expect(response.headers["content-security-policy-report-only"]).not.to.include("upgrade-insecure-requests");
+        });
+
+        cy.get("input[name='sucuriscan_enforced_upgrade_insecure_requests']").check({force: true});
+        cy.get("input[name='sucuriscan_csp_upgrade_insecure_requests[]']").should("not.be.disabled");
+        cy.get("input[name='sucuriscan_csp_upgrade_insecure_requests[]']").check({force: true});
+
+        cy.get("[data-cy=sucuriscan_headers_csp_control_submit_btn]").click({force: true});
+
+        cy.request("/").then((response) => {
+            const cspHeader = response.headers["content-security-policy-report-only"];
+            expect(cspHeader).to.include("upgrade-insecure-requests");
+        });
+    });
 });
