@@ -1237,7 +1237,7 @@ describe("Run e2e tests", () => {
         cy.get('.sucuriscan-auditlog-entry').should('have.length.greaterThan', 0);
     });
 
-    it.only("Toggling enforce checkbox enables/disables inputs interactively", () => {
+    it("Toggling enforce checkbox enables/disables inputs interactively", () => {
         cy.visit("/wp-admin/admin.php?page=sucuriscan_settings#headers");
 
         cy.get("input[name='sucuriscan_enforced_default_src']").should("not.be.checked");
@@ -1251,7 +1251,7 @@ describe("Run e2e tests", () => {
     });
 
 
-    it.only("Saves enforced state and value changes and persists after reload", () => {
+    it("Saves enforced state and value changes and persists after reload", () => {
         cy.visit("/wp-admin/admin.php?page=sucuriscan_settings#headers");
 
         cy.get("input[name='sucuriscan_enforced_default_src']").check({force: true});
@@ -1280,7 +1280,7 @@ describe("Run e2e tests", () => {
         });
     });
 
-    it.only("Test multi_checkbox directive (sandbox)", () => {
+    it("Test multi_checkbox directive (sandbox)", () => {
         cy.visit("/wp-admin/admin.php?page=sucuriscan_settings#headers");
 
         cy.get("input[name='sucuriscan_enforced_sandbox']").check({force: true});
@@ -1313,7 +1313,7 @@ describe("Run e2e tests", () => {
         });
     });
 
-    it.only("Upgrade Insecure Requests directive should not appear unless enforced", () => {
+    it("Upgrade Insecure Requests directive should not appear unless enforced", () => {
         cy.visit("/wp-admin/admin.php?page=sucuriscan_settings#headers");
 
         cy.get("input[name='sucuriscan_enforced_upgrade_insecure_requests']").should("not.be.checked");
