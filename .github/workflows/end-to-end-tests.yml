@@ -1,7 +1,7 @@
 name: End-to-end tests
 
 # Triggers the workflow on push or pull request events
-on: [push, pull_request]
+on: [ push, pull_request ]
 
 jobs:
   # Runs the end-to-end test suite.
@@ -48,7 +48,6 @@ jobs:
           node --version
           curl --version
           git --version
-          svn --version
           php --version
           php -i
           locale -a
@@ -89,7 +88,6 @@ jobs:
           node --version
           curl --version
           git --version
-          svn --version
 
       - name: Docker debug information
         run: docker -v
@@ -104,7 +102,7 @@ jobs:
         env:
           cypress_waf_api_key: ${{ secrets.WAF_API_KEY }}
         run: make e2e-firewall
-          
+
       - name: Upload Cypress tests on failure
         uses: actions/upload-artifact@v4
         if: failure()

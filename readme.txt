@@ -3,8 +3,8 @@ Contributors: wordpress@sucuri.net
 Donate Link: https://sucuri.net/
 Tags: malware, security, firewall, scan, spam, virus, sucuri, protection, blocklist, detection, hardening, file integrity
 Requires at least: 3.6
-Tested up to: 6.6
-Stable tag: 1.9.6
+Tested up to: 6.7
+Stable tag: 1.9.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -44,7 +44,7 @@ Visit the [Support Forum](https://wordpress.org/support/plugin/sucuri-scanner) t
 
 == Frequently Asked Questions ==
 
-More information on the Sucuri Security WordPress plugin can be found in our [Knowledge Base](https://kb.sucuri.net/plugins/WordPress+Plugin).
+More information on the Sucuri Security WordPress plugin can be found in our [Knowledge Base](https://docs.sucuri.net/plugins/).
 
 = What is the security activity auditing? =
 
@@ -204,6 +204,9 @@ This version adds an option to refresh the malware scan results on demand, as we
 Daniel is no longer maintaining the Sucuri plugin at GoDaddy. We have transferred it to a dedicated team to maintain and improve it.
 
 == Changelog ==
+= 1.9.7 =
+* Add support for configuration of CSP header (report only)
+
 = 1.9.6 =
 * Added support for filters in the audit logs
 * Updated messaging for infected sites

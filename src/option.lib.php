@@ -279,7 +279,261 @@ class SucuriScanOption extends SucuriScanRequest
                     'pagination_factor' => 'unavailable',
                     'old_age_multiplier' => 'unavailable',
                 ),
-            )
+            ),
+            'sucuriscan_headers_csp' => 'disabled',
+            'sucuriscan_headers_csp_options' => array(
+                'base_uri' => array(
+                    'id' => 'base_uri',
+                    'title' => __('Base URI', 'sucuri-scanner'),
+                    'value' => "'self'",
+                    'type' => 'text',
+                    'description' => __(
+                        'Restricts the URLs that can appear in the document’s <base> element. Commonly \'self\'.',
+                        'sucuri-scanner'
+                    ),
+                    'enforced' => false
+                ),
+                'child_src' => array(
+                    'id' => 'child_src',
+                    'title' => __('Child Source', 'sucuri-scanner'),
+                    'value' => "'self'",
+                    'type' => 'text',
+                    'description' => __('Allowed sources for frames and nested browsing contexts.', 'sucuri-scanner'),
+                    'enforced' => false
+                ),
+                'connect_src' => array(
+                    'id' => 'connect_src',
+                    'title' => __('Connect Source', 'sucuri-scanner'),
+                    'value' => "'self'",
+                    'type' => 'text',
+                    'description' => __('Allowed endpoints for fetch/XHR/WebSocket connections.', 'sucuri-scanner'),
+                    'enforced' => false
+                ),
+                'default_src' => array(
+                    'id' => 'default_src',
+                    'title' => __('Default Source', 'sucuri-scanner'),
+                    'value' => "'self'",
+                    'type' => 'text',
+                    'description' => __(
+                        'Fallback policy for resources if no other directive is defined.',
+                        'sucuri-scanner'
+                    ),
+                    'enforced' => false
+                ),
+                'font_src' => array(
+                    'id' => 'font_src',
+                    'title' => __('Font Source', 'sucuri-scanner'),
+                    'value' => "'self'",
+                    'type' => 'text',
+                    'description' => __('Allowed font sources (e.g. self or font CDNs).', 'sucuri-scanner'),
+                    'enforced' => false
+                ),
+                'form_action' => array(
+                    'id' => 'form_action',
+                    'title' => __('Form Action', 'sucuri-scanner'),
+                    'value' => "'self'",
+                    'type' => 'text',
+                    'description' => __('Restricts the URLs to which forms can be submitted.', 'sucuri-scanner'),
+                    'enforced' => false
+                ),
+                'frame_ancestors' => array(
+                    'id' => 'frame_ancestors',
+                    'title' => __('Frame Ancestors', 'sucuri-scanner'),
+                    'value' => "'self'",
+                    'type' => 'text',
+                    'description' => __('Restricts which sites can embed this page in a frame.', 'sucuri-scanner'),
+                    'enforced' => false
+                ),
+                'img_src' => array(
+                    'id' => 'img_src',
+                    'title' => __('Image Source', 'sucuri-scanner'),
+                    'value' => "'self'",
+                    'type' => 'text',
+                    'description' => __(
+                        'Allowed image sources. Often includes self and possibly data: URIs.',
+                        'sucuri-scanner'
+                    ),
+                    'enforced' => false
+                ),
+                'manifest_src' => array(
+                    'id' => 'manifest_src',
+                    'title' => __('Manifest Source', 'sucuri-scanner'),
+                    'value' => "'self'",
+                    'type' => 'text',
+                    'description' => __('Allowed sources for web app manifests.', 'sucuri-scanner'),
+                    'enforced' => false
+                ),
+                'media_src' => array(
+                    'id' => 'media_src',
+                    'title' => __('Media Source', 'sucuri-scanner'),
+                    'value' => "'self'",
+                    'type' => 'text',
+                    'description' => __('Allowed sources for audio and video content.', 'sucuri-scanner'),
+                    'enforced' => false
+                ),
+                'navigate_to' => array(
+                    'id' => 'navigate_to',
+                    'title' => __('Navigate To', 'sucuri-scanner'),
+                    'value' => "'self'",
+                    'type' => 'text',
+                    'description' => __(
+                        'Restricts which URLs the document can navigate to (e.g., links).',
+                        'sucuri-scanner'
+                    ),
+                    'enforced' => false
+                ),
+                'object_src' => array(
+                    'id' => 'object_src',
+                    'title' => __('Object Source', 'sucuri-scanner'),
+                    'value' => "'none'",
+                    'type' => 'text',
+                    'description' => __(
+                        'Allowed sources for <object>, <embed>, or <applet>. Usually \'none\'.',
+                        'sucuri-scanner'
+                    ),
+                    'enforced' => false
+                ),
+                'script_src' => array(
+                    'id' => 'script_src',
+                    'title' => __('Script Source', 'sucuri-scanner'),
+                    'value' => "'self'",
+                    'type' => 'text',
+                    'description' => __(
+                        'Allowed script sources. Avoid \'unsafe-inline\'; consider nonces.',
+                        'sucuri-scanner'
+                    ),
+                    'enforced' => false
+                ),
+                'script_src_attr' => array(
+                    'id' => 'script_src_attr',
+                    'title' => __('Script Source Attribute', 'sucuri-scanner'),
+                    'value' => "'self'",
+                    'type' => 'text',
+                    'description' => __(
+                        'Allowed sources for inline event handlers.',
+                        'sucuri-scanner'
+                    ),
+                    'enforced' => false
+                ),
+                'script_src_elem' => array(
+                    'id' => 'script_src_elem',
+                    'title' => __('Script Source Element', 'sucuri-scanner'),
+                    'value' => "'self'",
+                    'type' => 'text',
+                    'description' => __(
+                        'Allowed sources for <script> elements. Falls back to script-src if missing.',
+                        'sucuri-scanner'
+                    ),
+                    'enforced' => false
+                ),
+                'style_src' => array(
+                    'id' => 'style_src',
+                    'title' => __('Style Source', 'sucuri-scanner'),
+                    'value' => "'self'",
+                    'type' => 'text',
+                    'description' => __(
+                        'Allowed style sources. Avoid \'unsafe-inline\'; consider nonces.',
+                        'sucuri-scanner'
+                    ),
+                    'enforced' => false
+                ),
+                'style_src_attr' => array(
+                    'id' => 'style_src_attr',
+                    'title' => __('Style Source Attribute', 'sucuri-scanner'),
+                    'value' => "'self'",
+                    'type' => 'text',
+                    'description' => __('Allowed sources for inline style attributes.', 'sucuri-scanner'),
+                    'enforced' => false
+                ),
+                'style_src_elem' => array(
+                    'id' => 'style_src_elem',
+                    'title' => __('Style Source Element', 'sucuri-scanner'),
+                    'value' => "'self'",
+                    'type' => 'text',
+                    'description' => __('Allowed sources for <style> and <link> elements.', 'sucuri-scanner'),
+                    'enforced' => false
+                ),
+                'worker_src' => array(
+                    'id' => 'worker_src',
+                    'title' => __('Worker Source', 'sucuri-scanner'),
+                    'value' => "'self'",
+                    'type' => 'text',
+                    'description' => __('Allowed sources for web and service workers.', 'sucuri-scanner'),
+                    'enforced' => false
+                ),
+                'sandbox' => array(
+                    'id' => 'sandbox',
+                    'title' => __('Sandbox', 'sucuri-scanner'),
+                    'type' => 'multi_checkbox',
+                    'options' => array(
+                        'allow-downloads' => array(
+                            'title' => __('Allow Downloads', 'sucuri-scanner'),
+                            'enforced' => true,
+                        ),
+                        'allow-forms' => array(
+                            'title' => __('Allow Forms', 'sucuri-scanner'),
+                            'enforced' => false,
+                        ),
+                        'allow-modals' => array(
+                            'title' => __('Allow Modals', 'sucuri-scanner'),
+                            'enforced' => false,
+                        ),
+                        'allow-orientation-lock' => array(
+                            'title' => __('Allow Orientation Lock', 'sucuri-scanner'),
+                            'enforced' => false,
+                        ),
+                        'allow-pointer-lock' => array(
+                            'title' => __('Allow Pointer Lock', 'sucuri-scanner'),
+                            'enforced' => false,
+                        ),
+                        'allow-popups' => array(
+                            'title' => __('Allow Popups', 'sucuri-scanner'),
+                            'enforced' => false,
+                        ),
+                        'allow-popups-to-escape-sandbox' => array(
+                            'title' => __('Allow Popups to Escape Sandbox', 'sucuri-scanner'),
+                            'enforced' => false,
+                        ),
+                        'allow-presentation' => array(
+                            'title' => __('Allow Presentation', 'sucuri-scanner'),
+                            'enforced' => false,
+                        ),
+                        'allow-same-origin' => array(
+                            'title' => __('Allow Same Origin', 'sucuri-scanner'),
+                            'enforced' => false,
+                        ),
+                        'allow-scripts' => array(
+                            'title' => __('Allow Scripts', 'sucuri-scanner'),
+                            'enforced' => false,
+                        ),
+                        'allow-top-navigation' => array(
+                            'title' => __('Allow Top Navigation', 'sucuri-scanner'),
+                            'enforced' => false,
+                        ),
+                    ),
+                    'description' => __(
+                        'Applies a sandbox to the page. Select tokens to allow exceptions.',
+                        'sucuri-scanner'
+                    ),
+                    'enforced' => false
+                ),
+                'upgrade_insecure_requests' => array(
+                    'id' => 'upgrade_insecure_requests',
+                    'title' => __('Upgrade Insecure Requests', 'sucuri-scanner'),
+                    'type' => 'multi_checkbox',
+                    'options' => array(
+                        'upgrade-insecure-requests' => array(
+                            'title' => __('Upgrade Insecure Requests', 'sucuri-scanner'),
+                            'enforced' => true,
+                        ),
+                    ),
+                    'description' => __(
+                        'Upgrade insecure requests to HTTPS. This is a security feature that prevents mixed content.',
+                        'sucuri-scanner'
+                    ),
+                    'enforced' => false
+                ),
+            ),
         );
 
         return (array)apply_filters('sucuriscan_option_defaults', $defaults);
@@ -313,8 +567,12 @@ class SucuriScanOption extends SucuriScanRequest
             $admin_email = get_option('admin_email');
             $default['sucuriscan_account'] = $admin_email;
             $default['sucuriscan_notify_to'] = $admin_email;
-            $default['sucuriscan_email_subject'] = sprintf(__('Sucuri Alert, %s, %s, %s', 'sucuri-scanner'),
-                ':domain', ':event', ':remoteaddr');
+            $default['sucuriscan_email_subject'] = sprintf(
+                __('Sucuri Alert, %s, %s, %s', 'sucuri-scanner'),
+                ':domain',
+                ':event',
+                ':remoteaddr'
+            );
         }
 
         return @$default[$option];
