@@ -410,7 +410,7 @@ class SucuriScanOption extends SucuriScanRequest
                     'value' => "'self'",
                     'type' => 'text',
                     'description' => __(
-                        'Allowed sources for inline event handlers (onXXX attributes).',
+                        'Allowed sources for inline event handlers.',
                         'sucuri-scanner'
                     ),
                     'enforced' => false
@@ -528,7 +528,7 @@ class SucuriScanOption extends SucuriScanRequest
                         ),
                     ),
                     'description' => __(
-                        'Applies a sandbox to the page. Select tokens to allow exceptions.',
+                        'Upgrade insecure requests to HTTPS. This is a security feature that prevents mixed content.',
                         'sucuri-scanner'
                     ),
                     'enforced' => false

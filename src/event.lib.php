@@ -110,9 +110,9 @@ class SucuriScanEvent extends SucuriScan
     public static function activeSchedules()
     {
         $activeCrons = array();
-        foreach ((array) _get_cron_array() as $timestamp => $cronhooks) {
-            foreach ((array) $cronhooks as $hook => $events) {
-                foreach ((array) $events as $key => $event) {
+        foreach ((array)_get_cron_array() as $timestamp => $cronhooks) {
+            foreach ((array)$cronhooks as $hook => $events) {
+                foreach ((array)$events as $key => $event) {
                     if (empty($event['args'])) {
                         $event['args'] = array('[]');
                     }
@@ -230,7 +230,7 @@ class SucuriScanEvent extends SucuriScan
     /**
      * Decides if the file system scanner can run or not.
      *
-     * @param  bool $force_scan Force the execution of the scanner.
+     * @param bool $force_scan Force the execution of the scanner.
      * @return bool             True if the scanner can run, false otherwise.
      */
     private static function runFileScanner($force_scan = false)
@@ -240,7 +240,7 @@ class SucuriScanEvent extends SucuriScan
         }
 
         $current_time = time();
-        $runtime = (int) SucuriScanOption::getOption(':runtime');
+        $runtime = (int)SucuriScanOption::getOption(':runtime');
         $diff = abs($current_time - $runtime);
 
         if ($diff < SUCURISCAN_SCANNER_FREQUENCY) {
@@ -255,7 +255,7 @@ class SucuriScanEvent extends SucuriScan
      * analyze them using the Sucuri Monitoring service, this will generate the
      * audit logs for this site and be part of the integrity checks.
      *
-     * @param  bool $force_scan Whether the filesystem scan was forced by an administrator user or not.
+     * @param bool $force_scan Whether the filesystem scan was forced by an administrator user or not.
      * @return bool             True if the filesystem scan was successful, false otherwise.
      */
     public static function filesystemScan($force_scan = false)
@@ -289,9 +289,9 @@ class SucuriScanEvent extends SucuriScan
      * in a failure. However, this procedure depends on the ability of the plugin
      * to write the log into the queue when the previous request failed.
      *
-     * @param  string     $message   Information about the event.
-     * @param  string|int $timestamp Time when the event was triggered.
-     * @param  int        $timeout   Maximum time in seconds to connect to the API.
+     * @param string $message Information about the event.
+     * @param string|int $timestamp Time when the event was triggered.
+     * @param int $timeout Maximum time in seconds to connect to the API.
      * @return bool                  True if the event was logged, false otherwise.
      */
     private static function sendLogToAPI($message = '', $timestamp = '', $timeout = 1)
@@ -308,7 +308,7 @@ class SucuriScanEvent extends SucuriScan
 
         $resp = SucuriScanAPI::apiCallWordpress('POST', $params, true, $args);
 
-        return (bool) (
+        return (bool)(
             is_array($resp)
             && array_key_exists('status', $resp)
             && intval($resp['status']) === 1
@@ -322,7 +322,7 @@ class SucuriScanEvent extends SucuriScan
      * but it could be private and be mocked by the test bootstrap script. Take
      * this in consideration during the static analysis of the code.
      *
-     * @param  string $message Information about the security event.
+     * @param string $message Information about the security event.
      * @return bool            True if the operation succeeded, false otherwise.
      */
     public static function sendLogToQueue($message = '')
@@ -403,7 +403,7 @@ class SucuriScanEvent extends SucuriScan
          * will try to send as much logs as possible to the API service in less
          * than 25 seconds.
          */
-        $maxtime = (int) SucuriScan::iniGet('max_execution_time');
+        $maxtime = (int)SucuriScan::iniGet('max_execution_time');
         $timeout = ($maxtime > 1) ? ($maxtime - 6) : 30;
 
         /* record some statistics */
@@ -442,8 +442,8 @@ class SucuriScanEvent extends SucuriScan
     /**
      * Generates an audit event log (to be sent later).
      *
-     * @param  int    $severity Importance of the event that will be reported.
-     * @param  string $message  The explanation of the event.
+     * @param int $severity Importance of the event that will be reported.
+     * @param string $message The explanation of the event.
      * @return bool             True if the event was logged, false otherwise.
      */
     private static function reportEvent($severity = 0, $message = '')
@@ -467,12 +467,18 @@ class SucuriScanEvent extends SucuriScan
         $severity = intval($severity);
         $severity_name = __('Info', 'sucuri-scanner');
         $severities = array(
-            /* 0 */ __('Debug', 'sucuri-scanner'),
-            /* 1 */ __('Notice', 'sucuri-scanner'),
-            /* 2 */ __('Info', 'sucuri-scanner'),
-            /* 3 */ __('Warning', 'sucuri-scanner'),
-            /* 4 */ __('Error', 'sucuri-scanner'),
-            /* 5 */ __('Critical', 'sucuri-scanner'),
+            /* 0 */
+            __('Debug', 'sucuri-scanner'),
+            /* 1 */
+            __('Notice', 'sucuri-scanner'),
+            /* 2 */
+            __('Info', 'sucuri-scanner'),
+            /* 3 */
+            __('Warning', 'sucuri-scanner'),
+            /* 4 */
+            __('Error', 'sucuri-scanner'),
+            /* 5 */
+            __('Critical', 'sucuri-scanner'),
         );
 
         if (isset($severities[$severity])) {
@@ -499,7 +505,7 @@ class SucuriScanEvent extends SucuriScan
     /**
      * Reports a debug event on the website.
      *
-     * @param  string $message Text witht the explanation of the event or action performed.
+     * @param string $message Text witht the explanation of the event or action performed.
      * @return bool            Either true or false depending on the success of the operation.
      */
     public static function reportDebugEvent($message = '')
@@ -510,7 +516,7 @@ class SucuriScanEvent extends SucuriScan
     /**
      * Reports a notice event on the website.
      *
-     * @param  string $message Text witht the explanation of the event or action performed.
+     * @param string $message Text witht the explanation of the event or action performed.
      * @return bool            Either true or false depending on the success of the operation.
      */
     public static function reportNoticeEvent($message = '')
@@ -521,7 +527,7 @@ class SucuriScanEvent extends SucuriScan
     /**
      * Reports a info event on the website.
      *
-     * @param  string $message Text witht the explanation of the event or action performed.
+     * @param string $message Text witht the explanation of the event or action performed.
      * @return bool            Either true or false depending on the success of the operation.
      */
     public static function reportInfoEvent($message = '')
@@ -532,7 +538,7 @@ class SucuriScanEvent extends SucuriScan
     /**
      * Reports a warning event on the website.
      *
-     * @param  string $message Text witht the explanation of the event or action performed.
+     * @param string $message Text witht the explanation of the event or action performed.
      * @return bool            Either true or false depending on the success of the operation.
      */
     public static function reportWarningEvent($message = '')
@@ -543,7 +549,7 @@ class SucuriScanEvent extends SucuriScan
     /**
      * Reports a error event on the website.
      *
-     * @param  string $message Text witht the explanation of the event or action performed.
+     * @param string $message Text witht the explanation of the event or action performed.
      * @return bool            Either true or false depending on the success of the operation.
      */
     public static function reportErrorEvent($message = '')
@@ -554,7 +560,7 @@ class SucuriScanEvent extends SucuriScan
     /**
      * Reports a critical event on the website.
      *
-     * @param  string $message Text witht the explanation of the event or action performed.
+     * @param string $message Text witht the explanation of the event or action performed.
      * @return bool            Either true or false depending on the success of the operation.
      */
     public static function reportCriticalEvent($message = '')
@@ -566,8 +572,8 @@ class SucuriScanEvent extends SucuriScan
      * Send a notification to the administrator of the specified events, only if
      * the administrator accepted to receive alerts for this type of events.
      *
-     * @param  string $event   The name of the event that was triggered.
-     * @param  string $content Body of the email that will be sent to the administrator.
+     * @param string $event The name of the event that was triggered.
+     * @param string $content Body of the email that will be sent to the administrator.
      * @return bool            True if the email was apparently sent, false otherwise.
      */
     public static function notifyEvent($event = '', $content = '')
@@ -602,7 +608,10 @@ class SucuriScanEvent extends SucuriScan
             case 'failed_login':
                 $settings_url = SucuriScanTemplate::getUrl('settings');
                 $content .= "\n" . sprintf(
-                    __("<br><br>\n\n<em>Explanation: Someone failed to login to your site. If you are getting too many of these messages, it is likely your site is under a password guessing brute-force attack [1]. You can disable the failed login alerts from here [2]. Alternatively, you can consider to install a firewall between your website and your visitors to filter out these and other attacks, take a look at Sucuri Firewall [3].</em><br><br>\n\n[1] <a href='https://kb.sucuri.net/definitions/attacks/brute-force/password-guessing'>https://kb.sucuri.net/definitions/attacks/brute-force/password-guessing</a><br>\n[2] <a href='%s'>%s</a> <br>\n[3] <a href='https://sucuri.net/website-firewall/?wpalert'>https://sucuri.net/website-firewall/</a><br>\n", 'sucuri-scanner'),
+                    __(
+                        "<br><br>\n\n<em>Explanation: Someone failed to login to your site. If you are getting too many of these messages, it is likely your site is under a password guessing brute-force attack [1]. You can disable the failed login alerts from here [2]. Alternatively, you can consider to install a firewall between your website and your visitors to filter out these and other attacks, take a look at Sucuri Firewall [3].</em><br><br>\n\n[1] <a href='https://docs.sucuri.net/definitions/attacks/brute-force/password-guessing-brute-force-attacks/'>https://docs.sucuri.net/definitions/attacks/brute-force/password-guessing-brute-force-attacks/</a><br>\n[2] <a href='%s'>%s</a> <br>\n[3] <a href='https://sucuri.net/website-firewall/?wpalert'>https://sucuri.net/website-firewall/</a><br>\n",
+                        'sucuri-scanner'
+                    ),
                     $settings_url,
                     $settings_url
                 );
@@ -636,7 +645,7 @@ class SucuriScanEvent extends SucuriScan
     /**
      * Check whether an IP address is being trusted or not.
      *
-     * @param  string $addr The supposed ip address that will be checked.
+     * @param string $addr The supposed ip address that will be checked.
      * @return bool         True if the user IP is trusted, false otherwise.
      */
     public static function isTrustedIP($addr = '')
@@ -703,7 +712,7 @@ class SucuriScanEvent extends SucuriScan
     /**
      * Generate and set a new password for a specific user not in session.
      *
-     * @param  int $user_id User account identifier.
+     * @param int $user_id User account identifier.
      * @return bool         True if the process exit clean, false otherwise.
      */
     public static function setNewPassword($user_id = 0)
@@ -727,7 +736,10 @@ class SucuriScanEvent extends SucuriScan
             return false;
         }
 
-        $reset_password_url = network_site_url("wp-login.php?action=rp&key=$key&login=" . rawurlencode($user_login), 'https' );
+        $reset_password_url = network_site_url(
+            "wp-login.php?action=rp&key=$key&login=" . rawurlencode($user_login),
+            'https'
+        );
 
         $message = SucuriScanTemplate::getSection(
             'settings-posthack-reset-password-alert',
@@ -755,10 +767,10 @@ class SucuriScanEvent extends SucuriScan
     /**
      * Gets a new password reset key.
      *
-     * @since 1.8.25
-     *
      * @param WP_User $user WP_User object.
      * @return string|WP_Error Returns a password reset key as a string, WP_Error otherwise.
+     * @since 1.8.25
+     *
      */
     private static function GetPasswordResetKey($user)
     {
@@ -921,7 +933,7 @@ class SucuriScanEvent extends SucuriScan
 
         // Delete $filepath.
         @unlink($filepath);
-        
+
         // Register on audit logs and return result.
         SucuriScanEvent::reportInfoEvent(
             sprintf(

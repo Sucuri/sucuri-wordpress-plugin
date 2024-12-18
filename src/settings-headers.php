@@ -34,6 +34,11 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  */
 function sucuriscan_settings_cache_options($nonce)
 {
+    if (!SucuriScanInterface::checkNonce()) {
+        SucuriScanInterface::error(__('Invalid nonce.', 'sucuri-scanner'));
+        return '';
+    }
+
     $isWooCommerceActive = in_array(
         'woocommerce/woocommerce.php',
         apply_filters('active_plugins', get_option('active_plugins'))
@@ -221,13 +226,13 @@ function sucuriscan_map_csp_options($headersCSPControlOptions)
             // If directive value is set in $_POST, sanitize and store it
             if (isset($_POST[$postKey])) {
                 $postValue = wp_unslash($_POST[$postKey]);
-                $postValue = SucuriScanCSPHeaders::sanitize_csp_directive($postValue);
+                $postValue = SucuriScanCSPHeaders::sanitize_csp_directive(sanitize_text_field($postValue));
 
                 $newOptions[$directive] = array(
-                    'id' => $option['id'],
-                    'title' => $option['title'],
+                    'id' => esc_attr($option['id']),
+                    'title' => esc_html($option['title']),
                     'type' => $type,
-                    'description' => isset($option['description']) ? $option['description'] : '',
+                    'description' => isset($option['description']) ? esc_html($option['description']) : '',
                     'options' => isset($option['options']) ? $option['options'] : array(),
                     'enforced' => $enforced,
                     'value' => $postValue,
@@ -246,7 +251,7 @@ function sucuriscan_map_csp_options($headersCSPControlOptions)
             $selectedValues = array();
             if (isset($_POST[$postKey]) && is_array($_POST[$postKey])) {
                 foreach ($_POST[$postKey] as $val) {
-                    $token = SucuriScanCSPHeaders::sanitize_csp_directive($val);
+                    $token = SucuriScanCSPHeaders::sanitize_csp_directive(sanitize_text_field($val));
                     if (!empty($token)) {
                         $selectedValues[] = $token;
                     }
@@ -256,10 +261,10 @@ function sucuriscan_map_csp_options($headersCSPControlOptions)
             $finalValue = empty($selectedValues) ? '' : implode(' ', $selectedValues);
 
             $newOptions[$directive] = array(
-                'id' => $option['id'],
-                'title' => $option['title'],
+                'id' => esc_attr($option['id']),
+                'title' => esc_html($option['title']),
                 'type' => $type,
-                'description' => isset($option['description']) ? $option['description'] : '',
+                'description' => isset($option['description']) ? esc_html($option['description']) : '',
                 'options' => isset($option['options']) ? $option['options'] : array(),
                 'enforced' => $enforced,
                 'value' => $finalValue,
@@ -284,6 +289,11 @@ function sucuriscan_map_csp_options($headersCSPControlOptions)
  */
 function sucuriscan_settings_csp_options($nonce)
 {
+    if (!SucuriScanInterface::checkNonce()) {
+        SucuriScanInterface::error(__('Invalid nonce.', 'sucuri-scanner'));
+        return '';
+    }
+
     $params = array(
         'CSPOptions.Options' => '',
         'CSPOptions.Modes' => '',
@@ -298,17 +308,20 @@ function sucuriscan_settings_csp_options($nonce)
         'report-only' => __('Report Only', 'sucuri-scanner'),
     );
 
-    if (SucuriScanInterface::checkNonce() && SucuriScanRequest::post(':update_csp_options')) {
+    // Process form submission
+    if (SucuriScanRequest::post(':update_csp_options')) {
         $headerCSPMode = sanitize_text_field(SucuriScanRequest::post(':csp_options_mode'));
 
-        $newOptions = sucuriscan_map_csp_options($headersCSPControlOptions);
+        // Validate selected CSP mode
+        if (!array_key_exists($headerCSPMode, $availableModes)) {
+            SucuriScanInterface::error(__('Invalid CSP mode selected.', 'sucuri-scanner'));
+        } else {
+            $newOptions = sucuriscan_map_csp_options($headersCSPControlOptions);
 
-        if (array_key_exists($headerCSPMode, $availableModes)) {
+            // Save new options if valid
             SucuriScanOption::updateOption(':headers_csp', $headerCSPMode);
             SucuriScanOption::updateOption(':headers_csp_options', $newOptions);
             SucuriScanInterface::info(__('Content Security Policy settings were updated.', 'sucuri-scanner'));
-        } else {
-            SucuriScanInterface::error(__('Invalid CSP mode selected.', 'sucuri-scanner'));
         }
     }
 
@@ -323,18 +336,22 @@ function sucuriscan_settings_csp_options($nonce)
         $params['CSPOptions.Options'] .= sucuriscan_get_csp_directive_html($directive, $option);
     }
 
+    // Render CSP mode dropdown
+    foreach ($availableModes as $modeValue => $modeLabel) {
+        $selected = ($headersCSPControl === $modeValue) ? ' selected' : '';
+        $params['CSPOptions.Modes'] .= sprintf(
+            '<option value="%s"%s>%s</option>',
+            esc_attr($modeValue),
+            $selected,
+            esc_html($modeLabel)
+        );
+    }
+
+    // Set CSP status
     $params['CSPOptions.Status'] = $isCSPControlHeaderDisabled ? __('Disabled', 'sucuri-scanner') : __(
         'Report Only',
         'sucuri-scanner'
     );
-
-    foreach ($availableModes as $modeValue => $modeLabel) {
-        $selected = '';
-        if ($headersCSPControl == $modeValue) {
-            $selected = ' selected';
-        }
-        $params['CSPOptions.Modes'] .= sprintf('<option value="%s"%s>%s</option>', $modeValue, $selected, $modeLabel);
-    }
 
     return SucuriScanTemplate::getSection('settings-headers-csp', $params);
 }

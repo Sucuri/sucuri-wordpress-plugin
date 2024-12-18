@@ -30,7 +30,6 @@ class SucuriScanCSPHeaders extends SucuriScan
 {
     /**
      * Basic sanitization for CSP directive values.
-     * This removes invalid characters, but does not fully validate semantics.
      *
      * @param string $input Raw input value
      *
@@ -58,19 +57,15 @@ class SucuriScanCSPHeaders extends SucuriScan
         }
 
         $cspOptions = SucuriScanOption::getOption(':headers_csp_options');
-        if (empty($cspOptions) || !is_array($cspOptions)) {
-            return;
+        if (!is_array($cspOptions)) {
+            $cspOptions = array();
         }
 
         $cspDirectives = array();
 
         foreach ($cspOptions as $directive => $option) {
             // Skip directives that aren't enforced
-            if (!isset($option['enforced']) || !$option['enforced']) {
-                continue;
-            }
-
-            if (!isset($option['value'])) {
+            if (!isset($option['enforced']) || !$option['enforced'] || !isset($option['value'])) {
                 continue;
             }
 
@@ -82,35 +77,37 @@ class SucuriScanCSPHeaders extends SucuriScan
 
             $allowedDirective = $this->getValidDirectiveOrFalse($directive);
             if (!$allowedDirective) {
+                error_log("Invalid CSP directive: $directive");
                 continue;
             }
 
-            // Sanitize and validate the value
             $sanitizedValue = $this->sanitizeDirectiveValue($allowedDirective, $value);
             if ($sanitizedValue !== false) {
-                $cspDirectives[] = $allowedDirective . ' ' . $sanitizedValue;
+                if ($allowedDirective === 'upgrade-insecure-requests') {
+                    $cspDirectives[] = $allowedDirective;
+                } else {
+                    $cspDirectives[] = $allowedDirective . ' ' . $sanitizedValue;
+                }
+            } else {
+                error_log("Invalid value for CSP directive: $directive => $value");
             }
         }
 
         if (empty($cspDirectives)) {
-            // No valid CSP directives to set
             return;
         }
 
         $cspHeaderValue = implode('; ', $cspDirectives);
 
-        // Default to report-only to avoid breaking sites
-        header('Content-Security-Policy-Report-Only: ' . $cspHeaderValue);
+        // Validate the final CSP header value
+        if (preg_match('/^[a-zA-Z0-9\-\'\:;\/\.\*\s]+$/', $cspHeaderValue)) {
+            header('Content-Security-Policy-Report-Only: ' . $cspHeaderValue);
+            return;
+        }
+
+        error_log("Invalid CSP header value: $cspHeaderValue");
     }
 
-
-    /**
-     * Validate the directive name against allowed directives.
-     *
-     * @param string $directive The directive name.
-     *
-     * @return string|false The directive if valid, false otherwise.
-     */
     protected function getValidDirectiveOrFalse($directive)
     {
         $allowedDirectives = array(
@@ -140,14 +137,10 @@ class SucuriScanCSPHeaders extends SucuriScan
             'style-src-elem',
             'trusted-types',
             'upgrade-insecure-requests',
-            'worker-src',
+            'worker-src'
         );
 
-        if (in_array($directive, $allowedDirectives)) {
-            return $directive;
-        }
-
-        return false;
+        return in_array($directive, $allowedDirectives) ? $directive : false;
     }
 
     /**
@@ -172,7 +165,6 @@ class SucuriScanCSPHeaders extends SucuriScan
             return $this->sanitizeReportUriOrTo($value);
         }
 
-        // For all other directives, treat as a source-list directive
         return $this->sanitizeSourceListDirective($value);
     }
 
@@ -186,12 +178,7 @@ class SucuriScanCSPHeaders extends SucuriScan
     protected function sanitizeUpgradeInsecureRequests($value)
     {
         $val = trim($this->sanitize_csp_directive($value));
-
-        if ($val === 'upgrade-insecure-requests' || $val === '') {
-            return 'upgrade-insecure-requests';
-        }
-
-        return false;
+        return $val === 'upgrade-insecure-requests' || $val === '' ? 'upgrade-insecure-requests' : false;
     }
 
     /**
@@ -218,7 +205,6 @@ class SucuriScanCSPHeaders extends SucuriScan
         );
 
         $tokens = preg_split('/\s+/', $value, -1, PREG_SPLIT_NO_EMPTY);
-
         $finalTokens = array();
 
         foreach ($tokens as $t) {
@@ -242,16 +228,7 @@ class SucuriScanCSPHeaders extends SucuriScan
     protected function sanitizeReportUriOrTo($value)
     {
         $val = $this->sanitize_csp_directive($value);
-
-        // Basic URL check: it should start with http/https or a known scheme
-        if (preg_match('#^(https?:|data:|blob:|mediastream:|filesystem:)#i', $val) || filter_var(
-            $val,
-            FILTER_VALIDATE_URL
-        )) {
-            return $val;
-        }
-
-        return false;
+        return (preg_match('#^(https?:)#i', $val) && filter_var($val, FILTER_VALIDATE_URL)) ? $val : false;
     }
 
     /**
@@ -275,36 +252,23 @@ class SucuriScanCSPHeaders extends SucuriScan
         );
 
         $tokens = preg_split('/\s+/', $value, -1, PREG_SPLIT_NO_EMPTY);
-
         $finalTokens = array();
 
         foreach ($tokens as $token) {
             $t = $this->sanitize_csp_directive($token);
 
-            if (in_array($t, $allowedKeywords)) {
+            if (in_array($t, $allowedKeywords) ||
+                preg_match('#^(https?:|data:|blob:|mediastream:|filesystem:)#i', $t) ||
+                $t === '*' ||
+                $this->isValidHostSource($t)) {
                 $finalTokens[] = $t;
                 continue;
             }
 
-            if (preg_match('#^(https?:|data:|blob:|mediastream:|filesystem:)#i', $t) || $t === '*') {
-                $finalTokens[] = $t;
-                continue;
-            }
-
-            if ($this->isValidHostSource($t)) {
-                $finalTokens[] = $t;
-                continue;
-            }
-
-            // Invalid token found
             return false;
         }
 
-        if (empty($finalTokens)) {
-            return false;
-        }
-
-        return implode(' ', $finalTokens);
+        return empty($finalTokens) ? false : implode(' ', $finalTokens);
     }
 
     /**
@@ -321,8 +285,7 @@ class SucuriScanCSPHeaders extends SucuriScan
      */
     protected function isValidHostSource($source)
     {
-        $pattern = '/^(?:\*\.)?[a-zA-Z0-9\-\.]+(?:\:[0-9]+)?$/';
-
+        $pattern = '/^(\*\.)?[a-zA-Z0-9\-]+(\.[a-zA-Z0-9\-]+)*(?::[0-9]+)?$/';
         return (bool)preg_match($pattern, $source);
     }
 }
