@@ -271,10 +271,6 @@ function sucuriscan_map_csp_options($headersCSPControlOptions)
             );
             continue;
         }
-
-        // For unknown types, just update enforced
-        $option['enforced'] = $enforced;
-        $newOptions[$directive] = $option;
     }
 
     return $newOptions;
