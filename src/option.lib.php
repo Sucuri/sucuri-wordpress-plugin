@@ -624,7 +624,7 @@ class SucuriScanOption extends SucuriScanRequest
                     'options' => array(
                         'Access-Control-Allow-Credentials' => array(
                             'title' => __('Allow Credentials', 'sucuri-scanner'),
-                            'enforced' => true,
+                            'enforced' => false,
                         ),
                     ),
                     'description' => __(
