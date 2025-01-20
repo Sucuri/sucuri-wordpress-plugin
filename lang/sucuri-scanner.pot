@@ -1,15 +1,15 @@
-# Copyright (C) 2024 Sucuri Inc.
+# Copyright (C) 2025 Sucuri Inc.
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Sucuri Security - Auditing, Malware Scanner and Hardening 1.9.7\n"
+"Project-Id-Version: Sucuri Security - Auditing, Malware Scanner and Hardening 1.9.8\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/sucuri-wordpress-plugin\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-12-17T16:22:56+00:00\n"
+"POT-Creation-Date: 2025-01-20T02:48:54+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: sucuri-scanner\n"
@@ -1036,7 +1036,7 @@ msgid "Script Source Attribute"
 msgstr ""
 
 #: src/option.lib.php:412
-msgid "Allowed sources for inline event handlers (onXXX attributes)."
+msgid "Allowed sources for inline event handlers."
 msgstr ""
 
 #: src/option.lib.php:420
@@ -1128,7 +1128,6 @@ msgid "Allow Top Navigation"
 msgstr ""
 
 #: src/option.lib.php:514
-#: src/option.lib.php:530
 msgid "Applies a sandbox to the page. Select tokens to allow exceptions."
 msgstr ""
 
@@ -1137,7 +1136,99 @@ msgstr ""
 msgid "Upgrade Insecure Requests"
 msgstr ""
 
-#: src/option.lib.php:571
+#: src/option.lib.php:530
+msgid "Upgrade insecure requests to HTTPS. This is a security feature that prevents mixed content."
+msgstr ""
+
+#: src/option.lib.php:541
+msgid "Access-Control-Allow-Origin"
+msgstr ""
+
+#: src/option.lib.php:544
+msgid "Specifies the origin that is allowed to access the resource."
+msgstr ""
+
+#: src/option.lib.php:552
+msgid "Access-Control-Expose-Headers"
+msgstr ""
+
+#: src/option.lib.php:555
+msgid "Specifies the headers that can be exposed when accessing the resource."
+msgstr ""
+
+#: src/option.lib.php:563
+msgid "Access-Control-Allow-Methods"
+msgstr ""
+
+#: src/option.lib.php:566
+msgid "Allow GET method"
+msgstr ""
+
+#: src/option.lib.php:570
+msgid "Allow POST method"
+msgstr ""
+
+#: src/option.lib.php:574
+msgid "Allow PUT method"
+msgstr ""
+
+#: src/option.lib.php:578
+msgid "Allow DELETE method"
+msgstr ""
+
+#: src/option.lib.php:582
+msgid "Allow OPTIONS method"
+msgstr ""
+
+#: src/option.lib.php:586
+msgid "Allow PATCH method"
+msgstr ""
+
+#: src/option.lib.php:590
+msgid "Allow HEAD method"
+msgstr ""
+
+#: src/option.lib.php:594
+msgid "Allow TRACE method"
+msgstr ""
+
+#: src/option.lib.php:598
+msgid "Allow CONNECT method"
+msgstr ""
+
+#: src/option.lib.php:603
+msgid "Specifies the methods allowed when accessing the resource."
+msgstr ""
+
+#: src/option.lib.php:611
+msgid "Access-Control-Allow-Headers"
+msgstr ""
+
+#: src/option.lib.php:614
+msgid "Specifies the headers allowed when accessing the resource."
+msgstr ""
+
+#: src/option.lib.php:622
+msgid "Access-Control-Allow-Credentials"
+msgstr ""
+
+#: src/option.lib.php:626
+msgid "Allow Credentials"
+msgstr ""
+
+#: src/option.lib.php:630
+msgid "Specifies whether credentials are allowed when accessing the resource."
+msgstr ""
+
+#: src/option.lib.php:638
+msgid "Access-Control-Max-Age"
+msgstr ""
+
+#: src/option.lib.php:641
+msgid "Specifies how long the results of a preflight request can be cached."
+msgstr ""
+
+#: src/option.lib.php:682
 #: src/settings-alerts.php:214
 #: src/settings-alerts.php:215
 #: src/settings-alerts.php:216
@@ -1495,7 +1586,9 @@ msgstr ""
 #: src/settings-general.php:211
 #: src/settings-general.php:277
 #: src/settings-general.php:324
-#: src/settings-headers.php:130
+#: src/settings-headers.php:135
+#: src/settings-headers.php:387
+#: src/settings-headers.php:430
 #: src/settings-integrity.php:80
 #: src/strings.php:772
 msgid "Enabled"
@@ -1513,9 +1606,11 @@ msgstr ""
 #: src/settings-general.php:254
 #: src/settings-general.php:298
 #: src/settings-general.php:359
-#: src/settings-headers.php:130
-#: src/settings-headers.php:297
-#: src/settings-headers.php:326
+#: src/settings-headers.php:135
+#: src/settings-headers.php:310
+#: src/settings-headers.php:354
+#: src/settings-headers.php:386
+#: src/settings-headers.php:430
 #: src/strings.php:773
 msgid "Disabled"
 msgstr ""
@@ -1925,53 +2020,67 @@ msgstr ""
 msgid "Selected files have been removed"
 msgstr ""
 
-#: src/settings-headers.php:48
-msgid "disabled"
-msgstr ""
-
-#: src/settings-headers.php:49
-msgid "static"
-msgstr ""
-
-#: src/settings-headers.php:50
-msgid "occasional"
-msgstr ""
-
-#: src/settings-headers.php:51
-msgid "frequent"
-msgstr ""
-
-#: src/settings-headers.php:52
-msgid "busy"
+#: src/settings-headers.php:38
+#: src/settings-headers.php:296
+#: src/settings-headers.php:372
+msgid "Invalid nonce."
 msgstr ""
 
 #: src/settings-headers.php:53
+msgid "disabled"
+msgstr ""
+
+#: src/settings-headers.php:54
+msgid "static"
+msgstr ""
+
+#: src/settings-headers.php:55
+msgid "occasional"
+msgstr ""
+
+#: src/settings-headers.php:56
+msgid "frequent"
+msgstr ""
+
+#: src/settings-headers.php:57
+msgid "busy"
+msgstr ""
+
+#: src/settings-headers.php:58
 msgid "custom"
 msgstr ""
 
-#: src/settings-headers.php:89
+#: src/settings-headers.php:94
 msgid "Cache-Control header was deactivated."
 msgstr ""
 
-#: src/settings-headers.php:91
+#: src/settings-headers.php:96
 msgid "Cache-Control header was activated."
 msgstr ""
 
-#: src/settings-headers.php:94
+#: src/settings-headers.php:99
 msgid "Invalid cache control mode selected."
 msgstr ""
 
-#: src/settings-headers.php:298
-#: src/settings-headers.php:326
+#: src/settings-headers.php:311
+#: src/settings-headers.php:354
 msgid "Report Only"
 msgstr ""
 
-#: src/settings-headers.php:309
+#: src/settings-headers.php:320
+msgid "Invalid CSP mode selected."
+msgstr ""
+
+#: src/settings-headers.php:327
 msgid "Content Security Policy settings were updated."
 msgstr ""
 
-#: src/settings-headers.php:311
-msgid "Invalid CSP mode selected."
+#: src/settings-headers.php:396
+msgid "Invalid CORS mode selected."
+msgstr ""
+
+#: src/settings-headers.php:403
+msgid "CORS settings were updated."
 msgstr ""
 
 #: src/settings-integrity.php:65
@@ -2249,6 +2358,8 @@ msgstr ""
 #: src/strings.php:632
 #: src/strings.php:642
 #: src/strings.php:738
+#: src/strings.php:799
+#: src/strings.php:816
 msgid "Submit"
 msgstr ""
 
@@ -3294,11 +3405,62 @@ msgid "Cache Control Header"
 msgstr ""
 
 #: src/strings.php:774
+#: src/strings.php:815
 msgid "Mode:"
 msgstr ""
 
 #: src/strings.php:777
 msgid "Please enable site caching on your WAF to use these settings. If you are a Sucuri client and require assistance, please <a href=\"https://docs.sucuri.net/billing/how-do-i-open-a-general-support-ticket/\" target=\"_blank\" rel=\"noopener\">{{create a ticket}}</a> and reach out to the firewall team for support."
+msgstr ""
+
+#: src/strings.php:786
+msgid "CORS Options"
+msgstr ""
+
+#: src/strings.php:787
+#: src/strings.php:795
+msgid "Cross-Origin Resource Sharing (CORS) is a security feature that allows web applications to control the resources that can be requested from another domain."
+msgstr ""
+
+#: src/strings.php:791
+msgid "Here you can see all the CORS options available."
+msgstr ""
+
+#: src/strings.php:792
+msgid "Header"
+msgstr ""
+
+#: src/strings.php:793
+msgid "Header Value"
+msgstr ""
+
+#: src/strings.php:794
+msgid "CORS"
+msgstr ""
+
+#: src/strings.php:802
+msgid "Content Security Policy (CSP) Options"
+msgstr ""
+
+#: src/strings.php:803
+#: src/strings.php:811
+msgid "Content Security Policy (CSP) is a security feature that helps prevent various types of attacks, such as Cross-Site Scripting (XSS) and data injection attacks."
+msgstr ""
+
+#: src/strings.php:807
+msgid "Here you can see all the CSP options available."
+msgstr ""
+
+#: src/strings.php:808
+msgid "Directive"
+msgstr ""
+
+#: src/strings.php:809
+msgid "Directive Value"
+msgstr ""
+
+#: src/strings.php:810
+msgid "Content Security Policy"
 msgstr ""
 
 #: src/template.lib.php:277
@@ -3397,6 +3559,6 @@ msgstr ""
 msgid "Your WordPress install is following <a href=\"https://sucuri.net/guides/wordpress-security\" target=\"_blank\" rel=\"noopener\">the security best practices</a>."
 msgstr ""
 
-#: sucuri.php:336
+#: sucuri.php:344
 msgid "Sucuri plugin has been uninstalled"
 msgstr ""

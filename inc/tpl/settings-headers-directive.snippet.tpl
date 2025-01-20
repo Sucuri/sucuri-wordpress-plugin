@@ -12,7 +12,7 @@
     </td>
 
     <td>
-        <span class="sucuriscan-monospace csp-directive-inputs">
+        <span class="sucuriscan-monospace %%SUCURI.prefix%%-directive-inputs">
             %%%SUCURI.options%%%
         </span>
     </td>

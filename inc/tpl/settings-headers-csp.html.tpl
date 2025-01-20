@@ -46,9 +46,8 @@
                     <td id="cb" class="manage-column column-cb check-column">
 
                     </td>
-                    <th class="manage-column">Directive</th>
-                    <th class="manage-column">Directive Value</th>
-
+                    <th class="manage-column">{{Directive}}</th>
+                    <th class="manage-column">{{Directive Value}}</th>
                 </tr>
                 </thead>
 

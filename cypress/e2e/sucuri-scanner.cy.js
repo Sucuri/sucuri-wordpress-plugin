@@ -1284,9 +1284,9 @@ describe("Run e2e tests", () => {
         cy.visit("/wp-admin/admin.php?page=sucuriscan_settings#headers");
 
         cy.get("input[name='sucuriscan_enforced_sandbox']").check({force: true});
-        cy.get("input[name='sucuriscan_csp_sandbox[]'][value='allow-forms']").check({force: true});
-        cy.get("input[name='sucuriscan_csp_sandbox[]'][value='allow-popups']").check({force: true});
-        cy.get("input[name='sucuriscan_csp_sandbox[]'][value='allow-orientation-lock']").check({force: true});
+        cy.get("input[name='sucuriscan_csp_sandbox_allow-forms']").check({force: true});
+        cy.get("input[name='sucuriscan_csp_sandbox_allow-popups']").check({force: true});
+        cy.get("input[name='sucuriscan_csp_sandbox_allow-orientation-lock']").check({force: true});
 
         cy.get("[data-cy=sucuriscan_csp_options_mode_button]").select(
             "Report Only",
@@ -1299,10 +1299,10 @@ describe("Run e2e tests", () => {
             expect(response.headers["content-security-policy-report-only"]).to.equal("default-src 'none'; sandbox allow-forms allow-orientation-lock allow-popups");
         });
 
-        cy.get("input[name='sucuriscan_csp_sandbox[]'][value='allow-forms']").uncheck({force: true});
-        cy.get("input[name='sucuriscan_csp_sandbox[]'][value='allow-popups']").uncheck({force: true});
-        cy.get("input[name='sucuriscan_csp_sandbox[]'][value='allow-orientation-lock']").uncheck({force: true});
-        cy.get("input[name='sucuriscan_csp_sandbox[]'][value='allow-same-origin']").check({force: true});
+        cy.get("input[name='sucuriscan_csp_sandbox_allow-forms']").uncheck({force: true});
+        cy.get("input[name='sucuriscan_csp_sandbox_allow-popups']").uncheck({force: true});
+        cy.get("input[name='sucuriscan_csp_sandbox_allow-orientation-lock']").uncheck({force: true});
+        cy.get("input[name='sucuriscan_csp_sandbox_allow-same-origin']").check({force: true});
 
         cy.get("[data-cy=sucuriscan_headers_csp_control_submit_btn]").click({force: true});
 
@@ -1317,21 +1317,145 @@ describe("Run e2e tests", () => {
         cy.visit("/wp-admin/admin.php?page=sucuriscan_settings#headers");
 
         cy.get("input[name='sucuriscan_enforced_upgrade_insecure_requests']").should("not.be.checked");
-        cy.get("input[name='sucuriscan_csp_upgrade_insecure_requests[]']").should("be.disabled");
+        cy.get("input[name='sucuriscan_csp_upgrade_insecure_requests_upgrade-insecure-requests']").should("be.disabled");
 
         cy.request("/").then((response) => {
             expect(response.headers["content-security-policy-report-only"]).not.to.include("upgrade-insecure-requests");
         });
 
         cy.get("input[name='sucuriscan_enforced_upgrade_insecure_requests']").check({force: true});
-        cy.get("input[name='sucuriscan_csp_upgrade_insecure_requests[]']").should("not.be.disabled");
-        cy.get("input[name='sucuriscan_csp_upgrade_insecure_requests[]']").check({force: true});
+        cy.get("input[name='sucuriscan_csp_upgrade_insecure_requests_upgrade-insecure-requests']").should("not.be.disabled");
+        cy.get("input[name='sucuriscan_csp_upgrade_insecure_requests_upgrade-insecure-requests']").check({force: true});
 
         cy.get("[data-cy=sucuriscan_headers_csp_control_submit_btn]").click({force: true});
 
         cy.request("/").then((response) => {
             const cspHeader = response.headers["content-security-policy-report-only"];
             expect(cspHeader).to.include("upgrade-insecure-requests");
+        });
+    });
+
+    it("Toggling enforce checkbox enables/disables inputs for Access-Control-Allow-Origin", () => {
+        cy.visit("/wp-admin/admin.php?page=sucuriscan_settings#headers");
+
+        cy.get("input[name='sucuriscan_enforced_Access-Control-Allow-Origin']")
+            .uncheck({force: true})
+            .should("not.be.checked");
+
+        cy.get("input[name='sucuriscan_cors_Access-Control-Allow-Origin']")
+            .should("be.disabled");
+
+        cy.get("input[name='sucuriscan_enforced_Access-Control-Allow-Origin']")
+            .check({force: true})
+            .should("be.checked");
+
+        cy.get("input[name='sucuriscan_cors_Access-Control-Allow-Origin']")
+            .should("not.be.disabled");
+    });
+
+    it("Saves enforced state and value changes for Access-Control-Allow-Origin and persists after reload", () => {
+        cy.visit("/wp-admin/admin.php?page=sucuriscan_settings#headers");
+
+        cy.get("input[name='sucuriscan_enforced_Access-Control-Allow-Origin']").check({force: true});
+        cy.get("input[name='sucuriscan_cors_Access-Control-Allow-Origin']")
+            .clear()
+            .type("example.com");
+
+        cy.get("[data-cy=sucuriscan_cors_options_mode_button]").select("enabled");
+        cy.get("[data-cy=sucuriscan_headers_cors_control_submit_btn]").click({force: true});
+
+        cy.reload();
+        cy.get("input[name='sucuriscan_cors_Access-Control-Allow-Origin']")
+            .should("have.value", "example.com")
+            .and("not.be.disabled");
+
+        cy.request("/").then((response) => {
+            expect(response.headers["access-control-allow-origin"]).to.exist;
+            expect(response.headers["access-control-allow-origin"]).to.equal("example.com");
+        });
+    });
+
+    it("Multi-checkbox for Access-Control-Allow-Methods works correctly", () => {
+        cy.visit("/wp-admin/admin.php?page=sucuriscan_settings#headers");
+
+        cy.get("input[name='sucuriscan_enforced_Access-Control-Allow-Methods']").check({force: true});
+
+        cy.get("input[name='sucuriscan_cors_Access-Control-Allow-Methods_GET']")
+            .check({force: true});
+        cy.get("input[name='sucuriscan_cors_Access-Control-Allow-Methods_OPTIONS']")
+            .check({force: true});
+
+        cy.get("[data-cy=sucuriscan_cors_options_mode_button]").select("enabled");
+        cy.get("[data-cy=sucuriscan_headers_cors_control_submit_btn]").click({force: true});
+
+        cy.request("/").then((response) => {
+            expect(response.headers["access-control-allow-methods"]).to.exist;
+            const allowMethods = response.headers["access-control-allow-methods"];
+            expect(allowMethods).to.include("GET");
+            expect(allowMethods).to.include("OPTIONS");
+            expect(allowMethods).not.to.include("PUT");
+        });
+
+        cy.get("input[name='sucuriscan_cors_Access-Control-Allow-Methods_POST']")
+            .check({force: true});
+        cy.get("input[name='sucuriscan_cors_Access-Control-Allow-Methods_OPTIONS']")
+            .uncheck({force: true});
+        cy.get("[data-cy=sucuriscan_headers_cors_control_submit_btn]").click({force: true});
+
+        cy.request("/").then((response) => {
+            const allowMethods = response.headers["access-control-allow-methods"];
+            expect(allowMethods).to.include("GET");
+            expect(allowMethods).to.include("POST");
+            expect(allowMethods).not.to.include("PUT");
+            expect(allowMethods).not.to.include("OPTIONS");
+        });
+    });
+
+    it("Allows setting and unsetting Access-Control-Allow-Credentials", () => {
+        cy.visit("/wp-admin/admin.php?page=sucuriscan_settings#headers");
+
+        cy.get("input[name='sucuriscan_enforced_Access-Control-Allow-Credentials']")
+            .uncheck({force: true});
+
+        cy.get("[data-cy=sucuriscan_headers_cors_control_submit_btn]").click({force: true});
+
+        cy.request("/").then((response) => {
+            expect(response.headers["access-control-allow-credentials"]).to.not.exist;
+        });
+
+        cy.get("input[name='sucuriscan_enforced_Access-Control-Allow-Credentials']")
+            .check({force: true});
+        cy.get("input[name='sucuriscan_cors_Access-Control-Allow-Credentials_Access-Control-Allow-Credentials']").check({force: true});
+
+        cy.get("[data-cy=sucuriscan_headers_cors_control_submit_btn]").click({force: true});
+
+        cy.request("/").then((response) => {
+            expect(response.headers["access-control-allow-credentials"]).to.exist;
+            expect(response.headers["access-control-allow-credentials"]).to.equal("true");
+        });
+    });
+
+    it("Test disabling entire CORS mode removes all CORS headers", () => {
+        cy.visit("/wp-admin/admin.php?page=sucuriscan_settings#headers");
+
+        cy.get("input[name='sucuriscan_enforced_Access-Control-Allow-Origin']").check({force: true});
+        cy.get("input[name='sucuriscan_cors_Access-Control-Allow-Origin']")
+            .clear()
+            .type("example.org");
+
+        cy.get("[data-cy=sucuriscan_cors_options_mode_button]").select("enabled");
+        cy.get("[data-cy=sucuriscan_headers_cors_control_submit_btn]").click({force: true});
+
+        cy.request("/").then((response) => {
+            expect(response.headers["access-control-allow-origin"]).to.exist;
+            expect(response.headers["access-control-allow-origin"]).to.equal("example.org");
+        });
+
+        cy.get("[data-cy=sucuriscan_cors_options_mode_button]").select("disabled");
+        cy.get("[data-cy=sucuriscan_headers_cors_control_submit_btn]").click({force: true});
+
+        cy.request("/").then((response) => {
+            expect(response.headers["access-control-allow-origin"]).to.not.exist;
         });
     });
 });

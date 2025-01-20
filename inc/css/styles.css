@@ -1527,7 +1527,8 @@ h3.lead {
     margin: 0;
 }
 
-.csp-table .check-column {
+.csp-table .check-column,
+.cors-table .check-column {
     vertical-align: middle !important;
     padding-top: 0 !important;
     padding-bottom: 0 !important;
