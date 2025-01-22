@@ -31,11 +31,11 @@ class SucuriScanCSPHeaders extends SucuriScan
     /**
      * Basic sanitization for CSP directive values.
      *
-     * @param string $input Raw input value
+     * @param string $input Raw input value.
      *
      * @return string Sanitized value
      */
-    static function sanitize_csp_directive($input)
+    public static function sanitize_csp_directive($input)
     {
         // Allow letters, numbers, spaces, hyphens, single quotes, colons, semicolons, slashes, dots, and asterisks
         return preg_replace("/[^a-zA-Z0-9\s\-\'\:;\/\.\*]/", '', $input);
@@ -43,6 +43,8 @@ class SucuriScanCSPHeaders extends SucuriScan
 
     /**
      * Sets the CSP headers based on the user's settings.
+     *
+     * @return void
      */
     public function setCSPHeaders()
     {
@@ -64,32 +66,37 @@ class SucuriScanCSPHeaders extends SucuriScan
         $cspDirectives = array();
 
         foreach ($cspOptions as $directive => $option) {
-            // Skip directives that aren't enforced
-            if (!isset($option['enforced']) || !$option['enforced'] || !isset($option['value'])) {
+            // If the directive is not enforced, skip
+            if (!isset($option['enforced']) || !$option['enforced']) {
                 continue;
             }
 
-            $value = trim($option['value']);
-            $directive = str_replace('_', '-', $directive);
-            if ($value === '') {
+            $value = $this->collectDirectiveValue($option);
+
+            if (empty($value)) {
                 continue;
             }
 
-            $allowedDirective = $this->getValidDirectiveOrFalse($directive);
+            $normalizedDirective = str_replace('_', '-', $directive);
+            $allowedDirective = $this->getValidDirectiveOrFalse($normalizedDirective);
+
             if (!$allowedDirective) {
-                error_log("Invalid CSP directive: $directive");
+                error_log("Invalid CSP directive: $normalizedDirective");
                 continue;
             }
 
             $sanitizedValue = $this->sanitizeDirectiveValue($allowedDirective, $value);
-            if ($sanitizedValue !== false) {
-                if ($allowedDirective === 'upgrade-insecure-requests') {
-                    $cspDirectives[] = $allowedDirective;
-                } else {
-                    $cspDirectives[] = $allowedDirective . ' ' . $sanitizedValue;
-                }
+
+            if (!$sanitizedValue) {
+                error_log("Invalid value for CSP directive: $normalizedDirective => $value");
+                continue;
+            }
+
+            // For upgrade-insecure-requests, there's no trailing value
+            if ($allowedDirective === 'upgrade-insecure-requests') {
+                $cspDirectives[] = $allowedDirective;
             } else {
-                error_log("Invalid value for CSP directive: $directive => $value");
+                $cspDirectives[] = $allowedDirective . ' ' . $sanitizedValue;
             }
         }
 
@@ -108,6 +115,13 @@ class SucuriScanCSPHeaders extends SucuriScan
         error_log("Invalid CSP header value: $cspHeaderValue");
     }
 
+    /**
+     * Returns a valid CSP directive name if recognized, or false if not recognized.
+     *
+     * @param string $directive The normalized directive name (e.g. 'child-src').
+     *
+     * @return string|false
+     */
     protected function getValidDirectiveOrFalse($directive)
     {
         $allowedDirectives = array(
@@ -146,8 +160,8 @@ class SucuriScanCSPHeaders extends SucuriScan
     /**
      * Validates and sanitizes the value for a given directive according to CSP rules.
      *
-     * @param string $directive The CSP directive.
-     * @param string $value The raw value for the directive.
+     * @param string $directive The CSP directive (e.g. 'sandbox', 'script-src').
+     * @param string $value The raw user input or combined multi_checkbox tokens.
      *
      * @return string|false A sanitized value string if valid, false otherwise.
      */
@@ -177,14 +191,15 @@ class SucuriScanCSPHeaders extends SucuriScan
      */
     protected function sanitizeUpgradeInsecureRequests($value)
     {
-        $val = trim($this->sanitize_csp_directive($value));
-        return $val === 'upgrade-insecure-requests' || $val === '' ? 'upgrade-insecure-requests' : false;
+        $val = trim(self::sanitize_csp_directive($value));
+
+        return ($val === 'upgrade-insecure-requests') ? 'upgrade-insecure-requests' : false;
     }
 
     /**
      * Handle the sandbox directive, expecting a set of allowed tokens or empty.
      *
-     * @param string $value
+     * @param string $value Space-separated tokens (e.g. "allow-downloads allow-forms").
      *
      * @return string
      */
@@ -208,9 +223,9 @@ class SucuriScanCSPHeaders extends SucuriScan
         $finalTokens = array();
 
         foreach ($tokens as $t) {
-            $t = $this->sanitize_csp_directive($t);
+            $t = self::sanitize_csp_directive($t);
 
-            if (in_array($t, $sandboxTokens)) {
+            if (in_array($t, $sandboxTokens, true)) {
                 $finalTokens[] = $t;
             }
         }
@@ -221,23 +236,28 @@ class SucuriScanCSPHeaders extends SucuriScan
     /**
      * Handle the report-uri and report-to directives, expecting a valid URL or scheme.
      *
-     * @param string $value
+     * @param string $value Raw input value (e.g. "https://example.com/report").
      *
      * @return string|false
      */
     protected function sanitizeReportUriOrTo($value)
     {
-        $val = $this->sanitize_csp_directive($value);
-        return (preg_match('#^(https?:)#i', $val) && filter_var($val, FILTER_VALIDATE_URL)) ? $val : false;
+        $val = self::sanitize_csp_directive($value);
+
+        if (preg_match('#^(https?:)#i', $val) && filter_var($val, FILTER_VALIDATE_URL)) {
+            return $val;
+        }
+
+        return false;
     }
 
     /**
      * Handle generic source-list directives (e.g. default-src, script-src).
-     * These can have keywords, schemes, and host sources.
+     * These can have keywords, schemes, or host sources.
      *
-     * @param string $value
+     * @param string $value A space-separated list (e.g. "'self' https://example.com").
      *
-     * @return string|false
+     * @return string|false Sanitized list if valid, false if something doesn't match.
      */
     protected function sanitizeSourceListDirective($value)
     {
@@ -255,9 +275,9 @@ class SucuriScanCSPHeaders extends SucuriScan
         $finalTokens = array();
 
         foreach ($tokens as $token) {
-            $t = $this->sanitize_csp_directive($token);
+            $t = self::sanitize_csp_directive($token);
 
-            if (in_array($t, $allowedKeywords) ||
+            if (in_array($t, $allowedKeywords, true) ||
                 preg_match('#^(https?:|data:|blob:|mediastream:|filesystem:)#i', $t) ||
                 $t === '*' ||
                 $this->isValidHostSource($t)) {
@@ -287,5 +307,39 @@ class SucuriScanCSPHeaders extends SucuriScan
     {
         $pattern = '/^(\*\.)?[a-zA-Z0-9\-]+(\.[a-zA-Z0-9\-]+)*(?::[0-9]+)?$/';
         return (bool)preg_match($pattern, $source);
+    }
+
+    /**
+     * Collects a string representing the directive value:
+     * If it's a normal text directive, use 'value' directly;
+     * if it's a multi_checkbox directive, gather sub-options that are enforced.
+     *
+     * @param array $option Directive config array (type, value, options, enforced, etc.).
+     *
+     * @return string A space-separated list if multi_checkbox, or the text value otherwise.
+     */
+    protected function collectDirectiveValue($option)
+    {
+        if (isset($option['type']) && $option['type'] === 'multi_checkbox') {
+            if (!isset($option['options']) || !is_array($option['options'])) {
+                return '';
+            }
+
+            $subTokens = array();
+
+            foreach ($option['options'] as $token => $tokenObj) {
+                if ($tokenObj['enforced']) {
+                    $subTokens[] = $token;
+                }
+            }
+
+            return implode(' ', $subTokens);
+        }
+
+        if (isset($option['value']) && is_string($option['value'])) {
+            return trim($option['value']);
+        }
+
+        return '';
     }
 }

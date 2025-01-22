@@ -781,3 +781,36 @@ __(
 
 // settings-headers-cache-option.snippet.tpl
 __('Edit', 'sucuri-scanner');
+
+// settings-headers-cors.html.tpl
+__('CORS Options', 'sucuri-scanner');
+__(
+    'Cross-Origin Resource Sharing (CORS) is a security feature that allows web applications to control the resources that can be requested from another domain.',
+    'sucuri-scanner'
+);
+__('Here you can see all the CORS options available.', 'sucuri-scanner');
+__('Header', 'sucuri-scanner');
+__('Header Value', 'sucuri-scanner');
+__('CORS', 'sucuri-scanner');
+__(
+    'Cross-Origin Resource Sharing (CORS) is a security feature that allows web applications to control the resources that can be requested from another domain.',
+    'sucuri-scanner'
+);
+__('Submit', 'sucuri-scanner');
+
+// settings-headers-csp.html.tpl
+__('Content Security Policy (CSP) Options', 'sucuri-scanner');
+__(
+    'Content Security Policy (CSP) is a security feature that helps prevent various types of attacks, such as Cross-Site Scripting (XSS) and data injection attacks.',
+    'sucuri-scanner'
+);
+__('Here you can see all the CSP options available.', 'sucuri-scanner');
+__('Directive', 'sucuri-scanner');
+__('Directive Value', 'sucuri-scanner');
+__('Content Security Policy', 'sucuri-scanner');
+__(
+    'Content Security Policy (CSP) is a security feature that helps prevent various types of attacks, such as Cross-Site Scripting (XSS) and data injection attacks.',
+    'sucuri-scanner'
+);
+__('Mode:', 'sucuri-scanner');
+__('Submit', 'sucuri-scanner');

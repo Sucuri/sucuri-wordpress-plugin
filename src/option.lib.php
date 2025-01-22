@@ -468,7 +468,7 @@ class SucuriScanOption extends SucuriScanRequest
                     'options' => array(
                         'allow-downloads' => array(
                             'title' => __('Allow Downloads', 'sucuri-scanner'),
-                            'enforced' => true,
+                            'enforced' => false,
                         ),
                         'allow-forms' => array(
                             'title' => __('Allow Forms', 'sucuri-scanner'),
@@ -524,11 +524,122 @@ class SucuriScanOption extends SucuriScanRequest
                     'options' => array(
                         'upgrade-insecure-requests' => array(
                             'title' => __('Upgrade Insecure Requests', 'sucuri-scanner'),
-                            'enforced' => true,
+                            'enforced' => false,
                         ),
                     ),
                     'description' => __(
                         'Upgrade insecure requests to HTTPS. This is a security feature that prevents mixed content.',
+                        'sucuri-scanner'
+                    ),
+                    'enforced' => false
+                ),
+            ),
+            'sucuriscan_headers_cors' => 'disabled',
+            'sucuriscan_headers_cors_options' => array(
+                'Access-Control-Allow-Origin' => array(
+                    'id' => 'access_control_allow_origin',
+                    'title' => __('Access-Control-Allow-Origin', 'sucuri-scanner'),
+                    'value' => '*',
+                    'type' => 'text',
+                    'description' => __(
+                        'Specifies the origin that is allowed to access the resource.',
+                        'sucuri-scanner'
+                    ),
+                    'enforced' => false
+                ),
+                'Access-Control-Expose-Headers' => array(
+                    'id' => 'access_control_expose_headers',
+                    'title' => __('Access-Control-Expose-Headers', 'sucuri-scanner'),
+                    'value' => '',
+                    'type' => 'text',
+                    'description' => __(
+                        'Specifies the headers that can be exposed when accessing the resource.',
+                        'sucuri-scanner'
+                    ),
+                    'enforced' => false,
+                ),
+                'Access-Control-Allow-Methods' => array(
+                    'id' => 'access_control_allow_methods',
+                    'title' => __('Access-Control-Allow-Methods', 'sucuri-scanner'),
+                    'options' => array(
+                        'GET' => array(
+                            'title' => __('Allow GET method', 'sucuri-scanner'),
+                            'enforced' => false,
+                        ),
+                        'POST' => array(
+                            'title' => __('Allow POST method', 'sucuri-scanner'),
+                            'enforced' => false,
+                        ),
+                        'PUT' => array(
+                            'title' => __('Allow PUT method', 'sucuri-scanner'),
+                            'enforced' => false,
+                        ),
+                        'DELETE' => array(
+                            'title' => __('Allow DELETE method', 'sucuri-scanner'),
+                            'enforced' => false,
+                        ),
+                        'OPTIONS' => array(
+                            'title' => __('Allow OPTIONS method', 'sucuri-scanner'),
+                            'enforced' => false,
+                        ),
+                        'PATCH' => array(
+                            'title' => __('Allow PATCH method', 'sucuri-scanner'),
+                            'enforced' => false,
+                        ),
+                        'HEAD' => array(
+                            'title' => __('Allow HEAD method', 'sucuri-scanner'),
+                            'enforced' => false,
+                        ),
+                        'TRACE' => array(
+                            'title' => __('Allow TRACE method', 'sucuri-scanner'),
+                            'enforced' => false,
+                        ),
+                        'CONNECT' => array(
+                            'title' => __('Allow CONNECT method', 'sucuri-scanner'),
+                            'enforced' => false,
+                        ),
+                    ),
+                    'type' => 'multi_checkbox',
+                    'description' => __(
+                        'Specifies the methods allowed when accessing the resource.',
+                        'sucuri-scanner'
+                    ),
+                    'enforced' => false
+                ),
+                'Access-Control-Allow-Headers' => array(
+                    'id' => 'access_control_allow_headers',
+                    'title' => __('Access-Control-Allow-Headers', 'sucuri-scanner'),
+                    'value' => '',
+                    'type' => 'text',
+                    'description' => __(
+                        'Specifies the headers allowed when accessing the resource.',
+                        'sucuri-scanner'
+                    ),
+                    'enforced' => false
+                ),
+                'Access-Control-Allow-Credentials' => array(
+                    'id' => 'access_control_allow_credentials',
+                    'title' => __('Access-Control-Allow-Credentials', 'sucuri-scanner'),
+                    'type' => 'multi_checkbox',
+                    'options' => array(
+                        'Access-Control-Allow-Credentials' => array(
+                            'title' => __('Allow Credentials', 'sucuri-scanner'),
+                            'enforced' => false,
+                        ),
+                    ),
+                    'description' => __(
+                        'Specifies whether credentials are allowed when accessing the resource.',
+                        'sucuri-scanner'
+                    ),
+                    'enforced' => false
+                ),
+                'Access-Control-Max-Age' => array(
+                    'id' => 'access_control_max_age',
+                    'title' => __('Access-Control-Max-Age', 'sucuri-scanner'),
+                    'value' => '86400',
+                    'type' => 'text',
+                    'description' => __(
+                        'Specifies how long the results of a preflight request can be cached.',
                         'sucuri-scanner'
                     ),
                     'enforced' => false

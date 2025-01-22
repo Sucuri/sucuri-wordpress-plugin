@@ -153,7 +153,7 @@ function sucuriscan_settings_cache_options($nonce)
  *
  * @return  string          HTML for the security CSP header.
  */
-function sucuriscan_get_csp_directive_html($directive, $option)
+function sucuriscan_get_directive_html($directive, $option, $prefix)
 {
     $type = isset($option['type']) ? $option['type'] : 'text';
     $description = isset($option['description']) ? $option['description'] : '';
@@ -165,15 +165,21 @@ function sucuriscan_get_csp_directive_html($directive, $option)
 
     if ($type === 'multi_checkbox') {
         $options = '';
-        $currentValues = preg_split('/\s+/', $value, -1, PREG_SPLIT_NO_EMPTY);
 
         foreach ($directiveOptions as $token => $optionObj) {
-            $checked = in_array($token, $currentValues) ? ' checked' : '';
+            $checked = $optionObj['enforced'] ? 'checked' : '';
+
+            if (isset($option['value']) && is_string($option['value'])) {
+                $currentValues = preg_split('/\s+/', $option['value'], -1, PREG_SPLIT_NO_EMPTY);
+                $checked = in_array($token, $currentValues) ? 'checked' : '';
+            }
+
             $options .= sprintf(
                 '<div>
-                    <input type="checkbox" name="sucuriscan_csp_%s[]" value="%s"%s>
+                    <input type="checkbox" name="sucuriscan_%s_%s_%s" value="1" %s>
                     <label>%s</label>
                 </div>',
+                sanitize_text_field($prefix),
                 sanitize_text_field($directive),
                 sanitize_text_field($token),
                 $checked,
@@ -183,14 +189,15 @@ function sucuriscan_get_csp_directive_html($directive, $option)
     } else {
         // text input for normal directives
         $options = sprintf(
-            '<input type="text" name="sucuriscan_csp_%s" value="%s" />',
+            '<input type="text" name="sucuriscan_%s_%s" value="%s" />',
+            sanitize_text_field($prefix),
             sanitize_text_field($directive),
             esc_attr($value)
         );
     }
 
     return SucuriScanTemplate::getSnippet(
-        'settings-headers-csp-directive',
+        'settings-headers-directive',
         array(
             'id' => sanitize_text_field($option['id']),
             'directive' => sanitize_text_field($directive),
@@ -198,78 +205,78 @@ function sucuriscan_get_csp_directive_html($directive, $option)
             'description' => esc_html($description),
             'EnforcedChecked' => $enforcedChecked,
             'options' => $options,
+            'prefix' => $prefix,
         )
     );
 }
 
 /**
- * Maps the posted CSP directive values to the new options array.
+ * Maps the posted directive values to the new options array.
  *
- * @param array $headersCSPControlOptions Existing CSP options from the store.
+ * @param array Existing options from the store.
  *
- * @return array Updated CSP options array with enforced and value fields updated.
+ * @return array Updated options array with enforced and value fields updated.
  */
-function sucuriscan_map_csp_options($headersCSPControlOptions)
+function sucuriscan_map_directive_options($headerOptions, $prefix)
 {
     $newOptions = array();
 
-    foreach ($headersCSPControlOptions as $directive => $option) {
+    foreach ($headerOptions as $directive => $option) {
         $type = isset($option['type']) ? $option['type'] : 'text';
-        $postKey = 'sucuriscan_csp_' . $directive;
+        $postKey = $prefix . '_' . $directive;
         $enforcedKey = 'sucuriscan_enforced_' . $directive;
 
-        // Determine if enforced is checked
-        $enforced = isset($_POST[$enforcedKey]) && $_POST[$enforcedKey] == '1';
+        // Determine if directive is enforced
+        $enforced = SucuriScanRequest::post($enforcedKey) === '1' ? true : false;
 
-        // Handle text directives
         if ($type === 'text') {
-            // If directive value is set in $_POST, sanitize and store it
-            if (isset($_POST[$postKey])) {
+            if (SucuriScanRequest::post($postKey)) {
                 $postValue = wp_unslash($_POST[$postKey]);
-                $postValue = SucuriScanCSPHeaders::sanitize_csp_directive(sanitize_text_field($postValue));
 
                 $newOptions[$directive] = array(
                     'id' => esc_attr($option['id']),
                     'title' => esc_html($option['title']),
-                    'type' => $type,
+                    'type' => esc_html($type),
                     'description' => isset($option['description']) ? esc_html($option['description']) : '',
-                    'options' => isset($option['options']) ? $option['options'] : array(),
+                    'value' => sanitize_text_field($postValue),
                     'enforced' => $enforced,
-                    'value' => $postValue,
                 );
+
                 continue;
             }
 
             // If not set in $_POST, keep original but update enforced
             $option['enforced'] = $enforced;
             $newOptions[$directive] = $option;
+
             continue;
         }
 
-        // Handle multi_checkbox directives
         if ($type === 'multi_checkbox') {
-            $selectedValues = array();
-            if (isset($_POST[$postKey]) && is_array($_POST[$postKey])) {
-                foreach ($_POST[$postKey] as $val) {
-                    $token = SucuriScanCSPHeaders::sanitize_csp_directive(sanitize_text_field($val));
-                    if (!empty($token)) {
-                        $selectedValues[] = $token;
+            $newOptionsValues = array();
+
+            if (isset($option['options']) && is_array($option['options'])) {
+                foreach ($option['options'] as $token => $optionObj) {
+                    $checked = SucuriScanRequest::post($postKey . '_' . $token) === '1' ? true : false;
+
+                    if (isset($option['value']) && is_string($option['value'])) {
+                        $currentValues = preg_split('/\s+/', $option['value'], -1, PREG_SPLIT_NO_EMPTY);
+                        $checked = in_array($token, $currentValues) ? true : false;
                     }
+
+                    $newOptionsValues[$token] = $optionObj;
+                    $newOptionsValues[$token]['enforced'] = $checked;
                 }
             }
-
-            $finalValue = empty($selectedValues) ? '' : implode(' ', $selectedValues);
 
             $newOptions[$directive] = array(
                 'id' => esc_attr($option['id']),
                 'title' => esc_html($option['title']),
-                'type' => $type,
+                'type' => esc_html($type),
                 'description' => isset($option['description']) ? esc_html($option['description']) : '',
-                'options' => isset($option['options']) ? $option['options'] : array(),
+                'options' => $newOptionsValues,
                 'enforced' => $enforced,
-                'value' => $finalValue,
             );
-            continue;
         }
     }
 
@@ -312,7 +319,7 @@ function sucuriscan_settings_csp_options($nonce)
         if (!array_key_exists($headerCSPMode, $availableModes)) {
             SucuriScanInterface::error(__('Invalid CSP mode selected.', 'sucuri-scanner'));
         } else {
-            $newOptions = sucuriscan_map_csp_options($headersCSPControlOptions);
+            $newOptions = sucuriscan_map_directive_options($headersCSPControlOptions, 'sucuriscan_csp');
 
             // Save new options if valid
             SucuriScanOption::updateOption(':headers_csp', $headerCSPMode);
@@ -329,7 +336,7 @@ function sucuriscan_settings_csp_options($nonce)
     $params['CSPOptions.CSPControl'] = $isCSPControlHeaderDisabled ? 0 : 1;
 
     foreach ($headersCSPControlOptions as $directive => $option) {
-        $params['CSPOptions.Options'] .= sucuriscan_get_csp_directive_html($directive, $option);
+        $params['CSPOptions.Options'] .= sucuriscan_get_directive_html($directive, $option, 'csp');
     }
 
     // Render CSP mode dropdown
@@ -350,4 +357,80 @@ function sucuriscan_settings_csp_options($nonce)
     );
 
     return SucuriScanTemplate::getSection('settings-headers-csp', $params);
+}
+
+/**
+ * Returns the HTML to configure the header's CORS options.
+ *
+ * @param bool $nonce True if the CSRF protection worked, false otherwise.
+ *
+ * @return string HTML for the CORS settings.
+ */
+function sucuriscan_settings_cors_options($nonce)
+{
+    if (!SucuriScanInterface::checkNonce()) {
+        SucuriScanInterface::error(__('Invalid nonce.', 'sucuri-scanner'));
+        return '';
+    }
+
+    $params = array(
+        'CORSOptions.Options' => '',
+        'CORSOptions.Modes' => '',
+        'CORSOptions.Status' => '',
+        'CORSOptions.CORSControl' => '',
+    );
+
+    $headersCORSControlOptions = SucuriScanOption::getOption(':headers_cors_options');
+
+    $availableModes = array(
+        'disabled' => __('Disabled', 'sucuri-scanner'),
+        'enabled' => __('Enabled', 'sucuri-scanner'),
+    );
+
+    // Process form submission
+    if (SucuriScanRequest::post(':update_cors_options')) {
+        $headerCORSMode = sanitize_text_field(SucuriScanRequest::post(':cors_options_mode'));
+
+        // Validate selected CORS mode
+        if (!array_key_exists($headerCORSMode, $availableModes)) {
+            SucuriScanInterface::error(__('Invalid CORS mode selected.', 'sucuri-scanner'));
+        } else {
+            $newOptions = sucuriscan_map_directive_options($headersCORSControlOptions, 'sucuriscan_cors');
+
+            // Save new options if valid
+            SucuriScanOption::updateOption(':headers_cors', $headerCORSMode);
+            SucuriScanOption::updateOption(':headers_cors_options', $newOptions);
+            SucuriScanInterface::info(__('CORS settings were updated.', 'sucuri-scanner'));
+        }
+    }
+
+    // Get the latest CORS options after update
+    $headersCORSControl = SucuriScanOption::getOption(':headers_cors');
+    $headersCORSControlOptions = SucuriScanOption::getOption(':headers_cors_options');
+    $isCORSControlHeaderDisabled = ($headersCORSControl === 'disabled');
+
+    $params['CORSOptions.CORSControl'] = $isCORSControlHeaderDisabled ? 0 : 1;
+
+    foreach ($headersCORSControlOptions as $directive => $option) {
+        $params['CORSOptions.Options'] .= sucuriscan_get_directive_html($directive, $option, 'cors');
+    }
+
+    // Render CORS mode dropdown
+    foreach ($availableModes as $modeValue => $modeLabel) {
+        $selected = ($headersCORSControl === $modeValue) ? ' selected' : '';
+        $params['CORSOptions.Modes'] .= sprintf(
+            '<option value="%s"%s>%s</option>',
+            esc_attr($modeValue),
+            $selected,
+            esc_html($modeLabel)
+        );
+    }
+
+    // Set CORS status
+    $params['CORSOptions.Status'] = $isCORSControlHeaderDisabled ? __('Disabled', 'sucuri-scanner') : __(
+        'Enabled',
+        'sucuri-scanner'
+    );
+
+    return SucuriScanTemplate::getSection('settings-headers-cors', $params);
 }
