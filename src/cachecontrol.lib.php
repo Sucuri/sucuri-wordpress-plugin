@@ -209,7 +209,7 @@ class SucuriScanCacheHeaders extends SucuriScan
         } elseif (is_front_page() && !is_paged()) {
             return $this->getCacheDirectiveFromOption('front_page');
         } elseif (is_single()) {
-			if ($this->isWooCommerceInstalled() && is_product()) {
+			if ($this->isWooCommerceInstalled() && function_exists('is_product') && is_product()) {
 				return $this->getCacheDirectiveFromOption('woocommerce_products');
 			}
 
