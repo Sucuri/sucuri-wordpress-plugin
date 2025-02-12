@@ -398,7 +398,7 @@ class SucuriScan
      */
     public static function secretKeyPattern()
     {
-        return '/define\(\s*\'([A-Z_]+)\',(\s*)\'(.+)\'\s*\);/';
+	    return '/define\(\s*\'([A-Z_]+)\',(\s*)\'([^\\\\\']*)\'\s*\);/';
     }
 
     /**

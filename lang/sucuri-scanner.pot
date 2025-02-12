@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Sucuri Security - Auditing, Malware Scanner and Hardening 1.9.8\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/sucuri-wordpress-plugin\n"
+"Project-Id-Version: Sucuri Security - Auditing, Malware Scanner and Hardening 1.9.9\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/sucuri-scanner\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-01-20T02:48:54+00:00\n"
+"POT-Creation-Date: 2025-02-10T03:38:30+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: sucuri-scanner\n"
@@ -464,7 +464,7 @@ msgid "Directory is not usable"
 msgstr ""
 
 #: src/hardening.lib.php:125
-#: src/hardening.lib.php:325
+#: src/hardening.lib.php:334
 msgid "Access control file is not supported"
 msgstr ""
 
@@ -472,19 +472,19 @@ msgstr ""
 msgid "Directory is not hardened"
 msgstr ""
 
-#: src/hardening.lib.php:331
+#: src/hardening.lib.php:340
 msgid "Access control file does not exists"
 msgstr ""
 
-#: src/hardening.lib.php:335
+#: src/hardening.lib.php:344
 msgid "Access control file is not writable"
 msgstr ""
 
-#: src/hardening.lib.php:342
+#: src/hardening.lib.php:351
 msgid "File is already in the allowlist"
 msgstr ""
 
-#: src/hardening.lib.php:375
+#: src/hardening.lib.php:384
 msgid "Cannot remove file from the allowlist; no permissions."
 msgstr ""
 

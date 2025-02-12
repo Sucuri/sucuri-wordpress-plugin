@@ -300,4 +300,60 @@ final class HardeningTest extends TestCase
         $path = '/var/www/html/wp-admin/admin.php';
         $this->assertFalse(SucuriScanHardening::getFolderAndFilePath($path, $allowed_folders));
     }
+
+	public function testHtaccessEmptyFolder() {
+		Functions\when('get_home_path')->justReturn('/var/www/html/');
+
+		$htaccess = $this->callPrivateHtaccessMethod('');
+
+		$this->assertEquals('/var/www/html/.htaccess', $htaccess);
+	}
+
+	public function testHtaccessRootFolder() {
+		Functions\when('get_home_path')->justReturn('/');
+
+		$htaccess = $this->callPrivateHtaccessMethod('/wp-uploads/');
+
+		$this->assertEquals('/wp-uploads/.htaccess', $htaccess);
+	}
+
+	public function testHtaccessSubfolder() {
+		Functions\when('get_home_path')->justReturn('/var/www/html/');
+
+		$htaccess = $this->callPrivateHtaccessMethod('wp-includes');
+
+		$this->assertEquals('/var/www/html/wp-includes/.htaccess', $htaccess);
+	}
+
+	public function testHtaccessNestedSubfolder() {
+		Functions\when('get_home_path')->justReturn('/var/www/html/');
+
+		$htaccess = $this->callPrivateHtaccessMethod('/other/path/');
+
+		$this->assertEquals('/var/www/html/other/path/.htaccess', $htaccess);
+	}
+
+	public function testHtaccessFolderAtRoot() {
+		Functions\when('get_home_path')->justReturn('/');
+
+		$htaccess = $this->callPrivateHtaccessMethod('');
+
+		$this->assertEquals('/.htaccess', $htaccess);
+	}
+
+	public function testHtaccessFolderAbsolutePath() {
+		Functions\when('get_home_path')->justReturn('/var/www/html/');
+
+		$htaccess = $this->callPrivateHtaccessMethod('/var/www/html/other/path/');
+
+		$this->assertEquals('/var/www/html/other/path/.htaccess', $htaccess);
+	}
+
+	private function callPrivateHtaccessMethod($folder) {
+		$reflection = new ReflectionClass('SucuriScanHardening');
+		$method = $reflection->getMethod('htaccess');
+		$method->setAccessible(true);
+
+		return $method->invoke(null, $folder);
+	}
 }

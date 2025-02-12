@@ -225,16 +225,25 @@ class SucuriScanHardening extends SucuriScan
      * @param string $folder Folder where the htaccess file is supposed to be.
      * @return string         Path to the htaccess file in the specified folder.
      */
-    private static function htaccess($folder = '')
-    {
-        if (!function_exists('get_home_path')) {
-            require_once ABSPATH . 'wp-admin/includes/file.php';
-        }
-        $folder = str_replace(get_home_path(), '', $folder);
-        $bpath = rtrim(get_home_path(), DIRECTORY_SEPARATOR);
+	public static function htaccess($folder = '')
+	{
+		if (!function_exists('get_home_path')) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+		}
 
-        return $bpath . '/' . $folder . '/.htaccess';
-    }
+		$home = get_home_path();
+
+		if ($home !== '/' && strpos($folder, $home) === 0) {
+			$folder = substr($folder, strlen($home));
+		}
+
+		$wordpress_path = rtrim($home, DIRECTORY_SEPARATOR);
+		$folder = trim($folder, DIRECTORY_SEPARATOR);
+
+		$path = $wordpress_path . '/' . $folder . '/.htaccess';
+
+		return preg_replace('/\/+/', '/', $path);
+	}
 
     /**
      * Generates Apache access control rules for a file.

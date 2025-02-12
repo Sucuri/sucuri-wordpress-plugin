@@ -129,6 +129,7 @@ class SucuriScanCacheHeaders extends SucuriScan
     protected function getCacheDirectiveFromOption($optionName)
     {
         $cacheOptions = SucuriScanOption::getOption(':headers_cache_control_options');
+
         $option = $cacheOptions[$optionName];
 
         $maxAge = intval($option['max_age']);
@@ -208,6 +209,10 @@ class SucuriScanCacheHeaders extends SucuriScan
         } elseif (is_front_page() && !is_paged()) {
             return $this->getCacheDirectiveFromOption('front_page');
         } elseif (is_single()) {
+			if ($this->isWooCommerceInstalled() && function_exists('is_product') && is_product()) {
+				return $this->getCacheDirectiveFromOption('woocommerce_products');
+			}
+
             return $this->getCacheDirectiveFromOption('posts');
         } elseif (is_page()) {
             return $this->getCacheDirectiveFromOption('pages');
@@ -233,13 +238,11 @@ class SucuriScanCacheHeaders extends SucuriScan
             } else {
                 return $this->getCacheDirectiveFromOption('home');
             }
-        } elseif ($this->isWooCommerceInstalled()) {
-            if (function_exists('is_product') && is_product()) {
-                return $this->getCacheDirectiveFromOption('woocommerce_product');
-            } elseif (function_exists('is_product_category') && is_product_category()) {
-                return $this->getCacheDirectiveFromOption('woocommerce_category');
-            }
         }
+
+	    if ($this->isWooCommerceInstalled() && function_exists('is_product_category') && is_product_category()) {
+		    return $this->getCacheDirectiveFromOption('woocommerce_categories');
+	    }
 
         return $this->getCacheDirectives(false, false, false, false);
     }
