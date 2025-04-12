@@ -3,8 +3,8 @@ Contributors: wordpress@sucuri.net
 Donate Link: https://sucuri.net/
 Tags: malware, security, firewall, scan, spam, virus, sucuri, protection, blocklist, detection, hardening, file integrity
 Requires at least: 3.6
-Tested up to: 6.7
-Stable tag: 1.9.9
+Tested up to: 6.8
+Stable tag: 1.9.10
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -204,6 +204,10 @@ This version adds an option to refresh the malware scan results on demand, as we
 Daniel is no longer maintaining the Sucuri plugin at GoDaddy. We have transferred it to a dedicated team to maintain and improve it.
 
 == Changelog ==
+= 1.9.10 =
+* Fix bug deleting failed logins.
+* Fix bug causing WAF blocks due user-agent containing domain names with specific words.
+
 = 1.9.9 =
 * Fix secret key updater bug: Sometimes API return last character to be "\" breaking configuration file
 * Fix Undefined array key “woocommerce_category” PHP warning
