@@ -110,6 +110,7 @@ class SucuriScanAPI extends SucuriScanOption
         $args['httpversion'] = '1.1';
         $args['blocking'] = true;
         $args['sslverify'] = true;
+        $args['user-agent'] = 'SucuriScanner/' . SUCURISCAN_VERSION . ' (WordPress Plugin; https://sucuri.net/)';
 
         /* separate hardcoded query parameters */
         if (empty($params) && strpos($url, '?')) {

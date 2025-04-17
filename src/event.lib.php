@@ -912,40 +912,41 @@ class SucuriScanEvent extends SucuriScan
      * Failed logins sections was added and it triggers the removal of
      * sucuri/sucuri-lastlogins.php and sucuri/sucuri-failedlogins.php.
      *
-     * @param string $filename Name of the file to be deleted.
+     * @param array $files Name of the file to be deleted.
      *
      * @return HTML Message with the delete action outcome.
      */
-    public static function clearLastLogs($filename)
+    public static function clearLastLogs($files)
     {
-        // Get the complete path of the file.
-        $filepath = SucuriScan::dataStorePath($filename);
-
-        // Do not proceed if not possible.
-        if (!is_writable(dirname($filepath)) || is_dir($filepath)) {
-            return SucuriScanInterface::error(
-                sprintf(
-                    __('%s cannot be deleted.', 'sucuri-scanner'),
-                    $filename
-                )
-            );
+        if (!is_array($files)) {
+            $files = array($files);
         }
 
-        // Delete $filepath.
-        @unlink($filepath);
+        $filesDeleted = array();
 
-        // Register on audit logs and return result.
-        SucuriScanEvent::reportInfoEvent(
-            sprintf(
-                __('%s was deleted.', 'sucuri-scanner'),
-                $filename
-            )
-        );
-        return SucuriScanInterface::info(
-            sprintf(
-                __('%s was deleted.', 'sucuri-scanner'),
-                $filename
-            )
-        );
+        foreach ($files as $file) {
+            $filepath = SucuriScan::dataStorePath($file);
+
+            // Do not proceed if not possible.
+            if (!is_writable(dirname($filepath)) || is_dir($filepath)) {
+                return SucuriScanInterface::error(
+                    sprintf(
+                        __('%s cannot be deleted.', 'sucuri-scanner'),
+                        $file
+                    )
+                );
+            }
+
+            @unlink($filepath);
+            $filesDeleted[] = $file;
+        }
+
+        $message = count($files) > 1 ?
+            sprintf(__('%s log files were deleted.', 'sucuri-scanner'), implode(', ', $filesDeleted)) :
+            sprintf(__('%s log file was deleted.', 'sucuri-scanner'), $filesDeleted[0]);
+
+        SucuriScanEvent::reportInfoEvent($message);
+
+        return SucuriScanInterface::info($message);
     }
 }
