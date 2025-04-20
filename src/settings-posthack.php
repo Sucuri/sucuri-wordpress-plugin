@@ -48,6 +48,7 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
     {
         $params = array();
 
+	    $params['URL.PostHack'] = admin_url('admin.php?page=sucuriscan_post_hack_actions');
         $params['SecurityKeys.List'] = '';
         $params['WPConfigUpdate.NewConfig'] = '';
         $params['WPConfigUpdate.Visibility'] = 'hidden';
