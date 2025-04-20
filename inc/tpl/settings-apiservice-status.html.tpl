@@ -10,11 +10,13 @@
         <div class="sucuriscan-hstatus sucuriscan-hstatus-%%SUCURI.ApiStatus.StatusNum%%">
             <span>{{API Service Communication}} &mdash; %%SUCURI.ApiStatus.Status%%</span>
             <span class="sucuriscan-monospace">&mdash; %%SUCURI.ApiStatus.ServiceURL%%</span>
-            <form action="%%SUCURI.URL.Settings%%#apiservice" method="post">
-                <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
-                <input type="hidden" name="sucuriscan_api_service" value="%%SUCURI.ApiStatus.SwitchValue%%" />
-                <button type="submit" class="button button-primary btn-enable-api-s" data-cy="sucuriscan_api_status_toggle">%%SUCURI.ApiStatus.SwitchText%%</button>
-            </form>
+
         </div>
+
+        <form action="%%SUCURI.URL.Settings%%#apiservice" method="post">
+            <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
+            <input type="hidden" name="sucuriscan_api_service" value="%%SUCURI.ApiStatus.SwitchValue%%" />
+            <button type="submit" class="button button-primary btn-enable-api-s" data-cy="sucuriscan_api_status_toggle">%%SUCURI.ApiStatus.SwitchText%%</button>
+        </form>
     </div>
 </div>

@@ -49,6 +49,8 @@ function sucuriscan_settings_cache_options($nonce)
         'CacheOptions.Modes' => '',
     );
 
+	$params['URL.Headers'] = admin_url('admin.php?page=sucuriscan_headers_management');
+
     $availableSettings = array(
         __('disabled', 'sucuri-scanner'),
         __('static', 'sucuri-scanner'),
@@ -304,6 +306,8 @@ function sucuriscan_settings_csp_options($nonce)
         'CSPOptions.CSPControl' => '',
     );
 
+	$params['URL.Headers'] = admin_url('admin.php?page=sucuriscan_headers_management');
+
     $headersCSPControlOptions = SucuriScanOption::getOption(':headers_csp_options');
 
     $availableModes = array(
@@ -380,7 +384,9 @@ function sucuriscan_settings_cors_options($nonce)
         'CORSOptions.CORSControl' => '',
     );
 
-    $headersCORSControlOptions = SucuriScanOption::getOption(':headers_cors_options');
+	$params['URL.Headers'] = admin_url('admin.php?page=sucuriscan_headers_management');
+
+	$headersCORSControlOptions = SucuriScanOption::getOption(':headers_cors_options');
 
     $availableModes = array(
         'disabled' => __('Disabled', 'sucuri-scanner'),

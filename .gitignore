@@ -13,3 +13,4 @@ cypress.config.js
 .idea/
 
 composer.phar
+.DS_Store

@@ -118,6 +118,7 @@ class SucuriScanTemplate extends SucuriScanRequest
         $params['PluginVersion'] = SUCURISCAN_VERSION;
         $params['CleanDomain'] = self::getDomain();
         $params['Year'] = date('Y');
+		$params['FreemiumVisibility'] = SucuriScanInterface::shouldUseDarkTheme() ? 'sucuriscan-hidden' : '';
 
         if (!array_key_exists('PageStyleClass', $params)) {
             $params['PageStyleClass'] = 'base';
@@ -265,6 +266,9 @@ class SucuriScanTemplate extends SucuriScanRequest
      */
     public static function getTemplate($template = '', $params = array(), $type = 'page')
     {
+	    $api_key = SucuriScanFirewall::getOption(':cloudproxy_apikey');
+	    $dark_theme = SucuriScanFirewall::isValidKey($api_key);
+
         $params = is_array($params) ? $params : array();
 
         $filenames = array(
@@ -285,6 +289,7 @@ class SucuriScanTemplate extends SucuriScanRequest
         $params['DashboardButtonVisibility'] = $_page == 'sucuriscan' ? 'hidden' : 'visible';
         $params['SettingsButtonVisibility'] = $_page == 'sucuriscan_settings' ? 'hidden' : 'visible';
         $params['FirewallButtonVisibility'] = $_page == 'sucuriscan_firewall' ? 'hidden' : 'visible';
+		$params['SucuriLogo'] = $dark_theme ? 'pluginlogo-darktheme.png' : 'pluginlogo.png';
 
         /* load raw content from the specified template file */
         $fpath = sprintf($filenames[$type], SUCURISCAN_PLUGIN_PATH, $template);
