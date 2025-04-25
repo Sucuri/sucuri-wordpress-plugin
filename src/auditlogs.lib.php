@@ -137,6 +137,7 @@ class SucuriScanAuditLogs
         $response['selfhosting'] = false;
         $response['filters'] = '';
         $response['filtersStatus'] = '';
+        $response['auditlogs'] = 'Loading...';
 
         /* initialize the values for the pagination */
         $maxPerPage = SUCURISCAN_AUDITLOGS_PER_PAGE;
@@ -155,7 +156,7 @@ class SucuriScanAuditLogs
             }
         }
 
-        $filter_keys = array('posts', 'logins', 'users', 'plugins');
+        $filter_keys = array('posts', 'logins', 'users', 'plugins', 'files');
 
         foreach ($filter_keys as $key) {
             if (SucuriScanRequest::get($key)) {

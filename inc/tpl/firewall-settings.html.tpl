@@ -75,23 +75,28 @@
         </div>
 
         <div id="sucuriscan-waf-key-box" class="sucuriscan-hstatus sucuriscan-hstatus-2 sucuriscan-firewall-apikey sucuriscan-%%SUCURI.Firewall.APIKeyVisibility%%">
-            <strong>{{Firewall API Key:}}</strong>
-            <span id="sucuriscan_waf_key" class="sucuriscan-monospace" data-key="%%SUCURI.Firewall.APIKey%%">*******************************************************</span>
-            <button id="sucuriscan_toggle_wafkey" name="sucuriscan_toggle_wafkey" data-cy="sucuriscan-toggle-wafkey" class="button button-primary">{{Show}}</button>
-            <form action="%%SUCURI.URL.Firewall%%" method="post">
-                <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
-                <input type="hidden" name="sucuriscan_delete_wafkey" value="" />
+            <div class="sucuriscan-key-info">
+                <strong>{{Firewall API Key:}}</strong>
+                <span id="sucuriscan_waf_key" class="sucuriscan-monospace" data-key="%%SUCURI.Firewall.APIKey%%">*******************************************************</span>
+            </div>
 
-                <div class="sucuriscan-dropdown">
-                    <a target="_blank" rel="noopener" class="button button-secondary">Options</a>
+            <div class="sucuriscan-key-actions">
+                <button id="sucuriscan_toggle_wafkey" name="sucuriscan_toggle_wafkey" data-cy="sucuriscan-toggle-wafkey" class="button button-primary">{{Show}}</button>
+                <form action="%%SUCURI.URL.Firewall%%" method="post">
+                    <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
+                    <input type="hidden" name="sucuriscan_delete_wafkey" value="" />
 
-                    <div id="sucuriscan-waf-key-options" class="sucuriscan-dropdown-content sucuriscan-dropdown-content-sm">
-                        <i class="sucuriscan-pointer"></i>
-                        <option value="update">Update</option>
-                        <option value="delete">Delete</option>
+                    <div class="sucuriscan-dropdown">
+                        <a target="_blank" rel="noopener" class="button button-secondary">Options</a>
+
+                        <div id="sucuriscan-waf-key-options" class="sucuriscan-dropdown-content sucuriscan-dropdown-content-sm">
+                            <i class="sucuriscan-pointer"></i>
+                            <option value="update">Update</option>
+                            <option value="delete">Delete</option>
+                        </div>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
 
         <form id="sucuriscan-waf-key-form" action="%%SUCURI.URL.Firewall%%" method="post" class="sucuriscan-%%SUCURI.Firewall.APIKeyFormVisibility%%">

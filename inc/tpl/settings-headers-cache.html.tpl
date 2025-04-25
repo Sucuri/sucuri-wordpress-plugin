@@ -77,7 +77,7 @@
                         newValues[this.name] = this.value;
                     });
 
-                    $.post('%%SUCURI.URL.Settings%%#headers', {
+                    $.post('%%SUCURI.URL.Headers%%', {
                         sucuriscan_page_nonce: '%%SUCURI.PageNonce%%',
                         sucuriscan_update_cache_options: 1,
                         sucuriscan_cache_options_mode: 'custom',
@@ -206,7 +206,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="14" height="14"
      style="display: none;">
     <symbol id="helper-svg" viewBox="0 0 14 14">
-        <path fill="#000000" d="m6.998315,0.033333c-3.846307,0 -6.964982,
+        <path fill="#25BB9E" d="m6.998315,0.033333c-3.846307,0 -6.964982,
                     3.118675 -6.964982,6.964982s3.118675,6.965574 6.964982,6.965574s6.965574,
                     -3.119267 6.965574,-6.965574s-3.119267,-6.964982 -6.965574,-6.964982zm1.449957,
                     10.794779c-0.358509,0.141517 -0.643901,0.248833 -0.857945,0.32313c-0.213455,
@@ -241,7 +241,7 @@
 <div class="sucuriscan-panel">
     <h3 class="sucuriscan-title">{{Cache Control Header Options}}</h3>
 
-    <form action="%%SUCURI.URL.Settings%%#headers" method="post">
+    <form action="%%SUCURI.URL.Headers%%" method="post">
         <div class="inside">
             <p>{{Please enable site caching on your WAF to use these settings. If you are a Sucuri client and require assistance, please <a href="https://docs.sucuri.net/billing/how-do-i-open-a-general-support-ticket/" target="_blank" rel="noopener">{{create a ticket}}</a> and reach out to the firewall team for support.}}</p>
             <p>{{Here you can see all the cache options available.}}</p>
@@ -272,7 +272,7 @@
                         </span>
                     </th>
                     <th class="manage-column">
-                        {{stale-while-revalidate}}
+                        {{stale-while-revali...}}
                         <span class="sucuriscan-tooltip"
                               content="{{The stale-while-revalidate setting lets shared caches serve an old version of a web page while they update the cached copy in the background. This improves loading times because visitors don’t have to wait for the updated content. Like stale-if-error, it requires a private or shared cache duration, and can be used together with stale-if-error. This setting is useful for ensuring quick page loads while keeping content reasonably fresh.}}">
                             <svg><use xlink:href="#helper-svg"></use></svg>

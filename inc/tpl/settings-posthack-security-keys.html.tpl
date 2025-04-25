@@ -27,7 +27,7 @@
             </tbody>
         </table>
 
-        <form action="%%SUCURI.URL.Settings%%#posthack" method="post">
+        <form action="%%SUCURI.URL.PostHack%%" method="post">
             <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
             <input type="hidden" name="sucuriscan_update_wpconfig" value="1" />
 
@@ -48,7 +48,7 @@
                 {{Changing the Secret Keys frequently will decrease the chances of misuse of sessions left open on unprotected devices.}}
             </p>
 
-            <form action="%%SUCURI.URL.Settings%%#posthack" method="post">
+            <form action="%%SUCURI.URL.PostHack%%" method="post">
                 <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
                 <input type="hidden" name="sucuriscan_autoseckeyupdater" value="1" />
                 <label><strong>{{Frequency:}}</strong></label>

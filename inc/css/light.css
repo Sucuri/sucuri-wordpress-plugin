@@ -1,0 +1,68 @@
+:root {
+    --sucuri-color-black: #000000;
+    --sucuri-color-white: #ffffff;
+
+    --sucuri-color-background-main: #FFFFFF;
+    --sucuri-color-background-secondary: #F5F5F56B;
+    --sucuri-color-text-main: #1A272C;
+    --sucuri-color-text-main-inverse: #02141B;
+    --sucuri-color-card-background: #ffffff;
+    --sucuri-color-text-secondary: #727376;
+    --sucuri-color-text-disabled: #a0a5aa;
+
+    --sucuri-color-link: #028673;
+    --sucuri-color-link-hover: #26BA9E;
+    --sucuri-color-primary: #028673;
+    --sucuri-color-primary-hover: #028673;
+    --sucuri-color-success-background: #028673;
+    --sucuri-color-success-background-border: #25BB9E;
+    --sucuri-color-link-light: #00FFCE;
+
+    --sucuri-color-red: #CE3030;
+    --sucuri-color-blue: #4F6CB5;
+    --sucuri-color-purple: #b406dc;
+    --sucuri-color-orange: #F7BE17;
+    --sucuri-color-gray-6767: #676767;
+    --sucuri-color-blue-dark: #3f6890;
+    --sucuri-color-blue-light: #F5F5F5;
+    --sucuri-color-blue-light-border: #D4D4D4;
+
+    --sucuri-color-red-dark: #9b2b27;
+    --sucuri-color-red-darker: #872522;
+    --sucuri-color-red-error: #CC4D4D;
+    --sucuri-color-red-darker-error: #FCD3D3;
+    --sucuri-color-red-light: #ED5565;
+
+    --sucuri-color-gray-f1f1f1: #f1f1f1;
+    --sucuri-color-gray-f3f3f3: #f3f3f3;
+    --sucuri-color-gray-f5f5f5: #f5f5f5;
+    --sucuri-color-gray-f7f7f7: #f7f7f7;
+    --sucuri-color-border: #ddd;
+    --sucuri-color-dbdbdb: #dbdbdb;
+    --sucuri-color-ddd: #ddd;
+    --sucuri-color-dfdfdf: #dfdfdf;
+    --sucuri-color-gray-666: #666;
+    --sucuri-color-gray-989: #989898;
+    --sucuri-color-gray-999: #999;
+    --sucuri-color-gray-717171: #717171;
+
+    --sucuri-color-diff-border: #32636c;
+    --sucuri-color-diff-background: #003140;
+    --sucuri-color-table-border: #dedede;
+    --sucuri-color-resources-border: #D4D4D4;
+
+    --sucuri-color-background-upgrade-banner: #0c1a20;
+
+    --sucuri-main-button-color: #ffffff;
+
+    --sucuri-border-radius: 6px;
+}
+
+.sucuriscan-container .button-primary {
+    background: #028673 !important;
+    border: 1px solid #028673 !important;
+    border-radius: 6px;
+    color: var(--sucuri-color-white) !important;
+    transition: all 0.3s ease;
+}
+

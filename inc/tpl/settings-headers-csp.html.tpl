@@ -35,7 +35,7 @@
 <div class="sucuriscan-panel">
     <h3 class="sucuriscan-title">{{Content Security Policy (CSP) Options}}</h3>
 
-    <form action="%%SUCURI.URL.Settings%%#headers" method="post">
+    <form action="%%SUCURI.URL.Headers%%" method="post">
         <div class="inside">
             <p>{{Content Security Policy (CSP) is a security feature that helps prevent various types of attacks, such as Cross-Site Scripting (XSS) and data injection attacks.}}</p>
             <p>{{Here you can see all the CSP options available.}}</p>

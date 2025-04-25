@@ -23,7 +23,7 @@
 
         <span class="sucuriscan-tooltip sucuriscan-%%SUCURI.Integrity.ErrorVisibility%%" content="%%SUCURI.Integrity.ErrorMessage%%">
             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="14" height="14">
-                <path fill="#dd3d36" d="m6.998315,0.033333c-3.846307,0 -6.964982,
+                <path fill="#25BB9E" d="m6.998315,0.033333c-3.846307,0 -6.964982,
                 3.118675 -6.964982,6.964982s3.118675,6.965574 6.964982,6.965574s6.965574,
                 -3.119267 6.965574,-6.965574s-3.119267,-6.964982 -6.965574,-6.964982zm1.449957,
                 10.794779c-0.358509,0.141517 -0.643901,0.248833 -0.857945,0.32313c-0.213455,

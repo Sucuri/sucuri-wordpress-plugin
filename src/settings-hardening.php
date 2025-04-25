@@ -95,7 +95,9 @@ class SucuriScanHardeningPage extends SucuriScan
     {
         $params = array();
 
-        if (self::processRequest(__FUNCTION__)) {
+	    $params['URL.Hardening'] = admin_url('admin.php?page=sucuriscan_hardening_prevention');
+
+	    if (self::processRequest(__FUNCTION__)) {
             SucuriScanInterface::error(
                 __(
                     'The firewall is a premium service that you need purchase at - <a href="https://sucuri.net/website-firewall/signup" target="_blank">Sucuri Firewall</a>',
@@ -137,7 +139,10 @@ class SucuriScanHardeningPage extends SucuriScan
     public static function wpversion()
     {
         $params = array();
-        $updates = get_core_updates();
+
+	    $params['URL.Hardening'] = admin_url('admin.php?page=sucuriscan_hardening_prevention');
+
+	    $updates = get_core_updates();
         $site_version = SucuriScan::siteVersion();
 
         $params['URL.Settings'] = admin_url('update-core.php');
@@ -145,7 +150,7 @@ class SucuriScanHardeningPage extends SucuriScan
         $params['Hardening.FieldText'] = __('Check Updates Now', 'sucuri-scanner');
         $params['Hardening.Title'] = __('Verify WordPress Version', 'sucuri-scanner');
         $params['Hardening.Description'] = __(
-            'Why keep your site updated? WordPress is an open-source project which means that with every update the details of the changes made to the source code are made public, if there were security fixes then someone with malicious intent can use this information to attack any site that has not been upgraded.',
+            'Why keep your site updated? WordPress updates are public. If they include security fixes, attackers can exploit those details to target sites that haven’t upgraded. Staying updated helps protect your site from known vulnerabilities.',
             'sucuri-scanner'
         );
 
@@ -171,7 +176,9 @@ class SucuriScanHardeningPage extends SucuriScan
     {
         $params = array();
 
-        $params['Hardening.Title'] = __('Remove WordPress Version', 'sucuri-scanner');
+	    $params['URL.Hardening'] = admin_url('admin.php?page=sucuriscan_hardening_prevention');
+
+	    $params['Hardening.Title'] = __('Remove WordPress Version', 'sucuri-scanner');
         $params['Hardening.Status'] = 1;
         $params['Hardening.FieldText'] = __('Revert Hardening', 'sucuri-scanner');
         $params['Hardening.FieldAttrs'] = 'disabled';
@@ -196,7 +203,9 @@ class SucuriScanHardeningPage extends SucuriScan
 
         $params = array();
 
-        if (self::processRequest(__FUNCTION__)) {
+	    $params['URL.Hardening'] = admin_url('admin.php?page=sucuriscan_hardening_prevention');
+
+	    if (self::processRequest(__FUNCTION__)) {
             SucuriScanInterface::error(
                 __(
                     'Read the official WordPress guidelines to learn how to restrict access to PHP files in sensitive directories - <a href="https://developer.wordpress.org/advanced-administration/server/web-server/nginx/#global-restrictions-file" target="_blank" rel="noopener">Nginx Global Restrictions For WordPress</a>',
@@ -235,7 +244,9 @@ class SucuriScanHardeningPage extends SucuriScan
         $params = array();
         $folder = WP_CONTENT_DIR . '/uploads';
 
-        if (self::processRequest(__FUNCTION__)) {
+	    $params['URL.Hardening'] = admin_url('admin.php?page=sucuriscan_hardening_prevention');
+
+	    if (self::processRequest(__FUNCTION__)) {
             $result = SucuriScanHardening::hardenDirectory($folder);
 
             if ($result === true) {
@@ -297,7 +308,9 @@ class SucuriScanHardeningPage extends SucuriScan
 
         $params = array();
 
-        if (self::processRequest(__FUNCTION__)) {
+	    $params['URL.Hardening'] = admin_url('admin.php?page=sucuriscan_hardening_prevention');
+
+	    if (self::processRequest(__FUNCTION__)) {
             $result = SucuriScanHardening::hardenDirectory(WP_CONTENT_DIR);
 
             if ($result === true) {
@@ -361,7 +374,9 @@ class SucuriScanHardeningPage extends SucuriScan
         $params = array();
         $folder = ABSPATH . '/wp-includes';
 
-        if (self::processRequest(__FUNCTION__)) {
+	    $params['URL.Hardening'] = admin_url('admin.php?page=sucuriscan_hardening_prevention');
+
+	    if (self::processRequest(__FUNCTION__)) {
             $result = SucuriScanHardening::hardenDirectory($folder);
 
             if ($result === true) {
@@ -428,7 +443,9 @@ class SucuriScanHardeningPage extends SucuriScan
     {
         $params = array();
 
-        if (self::processRequest(__FUNCTION__)) {
+	    $params['URL.Hardening'] = admin_url('admin.php?page=sucuriscan_hardening_prevention');
+
+	    if (self::processRequest(__FUNCTION__)) {
             if (@unlink(ABSPATH . '/readme.html') === false) {
                 SucuriScanInterface::error(sprintf(
                     __('Cannot delete <code>%s/readme.html</code>', 'sucuri-scanner'),
@@ -448,7 +465,7 @@ class SucuriScanHardeningPage extends SucuriScan
 
         $params['Hardening.Title'] = __('Avoid Information Leakage', 'sucuri-scanner');
         $params['Hardening.Description'] = __(
-            'Checks if the WordPress README file still exists in the website. The information in this file can be used by malicious users to pin-point which disclosed vulnerabilities are associated to the website. Be aware that WordPress recreates this file automatically with every update.',
+            'Checks if the WordPress README file still exists in the website. The information in this file can be used by malicious users to pin-point which disclosed vulnerabilities are associated to the website. WordPress recreates this file automatically with every update.',
             'sucuri-scanner'
         );
 
@@ -475,7 +492,9 @@ class SucuriScanHardeningPage extends SucuriScan
     {
         $params = array();
 
-        $user_query = new WP_User_Query(
+	    $params['URL.Hardening'] = admin_url('admin.php?page=sucuriscan_hardening_prevention');
+
+	    $user_query = new WP_User_Query(
             array(
                 'search' => 'admin',
                 'fields' => array('ID', 'user_login'),
@@ -484,7 +503,7 @@ class SucuriScanHardeningPage extends SucuriScan
         );
         $results = $user_query->get_results();
 
-        $params['URL.Settings'] = admin_url('users.php?role=administrator');
+        $params['URL.Hardening'] = admin_url('users.php?role=administrator');
         $params['Hardening.Title'] = __('Verify Default Admin Account', 'sucuri-scanner');
         $params['Hardening.Description'] = __(
             'Check if the primary user account still uses the name "admin". This allows malicious users to easily identify which account has the highest privileges to target an attack.',
@@ -512,7 +531,10 @@ class SucuriScanHardeningPage extends SucuriScan
     public static function fileeditor()
     {
         $params = array();
-        $fileEditorWasDisabled = (bool)(defined('DISALLOW_FILE_EDIT') && DISALLOW_FILE_EDIT);
+
+	    $params['URL.Hardening'] = admin_url('admin.php?page=sucuriscan_hardening_prevention');
+
+	    $fileEditorWasDisabled = (bool)(defined('DISALLOW_FILE_EDIT') && DISALLOW_FILE_EDIT);
 
         if (self::processRequest(__FUNCTION__)) {
             $config = SucuriScan::getConfigPath();
@@ -658,7 +680,8 @@ class SucuriScanHardeningPage extends SucuriScan
 
         // Set status of auto secret key update.
         $params = array();
-        $params['Hardening.Title'] = __('Activate Automatic Secret Keys Updater', 'sucuri-scanner');
+	    $params['URL.Hardening'] = admin_url('admin.php?page=sucuriscan_hardening_prevention');
+	    $params['Hardening.Title'] = __('Activate Automatic Secret Keys Updater', 'sucuri-scanner');
         $params['Hardening.Description'] = __(
             'Changing the Secret Keys will invalidate all existing cookies, forcing all logged in users to login again. Doing this frequently will decrease the chances of misuse of sessions left open on unprotected devices.',
             'sucuri-scanner'
@@ -696,7 +719,9 @@ class SucuriScanHardeningPage extends SucuriScan
             'HardeningAllowlist.NoItemsVisibility' => 'visible',
         );
 
-        $upload_dir = wp_upload_dir();
+	    $params['URL.Hardening'] = admin_url('admin.php?page=sucuriscan_hardening_prevention');
+
+	    $upload_dir = wp_upload_dir();
         $allowed_folders = array(
             rtrim(ABSPATH, '/') . '/' . WPINC,
             WP_CONTENT_DIR,

@@ -32,7 +32,7 @@
                           content="{{The Unix Diff Utility is enabled. You can click the files in the table to see the differences detected by the scanner. If you consider the differences to be harmless you can mark the file as fixed, otherwise it is advised to restore the original content immediately.}}">
                             <svg xmlns="http://www.w3.org/2000/svg"
                                  width="14" height="14">
-                                <path fill="#000000" d="m6.998315,0.033333c-3.846307,0 -6.964982,
+                                <path fill="#25BB9E" d="m6.998315,0.033333c-3.846307,0 -6.964982,
                                 3.118675 -6.964982,6.964982s3.118675,6.965574 6.964982,6.965574s6.965574,
                                 -3.119267 6.965574,-6.965574s-3.119267,-6.964982 -6.965574,-6.964982zm1.449957,
                                 10.794779c-0.358509,0.141517 -0.643901,0.248833 -0.857945,0.32313c-0.213455,
@@ -119,7 +119,7 @@
                   content="{{Marking one or more files as fixed will force the plugin to ignore them during the next scan, very useful when you find false positives. Additionally you can restore the original content of the core files that appear as modified or deleted, this will tell the plugin to download a copy of the original files from the official WordPress repository. Deleting a file is an irreversible action, be careful.}}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14"
                      height="14">
-                    <path fill="#000000" d="m6.998315,0.033333c-3.846307,0 -6.964982,
+                    <path fill="#25BB9E" d="m6.998315,0.033333c-3.846307,0 -6.964982,
                     3.118675 -6.964982,6.964982s3.118675,6.965574 6.964982,6.965574s6.965574,
                     -3.119267 6.965574,-6.965574s-3.119267,-6.964982 -6.965574,-6.964982zm1.449957,
                     10.794779c-0.358509,0.141517 -0.643901,0.248833 -0.857945,0.32313c-0.213455,

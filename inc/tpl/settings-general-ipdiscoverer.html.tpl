@@ -5,7 +5,7 @@
     <div class="inside">
         <p>{{IP address discoverer will use DNS lookups to automatically detect if the website is behind the <a href="https://sucuri.net/website-firewall/" target="_blank" rel="noopener">Sucuri Firewall</a>, in which case it will modify the global server variable <em>Remote-Addr</em> to set the real IP of the website’s visitors. This check runs on every WordPress init action and that is why it may slow down your website as some hosting providers rely on slow DNS servers which makes the operation take more time than it should.}}</p>
 
-        <div class="sucuriscan-hstatus sucuriscan-hstatus-2">
+        <div id="sucuriscan-address-discoverer" class="sucuriscan-hstatus sucuriscan-hstatus-2">
             <span>{{IP Address Discoverer}} &mdash; %%SUCURI.DnsLookupsStatus%%</span>
 
             <form action="%%SUCURI.URL.Settings%%" method="post">

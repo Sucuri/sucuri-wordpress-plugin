@@ -1,0 +1,64 @@
+:root {
+    --sucuri-color-black: #000000;
+    --sucuri-color-white: #ffffff;
+
+    --sucuri-color-background-main: #02141B;
+    --sucuri-color-text-main-inverse: #1A272C;
+    --sucuri-color-background-secondary: #0c1a20;
+    --sucuri-color-text-main: #ffffff;
+    --sucuri-color-card-background: #1D2327;
+
+    --sucuri-color-text-secondary: #727376;
+    --sucuri-color-text-disabled: #a0a5aa;
+
+    --sucuri-color-link: #00FFCE;
+    --sucuri-color-link-hover: #028673;
+    --sucuri-color-primary: #028673;
+    --sucuri-color-primary-hover: #028673;
+    --sucuri-color-success-background: #2D514A;
+    --sucuri-color-success-background-border: #25BB9E;
+
+    --sucuri-color-red: #CE3030;
+    --sucuri-color-blue: #4F6CB5;
+    --sucuri-color-purple: #b406dc;
+    --sucuri-color-orange: #FFAB23;
+    --sucuri-color-gray-6767: #676767;
+    --sucuri-color-blue-dark: #3f6890;
+    --sucuri-color-blue-light: #2D514A;
+    --sucuri-color-blue-light-border: #25BB9E;
+
+    --sucuri-color-red-dark: #9b2b27;
+    --sucuri-color-red-darker: #872522;
+    --sucuri-color-red-error: #671313;
+    --sucuri-color-red-darker-error: #67131354;
+    --sucuri-color-red-light: #ED5565;
+
+    --sucuri-color-gray-f1f1f1: #333;
+    --sucuri-color-gray-f3f3f3: #1A1A1A;
+    --sucuri-color-gray-f5f5f5: #1A1A1A;
+    --sucuri-color-gray-f7f7f7: #333;
+    --sucuri-color-border: #373737;
+    --sucuri-color-dbdbdb: #555d66;
+    --sucuri-color-ddd: #555d66;
+    --sucuri-color-dfdfdf: #555d66;
+    --sucuri-color-gray-666: #666;
+    --sucuri-color-gray-989: #989898;
+    --sucuri-color-gray-999: #999;
+    --sucuri-color-gray-717171: #717171;
+
+    --sucuri-color-diff-border: #32636c;
+    --sucuri-color-diff-background: #003140;
+    --sucuri-color-table-border: #373737;
+    --sucuri-color-resources-border: #373737;
+
+    --sucuri-main-button-color: #000000;
+    --sucuri-border-radius: 6px;
+}
+
+/* Accounting for dark mode */
+.sucuriscan-container .notice,
+.sucuriscan-container .error {
+    background-color: var(--sucuri-color-background-main) !important;
+    color: var(--sucuri-color-text-main) !important;
+}
+
