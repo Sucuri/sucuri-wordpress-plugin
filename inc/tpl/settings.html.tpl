@@ -2,11 +2,8 @@
     <ul class="sucuriscan-clearfix sucuriscan-tabs-buttons">
         <li><a href="%%SUCURI.URL.Settings%%#general">{{General Settings}}</a></li>
         <li><a href="%%SUCURI.URL.Settings%%#scanner">{{Scanner}}</a></li>
-        <li><a href="%%SUCURI.URL.Settings%%#hardening">{{Hardening}}</a></li>
-        <li><a href="%%SUCURI.URL.Settings%%#posthack">{{Post-Hack}}</a></li>
         <li><a href="%%SUCURI.URL.Settings%%#alerts">{{Alerts}}</a></li>
-        <li><a href="%%SUCURI.URL.Settings%%#headers">{{Headers}}</a></li>
-        <li><a href="%%SUCURI.URL.Settings%%#apiservice">{{API Service Communication}}</a></li>
+        <li><a href="%%SUCURI.URL.Settings%%#apiservice">{{API Communication}}</a></li>
         <li><a href="%%SUCURI.URL.Settings%%#webinfo">{{Website Info}}</a></li>
     </ul>
 
@@ -37,48 +34,6 @@
             %%%SUCURI.Settings.Scanner.IgnoreFolders%%%
         </div>
 
-        <div id="sucuriscan-tabs-hardening">
-            <div class="sucuriscan-panel">
-                <h3 class="sucuriscan-title">{{Hardening Options}}</h3>
-
-                <div class="inside">
-                    %%%SUCURI.Settings.Hardening.Firewall%%%
-
-                    %%%SUCURI.Settings.Hardening.WPVersion%%%
-
-                    %%%SUCURI.Settings.Hardening.RemoveGenerator%%%
-
-                    %%%SUCURI.Settings.Hardening.NginxPHPFPM%%%
-
-                    %%%SUCURI.Settings.Hardening.WPUploads%%%
-
-                    %%%SUCURI.Settings.Hardening.WPContent%%%
-
-                    %%%SUCURI.Settings.Hardening.WPIncludes%%%
-
-                    %%%SUCURI.Settings.Hardening.Readme%%%
-
-                    %%%SUCURI.Settings.Hardening.AdminUser%%%
-
-                    %%%SUCURI.Settings.Hardening.FileEditor%%%
-
-                    %%%SUCURI.Settings.Hardening.SecKeyUpdater%%%
-                </div>
-            </div>
-
-            %%%SUCURI.Settings.Hardening.AllowlistPHPFiles%%%
-        </div>
-
-        <div id="sucuriscan-tabs-posthack">
-            %%%SUCURI.Settings.Posthack.SecurityKeys%%%
-
-            %%%SUCURI.Settings.Posthack.ResetPassword%%%
-
-            %%%SUCURI.Settings.Posthack.ResetPlugins%%%
-
-            %%%SUCURI.Settings.Posthack.AvailableUpdates%%%
-        </div>
-
         <div id="sucuriscan-tabs-alerts">
             %%%SUCURI.Settings.Alerts.Recipients%%%
 
@@ -93,14 +48,6 @@
             %%%SUCURI.Settings.Alerts.Events%%%
 
             %%%SUCURI.Settings.Alerts.IgnorePosts%%%
-        </div>
-
-        <div id="sucuriscan-tabs-headers">
-            %%%SUCURI.Settings.Headers.Cache%%%
-
-            %%%SUCURI.Settings.Headers.CORS%%%
-
-            %%%SUCURI.Settings.Headers.CSP%%%
         </div>
 
         <div id="sucuriscan-tabs-apiservice">

@@ -106,6 +106,7 @@
                 logins: url.searchParams.get('logins'),
                 users: url.searchParams.get('users'),
                 plugins: url.searchParams.get('plugins'),
+                files: url.searchParams.get('files'),
             };
 
             if (url.searchParams.get('startDate') !== null) {
@@ -160,12 +161,14 @@
                 var logins = $('#logins').val();
                 var users = $('#users').val();
                 var plugins = $('#plugins').val();
+                var files = $('#files').val();
 
                 if (time !== 'all time') filters.time = time;
                 if (posts !== 'all posts') filters.posts = posts;
                 if (logins !== 'all logins') filters.logins = logins;
                 if (users !== 'all users') filters.users = users;
                 if (plugins !== 'all plugins') filters.plugins = plugins;
+                if (files !== 'all files') filters.files = files;
 
                 if (time === 'custom') {
                     var startDate = $('#startDate').val();
@@ -187,6 +190,7 @@
                     $('#logins').val('all logins');
                     $('#users').val('all users');
                     $('#plugins').val('all plugins');
+                    $('#files').val('all files');
                     $('#startDate').val('');
                     $('#endDate').val('');
                 }
@@ -207,33 +211,35 @@
     });
 </script>
 
-<div class="sucuriscan-auditlog-table">
-    <div id="sucuriscan-filters"></div>
+<div class="sucuriscan-panel">
+    <div class="sucuriscan-auditlog-table">
+        <div id="sucuriscan-filters"></div>
 
-    <div class="sucuriscan-auditlog-response" data-cy="sucuriscan_auditlog_response_loading">
-        <em>{{Loading...}}</em>
-    </div>
-
-    <div class="sucuriscan-clearfix sucuriscan-pagination-panel">
-        <ul class="sucuriscan-pull-left sucuriscan-pagination">
-            <!-- Populated via JavaScript -->
-        </ul>
-
-        <div class="sucuriscan-pull-right sucuriscan-pagination-loading">
-            <!-- Populated via JavaScript -->
+        <div class="sucuriscan-auditlog-response" data-cy="sucuriscan_auditlog_response_loading">
+            <em>{{Loading...}}</em>
         </div>
-    </div>
 
-    <div class="sucuriscan-clearfix sucuriscan-auditlog-footer" data-cy="sucuriscan_audit_logs_footer">
-        <div class="sucuriscan-pull-left sucuriscan-hidden sucuriscan-tooltip
+        <div class="sucuriscan-clearfix sucuriscan-pagination-panel">
+            <ul class="sucuriscan-pull-left sucuriscan-pagination">
+                <!-- Populated via JavaScript -->
+            </ul>
+
+            <div class="sucuriscan-pull-right sucuriscan-pagination-loading">
+                <!-- Populated via JavaScript -->
+            </div>
+        </div>
+
+        <div class="sucuriscan-clearfix sucuriscan-auditlog-footer" data-cy="sucuriscan_audit_logs_footer">
+            <div class="sucuriscan-pull-left sucuriscan-hidden sucuriscan-tooltip
             sucuriscan-sendlogs-panel" tooltip-width="250" tooltip-html="true">
-            <small class="sucuriscan-auditlogs-sendlogs-response"></small>
-            <small><a href="#" class="sucuriscan-auditlogs-sendlogs"
-                      data-cy="sucuriscan_dashboard_send_audit_logs_submit">{{Send Logs}}</a></small>
-        </div>
+                <small class="sucuriscan-auditlogs-sendlogs-response"></small>
+                <small><a href="#" class="sucuriscan-auditlogs-sendlogs"
+                          data-cy="sucuriscan_dashboard_send_audit_logs_submit">{{Send Logs}}</a></small>
+            </div>
 
-        <div class="sucuriscan-pull-right">
-            <small class="sucuriscan-auditlog-status"></small>
+            <div class="sucuriscan-pull-right">
+                <small class="sucuriscan-auditlog-status"></small>
+            </div>
         </div>
     </div>
 </div>

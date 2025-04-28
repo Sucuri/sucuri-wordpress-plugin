@@ -35,7 +35,7 @@
 <div class="sucuriscan-panel">
     <h3 class="sucuriscan-title">{{CORS Options}}</h3>
 
-    <form action="%%SUCURI.URL.Settings%%#headers" method="post">
+    <form action="%%SUCURI.URL.Headers%%" method="post">
         <div class="inside">
             <p>{{Cross-Origin Resource Sharing (CORS) is a security feature that allows web applications to control the resources that can be requested from another domain.}}</p>
             <p>{{Here you can see all the CORS options available.}}</p>

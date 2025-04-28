@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Sucuri Security - Auditing, Malware Scanner and Hardening 1.9.10\n"
+"Project-Id-Version: Sucuri Security - Auditing, Malware Scanner and Hardening 2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/sucuri-scanner\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-04-12T22:44:54+00:00\n"
+"POT-Creation-Date: 2025-04-28T14:17:09+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: sucuri-scanner\n"
@@ -80,7 +80,7 @@ msgid "All Time"
 msgstr ""
 
 #: src/api.lib.php:498
-#: src/auditlogs.lib.php:383
+#: src/auditlogs.lib.php:384
 msgid "Today"
 msgstr ""
 
@@ -183,28 +183,36 @@ msgstr ""
 msgid "Deactivated"
 msgstr ""
 
-#: src/api.lib.php:920
+#: src/api.lib.php:618
+msgid "All Files"
+msgstr ""
+
+#: src/api.lib.php:622
+msgid "Added"
+msgstr ""
+
+#: src/api.lib.php:942
 msgid "WP Engine PHP Compatibility Checker: %s (created post #%d as cache)"
 msgstr ""
 
-#: src/api.lib.php:1263
-#: src/api.lib.php:1268
+#: src/api.lib.php:1285
+#: src/api.lib.php:1290
 msgid "WordPress version is not supported anymore"
 msgstr ""
 
-#: src/auditlogs.lib.php:190
+#: src/auditlogs.lib.php:191
 msgid "API is not available; using local queue"
 msgstr ""
 
-#: src/auditlogs.lib.php:192
+#: src/auditlogs.lib.php:193
 msgid "API %s secs"
 msgstr ""
 
-#: src/auditlogs.lib.php:238
+#: src/auditlogs.lib.php:239
 msgid "There are no logs."
 msgstr ""
 
-#: src/auditlogs.lib.php:294
+#: src/auditlogs.lib.php:295
 msgid "status has been changed"
 msgstr ""
 
@@ -435,29 +443,42 @@ msgid "IP has been removed from the blocklist: %s"
 msgstr ""
 
 #: src/globals.php:90
-#: src/strings.php:39
-#: src/strings.php:399
-msgid "Dashboard"
+msgid "Vulnerability Scanning"
 msgstr ""
 
 #: src/globals.php:91
-#: src/strings.php:40
-msgid "Firewall (WAF)"
+msgid "Firewall Management"
 msgstr ""
 
 #: src/globals.php:92
-msgid "Last Logins"
+msgid "Events Reporting"
 msgstr ""
 
 #: src/globals.php:93
+msgid "Headers Management"
+msgstr ""
+
+#: src/globals.php:94
+msgid "Hardening & Prevention"
+msgstr ""
+
+#: src/globals.php:95
+msgid "Post-Hack Actions"
+msgstr ""
+
+#: src/globals.php:96
+msgid "Last Logins"
+msgstr ""
+
+#: src/globals.php:97
 #: src/strings.php:41
 #: src/strings.php:124
 #: src/strings.php:400
 msgid "Settings"
 msgstr ""
 
-#: src/globals.php:114
-#: src/globals.php:115
+#: src/globals.php:118
+#: src/globals.php:119
 #: src/strings.php:35
 msgid "Sucuri Security"
 msgstr ""
@@ -724,7 +745,7 @@ msgstr ""
 #: src/integrity.lib.php:113
 #: src/settings-general.php:46
 #: src/settings-general.php:501
-#: src/settings-posthack.php:58
+#: src/settings-posthack.php:59
 msgid "You need to confirm that you understand the risk of this operation."
 msgstr ""
 
@@ -778,31 +799,31 @@ msgstr ""
 msgid "WordPress Integrity Diff Utility"
 msgstr ""
 
-#: src/interface.lib.php:190
+#: src/interface.lib.php:208
 msgid "The plugin requires PHP 5 >= 5.3.0 - OR - PHP 7"
 msgstr ""
 
-#: src/interface.lib.php:198
+#: src/interface.lib.php:216
 msgid "Storage is not writable: <code>%s</code>"
 msgstr ""
 
-#: src/interface.lib.php:240
+#: src/interface.lib.php:258
 msgid "Do you want to get vulnerability disclosures? Subscribe to our newsletter <a href=\"http://sucuri.hs-sites.com/subscribe-to-security\" target=\"_blank\" rel=\"noopener\">here</a>"
 msgstr ""
 
-#: src/interface.lib.php:253
+#: src/interface.lib.php:271
 msgid "Access denied; cannot manage options"
 msgstr ""
 
-#: src/interface.lib.php:254
+#: src/interface.lib.php:272
 msgid "Access denied by %s"
 msgstr ""
 
-#: src/interface.lib.php:274
+#: src/interface.lib.php:292
 msgid "Nonce is invalid"
 msgstr ""
 
-#: src/interface.lib.php:275
+#: src/interface.lib.php:293
 msgid "WordPress CSRF verification failed. The submitted form is missing an important unique code that prevents the execution of automated malicious scanners. Go back and try again. If you did not submit a form, this error message could be an indication of an incompatibility between this plugin and another add-on; one of them is inserting data into the global POST variable when the HTTP request is coming via GET. Disable them one by one (while reloading this page) to find the culprit."
 msgstr ""
 
@@ -1238,21 +1259,21 @@ msgstr ""
 msgid "Sucuri Alert, %s, %s, %s"
 msgstr ""
 
-#: src/pagehandler.php:44
+#: src/pagehandler.php:72
 msgid "iFrames"
 msgstr ""
 
-#: src/pagehandler.php:45
+#: src/pagehandler.php:73
 msgid "Links"
 msgstr ""
 
-#: src/pagehandler.php:46
+#: src/pagehandler.php:74
 msgid "Scripts"
 msgstr ""
 
-#: src/pagehandler.php:47
-#: src/pagehandler.php:48
-#: src/pagehandler.php:49
+#: src/pagehandler.php:75
+#: src/pagehandler.php:76
+#: src/pagehandler.php:77
 #: src/strings.php:26
 #: src/strings.php:57
 #: src/strings.php:69
@@ -1266,11 +1287,11 @@ msgstr ""
 msgid "Loading..."
 msgstr ""
 
-#: src/pagehandler.php:100
+#: src/pagehandler.php:197
 msgid "Last-Logins logs were successfully reset."
 msgstr ""
 
-#: src/pagehandler.php:102
+#: src/pagehandler.php:199
 msgid "Could not reset the last-logins data file."
 msgstr ""
 
@@ -1589,9 +1610,9 @@ msgstr ""
 #: src/settings-general.php:211
 #: src/settings-general.php:277
 #: src/settings-general.php:324
-#: src/settings-headers.php:135
-#: src/settings-headers.php:387
-#: src/settings-headers.php:430
+#: src/settings-headers.php:137
+#: src/settings-headers.php:393
+#: src/settings-headers.php:436
 #: src/settings-integrity.php:80
 #: src/strings.php:772
 msgid "Enabled"
@@ -1609,11 +1630,11 @@ msgstr ""
 #: src/settings-general.php:254
 #: src/settings-general.php:298
 #: src/settings-general.php:359
-#: src/settings-headers.php:135
-#: src/settings-headers.php:310
-#: src/settings-headers.php:354
-#: src/settings-headers.php:386
-#: src/settings-headers.php:430
+#: src/settings-headers.php:137
+#: src/settings-headers.php:314
+#: src/settings-headers.php:358
+#: src/settings-headers.php:392
+#: src/settings-headers.php:436
 #: src/strings.php:773
 msgid "Disabled"
 msgstr ""
@@ -1709,7 +1730,7 @@ msgid "%d out of %d files have been deleted."
 msgstr ""
 
 #: src/settings-general.php:136
-#: src/settings-posthack.php:368
+#: src/settings-posthack.php:369
 msgid "Not Writable"
 msgstr ""
 
@@ -1782,307 +1803,307 @@ msgstr ""
 msgid "The timezone for the date and time in the audit logs has been changed"
 msgstr ""
 
-#: src/settings-hardening.php:100
+#: src/settings-hardening.php:102
 msgid "The firewall is a premium service that you need purchase at - <a href=\"https://sucuri.net/website-firewall/signup\" target=\"_blank\">Sucuri Firewall</a>"
 msgstr ""
 
-#: src/settings-hardening.php:108
+#: src/settings-hardening.php:110
 msgid "Enable Website Firewall Protection"
 msgstr ""
 
-#: src/settings-hardening.php:109
+#: src/settings-hardening.php:111
 msgid "A WAF is a protection layer for your web site, blocking all sort of attacks (brute force attempts, DDoS, SQL injections, etc) and helping it remain malware and blocklist free. This test checks if your site is using Sucuri Firewall to protect your site."
 msgstr ""
 
-#: src/settings-hardening.php:116
-#: src/settings-hardening.php:277
-#: src/settings-hardening.php:339
-#: src/settings-hardening.php:414
-#: src/settings-hardening.php:458
-#: src/settings-hardening.php:501
-#: src/settings-hardening.php:616
-#: src/settings-hardening.php:669
+#: src/settings-hardening.php:118
+#: src/settings-hardening.php:288
+#: src/settings-hardening.php:352
+#: src/settings-hardening.php:429
+#: src/settings-hardening.php:475
+#: src/settings-hardening.php:520
+#: src/settings-hardening.php:638
+#: src/settings-hardening.php:692
 msgid "Apply Hardening"
 msgstr ""
 
-#: src/settings-hardening.php:120
-#: src/settings-hardening.php:176
-#: src/settings-hardening.php:269
-#: src/settings-hardening.php:273
-#: src/settings-hardening.php:331
-#: src/settings-hardening.php:335
-#: src/settings-hardening.php:406
-#: src/settings-hardening.php:410
-#: src/settings-hardening.php:461
-#: src/settings-hardening.php:497
-#: src/settings-hardening.php:612
-#: src/settings-hardening.php:674
+#: src/settings-hardening.php:122
+#: src/settings-hardening.php:183
+#: src/settings-hardening.php:280
+#: src/settings-hardening.php:284
+#: src/settings-hardening.php:344
+#: src/settings-hardening.php:348
+#: src/settings-hardening.php:421
+#: src/settings-hardening.php:425
+#: src/settings-hardening.php:478
+#: src/settings-hardening.php:516
+#: src/settings-hardening.php:634
+#: src/settings-hardening.php:697
 msgid "Revert Hardening"
 msgstr ""
 
-#: src/settings-hardening.php:145
+#: src/settings-hardening.php:150
 msgid "Check Updates Now"
 msgstr ""
 
-#: src/settings-hardening.php:146
+#: src/settings-hardening.php:151
 msgid "Verify WordPress Version"
 msgstr ""
 
-#: src/settings-hardening.php:147
-msgid "Why keep your site updated? WordPress is an open-source project which means that with every update the details of the changes made to the source code are made public, if there were security fixes then someone with malicious intent can use this information to attack any site that has not been upgraded."
+#: src/settings-hardening.php:152
+msgid "Why keep your site updated? WordPress updates are public. If they include security fixes, attackers can exploit those details to target sites that haven’t upgraded. Staying updated helps protect your site from known vulnerabilities."
 msgstr ""
 
-#: src/settings-hardening.php:154
+#: src/settings-hardening.php:159
 msgid "WordPress Update Available"
 msgstr ""
 
-#: src/settings-hardening.php:174
+#: src/settings-hardening.php:181
 msgid "Remove WordPress Version"
 msgstr ""
 
-#: src/settings-hardening.php:178
+#: src/settings-hardening.php:185
 msgid "It checks if your WordPress version is being leaked to the public via a HTML meta-tag. Many web vulnerability scanners use this to determine which version of the code is running in your website. They use this to find disclosed vulnerabilities associated to this version number. A vulnerability scanner can still guess which version of WordPress is installed by comparing the checksum of some static files."
 msgstr ""
 
-#: src/settings-hardening.php:201
+#: src/settings-hardening.php:210
 msgid "Read the official WordPress guidelines to learn how to restrict access to PHP files in sensitive directories - <a href=\"https://developer.wordpress.org/advanced-administration/server/web-server/nginx/#global-restrictions-file\" target=\"_blank\" rel=\"noopener\">Nginx Global Restrictions For WordPress</a>"
 msgstr ""
 
-#: src/settings-hardening.php:208
+#: src/settings-hardening.php:217
 msgid "Block of Certain PHP Files"
 msgstr ""
 
-#: src/settings-hardening.php:211
+#: src/settings-hardening.php:220
 msgid "Check Hardening"
 msgstr ""
 
-#: src/settings-hardening.php:212
-#: src/settings-hardening.php:261
-#: src/settings-hardening.php:323
-#: src/settings-hardening.php:398
+#: src/settings-hardening.php:221
+#: src/settings-hardening.php:272
+#: src/settings-hardening.php:336
+#: src/settings-hardening.php:413
 msgid "Block the execution of PHP files in sensitive directories. Be careful while applying this hardening option as there are many plugins and theme which rely on the ability to execute PHP files in the content directory to generate images or save temporary data. Use the \"Add PHP Files to the Allowlist\" tool to add exceptions to individual files."
-msgstr ""
-
-#: src/settings-hardening.php:242
-#: src/settings-hardening.php:243
-msgid "Hardening applied to the uploads directory"
-msgstr ""
-
-#: src/settings-hardening.php:245
-#: src/settings-hardening.php:307
-#: src/settings-hardening.php:380
-msgid "Error hardening directory, check the permissions."
 msgstr ""
 
 #: src/settings-hardening.php:253
 #: src/settings-hardening.php:254
-msgid "Hardening reverted in the uploads directory"
+msgid "Hardening applied to the uploads directory"
 msgstr ""
 
 #: src/settings-hardening.php:256
-#: src/settings-hardening.php:318
-#: src/settings-hardening.php:393
+#: src/settings-hardening.php:320
+#: src/settings-hardening.php:395
+msgid "Error hardening directory, check the permissions."
+msgstr ""
+
+#: src/settings-hardening.php:264
+#: src/settings-hardening.php:265
+msgid "Hardening reverted in the uploads directory"
+msgstr ""
+
+#: src/settings-hardening.php:267
+#: src/settings-hardening.php:331
+#: src/settings-hardening.php:408
 msgid "Access file is not writable, check the permissions."
 msgstr ""
 
-#: src/settings-hardening.php:260
+#: src/settings-hardening.php:271
 msgid "Block PHP Files in Uploads Directory"
 msgstr ""
 
-#: src/settings-hardening.php:304
-#: src/settings-hardening.php:305
+#: src/settings-hardening.php:317
+#: src/settings-hardening.php:318
 msgid "Hardening applied to the content directory"
 msgstr ""
 
-#: src/settings-hardening.php:315
-#: src/settings-hardening.php:316
+#: src/settings-hardening.php:328
+#: src/settings-hardening.php:329
 msgid "Hardening reverted in the content directory"
 msgstr ""
 
-#: src/settings-hardening.php:322
+#: src/settings-hardening.php:335
 msgid "Block PHP Files in WP-CONTENT Directory"
 msgstr ""
 
-#: src/settings-hardening.php:371
-#: src/settings-hardening.php:375
+#: src/settings-hardening.php:386
+#: src/settings-hardening.php:390
 msgid "Hardening applied to the library directory"
 msgstr ""
 
-#: src/settings-hardening.php:390
-#: src/settings-hardening.php:391
+#: src/settings-hardening.php:405
+#: src/settings-hardening.php:406
 msgid "Hardening reverted in the library directory"
 msgstr ""
 
-#: src/settings-hardening.php:397
+#: src/settings-hardening.php:412
 msgid "Block PHP Files in WP-INCLUDES Directory"
 msgstr ""
 
-#: src/settings-hardening.php:434
+#: src/settings-hardening.php:451
 msgid "Cannot delete <code>%s/readme.html</code>"
 msgstr ""
 
-#: src/settings-hardening.php:438
-#: src/settings-hardening.php:442
+#: src/settings-hardening.php:455
+#: src/settings-hardening.php:459
 msgid "Hardening applied to the <code>readme.html</code> file"
 msgstr ""
 
-#: src/settings-hardening.php:449
+#: src/settings-hardening.php:466
 msgid "Avoid Information Leakage"
 msgstr ""
 
-#: src/settings-hardening.php:450
-msgid "Checks if the WordPress README file still exists in the website. The information in this file can be used by malicious users to pin-point which disclosed vulnerabilities are associated to the website. Be aware that WordPress recreates this file automatically with every update."
+#: src/settings-hardening.php:467
+msgid "Checks if the WordPress README file still exists in the website. The information in this file can be used by malicious users to pin-point which disclosed vulnerabilities are associated to the website. WordPress recreates this file automatically with every update."
 msgstr ""
 
-#: src/settings-hardening.php:488
+#: src/settings-hardening.php:507
 msgid "Verify Default Admin Account"
 msgstr ""
 
-#: src/settings-hardening.php:489
+#: src/settings-hardening.php:508
 msgid "Check if the primary user account still uses the name \"admin\". This allows malicious users to easily identify which account has the highest privileges to target an attack."
 msgstr ""
 
-#: src/settings-hardening.php:521
-#: src/settings-hardening.php:562
+#: src/settings-hardening.php:543
+#: src/settings-hardening.php:584
 msgid "WordPress configuration file was not found."
 msgstr ""
 
-#: src/settings-hardening.php:523
-#: src/settings-hardening.php:564
-#: src/settings-posthack.php:76
+#: src/settings-hardening.php:545
+#: src/settings-hardening.php:586
+#: src/settings-posthack.php:77
 msgid "WordPress configuration file is not writable."
 msgstr ""
 
-#: src/settings-hardening.php:550
-#: src/settings-hardening.php:554
+#: src/settings-hardening.php:572
+#: src/settings-hardening.php:576
 msgid "Hardening applied to the plugin and theme editor"
 msgstr ""
 
-#: src/settings-hardening.php:582
+#: src/settings-hardening.php:604
 msgid "File Editor was not disabled using this tool. You must scan your project for a constant defined as DISALLOW_FILE_EDIT, then either delete it or set its value to False. Any plugin/theme can disable the file editor, so it is impossible to determine the origin of the constant."
 msgstr ""
 
-#: src/settings-hardening.php:591
-#: src/settings-hardening.php:595
+#: src/settings-hardening.php:613
+#: src/settings-hardening.php:617
 msgid "Hardening reverted in the plugin and theme editor"
 msgstr ""
 
-#: src/settings-hardening.php:603
+#: src/settings-hardening.php:625
 msgid "Disable Plugin and Theme Editor"
 msgstr ""
 
-#: src/settings-hardening.php:604
+#: src/settings-hardening.php:626
 msgid "Disables the theme and plugin editors to prevent unwanted modifications to the code. If you are having problems reverting this please open the wp-config.php file and delete the line with the constant DISALLOW_FILE_EDIT."
 msgstr ""
 
-#: src/settings-hardening.php:639
+#: src/settings-hardening.php:661
 msgid "Automatic Secret Keys Updater enabled. The default frequency is \"Weekly\", but you can change the frequency on Settings -> Post-Hack -> Update Secret Keys section."
 msgstr ""
 
-#: src/settings-hardening.php:643
-#: src/settings-posthack.php:158
+#: src/settings-hardening.php:665
 #: src/settings-posthack.php:159
+#: src/settings-posthack.php:160
 msgid "Automatic Secret Keys Updater enabled."
 msgstr ""
 
-#: src/settings-hardening.php:645
-#: src/settings-hardening.php:655
-#: src/settings-posthack.php:150
-#: src/settings-posthack.php:161
+#: src/settings-hardening.php:667
+#: src/settings-hardening.php:677
+#: src/settings-posthack.php:151
+#: src/settings-posthack.php:162
 msgid "Something went wrong."
 msgstr ""
 
-#: src/settings-hardening.php:652
-#: src/settings-hardening.php:653
-#: src/settings-posthack.php:147
+#: src/settings-hardening.php:674
+#: src/settings-hardening.php:675
 #: src/settings-posthack.php:148
+#: src/settings-posthack.php:149
 msgid "Automatic Secret Keys Updater disabled."
 msgstr ""
 
-#: src/settings-hardening.php:661
+#: src/settings-hardening.php:684
 msgid "Activate Automatic Secret Keys Updater"
 msgstr ""
 
-#: src/settings-hardening.php:662
+#: src/settings-hardening.php:685
 msgid "Changing the Secret Keys will invalidate all existing cookies, forcing all logged in users to login again. Doing this frequently will decrease the chances of misuse of sessions left open on unprotected devices."
 msgstr ""
 
-#: src/settings-hardening.php:716
+#: src/settings-hardening.php:741
 msgid "The file has been allowed"
 msgstr ""
 
-#: src/settings-hardening.php:721
+#: src/settings-hardening.php:746
 msgid "Specified folder is not hardened by this plugin"
 msgstr ""
 
-#: src/settings-hardening.php:748
+#: src/settings-hardening.php:773
 msgid "Some files could not be removed"
 msgstr ""
 
-#: src/settings-hardening.php:750
+#: src/settings-hardening.php:775
 msgid "Selected files have been removed"
 msgstr ""
 
 #: src/settings-headers.php:38
-#: src/settings-headers.php:296
-#: src/settings-headers.php:372
+#: src/settings-headers.php:298
+#: src/settings-headers.php:376
 msgid "Invalid nonce."
 msgstr ""
 
-#: src/settings-headers.php:53
+#: src/settings-headers.php:55
 msgid "disabled"
 msgstr ""
 
-#: src/settings-headers.php:54
+#: src/settings-headers.php:56
 msgid "static"
 msgstr ""
 
-#: src/settings-headers.php:55
+#: src/settings-headers.php:57
 msgid "occasional"
 msgstr ""
 
-#: src/settings-headers.php:56
+#: src/settings-headers.php:58
 msgid "frequent"
 msgstr ""
 
-#: src/settings-headers.php:57
+#: src/settings-headers.php:59
 msgid "busy"
 msgstr ""
 
-#: src/settings-headers.php:58
+#: src/settings-headers.php:60
 msgid "custom"
 msgstr ""
 
-#: src/settings-headers.php:94
+#: src/settings-headers.php:96
 msgid "Cache-Control header was deactivated."
 msgstr ""
 
-#: src/settings-headers.php:96
+#: src/settings-headers.php:98
 msgid "Cache-Control header was activated."
 msgstr ""
 
-#: src/settings-headers.php:99
+#: src/settings-headers.php:101
 msgid "Invalid cache control mode selected."
 msgstr ""
 
-#: src/settings-headers.php:311
-#: src/settings-headers.php:354
+#: src/settings-headers.php:315
+#: src/settings-headers.php:358
 msgid "Report Only"
 msgstr ""
 
-#: src/settings-headers.php:320
+#: src/settings-headers.php:324
 msgid "Invalid CSP mode selected."
 msgstr ""
 
-#: src/settings-headers.php:327
+#: src/settings-headers.php:331
 msgid "Content Security Policy settings were updated."
 msgstr ""
 
-#: src/settings-headers.php:396
+#: src/settings-headers.php:402
 msgid "Invalid CORS mode selected."
 msgstr ""
 
-#: src/settings-headers.php:403
+#: src/settings-headers.php:409
 msgid "CORS settings were updated."
 msgstr ""
 
@@ -2106,71 +2127,71 @@ msgstr ""
 msgid "The selected files have been successfully processed."
 msgstr ""
 
-#: src/settings-posthack.php:63
+#: src/settings-posthack.php:64
 msgid "WordPress configuration file was not found or new keys could not be created."
 msgstr ""
 
-#: src/settings-posthack.php:65
+#: src/settings-posthack.php:66
 msgid "Generate new security keys (success)"
 msgstr ""
 
-#: src/settings-posthack.php:66
+#: src/settings-posthack.php:67
 msgid "Secret keys updated successfully (summary of the operation bellow)."
 msgstr ""
 
-#: src/settings-posthack.php:69
+#: src/settings-posthack.php:70
 msgid "Old Security Keys"
 msgstr ""
 
-#: src/settings-posthack.php:72
+#: src/settings-posthack.php:73
 msgid "New Security Keys"
 msgstr ""
 
-#: src/settings-posthack.php:75
+#: src/settings-posthack.php:76
 msgid "Generate new security keys (failure)"
 msgstr ""
 
-#: src/settings-posthack.php:140
+#: src/settings-posthack.php:141
 msgid "No frequency selected for the automatic secret key updater."
 msgstr ""
 
-#: src/settings-posthack.php:263
+#: src/settings-posthack.php:264
 msgid "Password changed for user #%d"
 msgstr ""
 
-#: src/settings-posthack.php:358
+#: src/settings-posthack.php:359
 msgid "not installed"
 msgstr ""
 
-#: src/settings-posthack.php:365
+#: src/settings-posthack.php:366
 msgid "Plugin is Premium"
 msgstr ""
 
-#: src/settings-posthack.php:371
+#: src/settings-posthack.php:372
 msgid "Missing Library"
 msgstr ""
 
-#: src/settings-posthack.php:381
+#: src/settings-posthack.php:382
 msgid "Cannot Download"
 msgstr ""
 
-#: src/settings-posthack.php:384
+#: src/settings-posthack.php:385
 msgid "Cannot Backup"
 msgstr ""
 
-#: src/settings-posthack.php:397
+#: src/settings-posthack.php:398
 msgid "Cannot Install"
 msgstr ""
 
-#: src/settings-posthack.php:406
+#: src/settings-posthack.php:407
 msgid "Installed v%s"
 msgstr ""
 
-#: src/settings-posthack.php:480
+#: src/settings-posthack.php:481
 msgid "Newest WordPress"
 msgstr ""
 
-#: src/settings-posthack.php:518
+#: src/settings-posthack.php:519
 msgid "There are no updates available."
 msgstr ""
 
@@ -2304,8 +2325,17 @@ msgid "Review"
 msgstr ""
 
 #: src/strings.php:38
-#: src/template.lib.php:136
+#: src/template.lib.php:137
 msgid "Generate API Key"
+msgstr ""
+
+#: src/strings.php:39
+#: src/strings.php:399
+msgid "Dashboard"
+msgstr ""
+
+#: src/strings.php:40
+msgid "Firewall (WAF)"
 msgstr ""
 
 #: src/strings.php:42
@@ -3466,7 +3496,7 @@ msgstr ""
 msgid "Content Security Policy"
 msgstr ""
 
-#: src/template.lib.php:277
+#: src/template.lib.php:281
 msgid "Invalid template type"
 msgstr ""
 
@@ -3562,6 +3592,6 @@ msgstr ""
 msgid "Your WordPress install is following <a href=\"https://sucuri.net/guides/wordpress-security\" target=\"_blank\" rel=\"noopener\">the security best practices</a>."
 msgstr ""
 
-#: sucuri.php:344
+#: sucuri.php:345
 msgid "Sucuri plugin has been uninstalled"
 msgstr ""

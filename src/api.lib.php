@@ -560,7 +560,7 @@ class SucuriScanAPI extends SucuriScanOption
                 ),
                 'deleted' => array(
                     'label' => __('Deleted', 'sucuri-scanner'),
-                    'value' => 'Post moved to trash',
+                    'value' => array('Post moved to trash', 'Post deleted'),
                 ),
             ),
             'logins' => array(
@@ -613,6 +613,16 @@ class SucuriScanAPI extends SucuriScanOption
                     'value' => 'Plugin deactivated',
                 ),
             ),
+            'files' => array(
+                'all files' => array(
+                    'label' => __('All Files', 'sucuri-scanner'),
+                    'value' => '',
+                ),
+                'added' => array(
+                    'label' => __('Added', 'sucuri-scanner'),
+                    'value' => 'Media file added',
+                ),
+            ),
         );
     }
 
@@ -649,8 +659,20 @@ class SucuriScanAPI extends SucuriScanOption
             if (isset($filters[$active_filter][$value_filter])) {
                 $search_term = $filters[$active_filter][$value_filter]['value'];
 
+                $match = false;
+
+                if (is_array($search_term)) {
+                    foreach ($search_term as $term) {
+                        if (strpos($log['message'], $term) !== false) {
+                            $match = true;
+                        }
+                    }
+
+                    return $match;
+                }
+
                 if (strpos($log['message'], $search_term) !== false) {
-                    return true; // Log matches one of the filters
+                    return true;
                 }
             }
         }
@@ -1270,4 +1292,173 @@ class SucuriScanAPI extends SucuriScanOption
 
         return $resp ? $resp : false;
     }
+
+
+	/**
+	 * Fetch vulnerability data from the specified endpoint.
+	 *
+	 * @param string $endpoint The endpoint to fetch data from.
+	 * @param array $params Parameters for the request defined in an associative array.
+	 * @return array|bool The vulnerability data or false on failure.
+	 */
+	public static function fetchVulnerabilityData($endpoint, $params)
+	{
+		$key = SucuriScanOption::getOption(':cloudproxy_apikey');
+
+		$slug = isset($params['slug']) ? $params['slug'] : '';
+		$version = isset($params['version']) ? $params['version'] : '';
+
+		$url = 'https://wp-plugin.sucuri.net/v1/vulnerabilities/' . $endpoint . '/' . $version;
+
+		if ($slug) {
+			$url = 'https://wp-plugin.sucuri.net/v1/vulnerabilities/' . $endpoint . '/' . $slug . '/' . $version;
+		}
+
+		$args = array(
+			'method'  => 'GET',
+			'headers' => array(
+				'Authorization' => 'Bearer ' . $key
+			),
+			'timeout' => 30
+		);
+
+		$response = wp_remote_get($url, $args);
+
+		if (is_wp_error($response)) {
+			return array('error' => $response->get_error_message());
+		}
+
+		$body = wp_remote_retrieve_body($response);
+
+		if (empty($body)) {
+			return array('error' => 'No data');
+		}
+
+		try {
+			$data = json_decode($body, true);
+		} catch (Exception $e) {
+			// Probably firewall blocked request.
+			return array('error' => $e->getMessage());
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Get vulnerability data for PHP version.
+	 *
+	 * @param string $version The PHP version to check for vulnerabilities.
+	 * @return array|bool The vulnerability data or false on failure.
+	 */
+	public static function getPHPVulnerabilities($version)
+	{
+		$cache = new SucuriScanCache('vulnerabilities');
+		$cache_key = 'php_' . $version;
+		$cached_data = $cache->get($cache_key, 3600, 'array');
+
+		if ($cached_data) {
+			$cached_data['wp_cache'] = true;
+
+			return $cached_data;
+		}
+
+		$params = array('version' => PHP_VERSION);
+
+		$data = self::fetchVulnerabilityData('php', $params);
+
+		if ($data) {
+			$cache->add($cache_key, $data);
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Get vulnerability data for WordPress core version.
+	 *
+	 * @param string $version The WordPress core version to check for vulnerabilities.
+	 * @return array|bool The vulnerability data or false on failure.
+	 */
+	public static function getWordPressCoreVulnerabilities($version)
+	{
+		$cache = new SucuriScanCache('vulnerabilities');
+		$cache_key = 'wordpress_core_' . $version;
+		$cached_data = $cache->get($cache_key, 3600, 'array');
+
+		if ($cached_data) {
+			$cached_data['wp_cache'] = true;
+
+			return $cached_data;
+		}
+
+		$params = array('version' => $version);
+
+		$data = self::fetchVulnerabilityData('core', $params);
+
+		if ($data) {
+			$cache->add($cache_key, $data);
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Get vulnerability data for a plugin.
+	 *
+	 * @param string $slug The plugin slug to check for vulnerabilities.
+	 * @param string $version The plugin version to check for vulnerabilities.
+	 * @return array|bool The vulnerability data or false on failure.
+	 */
+	public static function getPluginVulnerabilities($slug, $version)
+	{
+		$cache = new SucuriScanCache('vulnerabilities');
+		$cache_key = 'plugin_' . $slug . '_' . $version;
+		$cached_data = $cache->get($cache_key, 3600, 'array');
+
+		if ($cached_data) {
+			$cached_data['wp_cache'] = true;
+
+			return $cached_data;
+		}
+
+		$params = array('slug' => $slug, 'version' => $version);
+
+		$data = self::fetchVulnerabilityData('plugin', $params);
+
+		if ($data) {
+			$cache->add($cache_key, $data);
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Get vulnerability data for a theme.
+	 *
+	 * @param string $slug The theme slug to check for vulnerabilities.
+	 * @param string $version The theme version to check for vulnerabilities.
+	 * @return array|bool The vulnerability data or false on failure.
+	 */
+	public static function getThemeVulnerabilities($slug, $version)
+	{
+		$cache = new SucuriScanCache('vulnerabilities');
+		$cache_key = 'theme_' . $slug . '_' . $version;
+		$cached_data = $cache->get($cache_key, 3600, 'array');
+
+		if ($cached_data) {
+			$cached_data['wp_cache'] = true;
+
+			return $cached_data;
+		}
+
+		$params = array('slug' => $slug, 'version' => $version);
+
+		$data = self::fetchVulnerabilityData('theme', $params);
+
+		if ($data) {
+			$cache->add($cache_key, $data);
+		}
+
+		return $data;
+	}
 }

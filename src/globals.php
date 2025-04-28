@@ -87,8 +87,12 @@ if (defined('SUCURISCAN')) {
     function sucuriscanMainPages()
     {
         return array(
-            'sucuriscan' => __('Dashboard', 'sucuri-scanner'),
-            'sucuriscan_firewall' => __('Firewall (WAF)', 'sucuri-scanner'),
+            'sucuriscan' => __('Vulnerability Scanning', 'sucuri-scanner'),
+            'sucuriscan_firewall' => __('Firewall Management', 'sucuri-scanner'),
+            'sucuriscan_events_reporting' => __('Events Reporting', 'sucuri-scanner'),
+            'sucuriscan_headers_management' => __('Headers Management', 'sucuri-scanner'),
+            'sucuriscan_hardening_prevention' => __('Hardening & Prevention', 'sucuri-scanner'),
+            'sucuriscan_post_hack_actions' => __('Post-Hack Actions', 'sucuri-scanner'),
             'sucuriscan_lastlogins' => __('Last Logins', 'sucuri-scanner'),
             'sucuriscan_settings' => __('Settings', 'sucuri-scanner'),
         );

@@ -2,13 +2,13 @@
     /* global jQuery */
     /* jshint camelcase: false */
     jQuery(document).ready(function ($) {
-        $('#firewall-clear-cache-button').on('click', function (event) {
+        $('#firewall-page-clear-cache-button').on('click', function (event) {
             event.preventDefault();
 
             var button = $(this);
             button.attr('disabled', true);
             button.html('{{Loading...}}');
-            $('#firewall-clear-cache-response').html('');
+            $('#firewall-page-clear-cache-response').html('');
 
             $.post('%%SUCURI.AjaxURL.Firewall%%', {
                 action: 'sucuriscan_ajax',
@@ -16,7 +16,7 @@
                 form_action: 'firewall_clear_cache',
             }, function (data) {
                 button.addClass('sucuriscan-hidden');
-                $('#firewall-clear-cache-response').html(data);
+                $('#firewall-page-clear-cache-response').html(data);
             });
         });
 
@@ -31,7 +31,7 @@
 
             button.attr('disabled', true);
             button.html('{{Loading...}}');
-            $('#firewall-clear-cache-response').html('');
+            $('#firewall-page-clear-cache-response').html('');
 
             $.post('%%SUCURI.AjaxURL.Firewall%%', {
                 action: 'sucuriscan_ajax',
@@ -39,7 +39,7 @@
                 form_action: 'firewall_clear_cache',
                 path
             }, function (data) {
-                $('#firewall-clear-cache-response').html(data);
+                $('#firewall-page-clear-cache-response').html(data);
                 button.html('{{Clear Cache}}');
             });
         });
@@ -111,8 +111,8 @@
                 <span>{{Clear cache whenever a post or page is updated}}</span>
             </label>
         </div>
-        <button id="firewall-clear-cache-button" class="button button-primary">{{Clear Global Cache}}</button>
+        <button id="firewall-page-clear-cache-button" class="button button-primary">{{Clear Global Cache}}</button>
 
-        <div id="firewall-clear-cache-response" class="mt-2"></div>
+        <div id="firewall-page-clear-cache-response" class="mt-2"></div>
     </div>
 </div>
