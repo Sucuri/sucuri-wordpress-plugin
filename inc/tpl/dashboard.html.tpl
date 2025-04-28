@@ -9,18 +9,20 @@
             }
 
             var $tbody = $('<tbody>');
-            for (var i = 0; i < links.length; i++) {
-                var href = links[i];
-                $tbody.append(
-                    '<tr><td><a href="' + href +
-                    '" target="_blank" class="sucuriscan-monospace">' +
-                    href + '</a></td></tr>'
-                );
-            }
+
+            $.each(links, function (_, href) {
+                var $a = $('<a>', {
+                    href:   href,
+                    target: '_blank',
+                    rel:    'noopener noreferrer',
+                    class:  'sucuriscan-monospace',
+                    text:   href
+                });
+                $tbody.append($('<tr>').append($('<td>').append($a)));
+            });
 
             $(target).html(
-                $('<table>', { 'class': 'wp-list-table widefat sucuriscan-table' })
-                    .html($tbody)
+                $('<table>', {class: 'wp-list-table widefat sucuriscan-table'}).html($tbody)
             );
         }
 
@@ -55,7 +57,9 @@
                 .replace(/&/g, '&amp;')
                 .replace(/"/g, '&quot;')
                 .replace(/'/g, '&#39;')
-                .replace(/`/g, '&#96;');
+                .replace(/`/g, '&#96;')
+                .replace(/\//g, '&#x2F;')
+                .replace(/=/g, '&#x3D;');
         }
 
         function getSeverityLabel(code) {
@@ -71,16 +75,16 @@
         function buildVulnDetailHTML(vuln) {
             var cve      = esc(vuln.cve_id            || 'Unknown');
             var desc     = esc(vuln.description       || 'No description available.');
-            var severity = getSeverityLabel(vuln.severity);
-            var affected = vuln.affected_version || 'Not specified';
+            var severity = esc(getSeverityLabel(vuln.severity));
+            var affected = vuln.affected_version  || 'Not specified';
 
             return (
                 '<div class="sucuriscan-collapsible-table-source-block">' +
-                    '<div class="sucuriscan-collapsible-table-field"><strong>CVE&nbsp;ID:</strong> <p>' + cve + '</p></div>' +
-                    '<div class="sucuriscan-collapsible-table-field"><strong>Description:</strong> <p>' + desc + '</p></div>' +
-                    '<div class="sucuriscan-collapsible-table-field"><strong>Severity:</strong> <p>' + esc(severity) + '</p></div>' +
-                    '<div class="sucuriscan-collapsible-table-field"><strong>Affected&nbsp;Version:</strong> <p>' + affected + '</p></div>' +
-                    '<div class="sucuriscan-collapsible-table-field"><strong>Source</strong> <p>We partner with WPVulnerability to provide you with valuable data that will improve your asset\'s stance. Please note data shown by external vulnerability scanners can present delays.</p></div>' +
+                '<div class="sucuriscan-collapsible-table-field"><strong>CVE&nbsp;ID:</strong> <p>' + cve + '</p></div>' +
+                '<div class="sucuriscan-collapsible-table-field"><strong>Description:</strong> <p>' + desc + '</p></div>' +
+                '<div class="sucuriscan-collapsible-table-field"><strong>Severity:</strong> <p>' + severity + '</p></div>' +
+                '<div class="sucuriscan-collapsible-table-field"><strong>Affected&nbsp;Version:</strong> <p>' + affected + '</p></div>' +
+                '<div class="sucuriscan-collapsible-table-field"><strong>Source</strong> <p>We partner with WPVulnerability to provide you with valuable data that will improve your asset\'s stance. Please note data shown by external vulnerability scanners can present delays.</p></div>' +
                 '</div>'
             );
         }
@@ -236,13 +240,11 @@
             var $overlay = $('<div class="sucuriscan-overlay" style="display:none;"></div>');
             var $modal   = $('<div class="sucuriscan-vulnerability-modal"></div>');
 
-            $modal.append('<button class="sucuriscan-vulnerability-close">X</button>')
-                .append('<h3></h3>').find('h3').text(title).end()
-                .append('<div class="sucuriscan-collapsible-table-body"></div>')
-                .find('div').last().html(bodyHTML);
+            $('<button>', {class:'sucuriscan-vulnerability-close', text:'X'}).appendTo($modal);
+            $('<h3>').text(title).appendTo($modal);
+            $('<div>', {class:'sucuriscan-collapsible-table-body'}).html(bodyHTML).appendTo($modal);
 
             $overlay.append($modal).appendTo('body').fadeIn();
-
             $overlay.on('click', '.sucuriscan-vulnerability-close', function () {
                 $overlay.fadeOut(function () { $overlay.remove(); });
             });
@@ -279,7 +281,7 @@
              src="%%SUCURI.PluginURL%%/inc/images/upgrade-shape.svg"
              alt="Decorative shape">
 
-        <a href="#" class="sucuriscan-upgrade-button">Upgrade Now</a>
+        <a href="https://sucuri.net/website-firewall/" class="sucuriscan-upgrade-button" target="_blank" rel="noopener">Upgrade Now</a>
     </div>
 </div>
 

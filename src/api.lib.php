@@ -1305,8 +1305,8 @@ class SucuriScanAPI extends SucuriScanOption
 	{
 		$key = SucuriScanOption::getOption(':cloudproxy_apikey');
 
-		$slug = $params['slug'];
-		$version = $params['version'];
+		$slug = isset($params['slug']) ? $params['slug'] : '';
+		$version = isset($params['version']) ? $params['version'] : '';
 
 		$url = 'https://wp-plugin.sucuri.net/v1/vulnerabilities/' . $endpoint . '/' . $version;
 
