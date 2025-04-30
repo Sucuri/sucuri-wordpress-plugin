@@ -2330,6 +2330,6 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
     display: inline-block;
 }
 
-.wp-core-ui select:focus {
+.wp-core-ui .sucuriscan-container select:focus {
     color: var(--sucuri-color-text-main);
 }

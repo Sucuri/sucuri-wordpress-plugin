@@ -4,7 +4,7 @@ Donate Link: https://sucuri.net/
 Tags: malware, security, firewall, scan, spam, virus, sucuri, protection, blocklist, detection, hardening, file integrity
 Requires at least: 3.6
 Tested up to: 6.8
-Stable tag: 2.0
+Stable tag: 2.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,12 +20,12 @@ We understand the importance of your online presence and are here to support you
 
 The Sucuri Security Monitoring Plugin is designed to safeguard your WordPress site with ease and reliability. Our plugin offers a range of essential security features, including:
 
-* Security Activity Auditing: Keep track of every security-related event within your WordPress environment.
-* File Integrity Monitoring: Detect unauthorized changes to your files and protect your site from potential vulnerabilities.
-* Remote Malware Scanning: Regularly scan your site for malware with our remote scanner to ensure it's clean and secure.
-* Blocklist Monitoring: Receive alerts if your site is blocklisted by any major services, allowing for quick resolution.
-* Security Hardening: Implement recommended security practices to fortify your site against threats.
-* Post-Hack Security Actions: If the worst happens, our plugin helps you recover your site easily.
+* <strong>Security Activity Auditing:</strong> Keep track of every security-related event within your WordPress environment.
+* <strong>File Integrity Monitoring:</strong> Detect unauthorized changes to your files and protect your site from potential vulnerabilities.
+* <strong>Remote Malware Scanning:</strong> Regularly scan your site for malware with our remote scanner to ensure it's clean and secure.
+* <strong>Blocklist Monitoring:</strong> Receive alerts if your site is blocklisted by any major services, allowing for quick resolution.
+* <strong>Security Hardening:</strong> Implement recommended security practices to fortify your site against threats.
+* <strong>Post-Hack Security Actions:</strong> If the worst happens, our plugin helps you recover your site easily.
 
 With Sucuri, you can focus on what matters most—growing your website—while we handle the security. Our feature set provides a clear view of your site's status, making it easy to manage, monitor and take action.
 
@@ -259,6 +259,9 @@ This version removes the API communication service dependency on https://wordpre
 This version adds an option to refresh the malware scan results on demand, as well as several small bug fixes and improvements.
 
 == Changelog ==
+= 2.1 =
+* Fix dark theme conflicting with Woo styles.
+
 = 2.0 =
 * Added support for WordPress Core vulnerability scanner.
 * Added support for PHP vulnerability scanner.
