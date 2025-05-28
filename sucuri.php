@@ -8,7 +8,7 @@
  * Author: Sucuri Inc.
  * Text Domain: sucuri-scanner
  * Domain Path: /lang
- * Version: 2.1
+ * Version: 2.2
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  *
@@ -87,7 +87,7 @@ define('SUCURISCAN', 'sucuriscan');
 /**
  * Current version of the plugin's code.
  */
-define('SUCURISCAN_VERSION', '2.1');
+define('SUCURISCAN_VERSION', '2.2');
 
 /**
  * Defines the human readable name of the plugin.

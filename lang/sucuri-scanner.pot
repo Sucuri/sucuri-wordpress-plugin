@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Sucuri Security - Auditing, Malware Scanner and Hardening 2.1\n"
+"Project-Id-Version: Sucuri Security - Auditing, Malware Scanner and Hardening 2.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/sucuri-scanner\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-04-30T00:48:05+00:00\n"
+"POT-Creation-Date: 2025-05-28T05:19:52+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: sucuri-scanner\n"
@@ -349,96 +349,96 @@ msgstr ""
 msgid "Firewall API key was successfully removed"
 msgstr ""
 
-#: src/firewall.lib.php:204
+#: src/firewall.lib.php:205
 msgid "enabled (recommended)"
 msgstr ""
 
-#: src/firewall.lib.php:205
+#: src/firewall.lib.php:206
 msgid "site caching (using your site headers)"
 msgstr ""
 
-#: src/firewall.lib.php:206
+#: src/firewall.lib.php:207
 msgid "minimal (only for a few minutes)"
 msgstr ""
 
-#: src/firewall.lib.php:207
+#: src/firewall.lib.php:208
 msgid "caching disabled (use with caution)"
 msgstr ""
 
-#: src/firewall.lib.php:253
-#: src/firewall.lib.php:349
-#: src/firewall.lib.php:567
-#: src/firewall.lib.php:602
-#: src/firewall.lib.php:643
-#: src/firewall.lib.php:740
+#: src/firewall.lib.php:254
+#: src/firewall.lib.php:350
+#: src/firewall.lib.php:568
+#: src/firewall.lib.php:603
+#: src/firewall.lib.php:644
+#: src/firewall.lib.php:741
 msgid "Firewall API key was not found."
 msgstr ""
 
-#: src/firewall.lib.php:385
+#: src/firewall.lib.php:386
 msgid "no data available."
 msgstr ""
 
-#: src/firewall.lib.php:443
+#: src/firewall.lib.php:444
 msgid "Anonymous"
 msgstr ""
 
-#: src/firewall.lib.php:488
+#: src/firewall.lib.php:489
 msgid "January"
 msgstr ""
 
-#: src/firewall.lib.php:489
+#: src/firewall.lib.php:490
 msgid "February"
 msgstr ""
 
-#: src/firewall.lib.php:490
+#: src/firewall.lib.php:491
 msgid "March"
 msgstr ""
 
-#: src/firewall.lib.php:491
+#: src/firewall.lib.php:492
 msgid "April"
 msgstr ""
 
-#: src/firewall.lib.php:492
+#: src/firewall.lib.php:493
 msgid "May"
 msgstr ""
 
-#: src/firewall.lib.php:493
+#: src/firewall.lib.php:494
 msgid "June"
 msgstr ""
 
-#: src/firewall.lib.php:494
+#: src/firewall.lib.php:495
 msgid "July"
 msgstr ""
 
-#: src/firewall.lib.php:495
+#: src/firewall.lib.php:496
 msgid "August"
 msgstr ""
 
-#: src/firewall.lib.php:496
+#: src/firewall.lib.php:497
 msgid "September"
 msgstr ""
 
-#: src/firewall.lib.php:497
+#: src/firewall.lib.php:498
 msgid "October"
 msgstr ""
 
-#: src/firewall.lib.php:498
+#: src/firewall.lib.php:499
 msgid "November"
 msgstr ""
 
-#: src/firewall.lib.php:499
+#: src/firewall.lib.php:500
 msgid "December"
 msgstr ""
 
-#: src/firewall.lib.php:610
+#: src/firewall.lib.php:611
 msgid "Failure connecting to the API service; try again."
 msgstr ""
 
-#: src/firewall.lib.php:617
+#: src/firewall.lib.php:618
 msgid "IP has been added to the blocklist: %s"
 msgstr ""
 
-#: src/firewall.lib.php:656
+#: src/firewall.lib.php:657
 msgid "IP has been removed from the blocklist: %s"
 msgstr ""
 
