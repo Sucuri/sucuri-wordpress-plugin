@@ -181,7 +181,6 @@ class SucuriScanFirewall extends SucuriScanAPI
             $params['Firewall.APIKeyVisibility'] = 'visible';
             $params['Firewall.APIKeyFormVisibility'] = 'hidden';
             $params['Firewall.APIKey'] = $api_key['string'];
-            $params['Firewall.DomainName'] = Sucuriscan::getDomain(true);
         }
 
         return SucuriScanTemplate::getSection('firewall-settings', $params);
