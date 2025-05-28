@@ -1,3 +1,44 @@
+<script type="text/javascript">
+    /* global jQuery */
+    /* jshint camelcase: false */
+
+    jQuery(document).ready(function ($) {
+        function setButtonState ($form) {
+            if (!$form.length) { return; }
+
+            var confirmed = $form.find('[name="sucuriscan_process_form"][type="checkbox"]').prop('checked');
+            var hasFiles  = $form.find('[name="sucuriscan_integrity[]"]:checked').length > 0;
+            var disabled  = !(confirmed && hasFiles);
+
+            $form.find('[data-cy="sucuriscan_integrity_incorrect_submit"]').prop('disabled', disabled);
+        }
+
+        function initIntegrityForms ($ctx) {
+            $ctx.find('[data-cy="sucuriscan_integrity_incorrect_submit"]').each(function () {
+                setButtonState($(this).closest('form'));
+            });
+        }
+
+        $(function () {
+            initIntegrityForms($(document));
+
+            $(document).on('change.integrityGuard',
+                '[name="sucuriscan_process_form"][type="checkbox"], [name="sucuriscan_integrity[]"]',
+                function () { setButtonState($(this).closest('form')); }
+            );
+
+            $(document).ajaxComplete(function (_e, _xhr, settings) {
+                if (!settings || !settings.data) { return; }
+
+                if (settings.data.indexOf('form_action=integrity') !== -1 ||
+                    settings.data.indexOf('integrity_scan')        !== -1) {
+                    initIntegrityForms($(document));
+                }
+            });
+        });
+    });
+</script>
+
 <div class="sucuriscan-panel sucuriscan-integrity sucuriscan-integrity-incorrect">
     <div class="sucuriscan-clearfix">
         <div class="sucuriscan-pull-left sucuriscan-integrity-left">
