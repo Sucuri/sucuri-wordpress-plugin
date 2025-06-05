@@ -259,6 +259,10 @@ This version removes the API communication service dependency on https://wordpre
 This version adds an option to refresh the malware scan results on demand, as well as several small bug fixes and improvements.
 
 == Changelog ==
+= 2.2 =
+* Update integrity section.
+* Add a warning when the configured WAF domain does not match site's domain.
+
 = 2.1 =
 * Fix dark theme conflicting with Woo styles.
 

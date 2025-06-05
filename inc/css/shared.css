@@ -2323,6 +2323,8 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
 #sucuriscan-waf-key-box .sucuriscan-key-info,
 #sucuriscan-waf-key-box .sucuriscan-key-actions form {
     display: inline-block;
+    vertical-align: middle;
+    margin-bottom: 0;
 }
 
 .wp-core-ui .sucuriscan-container select:focus {

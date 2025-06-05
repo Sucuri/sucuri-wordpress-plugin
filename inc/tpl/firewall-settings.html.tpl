@@ -1,4 +1,3 @@
-
 <script type="text/javascript">
     /* global jQuery */
     /* jshint camelcase: false */
@@ -10,6 +9,10 @@
         }, function (data) {
             if (data.ok) {
                 var value;
+
+                var wafDomain = (data?.settings?.domain || '').toLowerCase().replace(/^www\./, '');
+                var domain  = window.location.hostname.toLowerCase().replace(/^www\./, '');
+
                 $('#firewall-settings-table tbody').html('');
                 for (var name in data.settings) {
                     if (data.settings.hasOwnProperty(name) &&
@@ -25,6 +28,25 @@
             } else {
                 $('#firewall-settings-table tbody')
                     .html('<tr><td colspan="2">' + data.error + '</td></tr>');
+            }
+
+            if (wafDomain && domain && wafDomain !== domain) {
+                const $alert = $('<div>', {
+                    id:    'sucuriscan-alert-domain-mismatch',
+                    class: 'updated sucuriscan-alert sucuriscan-alert-updated'
+                })
+                    .append($('<a>', { href:'#', class:'close', text:'×', click: e => { e.preventDefault(); $(e.currentTarget).parent().slideUp(); } }))
+                    .append($('<p>').html('<b>SUCURI:</b> Firewall returned domain <code>' + wafDomain + '</code> which differs from configured <code>' + domain + '</code>. Please verify your WAF settings.'));
+
+                const $target = $('#firewall-clear-cache-response');
+
+                if ($target.length) {
+                    $alert.insertBefore($target);
+                } else {
+                    const $container = $('.sucuriscan-container').first();
+
+                    $container.length ? $container.prepend($alert) : $alert.insertBefore($('.sucuriscan-panel').first());
+                }
             }
         });
     });
