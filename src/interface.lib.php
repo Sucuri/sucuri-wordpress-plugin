@@ -63,7 +63,7 @@ class SucuriScanInterface
      */
     public static function enqueueScripts()
     {
-		if (self::shouldUseDarkTheme()) {
+		if (self::getPreferredTheme() === 'dark') {
 			wp_register_style(
 				'sucuriscan',
 				SUCURISCAN_URL . '/inc/css/dark.css',
@@ -370,9 +370,17 @@ class SucuriScanInterface
     }
 
 
-	public static function shouldUseDarkTheme() {
+	public static function isPremium() {
 		$api_key = SucuriScanFirewall::getOption(':cloudproxy_apikey');
 
 		return SucuriScanFirewall::isValidKey($api_key);
 	}
+
+    public static function getPreferredTheme() {
+        if (!self::isPremium()) {
+            return 'light';
+        }
+
+        return SucuriScanFirewall::getOption(':preferred_theme');
+    }
 }

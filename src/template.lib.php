@@ -118,7 +118,7 @@ class SucuriScanTemplate extends SucuriScanRequest
         $params['PluginVersion'] = SUCURISCAN_VERSION;
         $params['CleanDomain'] = self::getDomain();
         $params['Year'] = date('Y');
-		$params['FreemiumVisibility'] = SucuriScanInterface::shouldUseDarkTheme() ? 'sucuriscan-hidden' : '';
+		$params['FreemiumVisibility'] = SucuriScanInterface::isPremium() ? 'sucuriscan-hidden' : '';
 
         if (!array_key_exists('PageStyleClass', $params)) {
             $params['PageStyleClass'] = 'base';
@@ -267,7 +267,7 @@ class SucuriScanTemplate extends SucuriScanRequest
     public static function getTemplate($template = '', $params = array(), $type = 'page')
     {
 	    $api_key = SucuriScanFirewall::getOption(':cloudproxy_apikey');
-	    $dark_theme = SucuriScanFirewall::isValidKey($api_key);
+	    $dark_theme = SucuriScanInterface::getPreferredTheme() === 'dark';
 
         $params = is_array($params) ? $params : array();
 
