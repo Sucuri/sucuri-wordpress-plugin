@@ -381,6 +381,13 @@ class SucuriScanInterface
             return 'light';
         }
 
-        return SucuriScanFirewall::getOption(':preferred_theme');
+        $user_id = get_current_user_id();
+        $current_theme = get_user_meta($user_id, 'sucuriscan_preferred_theme', true);
+
+        if (!$current_theme) {
+            return 'dark';
+        }
+
+        return $current_theme;
     }
 }

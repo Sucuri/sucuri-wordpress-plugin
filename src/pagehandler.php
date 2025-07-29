@@ -56,7 +56,14 @@ function sucuriscan_resource_list($resource = array())
 function sucuriscan_theme_toggle() {
     $response = '';
 
-    $newPreferencedTheme = SucuriScanOption::getOption(':preferred_theme') === 'light' ? 'dark' : 'light';
+    if (!current_user_can( 'manage_options')) {
+        wp_send_json(array('ok' => false, 'error' => 'Non-admin user'), 200);
+    }
+
+    $user_id = get_current_user_id();
+    $option_name = 'sucuriscan_preferred_theme';
+    $currentTheme = get_user_meta($user_id, 'sucuriscan_preferred_theme', true);
+    $newPreferencedTheme = ($currentTheme === 'light') ? 'dark' : 'light';
 
     if ($newPreferencedTheme === 'dark' && !SucuriScanInterface::isPremium()) {
         $response = '<div class="sucuriscan-inline-alert-error"><p>To activate dark mode, please enter a valid WAF key.</p></div>';
@@ -64,7 +71,7 @@ function sucuriscan_theme_toggle() {
         wp_send_json(array('ok' => false, 'error' => $response), 200);
     }
 
-    SucuriScanOption::updateOption(':preferred_theme', $newPreferencedTheme);
+    update_user_meta($user_id, $option_name, $newPreferencedTheme);
 
     $response = sprintf(
         '<div class="sucuriscan-inline-alert-success"><p>Theme changed to %s mode.</p></div>',
