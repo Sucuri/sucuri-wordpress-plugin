@@ -53,6 +53,39 @@ function sucuriscan_resource_list($resource = array())
 	return $html;
 }
 
+function sucuriscan_theme_toggle() {
+    $response = '';
+
+    if (!current_user_can( 'manage_options')) {
+        wp_send_json(array('ok' => false, 'error' => 'Non-admin user'), 200);
+    }
+
+    $user_id = get_current_user_id();
+
+    if (!$user_id) {
+        wp_send_json(array('ok' => false, 'error' => 'Invalid user'), 200);
+    }
+
+    $option_name = 'sucuriscan_preferred_theme';
+    $currentTheme = get_user_meta($user_id, 'sucuriscan_preferred_theme', true);
+    $newPreferencedTheme = ($currentTheme === 'light') ? 'dark' : 'light';
+
+    if ($newPreferencedTheme === 'dark' && !SucuriScanInterface::isPremium()) {
+        $response = '<div class="sucuriscan-inline-alert-error"><p>To activate dark mode, please enter a valid WAF key.</p></div>';
+
+        wp_send_json(array('ok' => false, 'error' => $response), 200);
+    }
+
+    update_user_meta($user_id, $option_name, $newPreferencedTheme);
+
+    $response = sprintf(
+        '<div class="sucuriscan-inline-alert-success"><p>Theme changed to %s mode.</p></div>',
+        $newPreferencedTheme
+    );
+
+    wp_send_json($response, 200);
+}
+
 /**
  * Renders the content of the plugin's dashboard page.
  *
@@ -87,8 +120,14 @@ function sucuriscan_page()
 	$params['Themes'] = sucuriscan_resource_list(wp_get_themes());
 	$params['PluginsCount'] = count(get_plugins());
 	$params['ThemesCount'] = count(wp_get_themes());
-	$params['PremiumVisibility'] = SucuriScanInterface::shouldUseDarkTheme() ? '' : 'sucuriscan-hidden';
-	$params['FreemiumVisibility'] = SucuriScanInterface::shouldUseDarkTheme() ? 'sucuriscan-hidden' : '';
+	$params['PremiumVisibility'] = SucuriScanInterface::isPremium() ? '' : 'sucuriscan-hidden';
+	$params['FreemiumVisibility'] = SucuriScanInterface::isPremium() ? 'sucuriscan-hidden' : '';
+    $params['Theme'] = SucuriScanInterface::getPreferredTheme();
+
+    if (!SucuriScanInterface::isPremium()) {
+        $params['Plugins'] = '';
+        $params['Themes'] = '';
+    }
 
     if (SucuriScanRequest::get(':sitecheck_refresh') !== false) {
         $params['SiteCheck.Refresh'] = 'true';
@@ -111,6 +150,8 @@ function sucuriscan_firewall_page()
         'Firewall.AuditLogs' => SucuriScanFirewall::auditlogsPage(),
         'Firewall.IPAccess' => SucuriScanFirewall::ipAccessPage(),
         'Firewall.ClearCache' => SucuriScanFirewall::clearCachePage(),
+        'PremiumVisibility' => SucuriScanInterface::isPremium() ? '' : 'sucuriscan-hidden',
+        'Theme' => SucuriScanInterface::getPreferredTheme()
     );
 
     echo SucuriScanTemplate::getTemplate('firewall', $params);
@@ -123,6 +164,8 @@ function sucuriscan_events_reporting_page() {
 	SucuriScanInterface::startupChecks();
 
 	$params['AuditLogs'] = SucuriScanAuditLogs::pageAuditLogs();
+    $params['PremiumVisibility'] = SucuriScanInterface::isPremium() ? '' : 'sucuriscan-hidden';
+    $params['Theme'] = SucuriScanInterface::getPreferredTheme();
 
 	echo SucuriScanTemplate::getTemplate('events-reporting', $params);
 }
@@ -137,8 +180,10 @@ function sucuriscan_headers_management_page() {
 	$params['Settings.Headers.Cache'] = sucuriscan_settings_cache_options($nonce);
 	$params['Settings.Headers.CORS'] = sucuriscan_settings_cors_options($nonce);
 	$params['Settings.Headers.CSP'] = sucuriscan_settings_csp_options($nonce);
+    $params['PremiumVisibility'] = SucuriScanInterface::isPremium() ? '' : 'sucuriscan-hidden';
+    $params['Theme'] = SucuriScanInterface::getPreferredTheme();
 
-	echo SucuriScanTemplate::getTemplate('headers-management', $params);
+    echo SucuriScanTemplate::getTemplate('headers-management', $params);
 }
 
 function sucuriscan_hardening_prevention_page() {
@@ -159,8 +204,10 @@ function sucuriscan_hardening_prevention_page() {
 	$params['Settings.Hardening.FileEditor'] = SucuriScanHardeningPage::fileeditor();
 	$params['Settings.Hardening.SecKeyUpdater'] = SucuriScanHardeningPage::autoSecretKeyUpdater();
 	$params['Settings.Hardening.AllowlistPHPFiles'] = SucuriScanHardeningPage::AllowPHPFiles();
+    $params['PremiumVisibility'] = SucuriScanInterface::isPremium() ? '' : 'sucuriscan-hidden';
+    $params['Theme'] = SucuriScanInterface::getPreferredTheme();
 
-	echo SucuriScanTemplate::getTemplate('hardening-and-prevention', $params);
+    echo SucuriScanTemplate::getTemplate('hardening-and-prevention', $params);
 }
 
 function sucuriscan_post_hack_actions_page() {
@@ -173,8 +220,10 @@ function sucuriscan_post_hack_actions_page() {
 	$params['Settings.Posthack.ResetPassword'] = SucuriScanSettingsPosthack::resetPassword();
 	$params['Settings.Posthack.ResetPlugins'] = SucuriScanSettingsPosthack::resetPlugins();
 	$params['Settings.Posthack.AvailableUpdates'] = SucuriScanSettingsPosthack::availableUpdates();
+    $params['PremiumVisibility'] = SucuriScanInterface::isPremium() ? '' : 'sucuriscan-hidden';
+    $params['Theme'] = SucuriScanInterface::getPreferredTheme();
 
-	echo SucuriScanTemplate::getTemplate('post-hack', $params);
+    echo SucuriScanTemplate::getTemplate('post-hack', $params);
 }
 
 /**
@@ -206,6 +255,8 @@ function sucuriscan_lastlogins_page()
         'LastLogins.Admins' => sucuriscan_lastlogins_admins(),
         'LoggedInUsers' => sucuriscan_loggedin_users_panel(),
         'FailedLogins' => sucuriscan_failed_logins_panel(),
+        'PremiumVisibility' => SucuriScanInterface::isPremium() ? '' : 'sucuriscan-hidden',
+        'Theme' => SucuriScanInterface::getPreferredTheme()
     );
 
     echo SucuriScanTemplate::getTemplate('lastlogins', $params);
@@ -259,6 +310,9 @@ function sucuriscan_settings_page()
     $params['Settings.Webinfo.Details'] = sucuriscan_settings_webinfo_details();
     $params['Settings.Webinfo.HTAccess'] = sucuriscan_settings_webinfo_htaccess();
 
+    $params['PremiumVisibility'] = SucuriScanInterface::isPremium() ? '' : 'sucuriscan-hidden';
+    $params['Theme'] = SucuriScanInterface::getPreferredTheme();
+
     echo SucuriScanTemplate::getTemplate('settings', $params);
 }
 
@@ -292,6 +346,7 @@ function sucuriscan_ajax()
 	    SucuriScanVulnerability::renderVulnerabilitiesPanelAjax();
 		SucuriScanVulnerability::vulnerabilitiesPluginAjax();
 		SucuriScanVulnerability::vulnerabilitiesThemeAjax();
+        sucuriscan_theme_toggle();
     }
 
     wp_send_json(array('ok' => false, 'error' => 'invalid ajax action'), 200);

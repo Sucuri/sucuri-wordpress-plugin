@@ -53,6 +53,13 @@
 
     --sucuri-main-button-color: #000000;
     --sucuri-border-radius: 6px;
+
+    --sucuri-surface-panel-bg: #1D2327;
+    --sucuri-surface-panel-border: #373737;
+    --sucuri-surface-list-bg: #0C1A20;
+    --sucuri-surface-card-bg: #1D2327;
+    --sucuri-surface-card-border: #373737;
+    --sucuri-surface-elevation-1: 0 1px 3px rgba(0,0,0,.50);
 }
 
 /* Accounting for dark mode */

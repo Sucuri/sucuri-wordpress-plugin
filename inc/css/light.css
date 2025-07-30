@@ -56,6 +56,13 @@
     --sucuri-main-button-color: #ffffff;
 
     --sucuri-border-radius: 6px;
+
+    --sucuri-surface-panel-bg: var(--sucuri-color-white);
+    --sucuri-surface-panel-border: #D4D4D4;
+    --sucuri-surface-list-bg: #F5F5F5;
+    --sucuri-surface-card-bg: var(--sucuri-color-white);
+    --sucuri-surface-card-border: var(--sucuri-color-border);
+    --sucuri-surface-elevation-1: 0 1px 3px rgba(0,0,0,.06);
 }
 
 .sucuriscan-container .button-primary {
