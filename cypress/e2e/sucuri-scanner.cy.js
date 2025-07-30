@@ -260,7 +260,7 @@ describe("Run e2e tests", () => {
 
         cy.get("#sucuriscan_integrity_files_per_page").select("200");
         cy.get(".sucuriscan-is-loading").contains("Loading...");
-        cy.get(".sucuriscan-integrity-filepath").should("have.length", 104);
+        cy.get(".sucuriscan-integrity-filepath").should("have.length", 105);
     });
 
     it("can use pagination in integrity diff utility", () => {
