@@ -61,6 +61,11 @@ function sucuriscan_theme_toggle() {
     }
 
     $user_id = get_current_user_id();
+
+    if (!$user_id) {
+        wp_send_json(array('ok' => false, 'error' => 'Invalid user'), 200);
+    }
+
     $option_name = 'sucuriscan_preferred_theme';
     $currentTheme = get_user_meta($user_id, 'sucuriscan_preferred_theme', true);
     $newPreferencedTheme = ($currentTheme === 'light') ? 'dark' : 'light';
