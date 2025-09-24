@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Sucuri Security - Auditing, Malware Scanner and Hardening 2.3\n"
+"Project-Id-Version: Sucuri Security - Auditing, Malware Scanner and Hardening 2.4\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/sucuri-scanner\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-07-09T04:28:56+00:00\n"
+"POT-Creation-Date: 2025-09-24T02:24:09+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: sucuri-scanner\n"
@@ -749,51 +749,51 @@ msgstr ""
 msgid "You need to confirm that you understand the risk of this operation."
 msgstr ""
 
-#: src/integrity.lib.php:119
+#: src/integrity.lib.php:121
 msgid "Requested action is not supported."
 msgstr ""
 
-#: src/integrity.lib.php:129
+#: src/integrity.lib.php:131
 msgid "Core file restored"
 msgstr ""
 
-#: src/integrity.lib.php:130
+#: src/integrity.lib.php:132
 msgid "Non-core file deleted"
 msgstr ""
 
-#: src/integrity.lib.php:131
+#: src/integrity.lib.php:133
 msgid "Core file marked as fixed"
 msgstr ""
 
-#: src/integrity.lib.php:136
+#: src/integrity.lib.php:138
 msgid "Nothing was selected from the list."
 msgstr ""
 
-#: src/integrity.lib.php:229
+#: src/integrity.lib.php:231
 msgid "Server is not fast enough to process this action; maximum execution time reached"
 msgstr ""
 
-#: src/integrity.lib.php:236
+#: src/integrity.lib.php:240
 msgid "Only <b>%d</b> out of <b>%d</b> files were processed."
 msgstr ""
 
-#: src/integrity.lib.php:245
+#: src/integrity.lib.php:249
 msgid "<b>%d</b> out of <b>%d</b> files were successfully processed."
 msgstr ""
 
-#: src/integrity.lib.php:390
+#: src/integrity.lib.php:396
 msgid "The plugin has no permission to delete this file because it was created by a different system user who has more privileges than your account. Please use FTP to delete it."
 msgstr ""
 
-#: src/integrity.lib.php:393
+#: src/integrity.lib.php:401
 msgid "The plugin has no permission to restore this file because it was modified by a different system user who has more privileges than your account. Please use FTP to restore it."
 msgstr ""
 
-#: src/integrity.lib.php:396
+#: src/integrity.lib.php:406
 msgid "The plugin has no permission to restore this file because its directory is owned by a different system user who has more privileges than your account. Please use FTP to restore it."
 msgstr ""
 
-#: src/integrity.lib.php:494
+#: src/integrity.lib.php:509
 #: src/strings.php:662
 #: src/strings.php:667
 msgid "WordPress Integrity Diff Utility"
@@ -1259,21 +1259,21 @@ msgstr ""
 msgid "Sucuri Alert, %s, %s, %s"
 msgstr ""
 
-#: src/pagehandler.php:93
+#: src/pagehandler.php:105
 msgid "iFrames"
 msgstr ""
 
-#: src/pagehandler.php:94
+#: src/pagehandler.php:106
 msgid "Links"
 msgstr ""
 
-#: src/pagehandler.php:95
+#: src/pagehandler.php:107
 msgid "Scripts"
 msgstr ""
 
-#: src/pagehandler.php:96
-#: src/pagehandler.php:97
-#: src/pagehandler.php:98
+#: src/pagehandler.php:108
+#: src/pagehandler.php:109
+#: src/pagehandler.php:110
 #: src/strings.php:26
 #: src/strings.php:57
 #: src/strings.php:69
@@ -1287,11 +1287,11 @@ msgstr ""
 msgid "Loading..."
 msgstr ""
 
-#: src/pagehandler.php:234
+#: src/pagehandler.php:246
 msgid "Last-Logins logs were successfully reset."
 msgstr ""
 
-#: src/pagehandler.php:236
+#: src/pagehandler.php:248
 msgid "Could not reset the last-logins data file."
 msgstr ""
 
