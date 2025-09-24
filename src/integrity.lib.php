@@ -110,8 +110,10 @@ class SucuriScanIntegrity
 
         /* skip if the user didn't confirm the operation */
         if (SucuriScanRequest::post(':process_form') != 1) {
-            return SucuriScanInterface::error(__('You need to confirm that you understand the risk of this operation.',
-                'sucuri-scanner'));
+            return SucuriScanInterface::error(__(
+                'You need to confirm that you understand the risk of this operation.',
+                'sucuri-scanner'
+            ));
         }
 
         /* skip if the requested action is not currently supported */
@@ -139,10 +141,10 @@ class SucuriScanIntegrity
         /* process files until the maximum execution time is reached */
         $startTime = microtime(true);
         $displayTimeoutAlert = false;
-        $maxtime = (int)SucuriScan::iniGet('max_execution_time');
+        $maxtime = (int) SucuriScan::iniGet('max_execution_time');
         $timeout = ($maxtime > 1) ? ($maxtime - 6) : 30;
 
-        foreach ((array)$core_files as $file_meta) {
+        foreach ((array) $core_files as $file_meta) {
             if (strpos($file_meta, '@') === false) {
                 continue;
             }
@@ -226,8 +228,10 @@ class SucuriScanIntegrity
         }
 
         if ($displayTimeoutAlert) {
-            SucuriScanInterface::error(__('Server is not fast enough to process this action; maximum execution time reached',
-                'sucuri-scanner'));
+            SucuriScanInterface::error(__(
+                'Server is not fast enough to process this action; maximum execution time reached',
+                'sucuri-scanner'
+            ));
         }
 
         if ($files_processed != $files_selected) {
@@ -262,7 +266,8 @@ class SucuriScanIntegrity
                 foreach ($file_list as $file_info) {
                     $file_path = $file_info['filepath'];
 
-                    if ($ignored_files /* skip files marked as fixed */
+                    if (
+                        $ignored_files /* skip files marked as fixed */
                         && array_key_exists(md5($file_path), $ignored_files)
                     ) {
                         continue;
@@ -358,7 +363,8 @@ class SucuriScanIntegrity
                     $file_path = $file_info['filepath'];
                     $full_filepath = sprintf('%s/%s', rtrim(ABSPATH, '/'), $file_path);
 
-                    if ($ignored_files /* skip files marked as fixed */
+                    if (
+                        $ignored_files /* skip files marked as fixed */
                         && array_key_exists(md5($file_path), $ignored_files)
                     ) {
                         $params['Integrity.FalsePositivesVisibility'] = 'visible';
@@ -387,14 +393,20 @@ class SucuriScanIntegrity
                         $visibility = 'visible';
 
                         if ($list_type === 'added') {
-                            $error = __('The plugin has no permission to delete this file because it was created by a different system user who has more privileges than your account. Please use FTP to delete it.',
-                                'sucuri-scanner');
+                            $error = __(
+                                'The plugin has no permission to delete this file because it was created by a different system user who has more privileges than your account. Please use FTP to delete it.',
+                                'sucuri-scanner'
+                            );
                         } elseif ($list_type === 'modified') {
-                            $error = __('The plugin has no permission to restore this file because it was modified by a different system user who has more privileges than your account. Please use FTP to restore it.',
-                                'sucuri-scanner');
+                            $error = __(
+                                'The plugin has no permission to restore this file because it was modified by a different system user who has more privileges than your account. Please use FTP to restore it.',
+                                'sucuri-scanner'
+                            );
                         } elseif ($list_type === 'removed') {
-                            $error = __('The plugin has no permission to restore this file because its directory is owned by a different system user who has more privileges than your account. Please use FTP to restore it.',
-                                'sucuri-scanner');
+                            $error = __(
+                                'The plugin has no permission to restore this file because its directory is owned by a different system user who has more privileges than your account. Please use FTP to restore it.',
+                                'sucuri-scanner'
+                            );
                         }
                     }
 
@@ -462,8 +474,11 @@ class SucuriScanIntegrity
             }
         }
 
-        $params['Integrity.Items'] = str_replace('option value="' . $maxPerPage . '"',
-            'option value="' . $maxPerPage . '" selected', $params['Integrity.Items']);
+        $params['Integrity.Items'] = str_replace(
+            'option value="' . $maxPerPage . '"',
+            'option value="' . $maxPerPage . '" selected',
+            $params['Integrity.Items']
+        );
 
         $template = ($affected_files === 0) ? 'correct' : 'incorrect';
 
@@ -492,7 +507,7 @@ class SucuriScanIntegrity
             'none',
             array(
                 'Title' => __('WordPress Integrity Diff Utility', 'sucuri-scanner'),
-                'Content' => '' /* empty */,
+                'Content' => '' /* empty */ ,
                 'Identifier' => 'diff-utility',
                 'Visibility' => 'hidden',
             )
@@ -604,7 +619,8 @@ class SucuriScanIntegrity
             $full_filepath = sprintf('%s/%s', ABSPATH, $file_path);
 
             // @codeCoverageIgnoreStart
-            if (!file_exists($full_filepath)
+            if (
+                !file_exists($full_filepath)
                 && defined('WP_CONTENT_DIR')
                 && strpos($file_path, 'wp-content') !== false
             ) {
@@ -637,7 +653,7 @@ class SucuriScanIntegrity
                     );
                 } else {
                     $modified_at = @filemtime($full_filepath);
-                    $is_fixable = (bool)is_writable($full_filepath);
+                    $is_fixable = (bool) is_writable($full_filepath);
                     $output['modified'][] = array(
                         'filepath' => $file_path,
                         'is_fixable' => $is_fixable,
@@ -666,7 +682,7 @@ class SucuriScanIntegrity
             if (!array_key_exists($file_path, $latest_hashes)) {
                 $full_filepath = ABSPATH . '/' . $file_path;
                 $modified_at = @filemtime($full_filepath);
-                $is_fixable = (bool)is_writable($full_filepath);
+                $is_fixable = (bool) is_writable($full_filepath);
                 $output['added'][] = array(
                     'filepath' => $file_path,
                     'is_fixable' => $is_fixable,
@@ -750,6 +766,7 @@ class SucuriScanIntegrity
         $irrelevant = array(
             '^sucuri_[0-9a-z\-]+\.php$',
             '^sucuri-[0-9a-z\-]+\.php$',
+            '^sucuri-sss-(downloader|uploader)_[0-9a-z\-]+\.php$',
             '^\S+-sucuri-db-dump-gzip-[0-9]{10}-[0-9a-z]{32}\.gz$',
             '^\.sucuri-sss-resume-[0-9a-z]{32}\.php$',
             '^([^\/]*)\.(pdf|css|txt|jpg|gif|png|jpeg)$',
