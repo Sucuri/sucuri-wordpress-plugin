@@ -262,6 +262,10 @@ This version adds an option to refresh the malware scan results on demand, as we
 = 2.5 =
 * Add support for two-factor authentication.
 
+This plugin bundles qrcode-generator (MIT) by Kazuhiko Arase.
+Vendored copy due to npm package-injection concerns. We'll switch back to npm when feasible.
+Source: https://github.com/kazuhikoarase/qrcode-generator
+
 = 2.4 =
 * Update list of files to ignore in integrity check.
 
