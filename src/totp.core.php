@@ -57,7 +57,7 @@ class SucuriScanTOTP extends SucuriScan
     const DEFAULT_CRYPTO = 'sha1';
     const DEFAULT_DIGIT_COUNT = 6;
     const DEFAULT_TIME_STEP_SEC = 30;
-    const DEFAULT_TIME_STEP_ALLOWANCE = 0;
+    const DEFAULT_TIME_STEP_ALLOWANCE = 2;
 
     private static $base32_chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
 
