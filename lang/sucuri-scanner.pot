@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Sucuri Security - Auditing, Malware Scanner and Hardening 2.4\n"
+"Project-Id-Version: Sucuri Security - Auditing, Malware Scanner and Hardening 2.5\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/sucuri-scanner\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-09-24T02:24:09+00:00\n"
+"POT-Creation-Date: 2025-10-01T01:05:27+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: sucuri-scanner\n"
@@ -176,10 +176,13 @@ msgid "Installed"
 msgstr ""
 
 #: src/api.lib.php:608
+#: src/topt.lib.php:1363
 msgid "Activated"
 msgstr ""
 
 #: src/api.lib.php:612
+#: src/topt.lib.php:1363
+#: src/topt.lib.php:1395
 msgid "Deactivated"
 msgstr ""
 
@@ -451,34 +454,39 @@ msgid "Firewall Management"
 msgstr ""
 
 #: src/globals.php:92
-msgid "Events Reporting"
+#: src/topt.lib.php:661
+msgid "Two-Factor Authentication"
 msgstr ""
 
 #: src/globals.php:93
-msgid "Headers Management"
+msgid "Events Reporting"
 msgstr ""
 
 #: src/globals.php:94
-msgid "Hardening & Prevention"
+msgid "Headers Management"
 msgstr ""
 
 #: src/globals.php:95
-msgid "Post-Hack Actions"
+msgid "Hardening & Prevention"
 msgstr ""
 
 #: src/globals.php:96
-msgid "Last Logins"
+msgid "Post-Hack Actions"
 msgstr ""
 
 #: src/globals.php:97
+msgid "Last Logins"
+msgstr ""
+
+#: src/globals.php:98
 #: src/strings.php:41
 #: src/strings.php:124
 #: src/strings.php:400
 msgid "Settings"
 msgstr ""
 
-#: src/globals.php:118
 #: src/globals.php:119
+#: src/globals.php:120
 #: src/strings.php:35
 msgid "Sucuri Security"
 msgstr ""
@@ -891,389 +899,389 @@ msgstr ""
 msgid "Sucuri Alert"
 msgstr ""
 
-#: src/option.lib.php:121
+#: src/option.lib.php:123
 msgid "Front Page"
 msgstr ""
 
-#: src/option.lib.php:132
+#: src/option.lib.php:134
 msgid "Posts"
 msgstr ""
 
-#: src/option.lib.php:143
+#: src/option.lib.php:145
 msgid "Pages"
 msgstr ""
 
-#: src/option.lib.php:154
+#: src/option.lib.php:156
 msgid "Main Index"
 msgstr ""
 
-#: src/option.lib.php:165
+#: src/option.lib.php:167
 msgid "Categories"
 msgstr ""
 
-#: src/option.lib.php:176
+#: src/option.lib.php:178
 msgid "Tags"
 msgstr ""
 
-#: src/option.lib.php:187
+#: src/option.lib.php:189
 msgid "Authors"
 msgstr ""
 
-#: src/option.lib.php:198
+#: src/option.lib.php:200
 msgid "Archives"
 msgstr ""
 
-#: src/option.lib.php:209
+#: src/option.lib.php:211
 msgid "Feeds"
 msgstr ""
 
-#: src/option.lib.php:220
+#: src/option.lib.php:222
 msgid "Attachment Pages"
 msgstr ""
 
-#: src/option.lib.php:231
+#: src/option.lib.php:233
 msgid "Search Results"
 msgstr ""
 
-#: src/option.lib.php:242
+#: src/option.lib.php:244
 msgid "404 Not Found"
 msgstr ""
 
-#: src/option.lib.php:253
+#: src/option.lib.php:255
 msgid "Redirects"
 msgstr ""
 
-#: src/option.lib.php:264
+#: src/option.lib.php:266
 msgid "Woocommerce Products"
 msgstr ""
 
-#: src/option.lib.php:275
+#: src/option.lib.php:277
 msgid "Woocommerce Categories"
 msgstr ""
 
-#: src/option.lib.php:288
+#: src/option.lib.php:290
 msgid "Base URI"
 msgstr ""
 
-#: src/option.lib.php:291
+#: src/option.lib.php:293
 msgid "Restricts the URLs that can appear in the document’s <base> element. Commonly 'self'."
 msgstr ""
 
-#: src/option.lib.php:299
+#: src/option.lib.php:301
 msgid "Child Source"
 msgstr ""
 
-#: src/option.lib.php:302
+#: src/option.lib.php:304
 msgid "Allowed sources for frames and nested browsing contexts."
 msgstr ""
 
-#: src/option.lib.php:307
+#: src/option.lib.php:309
 msgid "Connect Source"
 msgstr ""
 
-#: src/option.lib.php:310
+#: src/option.lib.php:312
 msgid "Allowed endpoints for fetch/XHR/WebSocket connections."
 msgstr ""
 
-#: src/option.lib.php:315
+#: src/option.lib.php:317
 msgid "Default Source"
 msgstr ""
 
-#: src/option.lib.php:318
+#: src/option.lib.php:320
 msgid "Fallback policy for resources if no other directive is defined."
 msgstr ""
 
-#: src/option.lib.php:326
+#: src/option.lib.php:328
 msgid "Font Source"
 msgstr ""
 
-#: src/option.lib.php:329
+#: src/option.lib.php:331
 msgid "Allowed font sources (e.g. self or font CDNs)."
 msgstr ""
 
-#: src/option.lib.php:334
+#: src/option.lib.php:336
 msgid "Form Action"
 msgstr ""
 
-#: src/option.lib.php:337
+#: src/option.lib.php:339
 msgid "Restricts the URLs to which forms can be submitted."
 msgstr ""
 
-#: src/option.lib.php:342
+#: src/option.lib.php:344
 msgid "Frame Ancestors"
 msgstr ""
 
-#: src/option.lib.php:345
+#: src/option.lib.php:347
 msgid "Restricts which sites can embed this page in a frame."
 msgstr ""
 
-#: src/option.lib.php:350
+#: src/option.lib.php:352
 msgid "Image Source"
 msgstr ""
 
-#: src/option.lib.php:353
+#: src/option.lib.php:355
 msgid "Allowed image sources. Often includes self and possibly data: URIs."
 msgstr ""
 
-#: src/option.lib.php:361
+#: src/option.lib.php:363
 msgid "Manifest Source"
 msgstr ""
 
-#: src/option.lib.php:364
+#: src/option.lib.php:366
 msgid "Allowed sources for web app manifests."
 msgstr ""
 
-#: src/option.lib.php:369
+#: src/option.lib.php:371
 msgid "Media Source"
 msgstr ""
 
-#: src/option.lib.php:372
+#: src/option.lib.php:374
 msgid "Allowed sources for audio and video content."
 msgstr ""
 
-#: src/option.lib.php:377
+#: src/option.lib.php:379
 msgid "Navigate To"
 msgstr ""
 
-#: src/option.lib.php:380
+#: src/option.lib.php:382
 msgid "Restricts which URLs the document can navigate to (e.g., links)."
 msgstr ""
 
-#: src/option.lib.php:388
+#: src/option.lib.php:390
 msgid "Object Source"
 msgstr ""
 
-#: src/option.lib.php:391
+#: src/option.lib.php:393
 msgid "Allowed sources for <object>, <embed>, or <applet>. Usually 'none'."
 msgstr ""
 
-#: src/option.lib.php:399
+#: src/option.lib.php:401
 msgid "Script Source"
 msgstr ""
 
-#: src/option.lib.php:402
+#: src/option.lib.php:404
 msgid "Allowed script sources. Avoid 'unsafe-inline'; consider nonces."
 msgstr ""
 
-#: src/option.lib.php:410
+#: src/option.lib.php:412
 msgid "Script Source Attribute"
 msgstr ""
 
-#: src/option.lib.php:413
+#: src/option.lib.php:415
 msgid "Allowed sources for inline event handlers."
 msgstr ""
 
-#: src/option.lib.php:421
+#: src/option.lib.php:423
 msgid "Script Source Element"
 msgstr ""
 
-#: src/option.lib.php:424
+#: src/option.lib.php:426
 msgid "Allowed sources for <script> elements. Falls back to script-src if missing."
 msgstr ""
 
-#: src/option.lib.php:432
+#: src/option.lib.php:434
 msgid "Style Source"
 msgstr ""
 
-#: src/option.lib.php:435
+#: src/option.lib.php:437
 msgid "Allowed style sources. Avoid 'unsafe-inline'; consider nonces."
 msgstr ""
 
-#: src/option.lib.php:443
+#: src/option.lib.php:445
 msgid "Style Source Attribute"
 msgstr ""
 
-#: src/option.lib.php:446
+#: src/option.lib.php:448
 msgid "Allowed sources for inline style attributes."
 msgstr ""
 
-#: src/option.lib.php:451
+#: src/option.lib.php:453
 msgid "Style Source Element"
 msgstr ""
 
-#: src/option.lib.php:454
+#: src/option.lib.php:456
 msgid "Allowed sources for <style> and <link> elements."
 msgstr ""
 
-#: src/option.lib.php:459
+#: src/option.lib.php:461
 msgid "Worker Source"
 msgstr ""
 
-#: src/option.lib.php:462
+#: src/option.lib.php:464
 msgid "Allowed sources for web and service workers."
 msgstr ""
 
-#: src/option.lib.php:467
+#: src/option.lib.php:469
 msgid "Sandbox"
 msgstr ""
 
-#: src/option.lib.php:471
+#: src/option.lib.php:473
 msgid "Allow Downloads"
 msgstr ""
 
-#: src/option.lib.php:475
+#: src/option.lib.php:477
 msgid "Allow Forms"
 msgstr ""
 
-#: src/option.lib.php:479
+#: src/option.lib.php:481
 msgid "Allow Modals"
 msgstr ""
 
-#: src/option.lib.php:483
+#: src/option.lib.php:485
 msgid "Allow Orientation Lock"
 msgstr ""
 
-#: src/option.lib.php:487
+#: src/option.lib.php:489
 msgid "Allow Pointer Lock"
 msgstr ""
 
-#: src/option.lib.php:491
+#: src/option.lib.php:493
 msgid "Allow Popups"
 msgstr ""
 
-#: src/option.lib.php:495
+#: src/option.lib.php:497
 msgid "Allow Popups to Escape Sandbox"
 msgstr ""
 
-#: src/option.lib.php:499
+#: src/option.lib.php:501
 msgid "Allow Presentation"
 msgstr ""
 
-#: src/option.lib.php:503
+#: src/option.lib.php:505
 msgid "Allow Same Origin"
 msgstr ""
 
-#: src/option.lib.php:507
+#: src/option.lib.php:509
 msgid "Allow Scripts"
 msgstr ""
 
-#: src/option.lib.php:511
+#: src/option.lib.php:513
 msgid "Allow Top Navigation"
 msgstr ""
 
-#: src/option.lib.php:515
+#: src/option.lib.php:517
 msgid "Applies a sandbox to the page. Select tokens to allow exceptions."
 msgstr ""
 
-#: src/option.lib.php:523
-#: src/option.lib.php:527
+#: src/option.lib.php:525
+#: src/option.lib.php:529
 msgid "Upgrade Insecure Requests"
 msgstr ""
 
-#: src/option.lib.php:531
+#: src/option.lib.php:533
 msgid "Upgrade insecure requests to HTTPS. This is a security feature that prevents mixed content."
 msgstr ""
 
-#: src/option.lib.php:542
+#: src/option.lib.php:544
 msgid "Access-Control-Allow-Origin"
 msgstr ""
 
-#: src/option.lib.php:545
+#: src/option.lib.php:547
 msgid "Specifies the origin that is allowed to access the resource."
 msgstr ""
 
-#: src/option.lib.php:553
+#: src/option.lib.php:555
 msgid "Access-Control-Expose-Headers"
 msgstr ""
 
-#: src/option.lib.php:556
+#: src/option.lib.php:558
 msgid "Specifies the headers that can be exposed when accessing the resource."
 msgstr ""
 
-#: src/option.lib.php:564
+#: src/option.lib.php:566
 msgid "Access-Control-Allow-Methods"
 msgstr ""
 
-#: src/option.lib.php:567
+#: src/option.lib.php:569
 msgid "Allow GET method"
 msgstr ""
 
-#: src/option.lib.php:571
+#: src/option.lib.php:573
 msgid "Allow POST method"
 msgstr ""
 
-#: src/option.lib.php:575
+#: src/option.lib.php:577
 msgid "Allow PUT method"
 msgstr ""
 
-#: src/option.lib.php:579
+#: src/option.lib.php:581
 msgid "Allow DELETE method"
 msgstr ""
 
-#: src/option.lib.php:583
+#: src/option.lib.php:585
 msgid "Allow OPTIONS method"
 msgstr ""
 
-#: src/option.lib.php:587
+#: src/option.lib.php:589
 msgid "Allow PATCH method"
 msgstr ""
 
-#: src/option.lib.php:591
+#: src/option.lib.php:593
 msgid "Allow HEAD method"
 msgstr ""
 
-#: src/option.lib.php:595
+#: src/option.lib.php:597
 msgid "Allow TRACE method"
 msgstr ""
 
-#: src/option.lib.php:599
+#: src/option.lib.php:601
 msgid "Allow CONNECT method"
 msgstr ""
 
-#: src/option.lib.php:604
+#: src/option.lib.php:606
 msgid "Specifies the methods allowed when accessing the resource."
 msgstr ""
 
-#: src/option.lib.php:612
+#: src/option.lib.php:614
 msgid "Access-Control-Allow-Headers"
 msgstr ""
 
-#: src/option.lib.php:615
+#: src/option.lib.php:617
 msgid "Specifies the headers allowed when accessing the resource."
 msgstr ""
 
-#: src/option.lib.php:623
+#: src/option.lib.php:625
 msgid "Access-Control-Allow-Credentials"
 msgstr ""
 
-#: src/option.lib.php:627
+#: src/option.lib.php:629
 msgid "Allow Credentials"
 msgstr ""
 
-#: src/option.lib.php:631
+#: src/option.lib.php:633
 msgid "Specifies whether credentials are allowed when accessing the resource."
 msgstr ""
 
-#: src/option.lib.php:639
+#: src/option.lib.php:641
 msgid "Access-Control-Max-Age"
 msgstr ""
 
-#: src/option.lib.php:642
+#: src/option.lib.php:644
 msgid "Specifies how long the results of a preflight request can be cached."
 msgstr ""
 
-#: src/option.lib.php:683
+#: src/option.lib.php:685
 #: src/settings-alerts.php:214
 #: src/settings-alerts.php:215
 #: src/settings-alerts.php:216
 msgid "Sucuri Alert, %s, %s, %s"
 msgstr ""
 
-#: src/pagehandler.php:105
+#: src/pagehandler.php:159
 msgid "iFrames"
 msgstr ""
 
-#: src/pagehandler.php:106
+#: src/pagehandler.php:160
 msgid "Links"
 msgstr ""
 
-#: src/pagehandler.php:107
+#: src/pagehandler.php:161
 msgid "Scripts"
 msgstr ""
 
-#: src/pagehandler.php:108
-#: src/pagehandler.php:109
-#: src/pagehandler.php:110
+#: src/pagehandler.php:162
+#: src/pagehandler.php:163
+#: src/pagehandler.php:164
 #: src/strings.php:26
 #: src/strings.php:57
 #: src/strings.php:69
@@ -1287,11 +1295,11 @@ msgstr ""
 msgid "Loading..."
 msgstr ""
 
-#: src/pagehandler.php:246
+#: src/pagehandler.php:340
 msgid "Last-Logins logs were successfully reset."
 msgstr ""
 
-#: src/pagehandler.php:248
+#: src/pagehandler.php:342
 msgid "Could not reset the last-logins data file."
 msgstr ""
 
@@ -1615,6 +1623,7 @@ msgstr ""
 #: src/settings-headers.php:436
 #: src/settings-integrity.php:80
 #: src/strings.php:772
+#: src/topt.lib.php:1063
 msgid "Enabled"
 msgstr ""
 
@@ -1636,6 +1645,7 @@ msgstr ""
 #: src/settings-headers.php:392
 #: src/settings-headers.php:436
 #: src/strings.php:773
+#: src/topt.lib.php:1064
 msgid "Disabled"
 msgstr ""
 
@@ -2325,7 +2335,6 @@ msgid "Review"
 msgstr ""
 
 #: src/strings.php:38
-#: src/template.lib.php:137
 msgid "Generate API Key"
 msgstr ""
 
@@ -3496,8 +3505,176 @@ msgstr ""
 msgid "Content Security Policy"
 msgstr ""
 
-#: src/template.lib.php:281
+#: src/template.lib.php:140
+msgid "Activate Your Firewall API Key"
+msgstr ""
+
+#: src/template.lib.php:280
 msgid "Invalid template type"
+msgstr ""
+
+#: src/topt.lib.php:565
+msgid "Unable to initialize two-factor setup."
+msgstr ""
+
+#: src/topt.lib.php:613
+msgid "Invalid two-factor authentication code."
+msgstr ""
+
+#: src/topt.lib.php:652
+msgid "Enter the 6-digit code from your authenticator app to continue."
+msgstr ""
+
+#: src/topt.lib.php:700
+msgid "Invalid code. Make sure you scanned the QR and your device time is correct."
+msgstr ""
+
+#: src/topt.lib.php:724
+msgid "Set up two-factor authentication. Scan the QR code with your authenticator app, then enter the 6-digit code to continue."
+msgstr ""
+
+#: src/topt.lib.php:733
+msgid "Set up Two-Factor Authentication"
+msgstr ""
+
+#: src/topt.lib.php:964
+#: src/topt.lib.php:1010
+msgid "Please enter the 6-digit verification code."
+msgstr ""
+
+#: src/topt.lib.php:969
+msgid "Invalid secret. Reload the page and try again."
+msgstr ""
+
+#: src/topt.lib.php:989
+#: src/topt.lib.php:1032
+msgid "Incorrect code. Check your authenticator app and device time."
+msgstr ""
+
+#: src/topt.lib.php:1014
+msgid "Invalid secret."
+msgstr ""
+
+#: src/topt.lib.php:1021
+msgid "Verification failed."
+msgstr ""
+
+#: src/topt.lib.php:1085
+msgid "Two-Factor is not enabled for this user. Ask the user to enable it from their own Profile page."
+msgstr ""
+
+#: src/topt.lib.php:1112
+msgid "You can only enable two-factor for your own account."
+msgstr ""
+
+#: src/topt.lib.php:1213
+msgid "Two-Factor is not enforced for your account."
+msgstr ""
+
+#: src/topt.lib.php:1220
+msgid "Two-Factor is already enabled."
+msgstr ""
+
+#: src/topt.lib.php:1270
+#: src/topt.lib.php:1688
+msgid "Incorrect nonce."
+msgstr ""
+
+#: src/topt.lib.php:1276
+#: src/topt.lib.php:1316
+#: src/topt.lib.php:1694
+msgid "Incorrect user."
+msgstr ""
+
+#: src/topt.lib.php:1283
+msgid "Two-Factor Authentication is already enabled for your account."
+msgstr ""
+
+#: src/topt.lib.php:1290
+#: src/topt.lib.php:1330
+msgid "Unable to generate secret."
+msgstr ""
+
+#: src/topt.lib.php:1323
+msgid "Two-Factor Authentication is enabled for your account."
+msgstr ""
+
+#: src/topt.lib.php:1381
+msgid "Activate two factor for all users"
+msgstr ""
+
+#: src/topt.lib.php:1382
+msgid "Activate two factor for selected users"
+msgstr ""
+
+#: src/topt.lib.php:1383
+msgid "Deactivate two factor for all users"
+msgstr ""
+
+#: src/topt.lib.php:1384
+msgid "Deactivate two factor for selected users"
+msgstr ""
+
+#: src/topt.lib.php:1385
+msgid "Reset two factor for selected users (keep enforcement)"
+msgstr ""
+
+#: src/topt.lib.php:1386
+msgid "Reset two factor for all users (keep enforcement)"
+msgstr ""
+
+#: src/topt.lib.php:1387
+msgid "Delete all two-factor data and disable enforcement"
+msgstr ""
+
+#: src/topt.lib.php:1400
+msgid "Activated for all users"
+msgstr ""
+
+#: src/topt.lib.php:1403
+msgid "Activated for some users"
+msgstr ""
+
+#: src/topt.lib.php:1530
+msgid "You are not allowed to modify Two-Factor settings."
+msgstr ""
+
+#: src/topt.lib.php:1546
+msgid "Two-Factor enforced for all users."
+msgstr ""
+
+#: src/topt.lib.php:1556
+msgid "Two-Factor deactivated for all users."
+msgstr ""
+
+#: src/topt.lib.php:1563
+#: src/topt.lib.php:1581
+#: src/topt.lib.php:1622
+msgid "No users selected."
+msgstr ""
+
+#: src/topt.lib.php:1574
+msgid "Two-Factor enforced for selected users."
+msgstr ""
+
+#: src/topt.lib.php:1616
+msgid "Two-Factor deactivated for selected users."
+msgstr ""
+
+#: src/topt.lib.php:1633
+msgid "Two-Factor settings reset for selected users."
+msgstr ""
+
+#: src/topt.lib.php:1646
+msgid "Two-Factor settings reset for all users."
+msgstr ""
+
+#: src/topt.lib.php:1660
+msgid "All Two-Factor data deleted and enforcement disabled."
+msgstr ""
+
+#: src/topt.lib.php:1666
+msgid "Invalid two-factor action selected."
 msgstr ""
 
 #: src/wordpress-recommendations.lib.php:54
@@ -3592,6 +3769,6 @@ msgstr ""
 msgid "Your WordPress install is following <a href=\"https://sucuri.net/guides/wordpress-security\" target=\"_blank\" rel=\"noopener\">the security best practices</a>."
 msgstr ""
 
-#: sucuri.php:345
+#: sucuri.php:350
 msgid "Sucuri plugin has been uninstalled"
 msgstr ""

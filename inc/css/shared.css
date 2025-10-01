@@ -3,8 +3,8 @@
     font-weight: 600;
     font-display: swap;
     src: url('../fonts/TitilliumWeb-SemiBold.woff2') format('woff2'),
-    url('../fonts/TitilliumWeb-SemiBold.woff') format('woff'),
-    url('../fonts/TitilliumWeb-SemiBold.ttf') format('truetype');
+        url('../fonts/TitilliumWeb-SemiBold.woff') format('woff'),
+        url('../fonts/TitilliumWeb-SemiBold.ttf') format('truetype');
 }
 
 @font-face {
@@ -13,8 +13,8 @@
     font-style: normal;
     font-display: swap;
     src: url('../fonts/TitilliumWeb-Bold.woff2') format('woff2'),
-    url('../fonts/TitilliumWeb-Bold.woff') format('woff'),
-    url('../fonts/TitilliumWeb-Bold.ttf') format('truetype');
+        url('../fonts/TitilliumWeb-Bold.woff') format('woff'),
+        url('../fonts/TitilliumWeb-Bold.ttf') format('truetype');
 }
 
 @font-face {
@@ -23,8 +23,8 @@
     font-style: normal;
     font-display: swap;
     src: url('../fonts/TitilliumWeb-Black.woff2') format('woff2'),
-    url('../fonts/TitilliumWeb-Black.woff') format('woff'),
-    url('../fonts/TitilliumWeb-Black.ttf') format('truetype');
+        url('../fonts/TitilliumWeb-Black.woff') format('woff'),
+        url('../fonts/TitilliumWeb-Black.ttf') format('truetype');
 }
 
 @font-face {
@@ -32,8 +32,8 @@
     font-weight: normal;
     font-display: swap;
     src: url('../fonts/OpenSans-Regular.woff2') format('woff2'),
-    url('../fonts/OpenSans-Regular.woff') format('woff'),
-    url('../fonts/OpenSans-Regular.ttf') format('truetype');
+        url('../fonts/OpenSans-Regular.woff') format('woff'),
+        url('../fonts/OpenSans-Regular.ttf') format('truetype');
 }
 
 @font-face {
@@ -42,8 +42,8 @@
     font-style: normal;
     font-display: swap;
     src: url('../fonts/OpenSans-Medium.woff2') format('woff2'),
-    url('../fonts/OpenSans-Medium.woff') format('woff'),
-    url('../fonts/OpenSans-Medium.ttf') format('truetype');
+        url('../fonts/OpenSans-Medium.woff') format('woff'),
+        url('../fonts/OpenSans-Medium.ttf') format('truetype');
 }
 
 @font-face {
@@ -52,8 +52,8 @@
     font-style: normal;
     font-display: swap;
     src: url('../fonts/OpenSans-SemiBold.woff2') format('woff2'),
-    url('../fonts/OpenSans-SemiBold.woff') format('woff'),
-    url('../fonts/OpenSans-SemiBold.ttf') format('truetype');
+        url('../fonts/OpenSans-SemiBold.woff') format('woff'),
+        url('../fonts/OpenSans-SemiBold.ttf') format('truetype');
 }
 
 @font-face {
@@ -62,18 +62,24 @@
     font-style: normal;
     font-display: swap;
     src: url('../fonts/OpenSans-Bold.woff2') format('woff2'),
-    url('../fonts/OpenSans-Bold.woff') format('woff'),
-    url('../fonts/OpenSans-Bold.ttf') format('truetype');
+        url('../fonts/OpenSans-Bold.woff') format('woff'),
+        url('../fonts/OpenSans-Bold.ttf') format('truetype');
 }
 
 @keyframes sucuriscan-spin {
-    0%   { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 body.toplevel_page_sucuriscan,
 body.sucuri-security_page_sucuriscan_settings,
 body.sucuri-security_page_sucuriscan_firewall,
+body.sucuri-security_page_sucuriscan_2fa,
 body.sucuri-security_page_sucuriscan_events_reporting,
 body.sucuri-security_page_sucuriscan_headers_management,
 body.sucuri-security_page_sucuriscan_hardening_prevention,
@@ -121,6 +127,7 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
 .sucuriscan-pull-left {
     float: left;
 }
+
 .sucuriscan-pull-right {
     float: right;
 }
@@ -168,7 +175,7 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
 
 .sucuriscan-container a:focus {
     box-shadow: 0 0 0 1px rgba(3, 134, 115, .32),
-    0 0 2px 1px rgba(3, 134, 115, .38) !important;
+        0 0 2px 1px rgba(3, 134, 115, .38) !important;
     border-color: var(--sucuri-color-link) !important;
 }
 
@@ -423,20 +430,20 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
     cursor: not-allowed;
 }
 
-.sucuriscan-container .sucuriscan-register-site-button {
+.sucuriscan-container .sucuriscan-activate-your-waf-key-modal-button {
     background: var(--sucuri-color-gray-6767);
     border-color: var(--sucuri-color-gray-6767);
     color: var(--sucuri-color-white);
 }
 
-.wp-core-ui .sucuriscan-container .sucuriscan-register-site-button:focus,
-.wp-core-ui .sucuriscan-container .sucuriscan-register-site-button:hover,
-.wp-core-ui .sucuriscan-container .sucuriscan-register-site-button:active {
+.wp-core-ui .sucuriscan-container .sucuriscan-activate-your-waf-key-modal-button:focus,
+.wp-core-ui .sucuriscan-container .sucuriscan-activate-your-waf-key-modal-button:hover,
+.wp-core-ui .sucuriscan-container .sucuriscan-activate-your-waf-key-modal-button:active {
     background: #5e5f62;
     border-color: #5e5f62;
 }
 
-.sucuriscan-container .sucuriscan-register-site-modal fieldset label {
+.sucuriscan-container .sucuriscan-activate-your-waf-key-modal fieldset label {
     min-width: 160px;
 }
 
@@ -647,12 +654,12 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
     padding: 0;
 }
 
-.sucuriscan-pagination > li {
+.sucuriscan-pagination>li {
     display: inline;
 }
 
-.sucuriscan-pagination > li > a,
-.sucuriscan-pagination > li > span {
+.sucuriscan-pagination>li>a,
+.sucuriscan-pagination>li>span {
     background: var(--sucuri-color-gray-f1f1f1);
     border: 1px solid var(--sucuri-color-ddd);
     color: var(--sucuri-color-link);
@@ -664,19 +671,19 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
     text-decoration: none;
 }
 
-.sucuriscan-pagination > li:first-child > a,
-.sucuriscan-pagination > li:first-child > span {
+.sucuriscan-pagination>li:first-child>a,
+.sucuriscan-pagination>li:first-child>span {
     border-radius: 4px 0 0 4px;
     margin-left: 0;
 }
 
-.sucuriscan-pagination > li:last-child > a,
-.sucuriscan-pagination > li:last-child > span {
+.sucuriscan-pagination>li:last-child>a,
+.sucuriscan-pagination>li:last-child>span {
     border-radius: 0 4px 4px 0;
 }
 
-.sucuriscan-pagination > li > a.sucuriscan-pagination-active,
-.sucuriscan-pagination > li > a:hover {
+.sucuriscan-pagination>li>a.sucuriscan-pagination-active,
+.sucuriscan-pagination>li>a:hover {
     background: var(--sucuri-color-blue);
     color: var(--sucuri-color-white);
 }
@@ -686,7 +693,7 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
     position: relative;
 }
 
-.wrap .sucuriscan-alert > .close {
+.wrap .sucuriscan-alert>.close {
     color: var(--sucuri-color-white);
     font-size: 18px;
     font-weight: 700;
@@ -950,6 +957,7 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
 .sucuriscan-container .sucuriscan-table tbody tr:nth-child(even) {
     background: var(--sucuri-color-background-secondary);
 }
+
 .sucuriscan-container .sucuriscan-table tbody tr:nth-child(odd) {
     background: var(--sucuri-color-background-main);
 }
@@ -1100,9 +1108,11 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
     border-top: 1px solid var(--sucuri-color-ddd);
     border-bottom: 1px solid var(--sucuri-color-ddd);
 }
+
 .sucuriscan-sitecheck-details ul {
     margin: 0;
 }
+
 .sucuriscan-sitecheck-details li {
     display: inline-block;
     margin-bottom: 20px;
@@ -1354,7 +1364,7 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
     border-color: var(--sucuri-color-dbdbdb) !important;
 }
 
-.sucuriscan-hardening-option > span {
+.sucuriscan-hardening-option>span {
     font-size: 14px;
     color: var(--sucuri-color-text-main);
 }
@@ -1369,6 +1379,7 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
     padding: 8px 0;
     width: 14px;
 }
+
 .sucuriscan-hardening-option .sucuriscan-hardening-help svg {
     float: left;
 }
@@ -1392,7 +1403,7 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
     margin-top: 20px;
 }
 
-.sucuriscan-ipaccess-table tbody td + td {
+.sucuriscan-ipaccess-table tbody td+td {
     text-align: right;
 }
 
@@ -1606,7 +1617,7 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
     table-layout: fixed;
 }
 
-.sucuriscan-table-fixed-layout tbody .sucuriscan-tooltip > svg {
+.sucuriscan-table-fixed-layout tbody .sucuriscan-tooltip>svg {
     vertical-align: middle;
 }
 
@@ -1623,7 +1634,7 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
     margin-top: 0;
 }
 
-.sucuriscan-pagination-integrity > ul {
+.sucuriscan-pagination-integrity>ul {
     margin-bottom: 15px;
 }
 
@@ -1713,6 +1724,7 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
     left: 20px;
     right: initial;
 }
+
 .rtl .sucuriscan-container fieldset span,
 .rtl .sucuriscan-container fieldset label,
 .rtl .sucuriscan-container fieldset select,
@@ -1727,7 +1739,7 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
     margin-right: 5px;
 }
 
-.rtl .wrap .sucuriscan-alert > .close {
+.rtl .wrap .sucuriscan-alert>.close {
     right: initial;
     left: 20px;
 }
@@ -1963,7 +1975,7 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
     }
 }
 
-@media (min-width: 1024px ) {
+@media (min-width: 1024px) {
     .sucuriscan-upgrade-text:nth-child(odd) {
         padding-left: 40px;
         border-left: 1px solid #5C5C5C;
@@ -2015,6 +2027,7 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
 }
 
 @media (min-width: 1712px) {
+
     .sucuriscan-plugins-list-wrapper,
     .sucuriscan-themes-list-wrapper {
         width: calc(50% - 15px);
@@ -2229,7 +2242,8 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
     flex: 1;
 }
 
-.sucuriscan-collapsible-table-field p, .sucuriscan-collapsible-table-field a {
+.sucuriscan-collapsible-table-field p,
+.sucuriscan-collapsible-table-field a {
     flex: 5;
 }
 
@@ -2258,9 +2272,10 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
     max-height: 70%;
     overflow: auto;
     position: absolute;
-    top: 50%; left: 50%;
+    top: 50%;
+    left: 50%;
     transform: translate(-50%, -50%);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .sucuriscan-vulnerability-close {
@@ -2498,7 +2513,7 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
     margin-left: auto;
 }
 
-.sucuriscan-header > div:has(.sucuriscan-theme-toggle-container) {
+.sucuriscan-header>div:has(.sucuriscan-theme-toggle-container) {
     display: flex;
     align-items: center;
 }
@@ -2507,3 +2522,160 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
     color: var(--sucuri-color-text-main);
 }
 
+.sucuriscan-topt-qr img {
+    width: 240px;
+    height: 240px;
+}
+
+
+.sucuriscan-2fa-setup-row {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 10px;
+}
+
+.sucuriscan-topt-qr {
+    width: 240px;
+    height: 240px;
+    flex: 0 0 auto;
+}
+
+.sucuriscan-topt-qr img {
+    width: 240px;
+    height: 240px;
+    display: block;
+}
+
+.sucuriscan-2fa-setup-form {
+    flex: 1 1 260px;
+    min-width: 260px;
+}
+
+.sucuriscan-2fa-secret {
+    margin: 10px 0;
+}
+
+.sucuriscan-2fa-secret-code {
+    font-size: 12px !important;
+}
+
+.sucuriscan-2fa-form {
+    margin-top: 8px;
+}
+
+.sucuriscan-2fa-code-input {
+    width: 240px;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.sucuriscan-2fa-enforce {
+    display: block;
+    margin-top: 6px !important;
+    margin-bottom: 8px !important;
+}
+
+.sucuriscan-2fa-msg {
+    margin-left: 8px;
+}
+
+.sucuriscan-text-success {
+    color: green;
+}
+
+.sucuriscan-text-error {
+    color: red;
+}
+
+.sucuriscan-login-2fa-header {
+    text-align: center;
+    margin: 12px 0;
+}
+
+.sucuriscan-login-2fa-qr-section {
+    text-align: center;
+}
+
+.sucuriscan-login-2fa-qr-box {
+    display: inline-block;
+    background: #fff;
+    padding: 8px;
+    border: 1px solid #ddd;
+    min-width: 240px;
+    min-height: 240px;
+}
+
+.sucuriscan-login-2fa-form {
+    margin-top: 14px;
+}
+
+.sucuriscan-login-2fa-code {
+    display: block;
+    margin-top: 4px;
+}
+
+.sucuriscan-login-2fa-submit {
+    display: block;
+}
+
+.sucuriscan-2fa-action-row {
+    margin-top: 8px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.sucuriscan-2fa-enable-msg {
+    margin-left: 8px;
+}
+
+
+.sucuriscan-2fa-status-icon {
+    color: var(--sucuri-color-primary);
+    vertical-align: text-bottom;
+    margin-right: 4px;
+}
+
+.sucuriscan-2fa-reset-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sucuriscan-2fa-reset-msg {
+    margin-left: 8px;
+}
+
+.sucuriscan-text-error {
+    color: var(--sucuri-color-red);
+}
+
+.sucuriscan-text-success {
+    color: var(--sucuri-color-primary);
+}
+
+.sucuriscan-styles-list {
+    padding-left: 20px;
+    list-style-type: disc;
+}
+
+#sucuriscan-totp-qr {
+    text-align: center;
+}
+
+.sucuriscan-twofactor-bulk-select {
+    max-width: 250px !important;
+}
+
+#sucuriscan-totp-code,
+#sucuriscan-totp-submit {
+    display: block !important;
+}
+
+#loginform>.wpaas-sso-login-wrapper,
+.wpaas-show-sso-login #loginform>div,
+.wpaas-show-sso-login #loginform>p,
+.wpaas-show-sso-login #nav {
+    display: block !important;
+}

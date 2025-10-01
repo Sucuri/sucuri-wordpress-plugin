@@ -118,33 +118,32 @@ class SucuriScanTemplate extends SucuriScanRequest
         $params['PluginVersion'] = SUCURISCAN_VERSION;
         $params['CleanDomain'] = self::getDomain();
         $params['Year'] = date('Y');
-		$params['FreemiumVisibility'] = SucuriScanInterface::isPremium() ? 'sucuriscan-hidden' : '';
+        $params['FreemiumVisibility'] = SucuriScanInterface::isPremium() ? 'sucuriscan-hidden' : '';
 
         if (!array_key_exists('PageStyleClass', $params)) {
             $params['PageStyleClass'] = 'base';
         }
 
-        if ($target === 'base'
-            && current_user_can('manage_options')
-            && !SucuriScanAPI::getPluginKey()
-        ) {
-            $params['GenerateAPIKey.Visibility'] = 'visible';
-            $params['GenerateAPIKey.Modal'] = /* register-site */
+        if ($target === 'base' && current_user_can('manage_options')) {
+            $_page = self::get('page', '_page');
+            $isDashboard = ($_page == 'sucuriscan' || empty($_page));
+            $hasWafKey = (bool) SucuriScanFirewall::getKey();
 
-                SucuriScanTemplate::getModal(
-                    'register-site',
-                    array(
-                        'Title' => __('Generate API Key', 'sucuri-scanner'),
-                        'Identifier' => 'register-site',
-                        'Visibility' => 'hidden',
-                    )
-                );
-        }
+            $cookieDismissed = (SucuriScanCookie::get('sucuriscan_waf_dismissed') === '1');
 
-        // Get a list of admin users for the API key generation.
-        if ($target === 'modal' && !SucuriScanAPI::getPluginKey()) {
-            $admin_users = SucuriScan::getUsersForAPIKey();
-            $params['AdminEmails'] = self::selectOptions($admin_users);
+            if ($isDashboard && !$hasWafKey && !$cookieDismissed) {
+                $params['GenerateAPIKey.Visibility'] = 'visible';
+                $params['GenerateAPIKey.Modal'] =
+                    SucuriScanTemplate::getModal(
+                        'activate-your-waf-key-modal',
+                        array(
+                            'Title' => __('Activate Your Firewall API Key', 'sucuri-scanner'),
+                            'Identifier' => 'activate-your-waf-key-modal',
+                            'Visibility' => 'visible',
+                            'FirewallManagementLink' => '',
+                        )
+                    );
+            }
         }
 
         return $params;
@@ -266,8 +265,8 @@ class SucuriScanTemplate extends SucuriScanRequest
      */
     public static function getTemplate($template = '', $params = array(), $type = 'page')
     {
-	    $api_key = SucuriScanFirewall::getOption(':cloudproxy_apikey');
-	    $dark_theme = SucuriScanInterface::getPreferredTheme() === 'dark';
+        $api_key = SucuriScanFirewall::getOption(':cloudproxy_apikey');
+        $dark_theme = SucuriScanInterface::getPreferredTheme() === 'dark';
 
         $params = is_array($params) ? $params : array();
 
@@ -278,7 +277,7 @@ class SucuriScanTemplate extends SucuriScanRequest
         );
 
         if (!array_key_exists($type, $filenames)) {
-            return (string)SucuriScan::throwException(__('Invalid template type', 'sucuri-scanner'));
+            return (string) SucuriScan::throwException(__('Invalid template type', 'sucuri-scanner'));
         }
 
         $output = ''; /* initialize response */
@@ -289,14 +288,15 @@ class SucuriScanTemplate extends SucuriScanRequest
         $params['DashboardButtonVisibility'] = $_page == 'sucuriscan' ? 'hidden' : 'visible';
         $params['SettingsButtonVisibility'] = $_page == 'sucuriscan_settings' ? 'hidden' : 'visible';
         $params['FirewallButtonVisibility'] = $_page == 'sucuriscan_firewall' ? 'hidden' : 'visible';
-		$params['SucuriLogo'] = $dark_theme ? 'pluginlogo-darktheme.png' : 'pluginlogo.png';
+        $params['SucuriLogo'] = $dark_theme ? 'pluginlogo-darktheme.png' : 'pluginlogo.png';
 
         /* load raw content from the specified template file */
         $fpath = sprintf($filenames[$type], SUCURISCAN_PLUGIN_PATH, $template);
         $output = SucuriScanFileInfo::fileContent($fpath);
 
         /* replace the global pseudo-variables in the section/snippets templates. */
-        if ($template == 'base'
+        if (
+            $template == 'base'
             && array_key_exists('PageContent', $params)
             && strpos($params['PageContent'], '%%SUCURI.') !== false
         ) {
@@ -398,7 +398,7 @@ class SucuriScanTemplate extends SucuriScanRequest
     {
         $options = '';
 
-        foreach ((array)$allowed as $option_name => $option_label) {
+        foreach ((array) $allowed as $option_name => $option_label) {
             $selectedAttr = '';
 
             if ($option_name === $selected) {

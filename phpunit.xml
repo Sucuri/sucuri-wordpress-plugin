@@ -21,8 +21,8 @@
     xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
   <coverage/>
   <testsuites>
-    <testsuite name="Cache">
-      <file>tests/CacheTest.php</file>
+    <testsuite name="default">
+      <directory suffix="Test.php">tests</directory>
     </testsuite>
   </testsuites>
 </phpunit>

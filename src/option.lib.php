@@ -70,6 +70,7 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_auto_clear_cache' => 'disabled',
             'sucuriscan_checksum_api' => '',
             'sucuriscan_cloudproxy_apikey' => '',
+            'sucuriscan_waf_prompt_dismissed_users' => array(),
             'sucuriscan_diff_utility' => 'disabled',
             'sucuriscan_dns_lookups' => 'enabled',
             'sucuriscan_email_subject' => '',
@@ -112,7 +113,8 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_sitecheck_target' => '',
             'sucuriscan_timezone' => 'UTC+00.00',
             'sucuriscan_use_wpmail' => 'enabled',
-
+            'sucuriscan_twofactor_mode' => 'disabled',
+            'sucuriscan_twofactor_users' => array(),
             'sucuriscan_preferred_theme' => 'dark',
             'sucuriscan_headers_cache_control' => 'disabled',
             'sucuriscan_headers_cache_control_options' => array(
@@ -648,7 +650,7 @@ class SucuriScanOption extends SucuriScanRequest
             ),
         );
 
-        return (array)apply_filters('sucuriscan_option_defaults', $defaults);
+        return (array) apply_filters('sucuriscan_option_defaults', $defaults);
     }
 
     /**
@@ -761,7 +763,7 @@ class SucuriScanOption extends SucuriScanRequest
         $content = "<?php exit(0); ?>\n";
         $content .= @json_encode($options) . "\n";
 
-        return (bool)@file_put_contents($fpath, $content);
+        return (bool) @file_put_contents($fpath, $content);
     }
 
     /**
@@ -904,7 +906,7 @@ class SucuriScanOption extends SucuriScanRequest
      */
     public static function isEnabled($option = '')
     {
-        return (bool)(self::getOption($option) === 'enabled');
+        return (bool) (self::getOption($option) === 'enabled');
     }
 
     /**
@@ -915,7 +917,7 @@ class SucuriScanOption extends SucuriScanRequest
      */
     public static function isDisabled($option = '')
     {
-        return (bool)(self::getOption($option) === 'disabled');
+        return (bool) (self::getOption($option) === 'disabled');
     }
 
     /**
@@ -966,7 +968,8 @@ class SucuriScanOption extends SucuriScanRequest
         $site_options = self::getSiteOptions();
 
         foreach ($request as $req_name => $req_value) {
-            if (array_key_exists($req_name, $site_options)
+            if (
+                array_key_exists($req_name, $site_options)
                 && $site_options[$req_name] != $req_value
             ) {
                 $options_changed['original'][$req_name] = $site_options[$req_name];
@@ -1014,7 +1017,7 @@ class SucuriScanOption extends SucuriScanRequest
         }
 
         /* check the nonce validity */
-        return (bool)(
+        return (bool) (
             !empty($action)
             && isset($_REQUEST[$nonce])
             && wp_verify_nonce($_REQUEST[$nonce], $action)
@@ -1100,7 +1103,7 @@ class SucuriScanOption extends SucuriScanRequest
             $post_types = @json_decode($post_types, true);
         }
 
-        return (array)$post_types;
+        return (array) $post_types;
     }
 
     /**

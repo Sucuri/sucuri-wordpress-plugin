@@ -29,6 +29,8 @@ Cypress.Commands.add('login', (username, password) => {
   const loginPassword = password || Cypress.env('wp_pass');
 
   cy.session([username, password], () => {
+    cy.setCookie('sucuriscan_waf_dismissed', '1');
+
     cy.visit('/wp-login.php');
 
     cy.get('#user_login').clear().wait(200).type(loginUsername);

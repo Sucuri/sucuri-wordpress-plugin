@@ -2,11 +2,20 @@ const { defineConfig } = require("cypress");
 
 module.exports = defineConfig({
   e2e: {
+    setupNodeEvents(on, config) {
+      // Load tasks (e.g., TOTP generator) from plugins file
+      require('./cypress/plugins/index.js')(on, config);
+      return config;
+    },
     supportFile: 'cypress/support/index.js',
     baseUrl: 'http://localhost:8889/',
     env: {
       wp_user: 'admin',
       wp_pass: 'password',
+      test_admin_user: 'sucuri-admin',
+      test_admin_pass: 'password',
+      extra_user: 'sucuri',
+      extra_user_pass: 'password',
     },
     responseTimeout: 30000,
     defaultCommandTimeout: 30000,

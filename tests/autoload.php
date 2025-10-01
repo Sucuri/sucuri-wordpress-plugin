@@ -15,6 +15,7 @@ if (!function_exists('translate')) {
     }
 }
 
+
 if (!function_exists('esc_attr')) {
     function esc_attr($text)
     {
@@ -46,6 +47,7 @@ if (!function_exists('network_admin_url')) {
         return 'https://example.com/wp-admin/network/' . ltrim($path, '/');
     }
 }
+
 
 if (!function_exists('apply_filters')) {
     function apply_filters($hook, $value)
@@ -80,6 +82,16 @@ require BASE_DIR . '/src/api.lib.php';
 require BASE_DIR . '/src/mail.lib.php';
 require BASE_DIR . '/src/command.lib.php';
 require BASE_DIR . '/src/template.lib.php';
+if (!function_exists('sucuriscanMainPages')) {
+    function sucuriscanMainPages()
+    {
+        return array(
+            'sucuriscan' => 'Dashboard',
+            'sucuriscan_firewall' => 'Firewall',
+            'sucuriscan_settings' => 'Settings',
+        );
+    }
+}
 require BASE_DIR . '/src/fsscanner.lib.php';
 require BASE_DIR . '/src/hardening.lib.php';
 require BASE_DIR . '/src/interface.lib.php';
@@ -90,3 +102,4 @@ require BASE_DIR . '/src/integrity.lib.php';
 require BASE_DIR . '/src/firewall.lib.php';
 require BASE_DIR . '/src/installer-skin.lib.php';
 require BASE_DIR . '/src/cachecontrol.lib.php';
+require BASE_DIR . '/src/topt.lib.php';

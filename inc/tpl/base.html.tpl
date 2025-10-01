@@ -20,7 +20,7 @@
 
                 button.html('{{Clear Firewall Cache}}');
 
-                setTimeout(function() {
+                setTimeout(function () {
                     $('#firewall-clear-cache-response').html('');
                     button.attr('disabled', false);
                 }, 5000);
@@ -28,13 +28,13 @@
         });
 
         var SucuriThemeManager = {
-            init: function() {
+            init: function () {
                 this.createToggle();
                 this.bindEvents();
                 this.updateToggleState();
             },
 
-            toggleTheme: function(theme) {
+            toggleTheme: function (theme) {
                 var $link = $('#sucuriscan-css');
 
                 if (!$link.length) { return; }
@@ -46,20 +46,20 @@
 
                 var $logo = $('.sucuriscan-logo img');
 
-                if (!$logo.length) {return;}
+                if (!$logo.length) { return; }
 
-                    $logo.attr(
-                        'src',
-                        $logo.attr('src').replace(
-                            /pluginlogo(?:-darktheme)?\.png/i,
-                            theme === 'dark' ? 'pluginlogo-darktheme.png' : 'pluginlogo.png'
-                        )
-                    );
+                $logo.attr(
+                    'src',
+                    $logo.attr('src').replace(
+                        /pluginlogo(?:-darktheme)?\.png/i,
+                        theme === 'dark' ? 'pluginlogo-darktheme.png' : 'pluginlogo.png'
+                    )
+                );
 
                 this.updateToggleState(theme);
             },
 
-            createToggle: function() {
+            createToggle: function () {
                 var currentTheme = '%%%SUCURI.Theme%%%';
 
                 var toggleHtml = `
@@ -93,7 +93,7 @@
                 $('#sucuriscan-theme-toggle-placeholder').html(toggleHtml);
             },
 
-            updateToggleState: function(theme) {
+            updateToggleState: function (theme) {
                 theme = theme || $('#sucuriscan-toggle-theme').attr('data-theme');
                 var $toggle = $('#sucuriscan-toggle-theme');
                 var $circleIcon = $('.sucuriscan-circle-icon');
@@ -113,7 +113,7 @@
                 }
             },
 
-            bindEvents: function() {
+            bindEvents: function () {
                 var self = this;
 
                 $(document).on('click', '#sucuriscan-toggle-theme', function (event) {
@@ -127,17 +127,10 @@
                         action: 'sucuriscan_ajax',
                         sucuriscan_page_nonce: '%%SUCURI.PageNonce%%',
                         form_action: 'toggle_theme',
-                    }, function(data) {
+                    }, function (data) {
                         $('#firewall-clear-cache-response').html(data);
                         self.toggleTheme(newTheme);
                     });
-                });
-
-                $(document).on('keydown', function(e) {
-                    if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
-                        e.preventDefault();
-                        $('#sucuriscan-toggle-theme').trigger('click');
-                    }
                 });
             }
         };
@@ -156,6 +149,46 @@
 
     %%%SUCURI.GenerateAPIKey.Modal%%%
 
+    <script type="text/javascript">
+        jQuery(document).ready(function ($) {
+            function setWafDismissCookie() {
+                try {
+                    var date = new Date();
+                    date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000)); // 1 year!
+                    var expires = '; expires=' + date.toUTCString();
+                    var secure = (window.location.protocol === 'https:') ? '; Secure' : '';
+                    var samesite = '; SameSite=Lax';
+                    document.cookie = 'sucuriscan_waf_dismissed=1' + expires + '; path=/' + samesite + secure;
+                } catch (e) { }
+            }
+
+            function removeWafModal() {
+                try {
+                    var overlay = document.querySelector('.sucuriscan-overlay.sucuriscan-activate-your-waf-key-modal');
+                    var modal = document.querySelector('.sucuriscan-modal.sucuriscan-activate-your-waf-key-modal');
+                    if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+                    if (modal && modal.parentNode) modal.parentNode.removeChild(modal);
+                } catch (error) { console.warn(error); }
+            }
+
+            $(document).on('click', '[data-cy="sucuriscan-waf-modal-main-action"]', function () {
+                setWafDismissCookie();
+                removeWafModal();
+            });
+
+            $(document).on('click', '.sucuriscan-modal-close[data-cy="sucuriscan-waf-modal-dismiss"]', function (event) {
+                event.preventDefault();
+                setWafDismissCookie();
+                removeWafModal();
+            });
+
+            $(document).on('click', '.sucuriscan-overlay.sucuriscan-activate-your-waf-key-modal, .sucuriscan-activate-your-waf-key-modal .sucuriscan-modal-close', function () {
+                setWafDismissCookie();
+                removeWafModal();
+            });
+        });
+    </script>
+
     <div class="sucuriscan-header sucuriscan-clearfix">
         <div class="sucuriscan-pull-left sucuriscan-logo-wrapper">
             <a href="https://sucuri.net/signup" target="_blank" title="{{Sucuri Security}}" class="sucuriscan-logo">
@@ -166,7 +199,8 @@
                 <span class="sucuriscan-subtitle">{{WP Plugin}}</span>
                 <span class="sucuriscan-version">v%%SUCURI.PluginVersion%%</span>
 
-                <a href="https://sucuri.net/website-firewall/" class="unlock-premium %%SUCURI.FreemiumVisibility%%" target="_blank">Unlock Premium</a>
+                <a href="https://sucuri.net/website-firewall/" class="unlock-premium %%SUCURI.FreemiumVisibility%%"
+                    target="_blank">Unlock Premium</a>
             </div>
         </div>
 
@@ -176,19 +210,31 @@
 
         <div class="sucuriscan-pull-right sucuriscan-navbar">
             <ul>
-                <li><button id="firewall-clear-cache-button" class="button button-primary %%SUCURI.PremiumVisibility%%">{{Clear Firewall Cache}}</button></li>
+                <li><button id="firewall-clear-cache-button"
+                        class="button button-primary %%SUCURI.PremiumVisibility%%">{{Clear Firewall Cache}}</button>
+                </li>
 
-                <li><a href="https://support.sucuri.net/support/" class="button button-primary sucuriscan-%%SUCURI.DashboardButtonVisibility%%" target="_blank">{{Get Help}}</a></li>
+                <li><a href="https://support.sucuri.net/support/"
+                        class="button button-primary sucuriscan-%%SUCURI.DashboardButtonVisibility%%"
+                        target="_blank">{{Get Help}}</a></li>
 
-                <li><a href="https://docs.sucuri.net/plugins/" class="button button-primary" target="_blank">{{Knowledge Base}}</a></li>
+                <li><a href="https://docs.sucuri.net/plugins/" class="button button-primary" target="_blank">
+                        {{Knowledge Base}}
+                    </a></li>
 
-                <li><a href="https://sucuri.typeform.com/to/qNe18eDf" class="button button-primary" target="_blank">{{Feedback Survey}}</a></li>
+                <li><a href="https://sucuri.typeform.com/to/qNe18eDf" class="button button-primary"
+                        target="_blank">{{Feedback Survey}}</a></li>
 
-                <li><a href="%%SUCURI.URL.Dashboard%%" class="button button-primary sucuriscan-%%SUCURI.DashboardButtonVisibility%%"">{{Dashboard}}</a></li>
+                <li><a href="%%SUCURI.URL.Dashboard%%"
+                        class="button button-primary sucuriscan-%%SUCURI.DashboardButtonVisibility%%"">{{Dashboard}}</a></li>
 
-                <li><a href="%%SUCURI.URL.Firewall%%" class="button button-primary sucuriscan-%%SUCURI.FirewallButtonVisibility%%" data-cy="sucuriscan-main-nav-firewall">{{Firewall (WAF)}}</a></li>
+                <li><a href=" %%SUCURI.URL.Firewall%%"
+                        class="button button-primary sucuriscan-%%SUCURI.FirewallButtonVisibility%%"
+                        data-cy="sucuriscan-main-nav-firewall">{{Firewall (WAF)}}</a></li>
 
-                <li><a href="%%SUCURI.URL.Settings%%" class="button button-primary sucuriscan-%%SUCURI.SettingsButtonVisibility%%">{{Settings}}</a></li>
+                <li><a href="%%SUCURI.URL.Settings%%"
+                        class="button button-primary sucuriscan-%%SUCURI.SettingsButtonVisibility%%">{{Settings}}</a>
+                </li>
             </ul>
         </div>
     </div>

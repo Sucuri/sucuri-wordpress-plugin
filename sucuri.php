@@ -8,7 +8,7 @@
  * Author: Sucuri Inc.
  * Text Domain: sucuri-scanner
  * Domain Path: /lang
- * Version: 2.4
+ * Version: 2.5
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  *
@@ -87,7 +87,7 @@ define('SUCURISCAN', 'sucuriscan');
 /**
  * Current version of the plugin's code.
  */
-define('SUCURISCAN_VERSION', '2.4');
+define('SUCURISCAN_VERSION', '2.5');
 
 /**
  * Defines the human readable name of the plugin.
@@ -201,6 +201,7 @@ add_action('plugins_loaded', 'sucuriscan_load_plugin_textdomain');
 /* Load all classes before anything else. */
 require_once 'src/base.lib.php';
 require_once 'src/request.lib.php';
+require_once 'src/cookie.lib.php';
 require_once 'src/fileinfo.lib.php';
 require_once 'src/cache.lib.php';
 require_once 'src/option.lib.php';
@@ -223,6 +224,8 @@ require_once 'src/installer-skin.lib.php';
 require_once 'src/cachecontrol.lib.php';
 require_once 'src/csp.lib.php';
 require_once 'src/cors.lib.php';
+require_once 'src/totp.core.php';
+require_once 'src/topt.lib.php';
 
 /* Load page and ajax handlers */
 require_once 'src/pagehandler.php';
@@ -252,6 +255,8 @@ require_once 'src/globals.php';
 if (defined('WP_CLI') && WP_CLI) {
     include_once 'src/cli.lib.php';
 }
+
+SucuriScanTwoFactor::add_hooks();
 
 add_action('send_headers', 'sucuriscanSetSecurityHeaders');
 function sucuriscanSetSecurityHeaders()

@@ -1,5 +1,7 @@
 <?php declare(strict_types=1);
 
+use Brain\Monkey;
+use Brain\Monkey\Functions;
 use PHPUnit\Framework\TestCase;
 
 final class IntegrityTest extends TestCase
@@ -7,6 +9,53 @@ final class IntegrityTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        Monkey\setUp();
+
+        // Simple in-memory cache for wp_cache_* mocks
+        $GLOBALS['__wp_cache'] = [];
+
+        // Mock WordPress functions used during these tests
+        Functions\when('wp_cache_get')->alias(function ($key, $group = '') {
+            $group = $group ?: 'default';
+            return $GLOBALS['__wp_cache'][$group][$key] ?? false;
+        });
+
+        Functions\when('wp_cache_set')->alias(function ($key, $value, $group = '', $expire = 0) {
+            $group = $group ?: 'default';
+            if (!isset($GLOBALS['__wp_cache'][$group])) {
+                $GLOBALS['__wp_cache'][$group] = [];
+            }
+            $GLOBALS['__wp_cache'][$group][$key] = $value;
+            return true;
+        });
+
+        Functions\when('wp_cache_delete')->alias(function ($key, $group = '') {
+            $group = $group ?: 'default';
+            if (isset($GLOBALS['__wp_cache'][$group][$key])) {
+                unset($GLOBALS['__wp_cache'][$group][$key]);
+                return true;
+            }
+            return false;
+        });
+
+        // Translation and URL helpers
+        Functions\when('__')->alias(function ($text, $domain = null) {
+            return $text; });
+        Functions\when('get_site_url')->justReturn('https://example.com');
+
+        // Capture emails sent via wp_mail
+        Functions\when('wp_mail')->alias(function ($to, $subject, $message, $headers = array ()) {
+            if (!isset($GLOBALS['__sucuri_test_mails'])) {
+                $GLOBALS['__sucuri_test_mails'] = [];
+            }
+            $GLOBALS['__sucuri_test_mails'][] = [
+                'to' => $to,
+                'subject' => $subject,
+                'message' => $message,
+                'headers' => $headers,
+            ];
+            return true;
+        });
 
         SucuriScanOption::updateOption(':notify_to', 'alerts@example.com');
         SucuriScanOption::updateOption(':use_wpmail', 'enabled');
@@ -16,6 +65,8 @@ final class IntegrityTest extends TestCase
 
     protected function tearDown(): void
     {
+        Monkey\tearDown();
+        unset($GLOBALS['__wp_cache']);
         unset($GLOBALS['__sucuri_test_mails']);
         parent::tearDown();
     }
