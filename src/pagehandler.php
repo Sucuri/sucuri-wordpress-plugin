@@ -76,10 +76,8 @@ function sucuriscan_resource_list($resource = array())
     }
 
     foreach ($resource as $key => $value) {
-        if (!is_array($value)) {
-            continue;
-        }
         $slug = (string) $key;
+
         if (strpos($slug, '/') !== false) {
             $parts = explode('/', $slug);
             $slug = $parts[0];
@@ -91,10 +89,20 @@ function sucuriscan_resource_list($resource = array())
 
         $slug = sanitize_key($slug);
 
+        if (is_object($value) && $value instanceof WP_Theme) {
+            $version = $value->get('Version');
+            $name = $value->get('Name');
+        } elseif (is_array($value)) {
+            $version = isset($value['Version']) ? $value['Version'] : '';
+            $name = isset($value['Name']) ? $value['Name'] : $slug;
+        } else {
+            continue;
+        }
+
         $params = array(
             'slug' => $slug,
-            'version' => isset($value['Version']) ? $value['Version'] : '',
-            'name' => isset($value['Name']) ? $value['Name'] : $slug,
+            'version' => $version,
+            'name' => $name,
         );
 
         $html .= SucuriScanTemplate::getSection('dashboard-theme-plugin', $params);
