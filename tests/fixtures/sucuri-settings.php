@@ -1,0 +1,2 @@
+<?php exit(0); ?>
+{"sucuriscan_notify_to":"alerts@example.com","sucuriscan_use_wpmail":"enabled","sucuriscan_email_subject":":event","sucuriscan_notify_scan_checksums":"enabled","sucuriscan_addr_header":"HTTP_X_SUCURI_CLIENTIP","sucuriscan_prettify_mails":"disabled","sucuriscan_emails_per_hour":5,"sucuriscan_last_email_at":1758777874,"sucuriscan_emails_sent":1,"sucuriscan_timezone":"UTC+00.00","sucuriscan_cloudproxy_apikey":""}

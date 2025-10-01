@@ -89,6 +89,7 @@ if (defined('SUCURISCAN')) {
         return array(
             'sucuriscan' => __('Vulnerability Scanning', 'sucuri-scanner'),
             'sucuriscan_firewall' => __('Firewall Management', 'sucuri-scanner'),
+            'sucuriscan_2fa' => __('Two-Factor Authentication', 'sucuri-scanner'),
             'sucuriscan_events_reporting' => __('Events Reporting', 'sucuri-scanner'),
             'sucuriscan_headers_management' => __('Headers Management', 'sucuri-scanner'),
             'sucuriscan_hardening_prevention' => __('Hardening & Prevention', 'sucuri-scanner'),

@@ -1,0 +1,1 @@
+<p class="message">%%SUCURI.Message%%</p>

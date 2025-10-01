@@ -45,6 +45,8 @@ e2e-prepare:
 	npx wp-env start
 	npx wp-env clean all
 	npx wp-env run tests-cli wp user create sucuri sucuri@sucuri.net --role=author --user_pass=password
+	npx wp-env run tests-cli wp user create sucuri-admin sucuri-admin@sucuri.net --role=administrator --user_pass=password
+	npx wp-env run tests-cli wp user create sucuri-reset sucuri-reset@sucuri.net --role=author --user_pass=password
 	npx wp-env run tests-cli wp plugin install akismet --activate
 	npx wp-env run tests-cli touch .htaccess
 	npx wp-env run tests-cli touch wp-config-test.php
