@@ -124,7 +124,7 @@ class SucuriScanTemplate extends SucuriScanRequest
             $params['PageStyleClass'] = 'base';
         }
 
-        if ($target === 'base' && current_user_can('manage_options')) {
+        if ($target === 'base' && SucuriScanPermissions::canManagePlugin()) {
             $_page = self::get('page', '_page');
             $isDashboard = ($_page == 'sucuriscan' || empty($_page));
             $hasWafKey = (bool) SucuriScanFirewall::getKey();

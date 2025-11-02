@@ -66,7 +66,8 @@ function sucuriscan_lastlogins_admins()
             'AdminUsers.NoLastLoginsTable' => 'hidden',
         );
 
-        if ($last_logins
+        if (
+            $last_logins
             && isset($last_logins['entries'])
             && !empty($last_logins['entries'])
         ) {
@@ -334,7 +335,7 @@ function sucuriscan_get_logins($limit = 10, $offset = 0, $user_id = 0)
      */
     $user_ids = array();
     $current_user = wp_get_current_user();
-    $is_admin_user = (bool) current_user_can('manage_options');
+    $is_admin_user = (bool) SucuriScanPermissions::canManagePlugin();
 
     for ($i = $offset; $i < $total_lines; $i++) {
         $line = $reversed_lines[$i] ? trim($reversed_lines[$i]) : '';
@@ -417,7 +418,8 @@ if (!function_exists('sucuriscan_login_redirect')) {
     {
         $login_url = !empty($redirect_to) ? $redirect_to : SucuriScan::adminURL();
 
-        if ($user instanceof WP_User
+        if (
+            $user instanceof WP_User
             && in_array('administrator', $user->roles)
             && SucuriScanOption::isEnabled(':lastlogin_redirection')
         ) {
@@ -440,13 +442,15 @@ if (!function_exists('sucuriscan_get_user_lastlogin')) {
      */
     function sucuriscan_get_user_lastlogin()
     {
-        if (current_user_can('manage_options')
+        if (
+            SucuriScanPermissions::canManagePlugin()
             && SucuriScanRequest::get(':lastlogin', '1')
         ) {
             $current_user = wp_get_current_user();
             $last_logins = sucuriscan_get_logins(2, 0, $current_user->ID);
 
-            if ($last_logins
+            if (
+                $last_logins
                 && isset($last_logins['entries'])
                 && isset($last_logins['entries'][1])
             ) {
