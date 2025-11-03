@@ -72,7 +72,7 @@ class SucuriScanFirewall extends SucuriScanAPI
 
         if ($match) {
             return array(
-                'string' => $match[1].'/'.$match[2],
+                'string' => $match[1] . '/' . $match[2],
                 'k' => $match[1],
                 's' => $match[2],
             );
@@ -166,8 +166,8 @@ class SucuriScanFirewall extends SucuriScanAPI
                 }
             }
 
-            // Delete the firewall API key from the plugin.
-            if (SucuriScanRequest::post(':delete_wafkey') !== false) {
+            $delete_flag = SucuriScanRequest::post(':delete_wafkey');
+            if ($delete_flag === '1') {
                 SucuriScanOption::deleteOption($option_name);
                 SucuriScanInterface::info(__('Firewall API key was successfully removed', 'sucuri-scanner'));
                 SucuriScanOption::setRevProxy('disable');
@@ -518,7 +518,7 @@ class SucuriScanFirewall extends SucuriScanAPI
                     $key = $value;
                 }
 
-                $selected_tag = ( $key == $selected ) ? 'selected="selected"' : '';
+                $selected_tag = ($key == $selected) ? 'selected="selected"' : '';
                 $html_options .= sprintf('<option value="%s" %s>%s</option>', $key, $selected_tag, $value);
             }
 
