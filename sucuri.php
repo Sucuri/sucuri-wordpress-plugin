@@ -207,6 +207,7 @@ require_once 'src/cache.lib.php';
 require_once 'src/option.lib.php';
 require_once 'src/cron.lib.php';
 require_once 'src/event.lib.php';
+require_once 'src/permissions.lib.php';
 require_once 'src/hook.lib.php';
 require_once 'src/api.lib.php';
 require_once 'src/mail.lib.php';

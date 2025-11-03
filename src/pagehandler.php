@@ -32,7 +32,7 @@ function sucuriscan_dismiss_waf_prompt()
         return; // Not our action.
     }
 
-    if (!current_user_can('manage_options')) {
+    if (!SucuriScanPermissions::canManagePlugin()) {
         wp_send_json(array('ok' => false, 'error' => 'Non-admin user'), 200);
     }
 
@@ -120,7 +120,7 @@ function sucuriscan_theme_toggle()
         return; // Not our action.
     }
 
-    if (!current_user_can('manage_options')) {
+    if (!SucuriScanPermissions::canManagePlugin()) {
         wp_send_json(array('ok' => false, 'error' => 'Non-admin user'), 200);
     }
 

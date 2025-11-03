@@ -57,7 +57,13 @@ if (!function_exists('apply_filters')) {
 }
 
 if (!function_exists('current_user_can')) {
-    function current_user_can()
+    /**
+     * Test stub for current_user_can. Accepts optional cap for compatibility.
+     *
+     * @param mixed $cap Optional capability name (ignored in tests).
+     * @return bool Always true in test context.
+     */
+    function current_user_can($cap = null)
     {
         return true;
     }
@@ -82,6 +88,7 @@ require BASE_DIR . '/src/api.lib.php';
 require BASE_DIR . '/src/mail.lib.php';
 require BASE_DIR . '/src/command.lib.php';
 require BASE_DIR . '/src/template.lib.php';
+require BASE_DIR . '/src/permissions.lib.php';
 if (!function_exists('sucuriscanMainPages')) {
     function sucuriscanMainPages()
     {
