@@ -789,7 +789,7 @@ class SucuriScanTwoFactor extends SucuriScan
                 trailingslashit(SUCURISCAN_URL) . 'inc/js/qr.js',
                 array(),
                 method_exists('SucuriScan', 'fileVersion') ? SucuriScan::fileVersion('inc/js/qr.js') : false,
-                false,
+                false
             );
         }
 
