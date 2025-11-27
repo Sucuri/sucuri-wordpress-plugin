@@ -269,7 +269,7 @@ class SucuriScanInterface
     public static function checkPageVisibility()
     {
         if (!SucuriScanPermissions::canManagePlugin()) {
-            SucuriScan::throwException(message: __('Access denied; cannot manage options', 'sucuri-scanner'));
+            SucuriScan::throwException(__('Access denied; cannot manage options', 'sucuri-scanner'));
             wp_die(sprintf(esc_html__('Access denied by %s', 'sucuri-scanner'), esc_html(SUCURISCAN_PLUGIN_NAME)));
         }
     }
