@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-11-03T04:15:33+00:00\n"
+"POT-Creation-Date: 2025-11-27T04:57:41+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: sucuri-scanner\n"
@@ -176,13 +176,13 @@ msgid "Installed"
 msgstr ""
 
 #: src/api.lib.php:608
-#: src/topt.lib.php:1363
+#: src/topt.lib.php:1370
 msgid "Activated"
 msgstr ""
 
 #: src/api.lib.php:612
-#: src/topt.lib.php:1363
-#: src/topt.lib.php:1395
+#: src/topt.lib.php:1370
+#: src/topt.lib.php:1402
 msgid "Deactivated"
 msgstr ""
 
@@ -219,11 +219,11 @@ msgstr ""
 msgid "status has been changed"
 msgstr ""
 
-#: src/base.lib.php:60
+#: src/base.lib.php:61
 msgid "Error:"
 msgstr ""
 
-#: src/base.lib.php:60
+#: src/base.lib.php:61
 msgid "Info:"
 msgstr ""
 
@@ -373,7 +373,7 @@ msgstr ""
 #: src/firewall.lib.php:567
 #: src/firewall.lib.php:602
 #: src/firewall.lib.php:643
-#: src/firewall.lib.php:740
+#: src/firewall.lib.php:748
 msgid "Firewall API key was not found."
 msgstr ""
 
@@ -445,6 +445,14 @@ msgstr ""
 msgid "IP has been removed from the blocklist: %s"
 msgstr ""
 
+#: src/firewall.lib.php:751
+msgid "Invalid firewall API key format. Please verify the key is in the form k/s."
+msgstr ""
+
+#: src/firewall.lib.php:779
+msgid "Failure connecting to the Firewall API service; try again."
+msgstr ""
+
 #: src/globals.php:90
 msgid "Vulnerability Scanning"
 msgstr ""
@@ -491,32 +499,32 @@ msgstr ""
 msgid "Sucuri Security"
 msgstr ""
 
-#: src/hardening.lib.php:121
+#: src/hardening.lib.php:123
 msgid "Directory is not usable"
 msgstr ""
 
-#: src/hardening.lib.php:125
-#: src/hardening.lib.php:334
+#: src/hardening.lib.php:127
+#: src/hardening.lib.php:336
 msgid "Access control file is not supported"
 msgstr ""
 
-#: src/hardening.lib.php:161
+#: src/hardening.lib.php:163
 msgid "Directory is not hardened"
 msgstr ""
 
-#: src/hardening.lib.php:340
+#: src/hardening.lib.php:342
 msgid "Access control file does not exists"
 msgstr ""
 
-#: src/hardening.lib.php:344
+#: src/hardening.lib.php:346
 msgid "Access control file is not writable"
 msgstr ""
 
-#: src/hardening.lib.php:351
+#: src/hardening.lib.php:353
 msgid "File is already in the allowlist"
 msgstr ""
 
-#: src/hardening.lib.php:384
+#: src/hardening.lib.php:386
 msgid "Cannot remove file from the allowlist; no permissions."
 msgstr ""
 
@@ -807,31 +815,31 @@ msgstr ""
 msgid "WordPress Integrity Diff Utility"
 msgstr ""
 
-#: src/interface.lib.php:208
+#: src/interface.lib.php:209
 msgid "The plugin requires PHP 5 >= 5.3.0 - OR - PHP 7"
 msgstr ""
 
-#: src/interface.lib.php:216
+#: src/interface.lib.php:217
 msgid "Storage is not writable: <code>%s</code>"
 msgstr ""
 
-#: src/interface.lib.php:258
+#: src/interface.lib.php:259
 msgid "Do you want to get vulnerability disclosures? Subscribe to our newsletter <a href=\"http://sucuri.hs-sites.com/subscribe-to-security\" target=\"_blank\" rel=\"noopener\">here</a>"
 msgstr ""
 
-#: src/interface.lib.php:271
+#: src/interface.lib.php:272
 msgid "Access denied; cannot manage options"
 msgstr ""
 
-#: src/interface.lib.php:272
+#: src/interface.lib.php:273
 msgid "Access denied by %s"
 msgstr ""
 
-#: src/interface.lib.php:292
+#: src/interface.lib.php:293
 msgid "Nonce is invalid"
 msgstr ""
 
-#: src/interface.lib.php:293
+#: src/interface.lib.php:294
 msgid "WordPress CSRF verification failed. The submitted form is missing an important unique code that prevents the execution of automated malicious scanners. Go back and try again. If you did not submit a form, this error message could be an indication of an incompatibility between this plugin and another add-on; one of them is inserting data into the global POST variable when the HTTP request is coming via GET. Disable them one by one (while reloading this page) to find the culprit."
 msgstr ""
 
@@ -1295,11 +1303,11 @@ msgstr ""
 msgid "Loading..."
 msgstr ""
 
-#: src/pagehandler.php:348
+#: src/pagehandler.php:355
 msgid "Last-Logins logs were successfully reset."
 msgstr ""
 
-#: src/pagehandler.php:350
+#: src/pagehandler.php:357
 msgid "Could not reset the last-logins data file."
 msgstr ""
 
@@ -1623,7 +1631,7 @@ msgstr ""
 #: src/settings-headers.php:436
 #: src/settings-integrity.php:80
 #: src/strings.php:772
-#: src/topt.lib.php:1063
+#: src/topt.lib.php:1067
 msgid "Enabled"
 msgstr ""
 
@@ -1645,7 +1653,7 @@ msgstr ""
 #: src/settings-headers.php:392
 #: src/settings-headers.php:436
 #: src/strings.php:773
-#: src/topt.lib.php:1064
+#: src/topt.lib.php:1068
 msgid "Disabled"
 msgstr ""
 
@@ -3525,155 +3533,155 @@ msgstr ""
 msgid "Enter the 6-digit code from your authenticator app to continue."
 msgstr ""
 
-#: src/topt.lib.php:700
+#: src/topt.lib.php:701
 msgid "Invalid code. Make sure you scanned the QR and your device time is correct."
 msgstr ""
 
-#: src/topt.lib.php:724
+#: src/topt.lib.php:725
 msgid "Set up two-factor authentication. Scan the QR code with your authenticator app, then enter the 6-digit code to continue."
 msgstr ""
 
-#: src/topt.lib.php:733
+#: src/topt.lib.php:734
 msgid "Set up Two-Factor Authentication"
 msgstr ""
 
-#: src/topt.lib.php:964
-#: src/topt.lib.php:1010
+#: src/topt.lib.php:968
+#: src/topt.lib.php:1014
 msgid "Please enter the 6-digit verification code."
 msgstr ""
 
-#: src/topt.lib.php:969
+#: src/topt.lib.php:973
 msgid "Invalid secret. Reload the page and try again."
 msgstr ""
 
-#: src/topt.lib.php:989
-#: src/topt.lib.php:1032
+#: src/topt.lib.php:993
+#: src/topt.lib.php:1036
 msgid "Incorrect code. Check your authenticator app and device time."
 msgstr ""
 
-#: src/topt.lib.php:1014
+#: src/topt.lib.php:1018
 msgid "Invalid secret."
 msgstr ""
 
-#: src/topt.lib.php:1021
+#: src/topt.lib.php:1025
 msgid "Verification failed."
 msgstr ""
 
-#: src/topt.lib.php:1085
+#: src/topt.lib.php:1089
 msgid "Two-Factor is not enabled for this user. Ask the user to enable it from their own Profile page."
 msgstr ""
 
-#: src/topt.lib.php:1112
+#: src/topt.lib.php:1119
 msgid "You can only enable two-factor for your own account."
 msgstr ""
 
-#: src/topt.lib.php:1213
+#: src/topt.lib.php:1220
 msgid "Two-Factor is not enforced for your account."
 msgstr ""
 
-#: src/topt.lib.php:1220
+#: src/topt.lib.php:1227
 msgid "Two-Factor is already enabled."
 msgstr ""
 
-#: src/topt.lib.php:1270
-#: src/topt.lib.php:1688
+#: src/topt.lib.php:1277
+#: src/topt.lib.php:1695
 msgid "Incorrect nonce."
 msgstr ""
 
-#: src/topt.lib.php:1276
-#: src/topt.lib.php:1316
-#: src/topt.lib.php:1694
+#: src/topt.lib.php:1283
+#: src/topt.lib.php:1323
+#: src/topt.lib.php:1701
 msgid "Incorrect user."
 msgstr ""
 
-#: src/topt.lib.php:1283
+#: src/topt.lib.php:1290
 msgid "Two-Factor Authentication is already enabled for your account."
 msgstr ""
 
-#: src/topt.lib.php:1290
-#: src/topt.lib.php:1330
+#: src/topt.lib.php:1297
+#: src/topt.lib.php:1337
 msgid "Unable to generate secret."
 msgstr ""
 
-#: src/topt.lib.php:1323
+#: src/topt.lib.php:1330
 msgid "Two-Factor Authentication is enabled for your account."
 msgstr ""
 
-#: src/topt.lib.php:1381
+#: src/topt.lib.php:1388
 msgid "Activate two factor for all users"
 msgstr ""
 
-#: src/topt.lib.php:1382
+#: src/topt.lib.php:1389
 msgid "Activate two factor for selected users"
 msgstr ""
 
-#: src/topt.lib.php:1383
+#: src/topt.lib.php:1390
 msgid "Deactivate two factor for all users"
 msgstr ""
 
-#: src/topt.lib.php:1384
+#: src/topt.lib.php:1391
 msgid "Deactivate two factor for selected users"
 msgstr ""
 
-#: src/topt.lib.php:1385
+#: src/topt.lib.php:1392
 msgid "Reset two factor for selected users (keep enforcement)"
 msgstr ""
 
-#: src/topt.lib.php:1386
+#: src/topt.lib.php:1393
 msgid "Reset two factor for all users (keep enforcement)"
 msgstr ""
 
-#: src/topt.lib.php:1387
+#: src/topt.lib.php:1394
 msgid "Delete all two-factor data and disable enforcement"
 msgstr ""
 
-#: src/topt.lib.php:1400
+#: src/topt.lib.php:1407
 msgid "Activated for all users"
 msgstr ""
 
-#: src/topt.lib.php:1403
+#: src/topt.lib.php:1410
 msgid "Activated for some users"
 msgstr ""
 
-#: src/topt.lib.php:1530
+#: src/topt.lib.php:1537
 msgid "You are not allowed to modify Two-Factor settings."
 msgstr ""
 
-#: src/topt.lib.php:1546
+#: src/topt.lib.php:1553
 msgid "Two-Factor enforced for all users."
 msgstr ""
 
-#: src/topt.lib.php:1556
+#: src/topt.lib.php:1563
 msgid "Two-Factor deactivated for all users."
 msgstr ""
 
-#: src/topt.lib.php:1563
-#: src/topt.lib.php:1581
-#: src/topt.lib.php:1622
+#: src/topt.lib.php:1570
+#: src/topt.lib.php:1588
+#: src/topt.lib.php:1629
 msgid "No users selected."
 msgstr ""
 
-#: src/topt.lib.php:1574
+#: src/topt.lib.php:1581
 msgid "Two-Factor enforced for selected users."
 msgstr ""
 
-#: src/topt.lib.php:1616
+#: src/topt.lib.php:1623
 msgid "Two-Factor deactivated for selected users."
 msgstr ""
 
-#: src/topt.lib.php:1633
+#: src/topt.lib.php:1640
 msgid "Two-Factor settings reset for selected users."
 msgstr ""
 
-#: src/topt.lib.php:1646
+#: src/topt.lib.php:1653
 msgid "Two-Factor settings reset for all users."
 msgstr ""
 
-#: src/topt.lib.php:1660
+#: src/topt.lib.php:1667
 msgid "All Two-Factor data deleted and enforcement disabled."
 msgstr ""
 
-#: src/topt.lib.php:1666
+#: src/topt.lib.php:1673
 msgid "Invalid two-factor action selected."
 msgstr ""
 
