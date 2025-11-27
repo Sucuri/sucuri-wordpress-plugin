@@ -665,6 +665,7 @@ class SucuriScanTwoFactor extends SucuriScan
             'NonceField' => wp_nonce_field($nonce_action, '_wpnonce', true, false),
         );
 
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
         echo SucuriScanTemplate::getSection('login-2fa', $params);
 
         login_footer();
@@ -739,6 +740,7 @@ class SucuriScanTwoFactor extends SucuriScan
             'OtpauthURI' => $otpauth,
         );
 
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
         echo SucuriScanTemplate::getSection('login-2fa-setup', $params);
 
         login_footer();
@@ -764,6 +766,7 @@ class SucuriScanTwoFactor extends SucuriScan
 
         $logo = trailingslashit(SUCURISCAN_URL) . 'inc/images/pluginlogo.png';
 
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
         echo SucuriScanTemplate::getSnippet('login-brand', array(
             'LogoURL' => esc_url($logo),
         ));
@@ -785,7 +788,8 @@ class SucuriScanTwoFactor extends SucuriScan
                 'sucuriscan-qrcode',
                 trailingslashit(SUCURISCAN_URL) . 'inc/js/qr.js',
                 array(),
-                method_exists('SucuriScan', 'fileVersion') ? SucuriScan::fileVersion('inc/js/qr.js') : false
+                method_exists('SucuriScan', 'fileVersion') ? SucuriScan::fileVersion('inc/js/qr.js') : false,
+                false,
             );
         }
 
@@ -1086,8 +1090,11 @@ class SucuriScanTwoFactor extends SucuriScan
             }
         }
 
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
         echo SucuriScanTemplate::getSection('profile-2fa-section', array(
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
             'StatusHTML' => $status_html,
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
             'ActionsHTML' => $actions_html,
         ));
     }

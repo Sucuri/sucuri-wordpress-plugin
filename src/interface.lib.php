@@ -93,7 +93,8 @@ class SucuriScanInterface
             'sucuriscan',
             SUCURISCAN_URL . '/inc/js/scripts.js',
             array(/* empty */),
-            SucuriScan::fileVersion('inc/js/scripts.js')
+            SucuriScan::fileVersion('inc/js/scripts.js'),
+            false
         );
         wp_enqueue_script('sucuriscan');
 
@@ -268,8 +269,8 @@ class SucuriScanInterface
     public static function checkPageVisibility()
     {
         if (!SucuriScanPermissions::canManagePlugin()) {
-            SucuriScan::throwException(__('Access denied; cannot manage options', 'sucuri-scanner'));
-            wp_die(sprintf(__('Access denied by %s', 'sucuri-scanner'), SUCURISCAN_PLUGIN_NAME));
+            SucuriScan::throwException(message: __('Access denied; cannot manage options', 'sucuri-scanner'));
+            wp_die(sprintf(esc_html__('Access denied by %s', 'sucuri-scanner'), esc_html(SUCURISCAN_PLUGIN_NAME)));
         }
     }
 
@@ -335,11 +336,15 @@ class SucuriScanInterface
 
             SucuriScan::throwException($message, $type);
 
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
             echo SucuriScanTemplate::getSection(
                 'notification-admin',
                 array(
+                    // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                     'AlertType' => $type,
+                    // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                     'AlertUnique' => rand(100, 999),
+                    // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                     'AlertMessage' => $message,
                 )
             );

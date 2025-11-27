@@ -150,7 +150,7 @@ final class TwoFactorTest extends TestCase
         $wpUser = new WP_User(55);
 
         Functions\when('wp_safe_redirect')->alias(function ($url) {
-            throw new RuntimeException('REDIRECT:' . $url);
+            throw new RuntimeException('REDIRECT:' . esc_url($url));
         });
 
         try {

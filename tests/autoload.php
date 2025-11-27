@@ -23,6 +23,21 @@ if (!function_exists('esc_attr')) {
     }
 }
 
+if (!function_exists('esc_url')) {
+    function esc_url($url)
+    {
+        return (string) $url;
+    }
+}
+
+if (!function_exists('wp_kses_post')) {
+    function wp_kses_post($html)
+    {
+        // In tests, pass-through to simplify; production will use WP's kses.
+        return (string) $html;
+    }
+}
+
 if (file_exists(BASE_DIR . '/vendor/autoload.php')) {
     require BASE_DIR . '/vendor/autoload.php';
 }

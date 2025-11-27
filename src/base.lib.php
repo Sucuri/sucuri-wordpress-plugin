@@ -50,7 +50,8 @@ class SucuriScan
      */
     public static function throwException($message, $type = 'error')
     {
-        if (defined('SUCURISCAN_THROW_EXCEPTIONS')
+        if (
+            defined('SUCURISCAN_THROW_EXCEPTIONS')
             && SUCURISCAN_THROW_EXCEPTIONS === true
             && is_string($message)
         ) {
@@ -61,7 +62,7 @@ class SucuriScan
                 $message
             );
 
-            /* throw catchable errors via tests */
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
             throw new Exception($message, $code);
         }
 
@@ -398,7 +399,7 @@ class SucuriScan
      */
     public static function secretKeyPattern()
     {
-	    return '/define\(\s*\'([A-Z_]+)\',(\s*)\'([^\\\\\']*)\'\s*\);/';
+        return '/define\(\s*\'([A-Z_]+)\',(\s*)\'([^\\\\\']*)\'\s*\);/';
     }
 
     /**
@@ -502,7 +503,8 @@ class SucuriScan
         $headers = self::orderedHttpHeaders();
 
         foreach ($headers as $header) {
-            if (array_key_exists($header, $_SERVER)
+            if (
+                array_key_exists($header, $_SERVER)
                 && self::isValidIP($_SERVER[$header])
             ) {
                 $remote_addr = $_SERVER[$header];
@@ -715,7 +717,8 @@ class SucuriScan
             $timestamp = time();
         }
 
-        if ($length === 9
+        if (
+            $length === 9
             && substr($tz, 0, 3) === 'UTC'
             && ($tz[3] === '-' || $tz[3] === '+')
             && $tz[6] === '.'
@@ -911,7 +914,8 @@ class SucuriScan
         return substr(md5_file(SUCURISCAN_PLUGIN_PATH . '/' . $file), 0, 7);
     }
 
-    public static function issetScanApiUrl() {
+    public static function issetScanApiUrl()
+    {
         return defined('SUCURISCAN_API_URL') && !empty(SUCURISCAN_API_URL);
     }
 }
