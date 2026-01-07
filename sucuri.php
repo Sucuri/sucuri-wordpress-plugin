@@ -8,7 +8,7 @@
  * Author: Sucuri Inc.
  * Text Domain: sucuri-scanner
  * Domain Path: /lang
- * Version: 2.5
+ * Version: 2.6
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  *
@@ -87,7 +87,7 @@ define('SUCURISCAN', 'sucuriscan');
 /**
  * Current version of the plugin's code.
  */
-define('SUCURISCAN_VERSION', '2.5');
+define('SUCURISCAN_VERSION', '2.6');
 
 /**
  * Defines the human readable name of the plugin.
@@ -207,6 +207,7 @@ require_once 'src/cache.lib.php';
 require_once 'src/option.lib.php';
 require_once 'src/cron.lib.php';
 require_once 'src/event.lib.php';
+require_once 'src/permissions.lib.php';
 require_once 'src/hook.lib.php';
 require_once 'src/api.lib.php';
 require_once 'src/mail.lib.php';

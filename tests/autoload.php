@@ -23,6 +23,21 @@ if (!function_exists('esc_attr')) {
     }
 }
 
+if (!function_exists('esc_url')) {
+    function esc_url($url)
+    {
+        return (string) $url;
+    }
+}
+
+if (!function_exists('wp_kses_post')) {
+    function wp_kses_post($html)
+    {
+        // In tests, pass-through to simplify; production will use WP's kses.
+        return (string) $html;
+    }
+}
+
 if (file_exists(BASE_DIR . '/vendor/autoload.php')) {
     require BASE_DIR . '/vendor/autoload.php';
 }
@@ -57,7 +72,13 @@ if (!function_exists('apply_filters')) {
 }
 
 if (!function_exists('current_user_can')) {
-    function current_user_can()
+    /**
+     * Test stub for current_user_can. Accepts optional cap for compatibility.
+     *
+     * @param mixed $cap Optional capability name (ignored in tests).
+     * @return bool Always true in test context.
+     */
+    function current_user_can($cap = null)
     {
         return true;
     }
@@ -82,6 +103,7 @@ require BASE_DIR . '/src/api.lib.php';
 require BASE_DIR . '/src/mail.lib.php';
 require BASE_DIR . '/src/command.lib.php';
 require BASE_DIR . '/src/template.lib.php';
+require BASE_DIR . '/src/permissions.lib.php';
 if (!function_exists('sucuriscanMainPages')) {
     function sucuriscanMainPages()
     {

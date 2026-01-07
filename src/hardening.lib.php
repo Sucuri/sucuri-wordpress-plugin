@@ -66,10 +66,12 @@ class SucuriScanHardening extends SucuriScan
 
         foreach ($allowed_folders as $base_directory) {
             if (strpos($path, $base_directory . DIRECTORY_SEPARATOR) === 0) {
-                if ($best_match === false || substr_count(
-                    $base_directory,
-                    DIRECTORY_SEPARATOR
-                ) > substr_count($best_match['base_directory'], DIRECTORY_SEPARATOR)) {
+                if (
+                    $best_match === false || substr_count(
+                        $base_directory,
+                        DIRECTORY_SEPARATOR
+                    ) > substr_count($best_match['base_directory'], DIRECTORY_SEPARATOR)
+                ) {
                     $relative_path = str_replace($base_directory . DIRECTORY_SEPARATOR, '', $path);
 
                     $best_match = array(
@@ -118,11 +120,11 @@ class SucuriScanHardening extends SucuriScan
     public static function hardenDirectory($directory = '')
     {
         if (!is_dir($directory) || !is_writable($directory)) {
-            return self::throwException(__('Directory is not usable', 'sucuri-scanner'));
+            return self::throwException(esc_html__('Directory is not usable', 'sucuri-scanner'));
         }
 
         if (SucuriScan::isNginxServer() || SucuriScan::isIISServer()) {
-            return self::throwException(__('Access control file is not supported', 'sucuri-scanner'));
+            return self::throwException(esc_html__('Access control file is not supported', 'sucuri-scanner'));
         }
 
         $fhandle = false;
@@ -144,7 +146,7 @@ class SucuriScanHardening extends SucuriScan
         $written = @fwrite($fhandle, "\n" . $rules_text . "\n");
         @fclose($fhandle);
 
-        return (bool)($written !== false);
+        return (bool) ($written !== false);
     }
 
     /**
@@ -158,7 +160,7 @@ class SucuriScanHardening extends SucuriScan
     public static function unhardenDirectory($directory = '')
     {
         if (!self::isHardened($directory)) {
-            return self::throwException(__('Directory is not hardened', 'sucuri-scanner'));
+            return self::throwException(esc_html__('Directory is not hardened', 'sucuri-scanner'));
         }
 
         $fpath = self::htaccess($directory);
@@ -173,7 +175,7 @@ class SucuriScanHardening extends SucuriScan
             @unlink($fpath);
         }
 
-        return (bool)($written !== false);
+        return (bool) ($written !== false);
     }
 
     /**
@@ -196,7 +198,7 @@ class SucuriScanHardening extends SucuriScan
         $content = str_replace($rules, '', $content);
         $written = @file_put_contents($fpath, $content);
 
-        return (bool)($written !== false);
+        return (bool) ($written !== false);
     }
 
     /**
@@ -216,7 +218,7 @@ class SucuriScanHardening extends SucuriScan
         $deny_rules = self::getRules();
         $rules_text = implode("\n", $deny_rules);
 
-        return (bool)(strpos($content, $rules_text) !== false);
+        return (bool) (strpos($content, $rules_text) !== false);
     }
 
     /**
@@ -225,25 +227,25 @@ class SucuriScanHardening extends SucuriScan
      * @param string $folder Folder where the htaccess file is supposed to be.
      * @return string         Path to the htaccess file in the specified folder.
      */
-	public static function htaccess($folder = '')
-	{
-		if (!function_exists('get_home_path')) {
-			require_once ABSPATH . 'wp-admin/includes/file.php';
-		}
+    public static function htaccess($folder = '')
+    {
+        if (!function_exists('get_home_path')) {
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+        }
 
-		$home = get_home_path();
+        $home = get_home_path();
 
-		if ($home !== '/' && strpos($folder, $home) === 0) {
-			$folder = substr($folder, strlen($home));
-		}
+        if ($home !== '/' && strpos($folder, $home) === 0) {
+            $folder = substr($folder, strlen($home));
+        }
 
-		$wordpress_path = rtrim($home, DIRECTORY_SEPARATOR);
-		$folder = trim($folder, DIRECTORY_SEPARATOR);
+        $wordpress_path = rtrim($home, DIRECTORY_SEPARATOR);
+        $folder = trim($folder, DIRECTORY_SEPARATOR);
 
-		$path = $wordpress_path . '/' . $folder . '/.htaccess';
+        $path = $wordpress_path . '/' . $folder . '/.htaccess';
 
-		return preg_replace('/\/+/', '/', $path);
-	}
+        return preg_replace('/\/+/', '/', $path);
+    }
 
     /**
      * Generates Apache access control rules for a file.
@@ -331,27 +333,27 @@ class SucuriScanHardening extends SucuriScan
     public static function allow($filepath = '', $folder = '')
     {
         if (SucuriScan::isNginxServer() || SucuriScan::isIISServer()) {
-            throw new Exception(__('Access control file is not supported', 'sucuri-scanner'));
+            throw new Exception(esc_html__('Access control file is not supported', 'sucuri-scanner'));
         }
 
         $htaccess = self::htaccess($folder);
 
         if (!file_exists($htaccess)) {
-            throw new Exception(__('Access control file does not exists', 'sucuri-scanner'));
+            throw new Exception(esc_html__('Access control file does not exists', 'sucuri-scanner'));
         }
 
         if (!is_writable($htaccess)) {
-            throw new Exception(__('Access control file is not writable', 'sucuri-scanner'));
+            throw new Exception(esc_html__('Access control file is not writable', 'sucuri-scanner'));
         }
 
         $rules = self::allowlistRule($filepath, $folder);
         $content = SucuriScanFileInfo::fileContent($htaccess);
 
         if (strpos($content, $rules) !== false) {
-            throw new Exception(__('File is already in the allowlist', 'sucuri-scanner'));
+            throw new Exception(esc_html__('File is already in the allowlist', 'sucuri-scanner'));
         }
 
-        return (bool)@file_put_contents(
+        return (bool) @file_put_contents(
             $htaccess,
             "\n" . self::allowlistRule($filepath, $folder),
             FILE_APPEND
@@ -381,7 +383,7 @@ class SucuriScanHardening extends SucuriScan
         $content = SucuriScanFileInfo::fileContent($htaccess);
 
         if (!$content || !is_writable($htaccess)) {
-            return self::throwException(__('Cannot remove file from the allowlist; no permissions.', 'sucuri-scanner'));
+            return self::throwException(esc_html__('Cannot remove file from the allowlist; no permissions.', 'sucuri-scanner'));
         }
 
         if ($is_legacy) {
@@ -391,7 +393,7 @@ class SucuriScanHardening extends SucuriScan
         $content = str_replace($rules, '', $content);
         $content = rtrim($content) . "\n";
 
-        return (bool)@file_put_contents($htaccess, $content);
+        return (bool) @file_put_contents($htaccess, $content);
     }
 
     /*

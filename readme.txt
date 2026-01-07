@@ -259,6 +259,10 @@ This version removes the API communication service dependency on https://wordpre
 This version adds an option to refresh the malware scan results on demand, as well as several small bug fixes and improvements.
 
 == Changelog ==
+= 2.6 =
+* Create new permissions library.
+* Fix error causing deletion of WAF API key on clearing cache.
+
 = 2.5 =
 * Add support for two-factor authentication.
 

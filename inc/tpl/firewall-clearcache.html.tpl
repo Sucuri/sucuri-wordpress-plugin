@@ -20,6 +20,12 @@
             });
         });
 
+        // Prevent full-page submit (e.g., Enter key) and route to AJAX
+        $('.firewall-clear-cache-path form').on('submit', function (event) {
+            event.preventDefault();
+            $('#firewall-clear-cache-path-button').trigger('click');
+        });
+
         $('#firewall-clear-cache-path-button').on('click', function (event) {
             event.preventDefault();
 
@@ -79,11 +85,12 @@
         </div>
 
         <p>{{A web cache (or HTTP cache) is an information technology for the temporary storage (caching) of web documents, such as HTML pages and images, to reduce bandwidth usage, server load, and perceived lag. A web cache system stores copies of documents passing through it; subsequent requests may be satisfied from the cache if certain conditions are met. A web cache system can refer either to an appliance, or to a computer program. &mdash; <a href="https://en.wikipedia.org/wiki/Web_cache" target="_blank" rel="noopener">WikiPedia - Web Cache</a>}}</p>
-
+        
         <div class="firewall-clear-cache-path">
             <form action="%%SUCURI.URL.Firewall%%" method="post"
-                  class="sucuriscan-%%SUCURI.Firewall.APIKeyFormVisibility%%">
-                <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%"/>
+                class="sucuriscan-%%SUCURI.Firewall.APIKeyFormVisibility%%">
+                <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
+                <input type="hidden" name="form_action" value="firewall_clear_cache" />
                 <h3 class="lead">Clear Cache by Path</h3>
                 <p>This option allows you to clear the cache for an individual page, post, or other path. Enter the URL
                     you wish to clear and then click the Clear Cache button. </p>
@@ -92,11 +99,11 @@
                     <label>
                         <span class="ml-0">{{Path:}}</span>
                         <input type="text" name="path" id="firewall-clear-cache-path-input"
-                               data-cy="firewall-clear-cache-path-input" placeholder="e.g. security/how-to-clear-a-path"
-                               class="ml-0"/>
+                            data-cy="firewall-clear-cache-path-input" placeholder="e.g. security/how-to-clear-a-path"
+                            class="ml-0" />
                     </label>
                     <button type="submit" class="button button-primary" id="firewall-clear-cache-path-button" disabled
-                            data-cy="sucuriscan-clear-cache-path">{{Clear Cache}}</button>
+                        data-cy="sucuriscan-clear-cache-path">{{Clear Cache}}</button>
                 </fieldset>
             </form>
         </div>
@@ -107,7 +114,7 @@
                 WordPress website.</p>
             <label>
                 <input type="checkbox" name="sucuriscan_auto_clear_cache" value="true"
-                       %%SUCURI.FirewallAutoClearCache%%/>
+                    %%SUCURI.FirewallAutoClearCache%% />
                 <span>{{Clear cache whenever a post or page is updated}}</span>
             </label>
         </div>

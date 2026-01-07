@@ -63,28 +63,28 @@ class SucuriScanInterface
      */
     public static function enqueueScripts()
     {
-		if (self::getPreferredTheme() === 'dark') {
-			wp_register_style(
-				'sucuriscan',
-				SUCURISCAN_URL . '/inc/css/dark.css',
-				array(/* empty */),
-				SucuriScan::fileVersion('inc/css/dark.css')
-			);
-		} else {
-			wp_register_style(
-				'sucuriscan',
-				SUCURISCAN_URL . '/inc/css/light.css',
-				array(/* empty */),
-				SucuriScan::fileVersion('inc/css/light.css')
-			);
-		}
+        if (self::getPreferredTheme() === 'dark') {
+            wp_register_style(
+                'sucuriscan',
+                SUCURISCAN_URL . '/inc/css/dark.css',
+                array(/* empty */),
+                SucuriScan::fileVersion('inc/css/dark.css')
+            );
+        } else {
+            wp_register_style(
+                'sucuriscan',
+                SUCURISCAN_URL . '/inc/css/light.css',
+                array(/* empty */),
+                SucuriScan::fileVersion('inc/css/light.css')
+            );
+        }
 
-	    wp_register_style(
-		    'sucuriscan_shared',
-		    SUCURISCAN_URL . '/inc/css/shared.css',
-		    array(/* empty */),
-		    SucuriScan::fileVersion('inc/css/shared.css')
-	    );
+        wp_register_style(
+            'sucuriscan_shared',
+            SUCURISCAN_URL . '/inc/css/shared.css',
+            array(/* empty */),
+            SucuriScan::fileVersion('inc/css/shared.css')
+        );
 
         wp_enqueue_style('sucuriscan');
         wp_enqueue_style('sucuriscan_shared');
@@ -93,7 +93,8 @@ class SucuriScanInterface
             'sucuriscan',
             SUCURISCAN_URL . '/inc/js/scripts.js',
             array(/* empty */),
-            SucuriScan::fileVersion('inc/js/scripts.js')
+            SucuriScan::fileVersion('inc/js/scripts.js'),
+            false
         );
         wp_enqueue_script('sucuriscan');
 
@@ -267,9 +268,9 @@ class SucuriScanInterface
      */
     public static function checkPageVisibility()
     {
-        if (!function_exists('current_user_can') || !current_user_can('manage_options')) {
+        if (!SucuriScanPermissions::canManagePlugin()) {
             SucuriScan::throwException(__('Access denied; cannot manage options', 'sucuri-scanner'));
-            wp_die(sprintf(__('Access denied by %s', 'sucuri-scanner'), SUCURISCAN_PLUGIN_NAME));
+            wp_die(sprintf(esc_html__('Access denied by %s', 'sucuri-scanner'), esc_html(SUCURISCAN_PLUGIN_NAME)));
         }
     }
 
@@ -320,7 +321,8 @@ class SucuriScanInterface
          * an HTML alert like this when the user authentication process is
          * executed may cause a "headers already sent" error.
          */
-        if (!empty($_POST)
+        if (
+            !empty($_POST)
             && SucuriScanRequest::post('log')
             && SucuriScanRequest::post('pwd')
             && SucuriScanRequest::post('wp-submit')
@@ -334,11 +336,15 @@ class SucuriScanInterface
 
             SucuriScan::throwException($message, $type);
 
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
             echo SucuriScanTemplate::getSection(
                 'notification-admin',
                 array(
+                    // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                     'AlertType' => $type,
+                    // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                     'AlertUnique' => rand(100, 999),
+                    // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                     'AlertMessage' => $message,
                 )
             );
@@ -370,13 +376,15 @@ class SucuriScanInterface
     }
 
 
-	public static function isPremium() {
-		$api_key = SucuriScanFirewall::getOption(':cloudproxy_apikey');
+    public static function isPremium()
+    {
+        $api_key = SucuriScanFirewall::getOption(':cloudproxy_apikey');
 
-		return SucuriScanFirewall::isValidKey($api_key);
-	}
+        return SucuriScanFirewall::isValidKey($api_key);
+    }
 
-    public static function getPreferredTheme() {
+    public static function getPreferredTheme()
+    {
         if (!self::isPremium()) {
             return 'light';
         }

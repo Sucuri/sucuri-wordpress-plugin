@@ -72,7 +72,7 @@ class SucuriScanFirewall extends SucuriScanAPI
 
         if ($match) {
             return array(
-                'string' => $match[1].'/'.$match[2],
+                'string' => $match[1] . '/' . $match[2],
                 'k' => $match[1],
                 's' => $match[2],
             );
@@ -166,8 +166,8 @@ class SucuriScanFirewall extends SucuriScanAPI
                 }
             }
 
-            // Delete the firewall API key from the plugin.
-            if (SucuriScanRequest::post(':delete_wafkey') !== false) {
+            $delete_flag = SucuriScanRequest::post(':delete_wafkey');
+            if ($delete_flag === '1') {
                 SucuriScanOption::deleteOption($option_name);
                 SucuriScanInterface::info(__('Firewall API key was successfully removed', 'sucuri-scanner'));
                 SucuriScanOption::setRevProxy('disable');
@@ -518,7 +518,7 @@ class SucuriScanFirewall extends SucuriScanAPI
                     $key = $value;
                 }
 
-                $selected_tag = ( $key == $selected ) ? 'selected="selected"' : '';
+                $selected_tag = ($key == $selected) ? 'selected="selected"' : '';
                 $html_options .= sprintf('<option value="%s" %s>%s</option>', $key, $selected_tag, $value);
             }
 
@@ -736,22 +736,50 @@ class SucuriScanFirewall extends SucuriScanAPI
             return;
         }
 
-        ob_start();
-        SucuriScanInterface::error(__('Firewall API key was not found.', 'sucuri-scanner'));
-        $response = ob_get_clean();
         $api_key = self::getKey();
+        $response = '';
 
-        if ($api_key) {
-            $path = SucuriScanRequest::post('path');
-            $res = self::clearCache($api_key, $path);
+        if (!$api_key) {
+            $raw = trim((string) self::getOption(':cloudproxy_apikey'));
 
-            if (is_array($res) && isset($res['messages'])) {
-                $response = sprintf(
-                    '<div class="sucuriscan-inline-alert-%s"><p>%s</p></div>',
-                    ($res['status'] == 1) ? 'success' : 'error',
-                    implode('<br>', $res['messages'])
-                );
+            ob_start();
+
+            if (empty($raw)) {
+                SucuriScanInterface::error(__('Firewall API key was not found.', 'sucuri-scanner'));
+                SucuriScanEvent::reportWarningEvent('Firewall cache clear failed: API key missing');
+            } else {
+                SucuriScanInterface::error(__('Invalid firewall API key format. Please verify the key is in the form k/s.', 'sucuri-scanner'));
+                SucuriScanEvent::reportWarningEvent('Firewall cache clear failed: API key invalid format');
             }
+
+            $response = ob_get_clean();
+            wp_send_json($response, 200);
+        }
+
+        $path = SucuriScanRequest::post('path');
+        $out = self::clearCache($api_key, $path);
+
+        if (is_array($out) && isset($out['messages'])) {
+            $response = sprintf(
+                '<div class="sucuriscan-inline-alert-%s"><p>%s</p></div>',
+                ($out['status'] == 1) ? 'success' : 'error',
+                implode('<br>', $out['messages'])
+            );
+
+            $context = ($path) ? sprintf("path '%s'", $path) : 'global';
+            $flatMsg = implode('; ', $out['messages']);
+
+            if ((int) $out['status'] === 1) {
+                SucuriScanEvent::reportInfoEvent(sprintf('Firewall cache clear requested (%s): %s', $context, $flatMsg));
+            } else {
+                SucuriScanEvent::reportWarningEvent(sprintf('Firewall cache clear failed (%s): %s', $context, $flatMsg));
+            }
+        } else {
+            ob_start();
+            SucuriScanInterface::error(__('Failure connecting to the Firewall API service; try again.', 'sucuri-scanner'));
+            $response = ob_get_clean();
+            $context = ($path) ? sprintf("path '%s'", $path) : 'global';
+            SucuriScanEvent::reportWarningEvent(sprintf('Firewall cache clear failed (%s): API service unavailable or unexpected response', $context));
         }
 
         wp_send_json($response, 200);

@@ -665,6 +665,7 @@ class SucuriScanTwoFactor extends SucuriScan
             'NonceField' => wp_nonce_field($nonce_action, '_wpnonce', true, false),
         );
 
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
         echo SucuriScanTemplate::getSection('login-2fa', $params);
 
         login_footer();
@@ -739,6 +740,7 @@ class SucuriScanTwoFactor extends SucuriScan
             'OtpauthURI' => $otpauth,
         );
 
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
         echo SucuriScanTemplate::getSection('login-2fa-setup', $params);
 
         login_footer();
@@ -764,6 +766,7 @@ class SucuriScanTwoFactor extends SucuriScan
 
         $logo = trailingslashit(SUCURISCAN_URL) . 'inc/images/pluginlogo.png';
 
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
         echo SucuriScanTemplate::getSnippet('login-brand', array(
             'LogoURL' => esc_url($logo),
         ));
@@ -785,7 +788,8 @@ class SucuriScanTwoFactor extends SucuriScan
                 'sucuriscan-qrcode',
                 trailingslashit(SUCURISCAN_URL) . 'inc/js/qr.js',
                 array(),
-                method_exists('SucuriScan', 'fileVersion') ? SucuriScan::fileVersion('inc/js/qr.js') : false
+                method_exists('SucuriScan', 'fileVersion') ? SucuriScan::fileVersion('inc/js/qr.js') : false,
+                false
             );
         }
 
@@ -859,7 +863,7 @@ class SucuriScanTwoFactor extends SucuriScan
             wp_send_json_error(array('message' => 'Invalid security token.'), 403);
         }
 
-        if (!$is_self && !current_user_can('edit_users')) {
+        if (!$is_self && !SucuriScanPermissions::canEditUsers()) {
             wp_send_json_error(array('message' => 'Not allowed'), 403);
         }
 
@@ -1050,7 +1054,7 @@ class SucuriScanTwoFactor extends SucuriScan
 
         $current_id = get_current_user_id();
         $is_self = ((int) $user->ID === (int) $current_id);
-        $can_manage_users = current_user_can('edit_users');
+        $can_manage_users = SucuriScanPermissions::canEditUsers();
 
         if (!self::is_enforced_for_user((int) $user->ID)) {
             return;
@@ -1086,8 +1090,11 @@ class SucuriScanTwoFactor extends SucuriScan
             }
         }
 
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
         echo SucuriScanTemplate::getSection('profile-2fa-section', array(
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
             'StatusHTML' => $status_html,
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
             'ActionsHTML' => $actions_html,
         ));
     }
@@ -1243,7 +1250,7 @@ class SucuriScanTwoFactor extends SucuriScan
         }
 
         if ($action === 'reset') {
-            if (!$is_self && !current_user_can('edit_users')) {
+            if (!$is_self && !SucuriScanPermissions::canEditUsers()) {
                 return; // Capability required to reset others.
             }
             if (!self::is_enforced_for_user($user_id)) {
@@ -1347,7 +1354,7 @@ class SucuriScanTwoFactor extends SucuriScan
      */
     public static function users_admin_section()
     {
-        if (!current_user_can('list_users')) {
+        if (!SucuriScanPermissions::canListUsers()) {
             return '';
         }
 
@@ -1526,7 +1533,7 @@ class SucuriScanTwoFactor extends SucuriScan
             'mode' => (string) SucuriScanOption::getOption(':twofactor_mode'),
         );
 
-        if (!is_admin() || !current_user_can('manage_options')) {
+        if (!is_admin() || !SucuriScanPermissions::canManagePlugin()) {
             $result['message'] = __('You are not allowed to modify Two-Factor settings.', 'sucuri-scanner');
 
             return $result;
@@ -1713,7 +1720,7 @@ class SucuriScanTwoFactor extends SucuriScan
         $enforce_all = false;
         $enforce_all_raw = SucuriScanRequest::post('enforce_all', '[01]');
 
-        if (current_user_can('manage_options')) {
+        if (SucuriScanPermissions::canManagePlugin()) {
             $enforce_all = ($enforce_all_raw !== false) && ((string) $enforce_all_raw === '1');
         }
 

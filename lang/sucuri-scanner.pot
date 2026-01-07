@@ -1,15 +1,15 @@
-# Copyright (C) 2025 Sucuri Inc.
+# Copyright (C) 2026 Sucuri Inc.
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Sucuri Security - Auditing, Malware Scanner and Hardening 2.5\n"
+"Project-Id-Version: Sucuri Security - Auditing, Malware Scanner and Hardening 2.6\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/sucuri-scanner\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-10-01T01:05:27+00:00\n"
+"POT-Creation-Date: 2026-01-07T04:06:07+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: sucuri-scanner\n"
@@ -176,13 +176,13 @@ msgid "Installed"
 msgstr ""
 
 #: src/api.lib.php:608
-#: src/topt.lib.php:1363
+#: src/topt.lib.php:1370
 msgid "Activated"
 msgstr ""
 
 #: src/api.lib.php:612
-#: src/topt.lib.php:1363
-#: src/topt.lib.php:1395
+#: src/topt.lib.php:1370
+#: src/topt.lib.php:1402
 msgid "Deactivated"
 msgstr ""
 
@@ -219,11 +219,11 @@ msgstr ""
 msgid "status has been changed"
 msgstr ""
 
-#: src/base.lib.php:60
+#: src/base.lib.php:61
 msgid "Error:"
 msgstr ""
 
-#: src/base.lib.php:60
+#: src/base.lib.php:61
 msgid "Info:"
 msgstr ""
 
@@ -373,7 +373,7 @@ msgstr ""
 #: src/firewall.lib.php:567
 #: src/firewall.lib.php:602
 #: src/firewall.lib.php:643
-#: src/firewall.lib.php:740
+#: src/firewall.lib.php:748
 msgid "Firewall API key was not found."
 msgstr ""
 
@@ -445,6 +445,14 @@ msgstr ""
 msgid "IP has been removed from the blocklist: %s"
 msgstr ""
 
+#: src/firewall.lib.php:751
+msgid "Invalid firewall API key format. Please verify the key is in the form k/s."
+msgstr ""
+
+#: src/firewall.lib.php:779
+msgid "Failure connecting to the Firewall API service; try again."
+msgstr ""
+
 #: src/globals.php:90
 msgid "Vulnerability Scanning"
 msgstr ""
@@ -491,32 +499,32 @@ msgstr ""
 msgid "Sucuri Security"
 msgstr ""
 
-#: src/hardening.lib.php:121
+#: src/hardening.lib.php:123
 msgid "Directory is not usable"
 msgstr ""
 
-#: src/hardening.lib.php:125
-#: src/hardening.lib.php:334
+#: src/hardening.lib.php:127
+#: src/hardening.lib.php:336
 msgid "Access control file is not supported"
 msgstr ""
 
-#: src/hardening.lib.php:161
+#: src/hardening.lib.php:163
 msgid "Directory is not hardened"
 msgstr ""
 
-#: src/hardening.lib.php:340
+#: src/hardening.lib.php:342
 msgid "Access control file does not exists"
 msgstr ""
 
-#: src/hardening.lib.php:344
+#: src/hardening.lib.php:346
 msgid "Access control file is not writable"
 msgstr ""
 
-#: src/hardening.lib.php:351
+#: src/hardening.lib.php:353
 msgid "File is already in the allowlist"
 msgstr ""
 
-#: src/hardening.lib.php:384
+#: src/hardening.lib.php:386
 msgid "Cannot remove file from the allowlist; no permissions."
 msgstr ""
 
@@ -525,11 +533,11 @@ msgid "Media file added; ID: %s; name: %s; type: %s"
 msgstr ""
 
 #: src/hook.lib.php:82
-#: src/hook.lib.php:108
-#: src/hook.lib.php:193
-#: src/hook.lib.php:1007
-#: src/hook.lib.php:1018
-#: src/hook.lib.php:1048
+#: src/hook.lib.php:110
+#: src/hook.lib.php:196
+#: src/hook.lib.php:1022
+#: src/hook.lib.php:1033
+#: src/hook.lib.php:1064
 #: src/settings-general.php:315
 #: src/settings-general.php:316
 #: src/settings-general.php:317
@@ -540,213 +548,213 @@ msgid "unknown"
 msgstr ""
 
 #: src/hook.lib.php:83
-#: src/hook.lib.php:109
-#: src/hook.lib.php:1008
-#: src/hook.lib.php:1019
-#: src/hook.lib.php:1049
+#: src/hook.lib.php:111
+#: src/hook.lib.php:1023
+#: src/hook.lib.php:1034
+#: src/hook.lib.php:1065
 msgid "user@domain.com"
 msgstr ""
 
-#: src/hook.lib.php:91
+#: src/hook.lib.php:92
 msgid "User added to website; user_id: %s; role: %s; blog_id: %s; name: %s; email: %s"
 msgstr ""
 
-#: src/hook.lib.php:117
+#: src/hook.lib.php:120
 msgid "User removed from website; user_id: %s; blog_id: %s; name: %s; email: %s"
 msgstr ""
 
-#: src/hook.lib.php:134
-#: src/hook.lib.php:225
-#: src/hook.lib.php:292
-#: src/hook.lib.php:404
-#: src/hook.lib.php:530
-#: src/hook.lib.php:746
-#: src/hook.lib.php:772
-#: src/hook.lib.php:873
-#: src/hook.lib.php:917
+#: src/hook.lib.php:137
+#: src/hook.lib.php:228
+#: src/hook.lib.php:295
+#: src/hook.lib.php:407
+#: src/hook.lib.php:537
+#: src/hook.lib.php:757
+#: src/hook.lib.php:783
+#: src/hook.lib.php:885
+#: src/hook.lib.php:931
 #: src/lastlogins-failed.php:251
 msgid "Unknown"
 msgstr ""
 
-#: src/hook.lib.php:136
+#: src/hook.lib.php:139
 msgid "Category created; ID: %s; name: %s"
 msgstr ""
 
-#: src/hook.lib.php:150
+#: src/hook.lib.php:153
 msgid "WordPress updated to version: %s"
 msgstr ""
 
-#: src/hook.lib.php:175
+#: src/hook.lib.php:178
 msgid "Bookmark link added; ID: %s; name: %s; url: %s; target: %s"
 msgstr ""
 
-#: src/hook.lib.php:205
+#: src/hook.lib.php:208
 msgid "Bookmark link edited; ID: %s; name: %s; url: %s; target: %s"
 msgstr ""
 
-#: src/hook.lib.php:226
+#: src/hook.lib.php:229
 msgid "User authentication failed: %s"
 msgstr ""
 
-#: src/hook.lib.php:279
+#: src/hook.lib.php:282
 msgid "Attempt to reset password by attacking WP/2.8.3 bug"
 msgstr ""
 
-#: src/hook.lib.php:293
+#: src/hook.lib.php:296
 msgid "User authentication succeeded: %s"
 msgstr ""
 
-#: src/hook.lib.php:322
+#: src/hook.lib.php:325
 msgid ""
 "The value of the option <b>%s</b> was changed from <b>'%s'</b> to <b>'%s'</b>.<br>\n"
 ""
 msgstr ""
 
-#: src/hook.lib.php:328
+#: src/hook.lib.php:331
 msgid "%s: from '%s' to '%s',"
 msgstr ""
 
-#: src/hook.lib.php:337
+#: src/hook.lib.php:340
 msgid "Common"
 msgstr ""
 
-#: src/hook.lib.php:341
+#: src/hook.lib.php:344
 msgid "Global"
 msgstr ""
 
-#: src/hook.lib.php:355
+#: src/hook.lib.php:358
 msgid "%s settings changed"
 msgstr ""
 
-#: src/hook.lib.php:358
+#: src/hook.lib.php:361
 msgid "%s: (multiple entries): %s"
 msgstr ""
 
-#: src/hook.lib.php:416
+#: src/hook.lib.php:419
 msgid "Plugin %s: %s (v%s; %s%s)"
 msgstr ""
 
-#: src/hook.lib.php:478
+#: src/hook.lib.php:483
 msgid "Plugins deleted: (multiple entries):"
 msgstr ""
 
-#: src/hook.lib.php:480
+#: src/hook.lib.php:485
 msgid "Plugin deleted:"
 msgstr ""
 
-#: src/hook.lib.php:506
+#: src/hook.lib.php:512
 msgid "Plugin editor used in: %s"
 msgstr ""
 
-#: src/hook.lib.php:531
+#: src/hook.lib.php:538
 msgid "Plugin installed: %s"
 msgstr ""
 
-#: src/hook.lib.php:591
+#: src/hook.lib.php:602
 msgid "Plugins updated: (multiple entries):"
 msgstr ""
 
-#: src/hook.lib.php:593
+#: src/hook.lib.php:604
 msgid "Plugin updated:"
 msgstr ""
 
-#: src/hook.lib.php:662
+#: src/hook.lib.php:673
 msgid "Post deleted: (multiple entries): %s"
 msgstr ""
 
-#: src/hook.lib.php:676
+#: src/hook.lib.php:687
 msgid "Ignore corrupted post data"
 msgstr ""
 
-#: src/hook.lib.php:681
+#: src/hook.lib.php:692
 msgid "Skip events for equal transitions"
 msgstr ""
 
-#: src/hook.lib.php:705
+#: src/hook.lib.php:716
 msgid "Skip events for postman-smtp alerts"
 msgstr ""
 
-#: src/hook.lib.php:710
+#: src/hook.lib.php:721
 msgid "Skip events for ignored post-types"
 msgstr ""
 
-#: src/hook.lib.php:716
+#: src/hook.lib.php:727
 msgid "Skip events for ignored post transitions"
 msgstr ""
 
-#: src/hook.lib.php:722
+#: src/hook.lib.php:733
 msgid "ID: %s"
 msgstr ""
 
-#: src/hook.lib.php:723
+#: src/hook.lib.php:734
 msgid "Old status: %s"
 msgstr ""
 
-#: src/hook.lib.php:724
+#: src/hook.lib.php:735
 msgid "New status: %s"
 msgstr ""
 
-#: src/hook.lib.php:727
+#: src/hook.lib.php:738
 msgid "Title: %s"
 msgstr ""
 
-#: src/hook.lib.php:730
+#: src/hook.lib.php:741
 msgid "%s status has been changed"
 msgstr ""
 
-#: src/hook.lib.php:756
+#: src/hook.lib.php:767
 msgid "Post moved to trash; ID: %s; name: %s; status: %s"
 msgstr ""
 
-#: src/hook.lib.php:773
+#: src/hook.lib.php:784
 msgid "Publication"
 msgstr ""
 
-#: src/hook.lib.php:791
+#: src/hook.lib.php:802
 msgid "%s was %s; ID: %s; name: %s"
 msgstr ""
 
-#: src/hook.lib.php:856
+#: src/hook.lib.php:867
 msgid "Password retrieval attempt: %s"
 msgstr ""
 
-#: src/hook.lib.php:875
+#: src/hook.lib.php:887
 msgid "Theme deleted: %s"
 msgstr ""
 
-#: src/hook.lib.php:898
+#: src/hook.lib.php:911
 msgid "Theme editor used in: %s/%s"
 msgstr ""
 
-#: src/hook.lib.php:919
+#: src/hook.lib.php:933
 msgid "Theme installed: %s"
 msgstr ""
 
-#: src/hook.lib.php:934
+#: src/hook.lib.php:948
 msgid "Theme activated: %s"
 msgstr ""
 
-#: src/hook.lib.php:976
+#: src/hook.lib.php:991
 msgid "Themes updated: (multiple entries):"
 msgstr ""
 
-#: src/hook.lib.php:978
+#: src/hook.lib.php:993
 msgid "Theme updated:"
 msgstr ""
 
-#: src/hook.lib.php:997
+#: src/hook.lib.php:1012
 msgid "User account deleted; ID: %d"
 msgstr ""
 
-#: src/hook.lib.php:1028
+#: src/hook.lib.php:1044
 msgid "User account edited; ID: %s; name: %s; old_name: %s; email: %s; old_email: %s; roles: %s; old_roles: %s"
 msgstr ""
 
-#: src/hook.lib.php:1060
+#: src/hook.lib.php:1076
 msgid "User account created; ID: %s; name: %s; email: %s; roles: %s"
 msgstr ""
 
-#: src/hook.lib.php:1103
+#: src/hook.lib.php:1120
 msgid "Widget %s (%s) %s %s (#%d; size %dx%d)"
 msgstr ""
 
@@ -807,31 +815,31 @@ msgstr ""
 msgid "WordPress Integrity Diff Utility"
 msgstr ""
 
-#: src/interface.lib.php:208
+#: src/interface.lib.php:209
 msgid "The plugin requires PHP 5 >= 5.3.0 - OR - PHP 7"
 msgstr ""
 
-#: src/interface.lib.php:216
+#: src/interface.lib.php:217
 msgid "Storage is not writable: <code>%s</code>"
 msgstr ""
 
-#: src/interface.lib.php:258
+#: src/interface.lib.php:259
 msgid "Do you want to get vulnerability disclosures? Subscribe to our newsletter <a href=\"http://sucuri.hs-sites.com/subscribe-to-security\" target=\"_blank\" rel=\"noopener\">here</a>"
 msgstr ""
 
-#: src/interface.lib.php:271
+#: src/interface.lib.php:272
 msgid "Access denied; cannot manage options"
 msgstr ""
 
-#: src/interface.lib.php:272
+#: src/interface.lib.php:273
 msgid "Access denied by %s"
 msgstr ""
 
-#: src/interface.lib.php:292
+#: src/interface.lib.php:293
 msgid "Nonce is invalid"
 msgstr ""
 
-#: src/interface.lib.php:293
+#: src/interface.lib.php:294
 msgid "WordPress CSRF verification failed. The submitted form is missing an important unique code that prevents the execution of automated malicious scanners. Go back and try again. If you did not submit a form, this error message could be an indication of an incompatibility between this plugin and another add-on; one of them is inserting data into the global POST variable when the HTTP request is coming via GET. Disable them one by one (while reloading this page) to find the culprit."
 msgstr ""
 
@@ -871,19 +879,19 @@ msgstr ""
 msgid "Attempt Date/Time"
 msgstr ""
 
-#: src/lastlogins.php:129
+#: src/lastlogins.php:130
 msgid "Last-logins data file is not writable: <code>%s</code>"
 msgstr ""
 
-#: src/lastlogins.php:305
+#: src/lastlogins.php:306
 msgid "Invalid last-logins storage file"
 msgstr ""
 
-#: src/lastlogins.php:312
+#: src/lastlogins.php:313
 msgid "No last-logins data is available"
 msgstr ""
 
-#: src/lastlogins.php:456
+#: src/lastlogins.php:460
 msgid "Last login was at <b>%s</b> from <b>%s</b> <em>(%s)</em> <a href=\"%s\" target=\"_self\">view all logs</a>"
 msgstr ""
 
@@ -1267,21 +1275,21 @@ msgstr ""
 msgid "Sucuri Alert, %s, %s, %s"
 msgstr ""
 
-#: src/pagehandler.php:159
+#: src/pagehandler.php:167
 msgid "iFrames"
 msgstr ""
 
-#: src/pagehandler.php:160
+#: src/pagehandler.php:168
 msgid "Links"
 msgstr ""
 
-#: src/pagehandler.php:161
+#: src/pagehandler.php:169
 msgid "Scripts"
 msgstr ""
 
-#: src/pagehandler.php:162
-#: src/pagehandler.php:163
-#: src/pagehandler.php:164
+#: src/pagehandler.php:170
+#: src/pagehandler.php:171
+#: src/pagehandler.php:172
 #: src/strings.php:26
 #: src/strings.php:57
 #: src/strings.php:69
@@ -1295,11 +1303,11 @@ msgstr ""
 msgid "Loading..."
 msgstr ""
 
-#: src/pagehandler.php:340
+#: src/pagehandler.php:355
 msgid "Last-Logins logs were successfully reset."
 msgstr ""
 
-#: src/pagehandler.php:342
+#: src/pagehandler.php:357
 msgid "Could not reset the last-logins data file."
 msgstr ""
 
@@ -1623,7 +1631,7 @@ msgstr ""
 #: src/settings-headers.php:436
 #: src/settings-integrity.php:80
 #: src/strings.php:772
-#: src/topt.lib.php:1063
+#: src/topt.lib.php:1067
 msgid "Enabled"
 msgstr ""
 
@@ -1645,7 +1653,7 @@ msgstr ""
 #: src/settings-headers.php:392
 #: src/settings-headers.php:436
 #: src/strings.php:773
-#: src/topt.lib.php:1064
+#: src/topt.lib.php:1068
 msgid "Disabled"
 msgstr ""
 
@@ -3525,155 +3533,155 @@ msgstr ""
 msgid "Enter the 6-digit code from your authenticator app to continue."
 msgstr ""
 
-#: src/topt.lib.php:700
+#: src/topt.lib.php:701
 msgid "Invalid code. Make sure you scanned the QR and your device time is correct."
 msgstr ""
 
-#: src/topt.lib.php:724
+#: src/topt.lib.php:725
 msgid "Set up two-factor authentication. Scan the QR code with your authenticator app, then enter the 6-digit code to continue."
 msgstr ""
 
-#: src/topt.lib.php:733
+#: src/topt.lib.php:734
 msgid "Set up Two-Factor Authentication"
 msgstr ""
 
-#: src/topt.lib.php:964
-#: src/topt.lib.php:1010
+#: src/topt.lib.php:968
+#: src/topt.lib.php:1014
 msgid "Please enter the 6-digit verification code."
 msgstr ""
 
-#: src/topt.lib.php:969
+#: src/topt.lib.php:973
 msgid "Invalid secret. Reload the page and try again."
 msgstr ""
 
-#: src/topt.lib.php:989
-#: src/topt.lib.php:1032
+#: src/topt.lib.php:993
+#: src/topt.lib.php:1036
 msgid "Incorrect code. Check your authenticator app and device time."
 msgstr ""
 
-#: src/topt.lib.php:1014
+#: src/topt.lib.php:1018
 msgid "Invalid secret."
 msgstr ""
 
-#: src/topt.lib.php:1021
+#: src/topt.lib.php:1025
 msgid "Verification failed."
 msgstr ""
 
-#: src/topt.lib.php:1085
+#: src/topt.lib.php:1089
 msgid "Two-Factor is not enabled for this user. Ask the user to enable it from their own Profile page."
 msgstr ""
 
-#: src/topt.lib.php:1112
+#: src/topt.lib.php:1119
 msgid "You can only enable two-factor for your own account."
 msgstr ""
 
-#: src/topt.lib.php:1213
+#: src/topt.lib.php:1220
 msgid "Two-Factor is not enforced for your account."
 msgstr ""
 
-#: src/topt.lib.php:1220
+#: src/topt.lib.php:1227
 msgid "Two-Factor is already enabled."
 msgstr ""
 
-#: src/topt.lib.php:1270
-#: src/topt.lib.php:1688
+#: src/topt.lib.php:1277
+#: src/topt.lib.php:1695
 msgid "Incorrect nonce."
 msgstr ""
 
-#: src/topt.lib.php:1276
-#: src/topt.lib.php:1316
-#: src/topt.lib.php:1694
+#: src/topt.lib.php:1283
+#: src/topt.lib.php:1323
+#: src/topt.lib.php:1701
 msgid "Incorrect user."
 msgstr ""
 
-#: src/topt.lib.php:1283
+#: src/topt.lib.php:1290
 msgid "Two-Factor Authentication is already enabled for your account."
 msgstr ""
 
-#: src/topt.lib.php:1290
-#: src/topt.lib.php:1330
+#: src/topt.lib.php:1297
+#: src/topt.lib.php:1337
 msgid "Unable to generate secret."
 msgstr ""
 
-#: src/topt.lib.php:1323
+#: src/topt.lib.php:1330
 msgid "Two-Factor Authentication is enabled for your account."
 msgstr ""
 
-#: src/topt.lib.php:1381
+#: src/topt.lib.php:1388
 msgid "Activate two factor for all users"
 msgstr ""
 
-#: src/topt.lib.php:1382
+#: src/topt.lib.php:1389
 msgid "Activate two factor for selected users"
 msgstr ""
 
-#: src/topt.lib.php:1383
+#: src/topt.lib.php:1390
 msgid "Deactivate two factor for all users"
 msgstr ""
 
-#: src/topt.lib.php:1384
+#: src/topt.lib.php:1391
 msgid "Deactivate two factor for selected users"
 msgstr ""
 
-#: src/topt.lib.php:1385
+#: src/topt.lib.php:1392
 msgid "Reset two factor for selected users (keep enforcement)"
 msgstr ""
 
-#: src/topt.lib.php:1386
+#: src/topt.lib.php:1393
 msgid "Reset two factor for all users (keep enforcement)"
 msgstr ""
 
-#: src/topt.lib.php:1387
+#: src/topt.lib.php:1394
 msgid "Delete all two-factor data and disable enforcement"
 msgstr ""
 
-#: src/topt.lib.php:1400
+#: src/topt.lib.php:1407
 msgid "Activated for all users"
 msgstr ""
 
-#: src/topt.lib.php:1403
+#: src/topt.lib.php:1410
 msgid "Activated for some users"
 msgstr ""
 
-#: src/topt.lib.php:1530
+#: src/topt.lib.php:1537
 msgid "You are not allowed to modify Two-Factor settings."
 msgstr ""
 
-#: src/topt.lib.php:1546
+#: src/topt.lib.php:1553
 msgid "Two-Factor enforced for all users."
 msgstr ""
 
-#: src/topt.lib.php:1556
+#: src/topt.lib.php:1563
 msgid "Two-Factor deactivated for all users."
 msgstr ""
 
-#: src/topt.lib.php:1563
-#: src/topt.lib.php:1581
-#: src/topt.lib.php:1622
+#: src/topt.lib.php:1570
+#: src/topt.lib.php:1588
+#: src/topt.lib.php:1629
 msgid "No users selected."
 msgstr ""
 
-#: src/topt.lib.php:1574
+#: src/topt.lib.php:1581
 msgid "Two-Factor enforced for selected users."
 msgstr ""
 
-#: src/topt.lib.php:1616
+#: src/topt.lib.php:1623
 msgid "Two-Factor deactivated for selected users."
 msgstr ""
 
-#: src/topt.lib.php:1633
+#: src/topt.lib.php:1640
 msgid "Two-Factor settings reset for selected users."
 msgstr ""
 
-#: src/topt.lib.php:1646
+#: src/topt.lib.php:1653
 msgid "Two-Factor settings reset for all users."
 msgstr ""
 
-#: src/topt.lib.php:1660
+#: src/topt.lib.php:1667
 msgid "All Two-Factor data deleted and enforcement disabled."
 msgstr ""
 
-#: src/topt.lib.php:1666
+#: src/topt.lib.php:1673
 msgid "Invalid two-factor action selected."
 msgstr ""
 
@@ -3769,6 +3777,6 @@ msgstr ""
 msgid "Your WordPress install is following <a href=\"https://sucuri.net/guides/wordpress-security\" target=\"_blank\" rel=\"noopener\">the security best practices</a>."
 msgstr ""
 
-#: sucuri.php:350
+#: sucuri.php:351
 msgid "Sucuri plugin has been uninstalled"
 msgstr ""

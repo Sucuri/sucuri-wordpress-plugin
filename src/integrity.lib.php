@@ -541,6 +541,7 @@ class SucuriScanIntegrity
 
         ob_start();
         $filename = SucuriScanRequest::post('filepath');
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped 
         echo SucuriScanCommand::diffHTML($filename);
         $response = ob_get_clean();
 
