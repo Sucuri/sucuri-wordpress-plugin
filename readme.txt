@@ -3,7 +3,7 @@ Contributors: wordpress@sucuri.net
 Donate Link: https://sucuri.net/
 Tags: malware, security, firewall, scan, spam, virus, sucuri, protection, blocklist, detection, hardening, file integrity
 Requires at least: 3.6
-Tested up to: 6.8
+Tested up to: 6.9
 Stable tag: 2.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
