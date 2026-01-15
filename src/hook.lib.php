@@ -231,6 +231,7 @@ class SucuriScanHook extends SucuriScanEvent
      */
     public static function hookLoginFailure($title = '')
     {
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing
         $password = SucuriScanRequest::post('pwd');
         $title = empty($title) ? __('Unknown', 'sucuri-scanner') : sanitize_user($title, true);
         /* translators: %s: username */
@@ -286,6 +287,7 @@ class SucuriScanHook extends SucuriScanEvent
     public static function hookLoginFormResetpass()
     {
         // Detecting WordPress 2.8.3 vulnerability - $key is array.
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         if (isset($_GET['key']) && is_array($_GET['key'])) {
             self::reportCriticalEvent(__('Attempt to reset password by attacking WP/2.8.3 bug', 'sucuri-scanner'));
         }
@@ -320,8 +322,10 @@ class SucuriScanHook extends SucuriScanEvent
     public static function hookOptionsManagement()
     {
         /* detect any Wordpress settings modification */
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing
         if (SucuriScanPermissions::canManagePlugin() && SucuriScanOption::checkOptionsNonce()) {
             /* compare settings in the database with the modified ones */
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing
             $options_changed = SucuriScanOption::whatOptionsWereChanged($_POST);
             $options_changed_str = '';
             $options_changed_simple = '';
@@ -347,7 +351,8 @@ class SucuriScanHook extends SucuriScanEvent
             }
 
             /* identify the origin of the request */
-            $option_page = isset($_POST['option_page']) ? $_POST['option_page'] : 'options';
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing
+            $option_page = isset($_POST['option_page']) ? sanitize_text_field(wp_unslash($_POST['option_page'])) : 'options';
             $page_referer = __('Common', 'sucuri-scanner');
 
             switch ($option_page) {
@@ -460,7 +465,6 @@ class SucuriScanHook extends SucuriScanEvent
      */
     public static function hookPluginDelete()
     {
-        // Plugin deletion request.
         if (
             SucuriScanPermissions::canDeletePlugins()
             && SucuriScanRequest::post('action', 'delete-selected')
@@ -513,14 +517,13 @@ class SucuriScanHook extends SucuriScanEvent
      * @return void
      */
     public static function hookPluginEditor()
-    {
-        // Plugin editor request.
+    {// phpcs:ignore WordPress.Security.NonceVerification.Missing
         if (
             SucuriScanPermissions::canEditPlugins()
             && SucuriScanRequest::post('action', 'update')
             && SucuriScanRequest::post('plugin', '.+')
             && SucuriScanRequest::post('file', '.+')
-            && strpos($_SERVER['SCRIPT_NAME'], 'plugin-editor.php') !== false
+            && isset($_SERVER['SCRIPT_NAME']) && strpos(sanitize_text_field(wp_unslash($_SERVER['SCRIPT_NAME'])), 'plugin-editor.php') !== false
         ) {
             $filename = SucuriScanRequest::post('file');
             /* translators: %s: filename of the edited plugin */
@@ -536,8 +539,7 @@ class SucuriScanHook extends SucuriScanEvent
      * @return void
      */
     public static function hookPluginInstall()
-    {
-        // Plugin installation request.
+    {// phpcs:ignore WordPress.Security.NonceVerification.Missing
         if (
             SucuriScanPermissions::canInstallPlugins()
             && SucuriScanRequest::getOrPost('action', '(install|upload)-plugin')
@@ -545,8 +547,8 @@ class SucuriScanHook extends SucuriScanEvent
         ) {
             $plugin = SucuriScanRequest::getOrPost('plugin', '.+');
 
-            if (isset($_FILES['pluginzip'])) {
-                $plugin = $_FILES['pluginzip']['name'];
+            if (isset($_FILES['pluginzip']) && isset($_FILES['pluginzip']['name'])) {
+                $plugin = sanitize_text_field(wp_unslash($_FILES['pluginzip']['name']));
             }
 
             $plugin = $plugin ? $plugin : __('Unknown', 'sucuri-scanner');
@@ -585,7 +587,7 @@ class SucuriScanHook extends SucuriScanEvent
 
             if (
                 SucuriScanRequest::get('plugin', '.+')
-                && strpos($_SERVER['SCRIPT_NAME'], 'wp-admin/update.php') !== false
+                && isset($_SERVER['SCRIPT_NAME']) && strpos(sanitize_text_field(wp_unslash($_SERVER['SCRIPT_NAME'])), 'wp-admin/update.php') !== false
             ) {
                 $plugin_list[] = SucuriScanRequest::get('plugin', '.+');
             } elseif (
@@ -929,7 +931,7 @@ class SucuriScanHook extends SucuriScanEvent
             && SucuriScanRequest::post('action', 'update')
             && SucuriScanRequest::post('theme', '.+')
             && SucuriScanRequest::post('file', '.+')
-            && strpos($_SERVER['SCRIPT_NAME'], 'theme-editor.php') !== false
+            && isset($_SERVER['SCRIPT_NAME']) && strpos(sanitize_text_field(wp_unslash($_SERVER['SCRIPT_NAME'])), 'theme-editor.php') !== false
             && check_ajax_referer('updates', false, false)
         ) {
             $theme_name = SucuriScanRequest::post('theme');

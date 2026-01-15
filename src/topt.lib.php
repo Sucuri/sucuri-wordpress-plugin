@@ -258,7 +258,7 @@ class SucuriScanTwoFactor extends SucuriScan
             'secret' => (string) $secret_for_setup,
             'created' => time(),
             'attempts' => 0,
-            'ua' => isset($_SERVER['HTTP_USER_AGENT']) ? (string) $_SERVER['HTTP_USER_AGENT'] : '',
+            'ua' => isset($_SERVER['HTTP_USER_AGENT']) ? sanitize_text_field(wp_unslash($_SERVER['HTTP_USER_AGENT'])) : '',
         );
 
         set_transient(self::transient_key($token), $data, self::LOGIN_TOKEN_TTL);
@@ -405,7 +405,7 @@ class SucuriScanTwoFactor extends SucuriScan
      */
     protected static function enforce_user_agent($session, $token)
     {
-        $ua = isset($_SERVER['HTTP_USER_AGENT']) ? (string) $_SERVER['HTTP_USER_AGENT'] : '';
+        $ua = isset($_SERVER['HTTP_USER_AGENT']) ? sanitize_text_field(wp_unslash($_SERVER['HTTP_USER_AGENT'])) : '';
 
         if (!empty($session['ua']) && $session['ua'] !== $ua) {
             self::clear_login_session($token);
@@ -606,7 +606,7 @@ class SucuriScanTwoFactor extends SucuriScan
 
         self::enforce_user_agent($session, $token);
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
             check_admin_referer($nonce_action);
 
             $submitted_code = self::extract_submitted_code('sucuriscan_totp_code');
@@ -694,7 +694,7 @@ class SucuriScanTwoFactor extends SucuriScan
         $user = get_user_by('id', $user_id);
         $otpauth = SucuriScanTOTP::generate_qr_code_url($user, $secret_key);
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
             check_admin_referer($nonce_action);
 
             $submitted_code = self::extract_submitted_code('sucuriscan_totp_code');

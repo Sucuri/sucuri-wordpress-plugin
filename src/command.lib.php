@@ -135,13 +135,13 @@ class SucuriScanCommand extends SucuriScan
         $output = ''; /* initialize empty with no differences */
         $a = tempnam(sys_get_temp_dir(), SUCURISCAN . '-integrity-');
         $b = tempnam(sys_get_temp_dir(), SUCURISCAN . '-integrity-');
-        $handle = @fopen($a, 'w');
+        $handle = @fopen($a, 'w'); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
 
         if ($handle) {
-            @fwrite($handle, SucuriScanAPI::getOriginalCoreFile($filepath));
+            @fwrite($handle, SucuriScanAPI::getOriginalCoreFile($filepath)); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite
             @copy(ABSPATH . '/' . $filepath, $b);
             $output = self::diff($a, $b);
-            @fclose($handle);
+            @fclose($handle); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
         }
 
         @unlink($a); /* delete original file */

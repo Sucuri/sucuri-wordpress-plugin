@@ -58,6 +58,7 @@ class SucuriScanSettingsIntegrity extends SucuriScanSettings
 
         if ($nonce) {
             // Enable or disable the Unix diff utility.
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing
             $status = SucuriScanRequest::post(':diff_utility', '(en|dis)able');
 
             if ($status) {

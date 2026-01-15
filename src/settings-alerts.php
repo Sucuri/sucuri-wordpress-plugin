@@ -48,7 +48,9 @@ function sucuriscan_settings_alerts_recipients($nonce)
     // Process form submission.
     if ($nonce) {
         // Add new email address to the alert recipient list.
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing
         if (SucuriScanRequest::post(':save_recipient') !== false) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing
             $new_email = SucuriScanRequest::post(':recipient');
 
             if (SucuriScan::isValidEmail($new_email)) {

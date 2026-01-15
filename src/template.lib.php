@@ -118,7 +118,7 @@ class SucuriScanTemplate extends SucuriScanRequest
         $params['WordPressVersion'] = self::siteVersion();
         $params['PluginVersion'] = SUCURISCAN_VERSION;
         $params['CleanDomain'] = self::getDomain();
-        $params['Year'] = date('Y');
+        $params['Year'] = gmdate('Y');
         $params['FreemiumVisibility'] = SucuriScanInterface::isPremium() ? 'sucuriscan-hidden' : '';
 
         if (!array_key_exists('PageStyleClass', $params)) {

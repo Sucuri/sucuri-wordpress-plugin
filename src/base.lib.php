@@ -503,13 +503,14 @@ class SucuriScan
         $headers = self::orderedHttpHeaders();
 
         foreach ($headers as $header) {
-            if (
-                array_key_exists($header, $_SERVER)
-                && self::isValidIP($_SERVER[$header])
-            ) {
-                $remote_addr = $_SERVER[$header];
-                $header_used = $header;
-                break;
+            if (array_key_exists($header, $_SERVER)) {
+                $header_value = sanitize_text_field(wp_unslash($_SERVER[$header]));
+
+                if (self::isValidIP($header_value)) {
+                    $remote_addr = $header_value;
+                    $header_used = $header;
+                    break;
+                }
             }
         }
 
@@ -542,7 +543,7 @@ class SucuriScan
     public static function getUserAgent()
     {
         if (isset($_SERVER['HTTP_USER_AGENT'])) {
-            return self::escape($_SERVER['HTTP_USER_AGENT']);
+            return sanitize_text_field(wp_unslash($_SERVER['HTTP_USER_AGENT']));
         }
 
         return 'Mozilla/5.0 (KHTML, like Gecko) Safari/537.36';
@@ -739,7 +740,7 @@ class SucuriScan
             );
         }
 
-        return date($format, (intval($timestamp) + ($diff * 3600)));
+        return gmdate($format, (intval($timestamp) + ($diff * 3600)));
     }
 
     /**
@@ -890,7 +891,8 @@ class SucuriScan
      */
     public static function isNginxServer()
     {
-        return (bool) (stripos(@$_SERVER['SERVER_SOFTWARE'], 'nginx') !== false);
+        $server_software = isset($_SERVER['SERVER_SOFTWARE']) ? sanitize_text_field(wp_unslash($_SERVER['SERVER_SOFTWARE'])) : '';
+        return (bool) (stripos($server_software, 'nginx') !== false);
     }
 
     /**
@@ -900,7 +902,8 @@ class SucuriScan
      */
     public static function isIISServer()
     {
-        return (bool) (stripos(@$_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS') !== false);
+        $server_software = isset($_SERVER['SERVER_SOFTWARE']) ? sanitize_text_field(wp_unslash($_SERVER['SERVER_SOFTWARE'])) : '';
+        return (bool) (stripos($server_software, 'Microsoft-IIS') !== false);
     }
 
     /**

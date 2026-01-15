@@ -138,7 +138,7 @@ class SucuriScanCookie extends SucuriScan
             return $default;
         }
 
-        $filtered = self::filterValue((string) $_COOKIE[$name]);
+        $filtered = self::filterValue(sanitize_text_field(wp_unslash((string) $_COOKIE[$name])));
 
         return ($filtered === '' && $_COOKIE[$name] !== '') ? $default : $filtered;
     }

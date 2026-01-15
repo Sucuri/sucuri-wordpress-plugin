@@ -53,9 +53,11 @@ class SucuriScanSettingsScanner extends SucuriScanSettings
             $allowed_actions[] = 'runnow'; /* execute in the next 10 seconds */
             $allowed_actions[] = 'remove'; /* can be reinstalled automatically */
             $allowed_actions = sprintf('(%s)', implode('|', $allowed_actions));
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing
             $cronjob_action = SucuriScanRequest::post(':cronjob_action', $allowed_actions);
 
             if ($cronjob_action) {
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing
                 $cronjobs = SucuriScanRequest::post(':cronjobs', '_array');
 
                 if (!empty($cronjobs)) {

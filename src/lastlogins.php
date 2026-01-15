@@ -218,11 +218,11 @@ function sucuriscan_lastlogins_datastore_is_writable()
     $datastore_filepath = sucuriscan_lastlogins_datastore_exists();
 
     if ($datastore_filepath) {
-        if (!is_writable($datastore_filepath)) {
-            @chmod($datastore_filepath, 0644);
+        if (!is_writable($datastore_filepath)) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
+            @chmod($datastore_filepath, 0644); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod
         }
 
-        if (is_writable($datastore_filepath)) {
+        if (is_writable($datastore_filepath)) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
             return $datastore_filepath;
         }
     }

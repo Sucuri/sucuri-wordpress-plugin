@@ -3,12 +3,14 @@
 
 require __DIR__ . '/constants.php';
 
+// phpcs:ignore WordPress.PHP.DevelopmentFunctions.prevent_path_disclosure_error_reporting
 error_reporting((E_ALL | E_USER_ERROR | E_USER_WARNING | E_USER_NOTICE) & ~E_DEPRECATED & ~E_USER_DEPRECATED);
 
 $GLOBALS['wp_version'] = $GLOBALS['wp_version'] ?? '6.4.0';
 $GLOBALS['locale'] = $GLOBALS['locale'] ?? 'en_US';
 
 if (!function_exists('translate')) {
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
     function translate($text, $domain = null)
     {
         return $text;
@@ -17,6 +19,7 @@ if (!function_exists('translate')) {
 
 
 if (!function_exists('esc_attr')) {
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
     function esc_attr($text)
     {
         return htmlspecialchars((string) $text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
@@ -24,6 +27,7 @@ if (!function_exists('esc_attr')) {
 }
 
 if (!function_exists('esc_url')) {
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
     function esc_url($url)
     {
         return (string) $url;
@@ -31,6 +35,7 @@ if (!function_exists('esc_url')) {
 }
 
 if (!function_exists('wp_kses_post')) {
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
     function wp_kses_post($html)
     {
         // In tests, pass-through to simplify; production will use WP's kses.
@@ -43,6 +48,7 @@ if (file_exists(BASE_DIR . '/vendor/autoload.php')) {
 }
 
 if (!function_exists('wp_create_nonce')) {
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
     function wp_create_nonce($s)
     {
         return 'nonce';
@@ -50,6 +56,7 @@ if (!function_exists('wp_create_nonce')) {
 }
 
 if (!function_exists('admin_url')) {
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
     function admin_url($path = '')
     {
         return 'https://example.com/wp-admin/' . ltrim($path, '/');
@@ -57,6 +64,7 @@ if (!function_exists('admin_url')) {
 }
 
 if (!function_exists('network_admin_url')) {
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
     function network_admin_url($path = '')
     {
         return 'https://example.com/wp-admin/network/' . ltrim($path, '/');
@@ -65,6 +73,7 @@ if (!function_exists('network_admin_url')) {
 
 
 if (!function_exists('apply_filters')) {
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
     function apply_filters($hook, $value)
     {
         return $value;
@@ -78,6 +87,7 @@ if (!function_exists('current_user_can')) {
      * @param mixed $cap Optional capability name (ignored in tests).
      * @return bool Always true in test context.
      */
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
     function current_user_can($cap = null)
     {
         return true;
@@ -85,6 +95,7 @@ if (!function_exists('current_user_can')) {
 }
 
 if (!function_exists('wp_get_current_user')) {
+
     function wp_get_current_user()
     {
         return (object) ['user_login' => 'admin', 'user_email' => 'admin@example.com', 'display_name' => 'Admin'];

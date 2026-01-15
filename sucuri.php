@@ -54,8 +54,8 @@ $sucuriscan_dependencies = array(
 );
 
 /* terminate execution if dependencies are not met */
-foreach ($sucuriscan_dependencies as $dependency) {
-    if (!function_exists($dependency)) {
+foreach ($sucuriscan_dependencies as $sucuriscan_dependency) {
+    if (!function_exists($sucuriscan_dependency)) {
         /* Report invalid access if possible. */
         header('HTTP/1.1 403 Forbidden');
         exit(0);

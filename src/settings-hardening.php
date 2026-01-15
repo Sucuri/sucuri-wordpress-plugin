@@ -542,7 +542,7 @@ class SucuriScanHardeningPage extends SucuriScan
 
             if (!$config) {
                 SucuriScanInterface::error(__('WordPress configuration file was not found.', 'sucuri-scanner'));
-            } elseif (!is_writable($config)) {
+            } elseif (!is_writable($config)) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
                 SucuriScanInterface::error(__('WordPress configuration file is not writable.', 'sucuri-scanner'));
             } else {
                 $content = SucuriScanFileInfo::fileContent($config);
@@ -583,7 +583,7 @@ class SucuriScanHardeningPage extends SucuriScan
 
             if (!$config) {
                 SucuriScanInterface::error(__('WordPress configuration file was not found.', 'sucuri-scanner'));
-            } elseif (!is_writable($config)) {
+            } elseif (!is_writable($config)) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
                 SucuriScanInterface::error(__('WordPress configuration file is not writable.', 'sucuri-scanner'));
             } else {
                 $content = SucuriScanFileInfo::fileContent($config);

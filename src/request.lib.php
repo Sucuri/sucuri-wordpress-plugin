@@ -100,6 +100,7 @@ class SucuriScanRequest extends SucuriScan
      */
     public static function get($key = '', $pattern = '')
     {
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         return self::request($_GET, $key, $pattern);
     }
 
@@ -113,6 +114,7 @@ class SucuriScanRequest extends SucuriScan
      */
     public static function post($key = '', $pattern = '')
     {
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing
         return self::request($_POST, $key, $pattern);
     }
 
@@ -126,6 +128,7 @@ class SucuriScanRequest extends SucuriScan
      */
     public static function getOrPost($key = '', $pattern = '')
     {
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         return self::request($_REQUEST, $key, $pattern);
     }
 }

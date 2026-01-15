@@ -57,7 +57,7 @@ function sucuriscan_settings_webinfo_details()
     }
 
     if (isset($_SERVER['SERVER_SOFTWARE'])) {
-        $info_vars['Server'] = $_SERVER['SERVER_SOFTWARE'];
+        $info_vars['Server'] = sanitize_text_field(wp_unslash($_SERVER['SERVER_SOFTWARE']));
     }
 
     /* PHP INI Settings */

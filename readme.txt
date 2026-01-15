@@ -1,7 +1,7 @@
-=== Sucuri Security - Auditing, Malware Scanner and Security Hardening ===
+=== Sucuri Security - Auditing, Malware Scanner and Hardening ===
 Contributors: wordpress@sucuri.net
 Donate Link: https://sucuri.net/
-Tags: malware, security, firewall, scan, spam, virus, sucuri, protection, blocklist, detection, hardening, file integrity
+Tags: security, malware, hardening, audit, firewall
 Requires at least: 3.6
 Tested up to: 6.9
 Stable tag: 2.6
@@ -253,7 +253,7 @@ The best place is to engage us via the [Support Forum](https://wordpress.org/sup
 == Upgrade Notice ==
 
 = 1.8.37 =
-This version removes the API communication service dependency on https://wordpress.sucuri.net/api/, because this service has been discontinued until further notice. Users who have their custom APIs to use in place of https://wordpress.sucuri.net/api/ can still use the API communication service by adding the API endpoint as SUCURISCAN_API_URL on the wp-config.php file.
+Removes dependency on wordpress.sucuri.net/api/. Custom APIs can still be used via SUCURISCAN_API_URL in wp-config.php.
 
 = 1.8.19 =
 This version adds an option to refresh the malware scan results on demand, as well as several small bug fixes and improvements.

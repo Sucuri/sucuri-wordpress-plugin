@@ -149,7 +149,7 @@ function sucuriscan_settings_general_datastorage($nonce)
             $labelExistence = 'success';
             $labelWritability = 'danger';
 
-            if (is_writable($fpath)) {
+            if (is_writable($fpath)) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
                 $disabled = ''; /* Allow file deletion */
                 $iswritable = __('Writable', 'sucuri-scanner');
                 $labelWritability = 'success';
@@ -194,7 +194,7 @@ function sucuriscan_selfhosting_fpath()
 
     if ($monitor === 'enabled'
         && !empty($monitor_fpath)
-        && is_writable($folder)
+        && is_writable($folder) // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
     ) {
         return $monitor_fpath;
     }
@@ -232,11 +232,11 @@ function sucuriscan_settings_general_selfhosting($nonce)
                 SucuriScanOption::updateOption(':selfhosting_monitor', 'disabled');
                 SucuriScanEvent::notifyEvent('plugin_change', $message);
                 SucuriScanInterface::info(__('The log exporter feature has been disabled', 'sucuri-scanner'));
-            } elseif (strpos($monitor_fpath, $_SERVER['DOCUMENT_ROOT']) !== false) {
+            } elseif (isset($_SERVER['DOCUMENT_ROOT']) && strpos($monitor_fpath, sanitize_text_field(wp_unslash($_SERVER['DOCUMENT_ROOT']))) !== false) {
                 SucuriScanInterface::error(__('File should not be publicly accessible.', 'sucuri-scanner'));
             } elseif (file_exists($monitor_fpath)) {
                 SucuriScanInterface::error(__('File already exists and will not be overwritten.', 'sucuri-scanner'));
-            } elseif (!is_writable(dirname($monitor_fpath))) {
+            } elseif (!is_writable(dirname($monitor_fpath))) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
                 SucuriScanInterface::error(__('File parent directory is not writable.', 'sucuri-scanner'));
             } else {
                 @file_put_contents($monitor_fpath, '', LOCK_EX);
@@ -551,7 +551,7 @@ function sucuriscan_settings_general_timezone($nonce)
         $sign = ($hour < 0) ? '-' : '+';
         $fill = (abs($hour) < 10) ? '0' : '';
         $keyname = sprintf('UTC%s%s%.2f', $sign, $fill, abs($hour));
-        $label = date('d M, Y H:i:s', $current + ($hour * 3600));
+        $label = gmdate('d M, Y H:i:s', $current + ($hour * 3600));
         $options[$keyname] = $keyname . ' (' . $label . ')';
     }
 

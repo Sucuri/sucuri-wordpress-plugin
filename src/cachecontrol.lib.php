@@ -82,7 +82,7 @@ class SucuriScanCacheHeaders extends SucuriScan
                 $localFutureTime = get_the_time('U');
 
                 if (($localNowTime + $maxTimeFuture) > $localFutureTime) {
-                    $maxTimeFuture = $localFutureTime - $localNowTime + rand(2, 32);
+                    $maxTimeFuture = $localFutureTime - $localNowTime + wp_rand(2, 32);
                 }
             }
 
@@ -117,7 +117,7 @@ class SucuriScanCacheHeaders extends SucuriScan
                 $directive .= ", stale-while-revalidate=$staleRevalidate";
             }
 
-            $directive = apply_filters('cache_control_cache_directive', $directive);
+            $directive = apply_filters('sucuriscan_cache_control_cache_directive', $directive);
 
             return $directive;
         }
@@ -196,8 +196,10 @@ class SucuriScanCacheHeaders extends SucuriScan
 
     protected function isWooCommerceInstalled()
     {
-        return in_array('woocommerce/woocommerce.php',
-            apply_filters('active_plugins', get_option('active_plugins')));
+        if (!function_exists('is_plugin_active')) {
+            include_once(ABSPATH . 'wp-admin/includes/plugin.php');
+        }
+        return is_plugin_active('woocommerce/woocommerce.php');
     }
 
     protected function selectCacheDirective()
@@ -231,9 +233,9 @@ class SucuriScanCacheHeaders extends SucuriScan
         } elseif (is_404()) {
             return $this->getCacheDirectiveFromOption('404_not_found');
         } elseif (is_date()) {
-            if ((is_year() && strcmp(get_the_time('Y'), date('Y')) < 0) ||
-                (is_month() && strcmp(get_the_time('Y-m'), date('Y-m')) < 0) ||
-                ((is_day() || is_time()) && strcmp(get_the_time('Y-m-d'), date('Y-m-d')) < 0)) {
+            if ((is_year() && strcmp(get_the_time('Y'), gmdate('Y')) < 0) ||
+                (is_month() && strcmp(get_the_time('Y-m'), gmdate('Y-m')) < 0) ||
+                ((is_day() || is_time()) && strcmp(get_the_time('Y-m-d'), gmdate('Y-m-d')) < 0)) {
                 return $this->getCacheDirectiveFromOption('dates');
             } else {
                 return $this->getCacheDirectiveFromOption('home');

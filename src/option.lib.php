@@ -1021,7 +1021,7 @@ class SucuriScanOption extends SucuriScanRequest
         return (bool) (
             !empty($action)
             && isset($_REQUEST[$nonce])
-            && wp_verify_nonce($_REQUEST[$nonce], $action)
+            && wp_verify_nonce(sanitize_text_field(wp_unslash($_REQUEST[$nonce])), $action)
         );
     }
 

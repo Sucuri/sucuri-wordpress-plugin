@@ -186,7 +186,7 @@ class SucuriScanIntegrity
                     $basedir = dirname($full_path);
 
                     if (!file_exists($basedir)) {
-                        @mkdir($basedir, 0755, true);
+                        @mkdir($basedir, 0755, true); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_mkdir
                     }
 
                     if (@file_put_contents($full_path, $content)) {
@@ -306,7 +306,9 @@ class SucuriScanIntegrity
         $maxPerPage = SUCURISCAN_INTEGRITY_FILES_PER_PAGE;
         $pageNumber = SucuriScanTemplate::pageNumber();
 
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing
         if (isset($_POST['files_per_page'])) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing
             $filesPerPage = intval(SucuriScanRequest::post('files_per_page'));
 
             if ($filesPerPage > 0) {
@@ -656,7 +658,7 @@ class SucuriScanIntegrity
                     );
                 } else {
                     $modified_at = @filemtime($full_filepath);
-                    $is_fixable = (bool) is_writable($full_filepath);
+                    $is_fixable = (bool) is_writable($full_filepath); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
                     $output['modified'][] = array(
                         'filepath' => $file_path,
                         'is_fixable' => $is_fixable,
@@ -664,7 +666,7 @@ class SucuriScanIntegrity
                     );
                 }
             } else {
-                $is_fixable = is_writable(dirname($full_filepath));
+                $is_fixable = is_writable(dirname($full_filepath)); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
                 $output['removed'][] = array(
                     'filepath' => $file_path,
                     'is_fixable' => $is_fixable,
@@ -685,7 +687,7 @@ class SucuriScanIntegrity
             if (!array_key_exists($file_path, $latest_hashes)) {
                 $full_filepath = ABSPATH . '/' . $file_path;
                 $modified_at = @filemtime($full_filepath);
-                $is_fixable = (bool) is_writable($full_filepath);
+                $is_fixable = (bool) is_writable($full_filepath); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
                 $output['added'][] = array(
                     'filepath' => $file_path,
                     'is_fixable' => $is_fixable,

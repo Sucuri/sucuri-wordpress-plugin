@@ -36,6 +36,7 @@ function sucuriscan_settings_apiservice_status($nonce)
 
     if ($nonce) {
         // Enable or disable the API service communication.
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing
         $api_service = SucuriScanRequest::post(':api_service', '(en|dis)able');
 
         if ($api_service) {

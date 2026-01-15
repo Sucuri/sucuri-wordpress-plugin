@@ -488,7 +488,7 @@ class SucuriScanEvent extends SucuriScan
         }
 
         /* remove unnecessary characters */
-        $message = strip_tags($message);
+        $message = wp_strip_all_tags($message);
         $message = str_replace("\r", '', $message);
         $message = str_replace("\n", '', $message);
         $message = str_replace("\t", '', $message);
@@ -892,7 +892,7 @@ class SucuriScanEvent extends SucuriScan
         }
 
         $resp = array(
-            'updated' => is_writable($config_path),
+            'updated' => is_writable($config_path), // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
             'old_keys' => $old_keys,
             'old_keys_string' => $old_keys_string,
             'new_keys' => $new_keys,
@@ -931,7 +931,7 @@ class SucuriScanEvent extends SucuriScan
             $filepath = SucuriScan::dataStorePath($file);
 
             // Do not proceed if not possible.
-            if (!is_writable(dirname($filepath)) || is_dir($filepath)) {
+            if (!is_writable(dirname($filepath)) || is_dir($filepath)) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
                 return SucuriScanInterface::error(
                     sprintf(
                         /* translators: %s: file path */
