@@ -448,6 +448,7 @@ class SucuriScanHardeningPage extends SucuriScan
 	    if (self::processRequest(__FUNCTION__)) {
             if (@unlink(ABSPATH . '/readme.html') === false) {
                 SucuriScanInterface::error(sprintf(
+                    /* translators: %s: path to the wordpress root */
                     __('Cannot delete <code>%s/readme.html</code>', 'sucuri-scanner'),
                     ABSPATH
                 ));

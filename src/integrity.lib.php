@@ -237,7 +237,8 @@ class SucuriScanIntegrity
         if ($files_processed != $files_selected) {
             return SucuriScanInterface::error(
                 sprintf(
-                    __('Only <b>%d</b> out of <b>%d</b> files were processed.', 'sucuri-scanner'),
+                    /* translators: %1$d: number of processed files, %2$d: total number of files */
+                    __('Only <b>%1$d</b> out of <b>%2$d</b> files were processed.', 'sucuri-scanner'),
                     $files_processed,
                     $files_selected
                 )
@@ -246,7 +247,8 @@ class SucuriScanIntegrity
 
         return SucuriScanInterface::info(
             sprintf(
-                __('<b>%d</b> out of <b>%d</b> files were successfully processed.', 'sucuri-scanner'),
+                /* translators: %1$d: number of processed files, %2$d: total number of files */
+                __('<b>%1$d</b> out of <b>%2$d</b> files were successfully processed.', 'sucuri-scanner'),
                 $files_processed,
                 $files_selected
             )

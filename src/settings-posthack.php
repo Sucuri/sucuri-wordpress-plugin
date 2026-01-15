@@ -261,6 +261,7 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
 
         if (SucuriScanEvent::setNewPassword($user_id)) {
             $response = 'Done';
+            /* translators: %d: user ID */
             SucuriScanEvent::reportNoticeEvent(sprintf(__('Password changed for user #%d', 'sucuri-scanner'), $user_id));
         }
 
@@ -404,6 +405,7 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
                     $fifo->skip_directories = false;
                     $fifo->removeDirectoryTree($newpath);
 
+                    /* translators: %s: version number */
                     $installed = sprintf(__('Installed v%s', 'sucuri-scanner'), SucuriScan::escape($info['version']));
                     $response = '<span class="sucuriscan-label-success">' . $installed . '</span>';
                 }

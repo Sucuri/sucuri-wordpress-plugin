@@ -186,7 +186,8 @@ class SucuriScanMail extends SucuriScanOption
             && !empty($user->user_login)
         ) {
             $display_name = sprintf(
-                __('User: %s (%s)', 'sucuri-scanner'),
+                /* translators: %1$s: User display name, %2$s: User login */
+                __('User: %1$s (%2$s)', 'sucuri-scanner'),
                 $user->display_name,
                 $user->user_login
             );

@@ -214,6 +214,7 @@ class SucuriScanInterface
         if (!is_writable($filename)) {
             self::error(
                 sprintf(
+                    /* translators: %s: absolute path of the settings file */
                     __('Storage is not writable: <code>%s</code>', 'sucuri-scanner'),
                     $filename /* absolute path of the settings file */
                 )
@@ -270,6 +271,7 @@ class SucuriScanInterface
     {
         if (!SucuriScanPermissions::canManagePlugin()) {
             SucuriScan::throwException(__('Access denied; cannot manage options', 'sucuri-scanner'));
+            /* translators: %s: Plugin name */
             wp_die(sprintf(esc_html__('Access denied by %s', 'sucuri-scanner'), esc_html(SUCURISCAN_PLUGIN_NAME)));
         }
     }

@@ -65,6 +65,7 @@ class SucuriScanSettingsIntegrity extends SucuriScanSettings
                     SucuriScanInterface::error(__('Your hosting provider has blocked the execution of external commands.', 'sucuri-scanner'));
                 } else {
                     $status = $status . 'd'; /* add past tense */
+                    /* translators: %s: status (enabled/disabled) */
                     $message = sprintf(__('Integrity diff utility has been <code>%s</code>', 'sucuri-scanner'), $status);
 
                     SucuriScanOption::updateOption(':diff_utility', $status);
@@ -109,6 +110,7 @@ class SucuriScanSettingsIntegrity extends SucuriScanSettings
 
             if (!empty($deletedFiles)) {
                 SucuriScanEvent::reportDebugEvent(
+                    /* translators: %s: comma-separated list of filenames */
                     sprintf(__('Core files that will not be ignored anymore: (multiple entries): %s', 'sucuri-scanner'), implode(',', $deletedFiles))
                 );
                 SucuriScanInterface::info(__('The selected files have been successfully processed.', 'sucuri-scanner'));
