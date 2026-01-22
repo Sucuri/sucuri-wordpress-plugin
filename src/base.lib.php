@@ -135,6 +135,22 @@ class SucuriScan
     }
 
     /**
+     * Retrieve a sanitized value from the $_SERVER super global.
+     *
+     * @param string $key     Key to look for.
+     * @param string $default Default value to return if key not found.
+     * @return string         Sanitized value.
+     */
+    public static function getHTTPServerValue($key, $default = '')
+    {
+        if (isset($_SERVER[$key])) {
+            return sanitize_text_field(wp_unslash($_SERVER[$key]));
+        }
+
+        return $default;
+    }
+
+    /**
      * Encodes the less-than, greater-than, ampersand, double quote and single
      * quote characters, will never double encode entities.
      *
@@ -503,14 +519,12 @@ class SucuriScan
         $headers = self::orderedHttpHeaders();
 
         foreach ($headers as $header) {
-            if (array_key_exists($header, $_SERVER)) {
-                $header_value = sanitize_text_field(wp_unslash($_SERVER[$header]));
+            $possible_addr = self::getHTTPServerValue($header);
 
-                if (self::isValidIP($header_value)) {
-                    $remote_addr = $header_value;
-                    $header_used = $header;
-                    break;
-                }
+            if (self::isValidIP($possible_addr)) {
+                $remote_addr = $possible_addr;
+                $header_used = $header;
+                break;
             }
         }
 
@@ -542,11 +556,7 @@ class SucuriScan
      */
     public static function getUserAgent()
     {
-        if (isset($_SERVER['HTTP_USER_AGENT'])) {
-            return sanitize_text_field(wp_unslash($_SERVER['HTTP_USER_AGENT']));
-        }
-
-        return 'Mozilla/5.0 (KHTML, like Gecko) Safari/537.36';
+        return self::getHTTPServerValue('HTTP_USER_AGENT', 'Mozilla/5.0 (KHTML, like Gecko) Safari/537.36');
     }
 
     /**
@@ -891,7 +901,8 @@ class SucuriScan
      */
     public static function isNginxServer()
     {
-        $server_software = isset($_SERVER['SERVER_SOFTWARE']) ? sanitize_text_field(wp_unslash($_SERVER['SERVER_SOFTWARE'])) : '';
+        $server_software = self::getHTTPServerValue('SERVER_SOFTWARE');
+
         return (bool) (stripos($server_software, 'nginx') !== false);
     }
 
@@ -902,7 +913,8 @@ class SucuriScan
      */
     public static function isIISServer()
     {
-        $server_software = isset($_SERVER['SERVER_SOFTWARE']) ? sanitize_text_field(wp_unslash($_SERVER['SERVER_SOFTWARE'])) : '';
+        $server_software = self::getHTTPServerValue('SERVER_SOFTWARE');
+
         return (bool) (stripos($server_software, 'Microsoft-IIS') !== false);
     }
 

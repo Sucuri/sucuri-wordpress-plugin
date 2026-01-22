@@ -95,7 +95,6 @@ if (!function_exists('current_user_can')) {
 }
 
 if (!function_exists('wp_get_current_user')) {
-
     function wp_get_current_user()
     {
         return (object) ['user_login' => 'admin', 'user_email' => 'admin@example.com', 'display_name' => 'Admin'];
