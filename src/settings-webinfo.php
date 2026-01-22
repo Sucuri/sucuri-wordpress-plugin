@@ -56,8 +56,8 @@ function sucuriscan_settings_webinfo_details()
         $info_vars['Memory_usage'] = round(memory_get_usage() / 1024 / 1024, 2).' MB';
     }
 
-    if (isset($_SERVER['SERVER_SOFTWARE'])) {
-        $info_vars['Server'] = $_SERVER['SERVER_SOFTWARE'];
+    if (SucuriScanRequest::server('SERVER_SOFTWARE')) {
+        $info_vars['Server'] = SucuriScanRequest::server('SERVER_SOFTWARE');
     }
 
     /* PHP INI Settings */

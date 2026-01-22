@@ -71,7 +71,7 @@ class SucuriScanCLI extends WP_CLI_Command
 
         preg_match_all('/<p><b>SUCURI:<\/b>(.+)<\/p>/', $output, $matches);
 
-        $message = isset($matches[1][0]) ? trim(strip_tags($matches[1][0])) : 'An unknown error occurred during registration.';
+        $message = isset($matches[1][0]) ? trim(wp_strip_all_tags($matches[1][0])) : 'An unknown error occurred during registration.';
 
         if (! $registered) {
             WP_CLI::error($message);

@@ -61,6 +61,7 @@ function sucuriscan_settings_general_datastorage($nonce)
     $params = array();
     $files = array(
         '<root>' => __('Directory used to store the plugin settings, cache and system logs', 'sucuri-scanner'),
+        /* translators: %s: number of seconds */
         'auditlogs' => sprintf(__('Cache to store the system logs obtained from the API service; expires after %s seconds.', 'sucuri-scanner'), SUCURISCAN_AUDITLOGS_LIFETIME),
         'auditqueue' => __('Local queue to store the most recent logs before they are sent to the remote API service.', 'sucuri-scanner'),
         'blockedusers' => __('Deprecated on 1.8.12; it was used to store a list of blocked user names.', 'sucuri-scanner'), /* TODO: deprecated on 1.8.12 */
@@ -70,8 +71,10 @@ function sucuriscan_settings_general_datastorage($nonce)
         'integrity' => __('Stores a list of files marked as fixed by the user via the WordPress Integrity tool.', 'sucuri-scanner'),
         'lastlogins' => __('Stores the data associated to every successful user login. The data never expires; manually delete if the file is too large.', 'sucuri-scanner'),
         'oldfailedlogins' => __('Stores the data for every failed login attempt after the plugin sends a report about a brute force password attack via email.', 'sucuri-scanner'),
+        /* translators: %s: number of seconds */
         'plugindata' => sprintf(__('Cache to store the data associated to the installed plugins listed in the Post-Hack page. Expires after %s seconds.', 'sucuri-scanner'), SUCURISCAN_GET_PLUGINS_LIFETIME),
         'settings' => __('Stores all the options used to configure the functionality and behavior of the plugin.', 'sucuri-scanner'),
+        /* translators: %s: number of seconds */
         'sitecheck' => sprintf(__('Cache to store the result of the malware scanner. Expires after %s seconds, reset at any time to force a re-scan.', 'sucuri-scanner'), SUCURISCAN_SITECHECK_LIFETIME),
         'trustip' => __('Stores a list of IP addresses trusted by the plugin, events triggered by one of these IPs will not be reported to the remote monitoring API service.', 'sucuri-scanner'),
     );
@@ -108,6 +111,7 @@ function sucuriscan_settings_general_datastorage($nonce)
             // Register on audit logs and return result.
             SucuriScanEvent::reportInfoEvent(
                 sprintf(
+                    /* translators: %s: comma-separated list of filenames */
                     __('%s were deleted.', 'sucuri-scanner'),
                     implode(', ', $filenames)
                 )
@@ -115,7 +119,8 @@ function sucuriscan_settings_general_datastorage($nonce)
 
             SucuriScanInterface::info(
                 sprintf(
-                    __('%d out of %d files have been deleted.', 'sucuri-scanner'),
+                    /* translators: %1$d: number of deleted files, %2$d: total number of files */
+                    __('%1$d out of %2$d files have been deleted.', 'sucuri-scanner'),
                     $deleted,
                     count($filenames)
                 )
@@ -144,7 +149,7 @@ function sucuriscan_settings_general_datastorage($nonce)
             $labelExistence = 'success';
             $labelWritability = 'danger';
 
-            if (is_writable($fpath)) {
+            if (is_writable($fpath)) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
                 $disabled = ''; /* Allow file deletion */
                 $iswritable = __('Writable', 'sucuri-scanner');
                 $labelWritability = 'success';
@@ -189,7 +194,7 @@ function sucuriscan_selfhosting_fpath()
 
     if ($monitor === 'enabled'
         && !empty($monitor_fpath)
-        && is_writable($folder)
+        && is_writable($folder) // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
     ) {
         return $monitor_fpath;
     }
@@ -227,11 +232,11 @@ function sucuriscan_settings_general_selfhosting($nonce)
                 SucuriScanOption::updateOption(':selfhosting_monitor', 'disabled');
                 SucuriScanEvent::notifyEvent('plugin_change', $message);
                 SucuriScanInterface::info(__('The log exporter feature has been disabled', 'sucuri-scanner'));
-            } elseif (strpos($monitor_fpath, $_SERVER['DOCUMENT_ROOT']) !== false) {
+            } elseif (SucuriScanRequest::server('DOCUMENT_ROOT') && strpos($monitor_fpath, SucuriScanRequest::server('DOCUMENT_ROOT')) !== false) {
                 SucuriScanInterface::error(__('File should not be publicly accessible.', 'sucuri-scanner'));
             } elseif (file_exists($monitor_fpath)) {
                 SucuriScanInterface::error(__('File already exists and will not be overwritten.', 'sucuri-scanner'));
-            } elseif (!is_writable(dirname($monitor_fpath))) {
+            } elseif (!is_writable(dirname($monitor_fpath))) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
                 SucuriScanInterface::error(__('File parent directory is not writable.', 'sucuri-scanner'));
             } else {
                 @file_put_contents($monitor_fpath, '', LOCK_EX);
@@ -336,6 +341,7 @@ function sucuriscan_settings_general_ipdiscoverer($nonce)
 
         if ($dns_lookups) {
             $action_d = $dns_lookups . 'd';
+            /* translators: %s: status (enabled/disabled) */
             $message = sprintf(__('DNS lookups for reverse proxy detection <code>%s</code>', 'sucuri-scanner'), $action_d);
 
             SucuriScanOption::updateOption(':dns_lookups', $action_d);
@@ -489,7 +495,8 @@ function sucuriscan_settings_general_importexport($nonce)
 
                 SucuriScanInterface::info(
                     sprintf(
-                        __('%d out of %d option have been successfully imported', 'sucuri-scanner'),
+                        /* translators: %1$d: number of imported options, %2$d: total options */
+                        __('%1$d out of %2$d option have been successfully imported', 'sucuri-scanner'),
                         $count,
                         $total
                     )
@@ -544,7 +551,7 @@ function sucuriscan_settings_general_timezone($nonce)
         $sign = ($hour < 0) ? '-' : '+';
         $fill = (abs($hour) < 10) ? '0' : '';
         $keyname = sprintf('UTC%s%s%.2f', $sign, $fill, abs($hour));
-        $label = date('d M, Y H:i:s', $current + ($hour * 3600));
+        $label = gmdate('d M, Y H:i:s', $current + ($hour * 3600));
         $options[$keyname] = $keyname . ' (' . $label . ')';
     }
 
@@ -553,6 +560,7 @@ function sucuriscan_settings_general_timezone($nonce)
         $timezone = SucuriScanRequest::post(':timezone', $pattern);
 
         if ($timezone) {
+            /* translators: %s: timezone */
             $message = sprintf(__('Timezone override will use %s', 'sucuri-scanner'), $timezone);
 
             SucuriScanOption::updateOption(':timezone', $timezone);

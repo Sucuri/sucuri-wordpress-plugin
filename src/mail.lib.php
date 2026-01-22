@@ -73,7 +73,7 @@ class SucuriScanMail extends SucuriScanOption
             unset($data_set['ForceHTML']);
         } else {
             $headers = array('Content-Type: text/plain');
-            $message = strip_tags($message);
+            $message = wp_strip_all_tags($message);
         }
 
         if (self::emailsPerHourReached() && !$force) {
@@ -126,7 +126,7 @@ class SucuriScanMail extends SucuriScanOption
     private static function getEmailSubject($event = '')
     {
         $subject = self::getOption(':email_subject');
-        $subject = strip_tags((string) $subject);
+        $subject = wp_strip_all_tags((string) $subject);
         $ip = self::getRemoteAddr();
 
         $subject = str_replace(':event', $event, $subject);
@@ -186,7 +186,8 @@ class SucuriScanMail extends SucuriScanOption
             && !empty($user->user_login)
         ) {
             $display_name = sprintf(
-                __('User: %s (%s)', 'sucuri-scanner'),
+                /* translators: %1$s: User display name, %2$s: User login */
+                __('User: %1$s (%2$s)', 'sucuri-scanner'),
                 $user->display_name,
                 $user->user_login
             );

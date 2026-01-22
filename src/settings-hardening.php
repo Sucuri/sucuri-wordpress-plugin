@@ -448,6 +448,7 @@ class SucuriScanHardeningPage extends SucuriScan
 	    if (self::processRequest(__FUNCTION__)) {
             if (@unlink(ABSPATH . '/readme.html') === false) {
                 SucuriScanInterface::error(sprintf(
+                    /* translators: %s: path to the wordpress root */
                     __('Cannot delete <code>%s/readme.html</code>', 'sucuri-scanner'),
                     ABSPATH
                 ));
@@ -541,7 +542,7 @@ class SucuriScanHardeningPage extends SucuriScan
 
             if (!$config) {
                 SucuriScanInterface::error(__('WordPress configuration file was not found.', 'sucuri-scanner'));
-            } elseif (!is_writable($config)) {
+            } elseif (!is_writable($config)) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
                 SucuriScanInterface::error(__('WordPress configuration file is not writable.', 'sucuri-scanner'));
             } else {
                 $content = SucuriScanFileInfo::fileContent($config);
@@ -582,7 +583,7 @@ class SucuriScanHardeningPage extends SucuriScan
 
             if (!$config) {
                 SucuriScanInterface::error(__('WordPress configuration file was not found.', 'sucuri-scanner'));
-            } elseif (!is_writable($config)) {
+            } elseif (!is_writable($config)) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
                 SucuriScanInterface::error(__('WordPress configuration file is not writable.', 'sucuri-scanner'));
             } else {
                 $content = SucuriScanFileInfo::fileContent($config);

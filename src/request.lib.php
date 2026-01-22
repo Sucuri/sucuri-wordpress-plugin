@@ -91,6 +91,22 @@ class SucuriScanRequest extends SucuriScan
     }
 
     /**
+     * Returns the value stored in a specific index in the global _SERVER variable.
+     *
+     * @param  string $key     Name of the variable contained in _SERVER.
+     * @param  string $default Default value to return if key not found.
+     * @return string          Sanitized value.
+     */
+    public static function server($key = '', $default = '')
+    {
+        if (isset($_SERVER[$key])) {
+            return sanitize_text_field(wp_unslash($_SERVER[$key]));
+        }
+
+        return $default;
+    }
+
+    /**
      * Returns the value stored in a specific index in the global _GET variable,
      * you can specify a pattern as the second argument to match allowed values.
      *
@@ -100,6 +116,7 @@ class SucuriScanRequest extends SucuriScan
      */
     public static function get($key = '', $pattern = '')
     {
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         return self::request($_GET, $key, $pattern);
     }
 
@@ -113,6 +130,7 @@ class SucuriScanRequest extends SucuriScan
      */
     public static function post($key = '', $pattern = '')
     {
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing
         return self::request($_POST, $key, $pattern);
     }
 
@@ -126,6 +144,7 @@ class SucuriScanRequest extends SucuriScan
      */
     public static function getOrPost($key = '', $pattern = '')
     {
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         return self::request($_REQUEST, $key, $pattern);
     }
 }

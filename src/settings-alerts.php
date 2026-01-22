@@ -48,15 +48,25 @@ function sucuriscan_settings_alerts_recipients($nonce)
     // Process form submission.
     if ($nonce) {
         // Add new email address to the alert recipient list.
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing
         if (SucuriScanRequest::post(':save_recipient') !== false) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing
             $new_email = SucuriScanRequest::post(':recipient');
 
             if (SucuriScan::isValidEmail($new_email)) {
                 $emails[] = $new_email;
-                $message = sprintf(__('The email alerts will be sent to: <code>%s</code>', 'sucuri-scanner'), $new_email);
+                $message = sprintf(
+                    /* translators: %s: email address */
+                    __('The email alerts will be sent to: <code>%s</code>', 'sucuri-scanner'), 
+                    $new_email
+                );
 
                 SucuriScanOption::updateOption(':notify_to', implode(',', $emails));
-                SucuriScanEvent::reportInfoEvent(sprintf(__('The email alerts will be sent to: %s', 'sucuri-scanner'), $new_email));
+                SucuriScanEvent::reportInfoEvent(sprintf(
+                    /* translators: %s: email address */
+                    __('The email alerts will be sent to: %s', 'sucuri-scanner'), 
+                    $new_email
+                ));
                 SucuriScanEvent::notifyEvent('plugin_change', $message);
                 SucuriScanInterface::info($message);
             } else {
@@ -79,10 +89,18 @@ function sucuriscan_settings_alerts_recipients($nonce)
 
             if (!empty($deleted_emails)) {
                 $deleted_emails_str = implode(",\x20", $deleted_emails);
-                $message = sprintf(__('These emails will stop receiving alerts: <code>%s</code>', 'sucuri-scanner'), $deleted_emails_str);
+                $message = sprintf(
+                    /* translators: %s: list of email addresses */
+                    __('These emails will stop receiving alerts: <code>%s</code>', 'sucuri-scanner'), 
+                    $deleted_emails_str
+                );
 
                 SucuriScanOption::updateOption(':notify_to', implode(',', $emails));
-                SucuriScanEvent::reportInfoEvent(sprintf(__('These emails will stop receiving alerts: %s', 'sucuri-scanner'), $deleted_emails_str));
+                SucuriScanEvent::reportInfoEvent(sprintf(
+                    /* translators: %s: list of email addresses */
+                    __('These emails will stop receiving alerts: %s', 'sucuri-scanner'), 
+                    $deleted_emails_str
+                ));
                 SucuriScanEvent::notifyEvent('plugin_change', $message);
                 SucuriScanInterface::info($message);
             }
@@ -94,6 +112,7 @@ function sucuriscan_settings_alerts_recipients($nonce)
             $mailSentSuccess = SucuriScanMail::sendMail(
                 $recipients,
                 __('Test Email Alert', 'sucuri-scanner'),
+                /* translators: %s: time of the event */
                 sprintf(__('Test email alert sent at %s', 'sucuri-scanner'), SucuriScan::datetime()),
                 array('Force' => true)
             );
@@ -150,8 +169,16 @@ function sucuriscan_settings_alerts_trustedips()
                 if ($cache->exists($cache_key)) {
                     SucuriScanInterface::error(__('The IP specified address was already added.', 'sucuri-scanner'));
                 } elseif ($cache->add($cache_key, $ip_info)) {
-                    SucuriScanEvent::reportWarningEvent(sprintf(__('IP has been trusted: %s', 'sucuri-scanner'), $trust_ip));
-                    SucuriScanInterface::info(sprintf(__('Events generated from this IP will be ignored: <code>%s</code>', 'sucuri-scanner'), $trust_ip));
+                    SucuriScanEvent::reportWarningEvent(sprintf(
+                        /* translators: %s: IP address */
+                        __('IP has been trusted: %s', 'sucuri-scanner'), 
+                        $trust_ip
+                    ));
+                    SucuriScanInterface::info(sprintf(
+                        /* translators: %s: IP address */
+                        __('Events generated from this IP will be ignored: <code>%s</code>', 'sucuri-scanner'), 
+                        $trust_ip
+                    ));
                 } else {
                     SucuriScanInterface::error(__('The IP address could not be added to the trusted list', 'sucuri-scanner'));
                 }
@@ -210,12 +237,19 @@ function sucuriscan_settings_alerts_subject($nonce)
     );
 
     $subjects = array(
-        sprintf(__('Sucuri Alert, %s, %s', 'sucuri-scanner'), ':domain', ':event'),
-        sprintf(__('Sucuri Alert, %s, %s, %s', 'sucuri-scanner'), ':domain', ':event', ':remoteaddr'),
-        sprintf(__('Sucuri Alert, %s, %s, %s', 'sucuri-scanner'), ':domain', ':event', ':username'),
-        sprintf(__('Sucuri Alert, %s, %s, %s', 'sucuri-scanner'), ':domain', ':event', ':email'),
-        sprintf(__('Sucuri Alert, %s, %s', 'sucuri-scanner'), ':event', ':remoteaddr'),
-        sprintf(__('Sucuri Alert, %s, %s', 'sucuri-scanner'), ':event', ':hostname'),
+        /* translators: %1$s: specific info like domain, event, etc */
+        sprintf(__('Sucuri Alert, %1$s, %2$s', 'sucuri-scanner'), ':domain', ':event'),
+        /* translators: %1$s: specific info like domain, event, etc */
+        sprintf(__('Sucuri Alert, %1$s, %2$s, %3$s', 'sucuri-scanner'), ':domain', ':event', ':remoteaddr'),
+        /* translators: %1$s: specific info like domain, event, etc */
+        sprintf(__('Sucuri Alert, %1$s, %2$s, %3$s', 'sucuri-scanner'), ':domain', ':event', ':username'),
+        /* translators: %1$s: specific info like domain, event, etc */
+        sprintf(__('Sucuri Alert, %1$s, %2$s, %3$s', 'sucuri-scanner'), ':domain', ':event', ':email'),
+        /* translators: %1$s: specific info like domain, event, etc */
+        sprintf(__('Sucuri Alert, %1$s, %2$s', 'sucuri-scanner'), ':event', ':remoteaddr'),
+        /* translators: %1$s: specific info like domain, event, etc */
+        sprintf(__('Sucuri Alert, %1$s, %2$s', 'sucuri-scanner'), ':event', ':hostname'),
+        /* translators: %s: event name */
         sprintf(__('Sucuri Alert, %s', 'sucuri-scanner'), ':event'),
     );
 
@@ -252,7 +286,11 @@ function sucuriscan_settings_alerts_subject($nonce)
 
             // Proceed with the operation saving the new subject.
             if ($new_subject !== false && $current_value !== $new_subject) {
-                $message = sprintf(__('Email subject set to <code>%s</code>', 'sucuri-scanner'), $new_subject);
+                $message = sprintf(
+                    /* translators: %s: email subject */
+                    __('Email subject set to <code>%s</code>', 'sucuri-scanner'), 
+                    $new_subject
+                );
 
                 SucuriScanOption::updateOption(':email_subject', $new_subject);
                 SucuriScanEvent::reportInfoEvent($message);
@@ -322,7 +360,11 @@ function sucuriscan_settings_alerts_perhour($nonce)
         if ($per_hour) {
             if (array_key_exists($per_hour, $emails_per_hour)) {
                 $per_hour_label = strtolower($emails_per_hour[$per_hour]);
-                $message = sprintf(__('Maximum alerts per hour set to <code>%s</code>', 'sucuri-scanner'), $per_hour_label);
+                $message = sprintf(
+                    /* translators: %s: maximum number */
+                    __('Maximum alerts per hour set to <code>%s</code>', 'sucuri-scanner'), 
+                    $per_hour_label
+                );
 
                 SucuriScanOption::updateOption(':emails_per_hour', $per_hour);
                 SucuriScanEvent::reportInfoEvent($message);
@@ -366,12 +408,20 @@ function sucuriscan_settings_alerts_bruteforce($nonce)
 
         if ($maximum) {
             if (array_key_exists($maximum, $max_failed_logins)) {
-                $message = sprintf(__('Consider brute-force attack after <code>%s</code> failed logins per hour', 'sucuri-scanner'), $maximum);
+                $message = sprintf(
+                    /* translators: %s: number of failed logins */
+                    __('Consider brute-force attack after <code>%s</code> failed logins per hour', 'sucuri-scanner'), 
+                    $maximum
+                );
 
                 SucuriScanOption::updateOption(':maximum_failed_logins', $maximum);
                 SucuriScanEvent::reportInfoEvent($message);
                 SucuriScanEvent::notifyEvent('plugin_change', $message);
-                SucuriScanInterface::info(sprintf(__('The plugin will assume that your website is under a brute-force attack after %s failed logins are detected during the same hour', 'sucuri-scanner'), $maximum));
+                SucuriScanInterface::info(sprintf(
+                    /* translators: %s: number of failed logins */
+                    __('The plugin will assume that your website is under a brute-force attack after %s failed logins are detected during the same hour', 'sucuri-scanner'), 
+                    $maximum
+                ));
             } else {
                 SucuriScanInterface::error(__('Invalid number of failed logins per hour', 'sucuri-scanner'));
             }
@@ -466,7 +516,11 @@ function sucuriscan_settings_alerts_events($nonce)
             }
 
             if ($ucounter > 0) {
-                $message = sprintf(__('A total of %s alert events were changed', 'sucuri-scanner'), $ucounter );
+                $message = sprintf(
+                    /* translators: %s: number of events */
+                    __('A total of %s alert events were changed', 'sucuri-scanner'), 
+                    $ucounter
+                );
 
                 SucuriScanEvent::reportInfoEvent($message);
                 SucuriScanEvent::notifyEvent('plugin_change', $message);
@@ -552,6 +606,7 @@ function sucuriscan_settings_alerts_ignore_posts()
 
                 SucuriScanInterface::info(__('Post-type has been successfully ignored.', 'sucuri-scanner'));
                 SucuriScanOption::updateOption(':ignored_events', $ignored_events);
+                /* translators: %s: post or page type (e.g. post, page, attachment) */
                 SucuriScanEvent::reportWarningEvent(sprintf(__('Changes in <code>%s</code> post-type will be ignored', 'sucuri-scanner'), $ignore_rule));
             }
         }

@@ -175,7 +175,9 @@ class SucuriScanSiteCheck extends SucuriScanAPI
         $params['SiteCheck.Metadata'] = '';
         $params['SiteCheck.Lifetime'] = self::cacheLifetime();
 
+        /* translators: %s: PHP version */
         $data['details'][] = sprintf(__('PHP Version: %s', 'sucuri-scanner'), phpversion());
+        /* translators: %s: WordPress version */
         $data['details'][] = sprintf(__('Version: %s', 'sucuri-scanner'), SucuriScan::siteVersion());
 
         if (isset($data['SCAN']['SITE'])) {
@@ -187,10 +189,12 @@ class SucuriScanSiteCheck extends SucuriScanAPI
         }
 
         if (isset($data['SCAN']['HOSTING'])) {
+            /* translators: %s: Hosting provider name */
             $data['details'][] = sprintf(__('Hosting: %s', 'sucuri-scanner'), apply_filters( 'sucuriscan_sitecheck_details_hosting', $data['SCAN']['HOSTING'][0] ));
         }
 
         if (isset($data['SCAN']['CMS'])) {
+            /* translators: %s: CMS name */
             $data['details'][] = sprintf(__('CMS: %s', 'sucuri-scanner'), $data['SCAN']['CMS'][0]);
         }
 
@@ -393,6 +397,7 @@ class SucuriScanSiteCheck extends SucuriScanAPI
             ? count($data['LINKS']['IFRAME'])
             : 0;
 
+        /* translators: %d: number of iframes */
         return sprintf(__('iFrames: %d', 'sucuri-scanner'), $niframes);
     }
 
@@ -408,6 +413,7 @@ class SucuriScanSiteCheck extends SucuriScanAPI
             ? count($data['LINKS']['URL'])
             : 0;
 
+        /* translators: %d: number of links */
         return sprintf(__('Links: %d', 'sucuri-scanner'), $nlinks);
     }
 
@@ -429,6 +435,7 @@ class SucuriScanSiteCheck extends SucuriScanAPI
             $total += count($data['LINKS']['JSEXTERNAL']);
         }
 
+        /* translators: %d: number of scripts */
         return sprintf(__('Scripts: %d', 'sucuri-scanner'), $total);
     }
 
