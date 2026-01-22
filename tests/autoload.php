@@ -91,34 +91,6 @@ if (!function_exists('wp_get_current_user')) {
     }
 }
 
-if (!function_exists('wp_unslash')) {
-    function wp_unslash($value)
-    {
-        return is_array($value) ? array_map('wp_unslash', $value) : stripslashes((string) $value);
-    }
-}
-
-if (!function_exists('sanitize_text_field')) {
-    function sanitize_text_field($str)
-    {
-        return trim(strip_tags((string) $str));
-    }
-}
-
-if (!function_exists('wp_strip_all_tags')) {
-    function wp_strip_all_tags($string, $remove_breaks = false)
-    {
-        $string = preg_replace('@<(script|style)[^>]*?>.*?</\\1>@si', '', (string)$string);
-        $string = strip_tags($string);
-
-        if ($remove_breaks) {
-            $string = preg_replace('/[\r\n\t ]+/', ' ', $string);
-        }
-
-        return trim($string);
-    }
-}
-
 require BASE_DIR . '/src/base.lib.php';
 require BASE_DIR . '/src/request.lib.php';
 require BASE_DIR . '/src/fileinfo.lib.php';
