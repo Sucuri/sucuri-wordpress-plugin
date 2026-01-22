@@ -232,7 +232,7 @@ function sucuriscan_settings_general_selfhosting($nonce)
                 SucuriScanOption::updateOption(':selfhosting_monitor', 'disabled');
                 SucuriScanEvent::notifyEvent('plugin_change', $message);
                 SucuriScanInterface::info(__('The log exporter feature has been disabled', 'sucuri-scanner'));
-            } elseif (isset($_SERVER['DOCUMENT_ROOT']) && strpos($monitor_fpath, sanitize_text_field(wp_unslash($_SERVER['DOCUMENT_ROOT']))) !== false) {
+            } elseif (SucuriScanRequest::server('DOCUMENT_ROOT') && strpos($monitor_fpath, SucuriScanRequest::server('DOCUMENT_ROOT')) !== false) {
                 SucuriScanInterface::error(__('File should not be publicly accessible.', 'sucuri-scanner'));
             } elseif (file_exists($monitor_fpath)) {
                 SucuriScanInterface::error(__('File already exists and will not be overwritten.', 'sucuri-scanner'));

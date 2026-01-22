@@ -523,7 +523,7 @@ class SucuriScanHook extends SucuriScanEvent
             && SucuriScanRequest::post('action', 'update')
             && SucuriScanRequest::post('plugin', '.+')
             && SucuriScanRequest::post('file', '.+')
-            && isset($_SERVER['SCRIPT_NAME']) && strpos(sanitize_text_field(wp_unslash($_SERVER['SCRIPT_NAME'])), 'plugin-editor.php') !== false
+            && strpos(SucuriScanRequest::server('SCRIPT_NAME'), 'plugin-editor.php') !== false
         ) {
             $filename = SucuriScanRequest::post('file');
             /* translators: %s: filename of the edited plugin */
@@ -587,7 +587,7 @@ class SucuriScanHook extends SucuriScanEvent
 
             if (
                 SucuriScanRequest::get('plugin', '.+')
-                && isset($_SERVER['SCRIPT_NAME']) && strpos(sanitize_text_field(wp_unslash($_SERVER['SCRIPT_NAME'])), 'wp-admin/update.php') !== false
+                && strpos(SucuriScanRequest::server('SCRIPT_NAME'), 'wp-admin/update.php') !== false
             ) {
                 $plugin_list[] = SucuriScanRequest::get('plugin', '.+');
             } elseif (
@@ -931,7 +931,7 @@ class SucuriScanHook extends SucuriScanEvent
             && SucuriScanRequest::post('action', 'update')
             && SucuriScanRequest::post('theme', '.+')
             && SucuriScanRequest::post('file', '.+')
-            && isset($_SERVER['SCRIPT_NAME']) && strpos(sanitize_text_field(wp_unslash($_SERVER['SCRIPT_NAME'])), 'theme-editor.php') !== false
+            && strpos(SucuriScanRequest::server('SCRIPT_NAME'), 'theme-editor.php') !== false
             && check_ajax_referer('updates', false, false)
         ) {
             $theme_name = SucuriScanRequest::post('theme');

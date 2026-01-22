@@ -135,22 +135,6 @@ class SucuriScan
     }
 
     /**
-     * Retrieve a sanitized value from the $_SERVER super global.
-     *
-     * @param string $key     Key to look for.
-     * @param string $default Default value to return if key not found.
-     * @return string         Sanitized value.
-     */
-    public static function getHTTPServerValue($key, $default = '')
-    {
-        if (isset($_SERVER[$key])) {
-            return sanitize_text_field(wp_unslash($_SERVER[$key]));
-        }
-
-        return $default;
-    }
-
-    /**
      * Encodes the less-than, greater-than, ampersand, double quote and single
      * quote characters, will never double encode entities.
      *
@@ -519,7 +503,7 @@ class SucuriScan
         $headers = self::orderedHttpHeaders();
 
         foreach ($headers as $header) {
-            $possible_addr = self::getHTTPServerValue($header);
+            $possible_addr = SucuriScanRequest::server($header);
 
             if (self::isValidIP($possible_addr)) {
                 $remote_addr = $possible_addr;
@@ -556,7 +540,7 @@ class SucuriScan
      */
     public static function getUserAgent()
     {
-        return self::getHTTPServerValue('HTTP_USER_AGENT', 'Mozilla/5.0 (KHTML, like Gecko) Safari/537.36');
+        return SucuriScanRequest::server('HTTP_USER_AGENT', 'Mozilla/5.0 (KHTML, like Gecko) Safari/537.36');
     }
 
     /**
@@ -607,7 +591,7 @@ class SucuriScan
      */
     private static function hasSucuriClientIPHeader()
     {
-        return array_key_exists('HTTP_X_SUCURI_CLIENTIP', $_SERVER);
+        return (bool) SucuriScanRequest::server('HTTP_X_SUCURI_CLIENTIP');
     }
 
     /**
@@ -901,7 +885,7 @@ class SucuriScan
      */
     public static function isNginxServer()
     {
-        $server_software = self::getHTTPServerValue('SERVER_SOFTWARE');
+        $server_software = SucuriScanRequest::server('SERVER_SOFTWARE');
 
         return (bool) (stripos($server_software, 'nginx') !== false);
     }
@@ -913,7 +897,7 @@ class SucuriScan
      */
     public static function isIISServer()
     {
-        $server_software = self::getHTTPServerValue('SERVER_SOFTWARE');
+        $server_software = SucuriScanRequest::server('SERVER_SOFTWARE');
 
         return (bool) (stripos($server_software, 'Microsoft-IIS') !== false);
     }

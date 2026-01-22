@@ -50,7 +50,7 @@ class SucuriScanInterface
         SucuriScanEvent::installScheduledTask();
 
         if (SucuriScan::supportReverseProxy() || SucuriScan::isBehindFirewall()) {
-            $remote_addr = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : '';
+            $remote_addr = SucuriScanRequest::server('REMOTE_ADDR');
             $_SERVER['SUCURIREAL_REMOTE_ADDR'] = $remote_addr;
             $_SERVER['REMOTE_ADDR'] = SucuriScan::getRemoteAddr();
         }
