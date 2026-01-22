@@ -34,16 +34,15 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
  */
 function sucuriscan_settings_cache_options($nonce)
 {
-    // phpcs:ignore WordPress.Security.NonceVerification.Missing
     if (!SucuriScanInterface::checkNonce()) {
         SucuriScanInterface::error(__('Invalid nonce.', 'sucuri-scanner'));
         return '';
     }
 
-    if (!function_exists('is_plugin_active')) {
-        include_once(ABSPATH . 'wp-admin/includes/plugin.php');
-    }
-    $isWooCommerceActive = is_plugin_active('woocommerce/woocommerce.php');
+    $isWooCommerceActive = in_array(
+        'woocommerce/woocommerce.php',
+        apply_filters('active_plugins', get_option('active_plugins'))
+    );
 
     $params = array(
         'CacheOptions.Options' => '',
@@ -66,9 +65,8 @@ function sucuriscan_settings_cache_options($nonce)
         $params['CacheOptions.Modes'] .= sprintf('<option value="%s">%s</option>', $mode, ucfirst($mode));
     }
 
-    // phpcs:ignore WordPress.Security.NonceVerification.Missing
-    if (SucuriScanInterface::checkNonce() && SucuriScanRequest::post(':update_cache_options')) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-        $headerCacheControlMode = sanitize_text_field(wp_unslash(SucuriScanRequest::post(':cache_options_mode')));
+    if (SucuriScanInterface::checkNonce() && SucuriScanRequest::post(':update_cache_options')) {
+        $headerCacheControlMode = sanitize_text_field(SucuriScanRequest::post(':cache_options_mode'));
         $newOptions = array();
 
         foreach ($headersCacheControlOptions as $pageType => $options) {
@@ -76,9 +74,8 @@ function sucuriscan_settings_cache_options($nonce)
 
             foreach ($options as $optionName => $defaultValue) {
                 $postKey = 'sucuriscan_' . $pageType . '_' . $optionName;
-                $postValue = sanitize_text_field(wp_unslash(SucuriScanRequest::post($postKey)));
+                $postValue = sanitize_text_field(SucuriScanRequest::post($postKey));
 
-                // phpcs:ignore WordPress.Security.NonceVerification.Missing
                 if (isset($_POST[$postKey])) {
                     if ($postValue === 'unavailable' || $postValue === '') {
                         $newOptions[$pageType][$optionName] = 'unavailable';
@@ -235,16 +232,15 @@ function sucuriscan_map_directive_options($headerOptions, $prefix)
         $enforced = SucuriScanRequest::post($enforcedKey) === '1' ? true : false;
 
         if ($type === 'text') {
-            $postValue = SucuriScanRequest::post($postKey);
-            if ($postValue !== false) {
-                $postValue = sanitize_text_field(wp_unslash($postValue));
+            if (SucuriScanRequest::post($postKey)) {
+                $postValue = wp_unslash($_POST[$postKey]);
 
                 $newOptions[$directive] = array(
                     'id' => esc_attr($option['id']),
                     'title' => esc_html($option['title']),
                     'type' => esc_html($type),
                     'description' => isset($option['description']) ? esc_html($option['description']) : '',
-                    'value' => $postValue,
+                    'value' => sanitize_text_field($postValue),
                     'enforced' => $enforced,
                 );
 
