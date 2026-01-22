@@ -43,6 +43,9 @@ final class IntegrityTest extends TestCase
             return $text; });
         Functions\when('get_site_url')->justReturn('https://example.com');
         Functions\when('sanitize_text_field')->alias(fn($v) => is_string($v) ? $v : '');
+        Functions\when('wp_strip_all_tags')->alias(function ($string) {
+            return trim(strip_tags((string) $string));
+        });
 
         // Capture emails sent via wp_mail
         Functions\when('wp_mail')->alias(function ($to, $subject, $message, $headers = array ()) {

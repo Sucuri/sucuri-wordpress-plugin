@@ -17,6 +17,7 @@ final class HardeningTest extends TestCase
         Functions\when('get_home_path')->justReturn(__DIR__);
         Functions\when('__')->returnArg();
         Functions\when('sanitize_text_field')->alias(fn($v) => is_string($v) ? $v : '');
+        Functions\when('wp_unslash')->alias(fn($v) => is_string($v) ? stripslashes($v) : $v);
 
         $_SERVER['SERVER_SOFTWARE'] = 'apache';
 
