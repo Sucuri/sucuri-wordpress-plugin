@@ -261,6 +261,8 @@ This version adds an option to refresh the malware scan results on demand, as we
 == Changelog ==
 = 2.7 =
 * Fixes a lot of readiness warning/errors from PCP.
+* Adds WAF Bypass Prevention functionality.
+* Fixes header alignment issue.
 
 = 2.6 =
 * Create new permissions library.

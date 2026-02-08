@@ -1616,7 +1616,82 @@ describe("Run e2e tests", () => {
         cy.get('#core-vulnerability-results').contains('Error: Could not fetch WordPress Core vulnerabilities.');
         cy.get("#php-vulnerability-results").contains('Error: Could not fetch PHP vulnerabilities.');
         cy.get('.sucuriscan-themes-list-body').should('have.length', 2);
-    })
+    });
+
+    it('CLI: Can enable/disable WAF bypass prevention and verify lockout', () => {
+        cy.on("uncaught:exception", (err, runnable) => {
+            if (err.message.includes("The response is not a valid JSON response")) {
+                return false;
+            }
+            return true;
+        });
+
+        cy.exec("npx wp-env run tests-cli wp sucuri bypass_prevention disable");
+
+        cy.exec("npx wp-env run tests-cli wp sucuri bypass_prevention enable").its('stdout').should('contain', 'WAF Bypass Prevention has been enabled.');
+
+        cy.request({
+            url: "/wp-admin/admin.php?page=sucuriscan_hardening_prevention",
+            failOnStatusCode: false,
+        }).then((response) => {
+            expect(response.status).to.eq(403);
+        });
+
+        cy.exec("npx wp-env run tests-cli wp sucuri bypass_prevention disable").its('stdout').should('contain', 'WAF Bypass Prevention has been disabled.');
+
+        cy.request("/wp-admin/admin.php?page=sucuriscan_hardening_prevention").then((response) => {
+            expect(response.status).to.eq(200);
+        });
+    });
+
+    it(
+        "can enable WAF Bypass Prevention, verifies lockout, and cleans up",
+        () => {
+            cy.on("uncaught:exception", (err, runnable) => {
+                if (err.message.includes("The response is not a valid JSON response")) {
+                    return false;
+                }
+                return true;
+            });
+
+            cy.exec("npx wp-env run tests-cli wp sucuri bypass_prevention disable");
+
+            cy.visit("/wp-admin/admin.php?page=sucuriscan_hardening_prevention", {
+                headers: {
+                    "X-Sucuri-ClientIP": "127.0.0.1",
+                },
+            });
+
+            cy.get('input[name="sucuriscan_hardening_bypassPrevention"]')
+                .should("not.be.disabled")
+                .click();
+
+            cy.get(".sucuriscan-modal.bypass-prevention-modal").should(
+                "not.have.class",
+                "sucuriscan-hidden",
+            );
+
+            cy.get("#sucuriscan-bypass-confirm-btn").should("be.disabled");
+
+            cy.get("#sucuriscan-bypass-confirmation").type("ENABLE");
+            cy.get("#sucuriscan-bypass-confirm-btn")
+                .should("not.be.disabled")
+                .click();
+
+            cy.get(".sucuriscan-alert").contains(
+                "Hardening applied for Bypass Prevention",
+            );
+
+            cy.request({
+                url: "/wp-admin/admin.php?page=sucuriscan_hardening_prevention",
+                failOnStatusCode: false,
+            }).then((response) => {
+                expect(response.status).to.eq(403);
+            });
+
+            cy.exec("npx wp-env run tests-cli wp sucuri bypass_prevention disable");
+        },
+    );
 });
 
 
@@ -1877,79 +1952,4 @@ describe('Two-Factor Authentication', () => {
         loginAndExpect2FA(extraUser.login, extraUser.pass, 'setup');
         loginAndExpect2FA(adminUser.login, adminUser.pass, 'setup');
     });
-
-    it('CLI: Can enable/disable WAF bypass prevention and verify lockout', () => {
-        cy.on("uncaught:exception", (err, runnable) => {
-            if (err.message.includes("The response is not a valid JSON response")) {
-                return false;
-            }
-            return true;
-        });
-
-        cy.exec("npx wp-env run tests-cli wp sucuri bypass_prevention disable");
-
-        cy.exec("npx wp-env run tests-cli wp sucuri bypass_prevention enable").its('stdout').should('contain', 'WAF Bypass Prevention has been enabled.');
-
-        cy.request({
-            url: "/wp-admin/admin.php?page=sucuriscan_hardening_prevention",
-            failOnStatusCode: false,
-        }).then((response) => {
-            expect(response.status).to.eq(403);
-        });
-
-        cy.exec("npx wp-env run tests-cli wp sucuri bypass_prevention disable").its('stdout').should('contain', 'WAF Bypass Prevention has been disabled.');
-
-        cy.request("/wp-admin/admin.php?page=sucuriscan_hardening_prevention").then((response) => {
-            expect(response.status).to.eq(200);
-        });
-    });
-
-    it(
-        "can enable WAF Bypass Prevention, verifies lockout, and cleans up",
-        () => {
-            cy.on("uncaught:exception", (err, runnable) => {
-                if (err.message.includes("The response is not a valid JSON response")) {
-                    return false;
-                }
-                return true;
-            });
-
-            cy.exec("npx wp-env run tests-cli wp sucuri bypass_prevention disable");
-
-            cy.visit("/wp-admin/admin.php?page=sucuriscan_hardening_prevention", {
-                headers: {
-                    "X-Sucuri-ClientIP": "127.0.0.1",
-                },
-            });
-
-            cy.get('input[name="sucuriscan_hardening_bypassPrevention"]')
-                .should("not.be.disabled")
-                .click();
-
-            cy.get(".sucuriscan-modal.bypass-prevention-modal").should(
-                "not.have.class",
-                "sucuriscan-hidden",
-            );
-
-            cy.get("#sucuriscan-bypass-confirm-btn").should("be.disabled");
-
-            cy.get("#sucuriscan-bypass-confirmation").type("ENABLE");
-            cy.get("#sucuriscan-bypass-confirm-btn")
-                .should("not.be.disabled")
-                .click();
-
-            cy.get(".sucuriscan-alert").contains(
-                "Hardening applied for Bypass Prevention",
-            );
-
-            cy.request({
-                url: "/wp-admin/admin.php?page=sucuriscan_hardening_prevention",
-                failOnStatusCode: false,
-            }).then((response) => {
-                expect(response.status).to.eq(403);
-            });
-
-            cy.exec("npx wp-env run tests-cli wp sucuri bypass_prevention disable");
-        },
-    );
 });
