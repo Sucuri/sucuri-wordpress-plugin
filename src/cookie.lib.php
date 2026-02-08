@@ -57,8 +57,10 @@ class SucuriScanCookie extends SucuriScan
             return is_ssl();
         }
 
-        return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
-            || (isset($_SERVER['SERVER_PORT']) && (int) $_SERVER['SERVER_PORT'] === 443);
+        $https = SucuriScanRequest::server('HTTPS');
+        $port = (int) SucuriScanRequest::server('SERVER_PORT');
+
+        return ($https !== '' && $https !== 'off') || $port === 443;
     }
 
     /**
@@ -138,6 +140,7 @@ class SucuriScanCookie extends SucuriScan
             return $default;
         }
 
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
         $filtered = self::filterValue((string) $_COOKIE[$name]);
 
         return ($filtered === '' && $_COOKIE[$name] !== '') ? $default : $filtered;

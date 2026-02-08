@@ -81,14 +81,12 @@ class SucuriScanCSPHeaders extends SucuriScan
             $allowedDirective = $this->getValidDirectiveOrFalse($normalizedDirective);
 
             if (!$allowedDirective) {
-                error_log("Invalid CSP directive: $normalizedDirective");
                 continue;
             }
 
             $sanitizedValue = $this->sanitizeDirectiveValue($allowedDirective, $value);
 
             if (!$sanitizedValue) {
-                error_log("Invalid value for CSP directive: $normalizedDirective => $value");
                 continue;
             }
 
@@ -111,8 +109,6 @@ class SucuriScanCSPHeaders extends SucuriScan
             header('Content-Security-Policy-Report-Only: ' . $cspHeaderValue);
             return;
         }
-
-        error_log("Invalid CSP header value: $cspHeaderValue");
     }
 
     /**

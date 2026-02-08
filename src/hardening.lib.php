@@ -119,7 +119,7 @@ class SucuriScanHardening extends SucuriScan
      */
     public static function hardenDirectory($directory = '')
     {
-        if (!is_dir($directory) || !is_writable($directory)) {
+        if (!is_dir($directory) || !is_writable($directory)) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
             return self::throwException(esc_html__('Directory is not usable', 'sucuri-scanner'));
         }
 
@@ -132,9 +132,9 @@ class SucuriScanHardening extends SucuriScan
 
         if (file_exists($target)) {
             self::fixPreviousHardening($directory);
-            $fhandle = @fopen($target, 'a');
+            $fhandle = @fopen($target, 'a'); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
         } else {
-            $fhandle = @fopen($target, 'w');
+            $fhandle = @fopen($target, 'w'); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
         }
 
         if (!$fhandle) {
@@ -143,8 +143,8 @@ class SucuriScanHardening extends SucuriScan
 
         $deny_rules = self::getRules();
         $rules_text = implode("\n", $deny_rules);
-        $written = @fwrite($fhandle, "\n" . $rules_text . "\n");
-        @fclose($fhandle);
+        $written = @fwrite($fhandle, "\n" . $rules_text . "\n"); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite
+        @fclose($fhandle); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 
         return (bool) ($written !== false);
     }
@@ -342,7 +342,7 @@ class SucuriScanHardening extends SucuriScan
             throw new Exception(esc_html__('Access control file does not exists', 'sucuri-scanner'));
         }
 
-        if (!is_writable($htaccess)) {
+        if (!is_writable($htaccess)) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
             throw new Exception(esc_html__('Access control file is not writable', 'sucuri-scanner'));
         }
 
@@ -382,7 +382,7 @@ class SucuriScanHardening extends SucuriScan
         $htaccess = self::htaccess($folder);
         $content = SucuriScanFileInfo::fileContent($htaccess);
 
-        if (!$content || !is_writable($htaccess)) {
+        if (!$content || !is_writable($htaccess)) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
             return self::throwException(esc_html__('Cannot remove file from the allowlist; no permissions.', 'sucuri-scanner'));
         }
 

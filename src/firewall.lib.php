@@ -614,6 +614,7 @@ class SucuriScanFirewall extends SucuriScanAPI
             $response['msg'] = implode(";\x20", $out['messages']);
 
             if ($out['status'] == 1) {
+                /* translators: %s: IP address */
                 SucuriScanEvent::reportInfoEvent(sprintf(__('IP has been added to the blocklist: %s', 'sucuri-scanner'), $params['ip']));
             }
         }
@@ -653,6 +654,7 @@ class SucuriScanFirewall extends SucuriScanAPI
         $response['msg'] = implode(";\x20", $out['messages']);
 
         if ($out['status'] == 1) {
+            /* translators: %s: IP address */
             SucuriScanEvent::reportInfoEvent(sprintf(__('IP has been removed from the blocklist: %s', 'sucuri-scanner'), $params['ip']));
         }
 

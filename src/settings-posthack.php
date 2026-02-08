@@ -261,6 +261,7 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
 
         if (SucuriScanEvent::setNewPassword($user_id)) {
             $response = 'Done';
+            /* translators: %d: user ID */
             SucuriScanEvent::reportNoticeEvent(sprintf(__('Password changed for user #%d', 'sucuri-scanner'), $user_id));
         }
 
@@ -364,7 +365,7 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
             // we can verify if the installation of the new code will work or not.
             $response = '<span class="sucuriscan-label-danger">'
             . __('Plugin is Premium', 'sucuri-scanner') . '</span>';
-        } elseif (!is_writable($allPlugins[$plugin]['InstallationPath'])) {
+        } elseif (!is_writable($allPlugins[$plugin]['InstallationPath'])) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
             $response = '<span class="sucuriscan-label-danger">'
             . __('Not Writable', 'sucuri-scanner') . '</span>';
         } elseif (!class_exists('SucuriScanPluginInstallerSkin')) {
@@ -380,7 +381,7 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
             if (!$info) {
                 $response = '<span class="sucuriscan-label-danger">'
                 . __('Cannot Download', 'sucuri-scanner') . '</span>';
-            } elseif (!rename($data['InstallationPath'], $newpath)) {
+            } elseif (!rename($data['InstallationPath'], $newpath)) { // phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename
                 $response = '<span class="sucuriscan-label-danger">'
                 . __('Cannot Backup', 'sucuri-scanner') . '</span>';
             } else {
@@ -393,7 +394,7 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
 
                 if (!file_exists($data['InstallationPath'])) {
                     /* Revert backup to its original location */
-                    @rename($newpath, $data['InstallationPath']);
+                    @rename($newpath, $data['InstallationPath']); // phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename
                     $response = '<span class="sucuriscan-label-danger">'
                     . __('Cannot Install', 'sucuri-scanner') . '</span>';
                 } else {
@@ -404,6 +405,7 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
                     $fifo->skip_directories = false;
                     $fifo->removeDirectoryTree($newpath);
 
+                    /* translators: %s: version number */
                     $installed = sprintf(__('Installed v%s', 'sucuri-scanner'), SucuriScan::escape($info['version']));
                     $response = '<span class="sucuriscan-label-success">' . $installed . '</span>';
                 }

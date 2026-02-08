@@ -162,7 +162,7 @@ class SucuriScanCORSHeaders extends SucuriScan
      */
     protected function sanitizeSimpleValue($value)
     {
-        $value = strip_tags($value);
+        $value = wp_strip_all_tags($value);
         $value = preg_replace('/[\r\n]+/', ' ', $value);
 
         return trim($value);

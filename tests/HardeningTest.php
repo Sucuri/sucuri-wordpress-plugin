@@ -22,7 +22,10 @@ final class HardeningTest extends TestCase
         Functions\when('wp_cache_get')->justReturn(false);
         Functions\when('wp_cache_set')->justReturn(true);
         Functions\when('wp_cache_delete')->justReturn(true);
+        Functions\when('wp_strip_all_tags')->alias(fn($v) => is_string($v) ? $v : '');
         Functions\when('sucuriscan_lastlogins_datastore_exists')->justReturn(true);
+        Functions\when('sanitize_text_field')->alias(fn($v) => is_string($v) ? $v : '');
+        Functions\when('wp_unslash')->alias(fn($v) => is_string($v) ? stripslashes($v) : $v);
 
         $_SERVER['SERVER_SOFTWARE'] = 'apache';
 

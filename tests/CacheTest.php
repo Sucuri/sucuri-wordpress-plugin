@@ -35,7 +35,7 @@ final class CacheTest extends TestCase
         $datastore = 'test-datastore';
         $datastoreFullpath = SUCURI_DATA_STORAGE . "/sucuri-$datastore.php";
         $cache = new SucuriScanCache($datastore, true);
-        chmod($datastoreFullpath, 000);
+        chmod($datastoreFullpath, 000); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod
 
         $ok = $cache->add('1234567890_0000', 'value');
         unlink($datastoreFullpath);

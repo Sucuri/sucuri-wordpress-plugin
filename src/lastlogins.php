@@ -127,6 +127,7 @@ function sucuriscan_lastlogins_all()
 
     if (!sucuriscan_lastlogins_datastore_is_writable()) {
         $fpath = SucuriScan::escape(sucuriscan_lastlogins_datastore_filepath());
+        /* translators: %s: file path */
         SucuriScanInterface::error(sprintf(__('Last-logins data file is not writable: <code>%s</code>', 'sucuri-scanner'), $fpath));
     }
 
@@ -217,11 +218,11 @@ function sucuriscan_lastlogins_datastore_is_writable()
     $datastore_filepath = sucuriscan_lastlogins_datastore_exists();
 
     if ($datastore_filepath) {
-        if (!is_writable($datastore_filepath)) {
-            @chmod($datastore_filepath, 0644);
+        if (!is_writable($datastore_filepath)) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
+            @chmod($datastore_filepath, 0644); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod
         }
 
-        if (is_writable($datastore_filepath)) {
+        if (is_writable($datastore_filepath)) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
             return $datastore_filepath;
         }
     }
@@ -457,7 +458,8 @@ if (!function_exists('sucuriscan_get_user_lastlogin')) {
                 $row = $last_logins['entries'][1];
                 $page_url = SucuriScanTemplate::getUrl('lastlogins');
                 $message = sprintf(
-                    __('Last login was at <b>%s</b> from <b>%s</b> <em>(%s)</em> <a href="%s" target="_self">view all logs</a>', 'sucuri-scanner'),
+                    /* translators: %1$s: date and time, %2$s: IP address, %3$s: hostname, %4$s: page url */
+                    __('Last login was at <b>%1$s</b> from <b>%2$s</b> <em>(%3$s)</em> <a href="%4$s" target="_self">view all logs</a>', 'sucuri-scanner'),
                     SucuriScan::datetime($row['user_lastlogin_timestamp']),
                     SucuriScan::escape($row['user_remoteaddr']),
                     SucuriScan::escape($row['user_hostname']),

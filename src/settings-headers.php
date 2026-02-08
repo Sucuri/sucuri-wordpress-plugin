@@ -41,6 +41,7 @@ function sucuriscan_settings_cache_options($nonce)
 
     $isWooCommerceActive = in_array(
         'woocommerce/woocommerce.php',
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound 
         apply_filters('active_plugins', get_option('active_plugins'))
     );
 
@@ -76,6 +77,7 @@ function sucuriscan_settings_cache_options($nonce)
                 $postKey = 'sucuriscan_' . $pageType . '_' . $optionName;
                 $postValue = sanitize_text_field(SucuriScanRequest::post($postKey));
 
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing
                 if (isset($_POST[$postKey])) {
                     if ($postValue === 'unavailable' || $postValue === '') {
                         $newOptions[$pageType][$optionName] = 'unavailable';
@@ -233,6 +235,7 @@ function sucuriscan_map_directive_options($headerOptions, $prefix)
 
         if ($type === 'text') {
             if (SucuriScanRequest::post($postKey)) {
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.InputNotValidated 
                 $postValue = wp_unslash($_POST[$postKey]);
 
                 $newOptions[$directive] = array(

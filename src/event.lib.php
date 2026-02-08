@@ -86,7 +86,8 @@ class SucuriScanEvent extends SucuriScan
 
         foreach ($jobs as $unique => $info) {
             $schedules[$unique] = sprintf(
-                __('%s (every %d seconds)', 'sucuri-scanner'),
+                /* translators: %1$s: display name, %2$d: time interval */
+                __('%1$s (every %2$d seconds)', 'sucuri-scanner'),
                 $info['display'],
                 $info['interval']
             );
@@ -144,19 +145,19 @@ class SucuriScanEvent extends SucuriScan
         }
         if (!isset($schedules['weekly'])) {
             $schedules['weekly'] = array(
-                'display' => __('Weekly', 'sucuriscan'),
+                'display' => __('Weekly', 'sucuri-scanner'),
                 'interval' => WEEK_IN_SECONDS,
             );
         }
         if (!isset($schedules['monthly'])) {
             $schedules['monthly'] = array(
-                'display' => __('Monthly', 'sucuriscan'),
+                'display' => __('Monthly', 'sucuri-scanner'),
                 'interval' => MONTH_IN_SECONDS,
             );
         }
         if (!isset($schedules['quarterly'])) {
             $schedules['quarterly'] = array(
-                'display' => __('Quarterly', 'sucuriscan'),
+                'display' => __('Quarterly', 'sucuri-scanner'),
                 'interval' => 3 * MONTH_IN_SECONDS,
             );
         }
@@ -222,6 +223,7 @@ class SucuriScanEvent extends SucuriScan
             return self::throwException(__('WordPress version was already reported', 'sucuri-scanner'));
         }
 
+        /* translators: %s: WordPress version */
         SucuriScanEvent::reportInfoEvent(sprintf(__('WordPress version detected %s', 'sucuri-scanner'), $wp_version));
 
         return SucuriScanOption::updateOption(':site_version', $wp_version);
@@ -486,7 +488,7 @@ class SucuriScanEvent extends SucuriScan
         }
 
         /* remove unnecessary characters */
-        $message = strip_tags($message);
+        $message = wp_strip_all_tags($message);
         $message = str_replace("\r", '', $message);
         $message = str_replace("\n", '', $message);
         $message = str_replace("\t", '', $message);
@@ -608,7 +610,9 @@ class SucuriScanEvent extends SucuriScan
             case 'failed_login':
                 $settings_url = SucuriScanTemplate::getUrl('settings');
                 $content .= "\n" . sprintf(
+                    /* translators: %1$s: settings url, %2$s: settings url */
                     __(
+                        /* phpcs:ignore WordPress.WP.I18n.UnorderedPlaceholdersText */
                         "<br><br>\n\n<em>Explanation: Someone failed to login to your site. If you are getting too many of these messages, it is likely your site is under a password guessing brute-force attack [1]. You can disable the failed login alerts from here [2]. Alternatively, you can consider to install a firewall between your website and your visitors to filter out these and other attacks, take a look at Sucuri Firewall [3].</em><br><br>\n\n[1] <a href='https://docs.sucuri.net/definitions/attacks/brute-force/password-guessing-brute-force-attacks/'>https://docs.sucuri.net/definitions/attacks/brute-force/password-guessing-brute-force-attacks/</a><br>\n[2] <a href='%s'>%s</a> <br>\n[3] <a href='https://sucuri.net/website-firewall/?wpalert'>https://sucuri.net/website-firewall/</a><br>\n",
                         'sucuri-scanner'
                     ),
@@ -889,7 +893,7 @@ class SucuriScanEvent extends SucuriScan
         }
 
         $resp = array(
-            'updated' => is_writable($config_path),
+            'updated' => is_writable($config_path), // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
             'old_keys' => $old_keys,
             'old_keys_string' => $old_keys_string,
             'new_keys' => $new_keys,
@@ -928,9 +932,10 @@ class SucuriScanEvent extends SucuriScan
             $filepath = SucuriScan::dataStorePath($file);
 
             // Do not proceed if not possible.
-            if (!is_writable(dirname($filepath)) || is_dir($filepath)) {
+            if (!is_writable(dirname($filepath)) || is_dir($filepath)) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
                 return SucuriScanInterface::error(
                     sprintf(
+                        /* translators: %s: file path */
                         __('%s cannot be deleted.', 'sucuri-scanner'),
                         $file
                     )
@@ -942,7 +947,9 @@ class SucuriScanEvent extends SucuriScan
         }
 
         $message = count($files) > 1 ?
+            /* translators: %s: comma-separated list of filenames */
             sprintf(__('%s log files were deleted.', 'sucuri-scanner'), implode(', ', $filesDeleted)) :
+            /* translators: %s: filename */
             sprintf(__('%s log file was deleted.', 'sucuri-scanner'), $filesDeleted[0]);
 
         SucuriScanEvent::reportInfoEvent($message);

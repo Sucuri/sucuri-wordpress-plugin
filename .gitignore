@@ -12,6 +12,7 @@ cypress.config.js
 .vscode/settings.json
 .idea/
 
+opencode.json
 composer.phar
 opencode.json
 .DS_Store

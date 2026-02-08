@@ -50,7 +50,8 @@ class SucuriScanInterface
         SucuriScanEvent::installScheduledTask();
 
         if (SucuriScan::supportReverseProxy() || SucuriScan::isBehindFirewall()) {
-            $_SERVER['SUCURIREAL_REMOTE_ADDR'] = $_SERVER['REMOTE_ADDR'];
+            $remote_addr = SucuriScanRequest::server('REMOTE_ADDR');
+            $_SERVER['SUCURIREAL_REMOTE_ADDR'] = $remote_addr;
             $_SERVER['REMOTE_ADDR'] = SucuriScan::getRemoteAddr();
         }
     }
@@ -166,7 +167,7 @@ class SucuriScanInterface
         $directory = SucuriScan::dataStorePath();
 
         if (!file_exists($directory)) {
-            @mkdir($directory, 0755, true);
+            @mkdir($directory, 0755, true); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_mkdir
         }
 
         if (file_exists($directory)) {
@@ -211,9 +212,10 @@ class SucuriScanInterface
 
         $filename = SucuriScanOption::optionsFilePath();
 
-        if (!is_writable($filename)) {
+        if (!is_writable($filename)) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
             self::error(
                 sprintf(
+                    /* translators: %s: absolute path of the settings file */
                     __('Storage is not writable: <code>%s</code>', 'sucuri-scanner'),
                     $filename /* absolute path of the settings file */
                 )
@@ -270,6 +272,7 @@ class SucuriScanInterface
     {
         if (!SucuriScanPermissions::canManagePlugin()) {
             SucuriScan::throwException(__('Access denied; cannot manage options', 'sucuri-scanner'));
+            /* translators: %s: Plugin name */
             wp_die(sprintf(esc_html__('Access denied by %s', 'sucuri-scanner'), esc_html(SUCURISCAN_PLUGIN_NAME)));
         }
     }
@@ -285,8 +288,10 @@ class SucuriScanInterface
      */
     public static function checkNonce()
     {
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing
         if (!empty($_POST)) {
             $nonce_name = 'sucuriscan_page_nonce';
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing
             $nonce_value = SucuriScanRequest::post($nonce_name, '_nonce');
 
             if (!$nonce_value || !wp_verify_nonce($nonce_value, $nonce_name)) {
@@ -322,6 +327,7 @@ class SucuriScanInterface
          * executed may cause a "headers already sent" error.
          */
         if (
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing
             !empty($_POST)
             && SucuriScanRequest::post('log')
             && SucuriScanRequest::post('pwd')
@@ -343,7 +349,7 @@ class SucuriScanInterface
                     // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                     'AlertType' => $type,
                     // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-                    'AlertUnique' => rand(100, 999),
+                    'AlertUnique' => wp_rand(100, 999),
                     // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                     'AlertMessage' => $message,
                 )

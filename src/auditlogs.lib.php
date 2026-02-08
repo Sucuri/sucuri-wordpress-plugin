@@ -190,6 +190,7 @@ class SucuriScanAuditLogs
             if (!is_array($auditlogs)) {
                 $response['status'] = __('API is not available; using local queue', 'sucuri-scanner');
             } else {
+                /* translators: %s: number of seconds */
                 $response['status'] = sprintf(__('API %s secs', 'sucuri-scanner'), round($duration, 4));
             }
         }
