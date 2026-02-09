@@ -8,7 +8,7 @@
         <form action="%%SUCURI.URL.Hardening%%" method="post">
             <input type="hidden" name="sucuriscan_page_nonce" value="%%SUCURI.PageNonce%%" />
 
-            <input type="submit" name="%%SUCURI.Hardening.FieldName%%" value="%%SUCURI.Hardening.FieldText%%" %%%SUCURI.Hardening.FieldAttrs%%% class="button button-primary" />
+            <input type="submit" name="%%SUCURI.Hardening.FieldName%%" value="%%SUCURI.Hardening.FieldText%%" %%SUCURI.Hardening.FieldAttrs%% class="button button-primary" />
         </form>
     </div>
     %%%SUCURI.Hardening.Modal%%%

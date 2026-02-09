@@ -528,6 +528,9 @@ class SucuriScanHardening extends SucuriScan
      */
     public static function hardenBypassPrevention($directory = null)
     {
+        $current_user = wp_get_current_user();
+        $current_username = (is_object($current_user) && isset($current_user->user_login)) ? $current_user->user_login : 'CLI';
+
         $directory = $directory !== null ? $directory : ABSPATH;
         $file_path = self::htaccess($directory);
 
@@ -585,7 +588,8 @@ class SucuriScanHardening extends SucuriScan
         @fclose($fhandle);
 
         if ($written !== false) {
-            SucuriScanEvent::reportNoticeEvent(__('WAF Bypass Prevention enabled', 'sucuri-scanner'));
+            // translators: %s is the username of the user who enabled the WAF Bypass Prevention hardening.
+            SucuriScanEvent::reportNoticeEvent(sprintf(__('WAF Bypass Prevention enabled by %s', 'sucuri-scanner'), $current_username));
         }
 
         return (bool) ($written !== false);
@@ -600,6 +604,9 @@ class SucuriScanHardening extends SucuriScan
      */
     public static function unhardenBypassPrevention($directory = null)
     {
+        $current_user = wp_get_current_user();
+        $current_username = (is_object($current_user) && isset($current_user->user_login)) ? $current_user->user_login : 'CLI';
+
         $directory = $directory !== null ? $directory : ABSPATH;
         $file_path = self::htaccess($directory);
 
@@ -637,7 +644,8 @@ class SucuriScanHardening extends SucuriScan
             return self::throwException(esc_html__('Failed to write to .htaccess', 'sucuri-scanner'));
         }
 
-        SucuriScanEvent::reportNoticeEvent(__('WAF Bypass Prevention disabled', 'sucuri-scanner'));
+        // translators: %s is the username of the user who disabled the WAF Bypass Prevention hardening.
+        SucuriScanEvent::reportNoticeEvent(sprintf(__('WAF Bypass Prevention disabled by %s', 'sucuri-scanner'), $current_username));
 
         return true;
     }
