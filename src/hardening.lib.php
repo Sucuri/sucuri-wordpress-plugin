@@ -528,8 +528,11 @@ class SucuriScanHardening extends SucuriScan
      */
     public static function hardenBypassPrevention($directory = null)
     {
-        $current_user = wp_get_current_user();
-        $current_username = (is_object($current_user) && isset($current_user->user_login)) ? $current_user->user_login : 'CLI';
+        $current_username = 'CLI';
+        if (function_exists('wp_get_current_user')) {
+            $current_user = wp_get_current_user();
+            $current_username = (is_object($current_user) && isset($current_user->user_login)) ? $current_user->user_login : 'CLI';
+        }
 
         $directory = $directory !== null ? $directory : ABSPATH;
         $file_path = self::htaccess($directory);
@@ -543,7 +546,7 @@ class SucuriScanHardening extends SucuriScan
         }
 
         /* Ensure we don't duplicate rules by removing any existing block first */
-        self::unhardenBypassPrevention($directory);
+        self::unhardenBypassPrevention($directory, false);
 
         $fhandle = false;
         if (file_exists($file_path)) {
@@ -599,13 +602,17 @@ class SucuriScanHardening extends SucuriScan
      * Removes Sucuri WAF bypass prevention rules from the root .htaccess file.
      *
      * @param string $directory Optional directory to remove hardening from (defaults to ABSPATH).
+     * @param bool $log_event Whether to emit an audit log event.
      *
      * @return bool True if the rules are successfully removed, false otherwise.
      */
-    public static function unhardenBypassPrevention($directory = null)
+    public static function unhardenBypassPrevention($directory = null, $log_event = true)
     {
-        $current_user = wp_get_current_user();
-        $current_username = (is_object($current_user) && isset($current_user->user_login)) ? $current_user->user_login : 'CLI';
+        $current_username = 'CLI';
+        if (function_exists('wp_get_current_user')) {
+            $current_user = wp_get_current_user();
+            $current_username = (is_object($current_user) && isset($current_user->user_login)) ? $current_user->user_login : 'CLI';
+        }
 
         $directory = $directory !== null ? $directory : ABSPATH;
         $file_path = self::htaccess($directory);
@@ -644,8 +651,10 @@ class SucuriScanHardening extends SucuriScan
             return self::throwException(esc_html__('Failed to write to .htaccess', 'sucuri-scanner'));
         }
 
-        // translators: %s is the username of the user who disabled the WAF Bypass Prevention hardening.
-        SucuriScanEvent::reportNoticeEvent(sprintf(__('WAF Bypass Prevention disabled by %s', 'sucuri-scanner'), $current_username));
+        if ($log_event) {
+            // translators: %s is the username of the user who disabled the WAF Bypass Prevention hardening.
+            SucuriScanEvent::reportNoticeEvent(sprintf(__('WAF Bypass Prevention disabled by %s', 'sucuri-scanner'), $current_username));
+        }
 
         return true;
     }
