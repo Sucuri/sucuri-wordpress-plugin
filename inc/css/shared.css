@@ -2318,6 +2318,29 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
     box-sizing: border-box;
 }
 
+.sucuri-2fa-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    box-sizing: border-box;
+}
+
+.sucuriscan-2fa-info-box {
+    width: calc(50% - 15px);
+    margin-bottom: 8px;
+    background-color: var(--sucuri-color-background-secondary);
+    border-radius: var(--sucuri-border-radius);
+}
+
+#two-factor-info {
+    width: calc(60% - 15px);
+}
+
+#sucuriscan-totp-form{
+    width: calc(40% - 15px);
+}
 .sucuriscan-tag {
     border-radius: var(--sucuri-border-radius);
     padding: 4px 8px;
@@ -2572,6 +2595,7 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
 }
 
 .sucuriscan-2fa-enforce {
+    width: 240px;
     display: block;
     margin-top: 6px !important;
     margin-bottom: 8px !important;
@@ -2678,4 +2702,74 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
 .wpaas-show-sso-login #loginform>p,
 .wpaas-show-sso-login #nav {
     display: block !important;
+}
+.sucuriscan-panel ol.circle-numbers {
+  list-style: none;           /* Remove default numbers */
+  counter-reset: step;        /* Start counter named "step" */
+  padding-left: 2.0rem;       /* Make room for the circles on the left */
+  margin: 1.0rem 0;
+  padding-top: 0.7rem;
+  padding-top: 0.7rem;
+}
+
+.sucuriscan-panel ol.circle-numbers > li {
+  counter-increment: step;    /* Increase counter for each <li> */
+  position: relative;
+  margin: 0 0 1.0rem 0;     /* ← key line: controls vertical gap between items */
+  padding-left: 0.2rem;
+  padding-top: 0.2rem;
+
+}
+
+.sucuriscan-panel ol.circle-numbers > li::before {
+  content: counter(step);     /* Display the current number */
+
+  position: absolute;
+  left: -2.1rem;              /* Move circle to the left */
+
+  width: 1.3rem;
+  height: 1.3rem;
+  line-height: 1.3rem;          /* Centers number vertically */
+  text-align: center;
+
+  background: transparent;        /* Circle background color */
+  font-weight: bold;
+
+  border: 1px solid #25BB9E;     /* ← only border */
+  color: var(--sucuri-color-text-main);
+  font-weight: bold;
+  
+  border-radius: 50%;         /* Makes it a circle */
+  font-size: 0.8rem;
+}
+
+.sucuri-with-icon {
+  position: relative;
+  padding-left: 24px;          /* make space for the icon */
+}
+
+.sucuri-with-icon::before {
+  content: "×";                /* Unicode × (looks better than x) */
+  position: absolute;
+  left: 0;
+  top: 0.7rem;
+  transform: translateY(-50%);
+  
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #ED5565;         /* red, change as needed */
+  color: white;
+  
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 15px;
+  text-align: center;
+}
+
+.status-success::before {
+  content: "✔";          /* or "✓" or "✅" */
+  background: #2ecc71;   /* brighter green variant */
+  font-size: 12px;
+  line-height: 15px;
 }
