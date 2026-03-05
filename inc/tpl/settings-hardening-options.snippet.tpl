@@ -11,4 +11,6 @@
             <input type="submit" name="%%SUCURI.Hardening.FieldName%%" value="%%SUCURI.Hardening.FieldText%%" %%SUCURI.Hardening.FieldAttrs%% class="button button-primary" />
         </form>
     </div>
+    %%%SUCURI.Hardening.Modal%%%
 </div>
+

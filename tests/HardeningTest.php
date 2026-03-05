@@ -9,6 +9,8 @@ final class HardeningTest extends TestCase
 {
     use MockeryPHPUnitIntegration;
 
+    private $auditLogBackup;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -16,10 +18,21 @@ final class HardeningTest extends TestCase
 
         Functions\when('get_home_path')->justReturn(__DIR__);
         Functions\when('__')->returnArg();
+        Functions\when('esc_html__')->returnArg();
+        Functions\when('wp_cache_get')->justReturn(false);
+        Functions\when('wp_cache_set')->justReturn(true);
+        Functions\when('wp_cache_delete')->justReturn(true);
+        Functions\when('wp_strip_all_tags')->alias(fn($v) => is_string($v) ? $v : '');
+        Functions\when('sucuriscan_lastlogins_datastore_exists')->justReturn(true);
         Functions\when('sanitize_text_field')->alias(fn($v) => is_string($v) ? $v : '');
         Functions\when('wp_unslash')->alias(fn($v) => is_string($v) ? stripslashes($v) : $v);
 
         $_SERVER['SERVER_SOFTWARE'] = 'apache';
+
+        // Backup audit log file to prevent test pollution
+        if (file_exists(SUCURI_DATA_STORAGE . '/sucuri-auditqueue.php')) {
+            $this->auditLogBackup = file_get_contents(SUCURI_DATA_STORAGE . '/sucuri-auditqueue.php');
+        }
 
         // Creating temp .php files in order to test allowing/disallowing them
         file_put_contents(SUCURI_DATA_STORAGE . '/archive.php', '<?php echo "Hello World";');
@@ -30,6 +43,11 @@ final class HardeningTest extends TestCase
     {
         Monkey\tearDown();
         parent::tearDown();
+
+        // Restore audit log file
+        if ($this->auditLogBackup !== null) {
+            file_put_contents(SUCURI_DATA_STORAGE . '/sucuri-auditqueue.php', $this->auditLogBackup);
+        }
 
         // Removing temp files
         if (file_exists($this->getHtaccessPath())) {
@@ -75,6 +93,41 @@ final class HardeningTest extends TestCase
         $hardening->unhardenDirectory(SUCURI_DATA_STORAGE);
 
         $this->assertFileDoesNotExist($this->getHtaccessPath());
+    }
+
+    public function testBypassPrevention()
+    {
+        $hardening = new SucuriScanHardening();
+
+        $hardening->hardenBypassPrevention(SUCURI_DATA_STORAGE);
+
+        $this->assertFileExists($this->getHtaccessPath());
+        $content = file_get_contents($this->getHtaccessPath());
+
+        $this->assertStringContainsString('# BEGIN Sucuri WAF Bypass Prevention', $content);
+        $this->assertStringContainsString('Deny from all', $content);
+        $this->assertStringContainsString('Allow from 127.0.0.1', $content);
+        $this->assertStringContainsString('Allow from ::1', $content);
+        $this->assertStringContainsString('Require ip 127.0.0.1', $content);
+        $this->assertStringContainsString('Require ip ::1', $content);
+        $this->assertStringContainsString('Require ip 192.88.134.0/23', $content);
+        $this->assertStringContainsString('# END Sucuri WAF Bypass Prevention', $content);
+
+        $this->assertTrue($hardening->isBypassPreventionEnabled(SUCURI_DATA_STORAGE));
+    }
+
+    public function testUnhardenBypassPrevention()
+    {
+        $hardening = new SucuriScanHardening();
+
+        $hardening->hardenBypassPrevention(SUCURI_DATA_STORAGE);
+        $this->assertTrue($hardening->isBypassPreventionEnabled(SUCURI_DATA_STORAGE));
+
+        $hardening->unhardenBypassPrevention(SUCURI_DATA_STORAGE);
+
+        $content = file_get_contents($this->getHtaccessPath());
+        $this->assertStringNotContainsString('# BEGIN Sucuri WAF Bypass Prevention', $content);
+        $this->assertFalse($hardening->isBypassPreventionEnabled(SUCURI_DATA_STORAGE));
     }
 
     public function testRemoveFromAllowlist()
@@ -351,11 +404,37 @@ final class HardeningTest extends TestCase
 		$this->assertEquals('/var/www/html/other/path/.htaccess', $htaccess);
 	}
 
-	private function callPrivateHtaccessMethod($folder) {
-		$reflection = new ReflectionClass('SucuriScanHardening');
-		$method = $reflection->getMethod('htaccess');
-		$method->setAccessible(true);
 
-		return $method->invoke(null, $folder);
-	}
+    public function testUnhardenPreservesOtherContent()
+    {
+        $hardening = new SucuriScanHardening();
+        $htaccessPath = $this->getHtaccessPath();
+
+        $otherContentTop = "# Top custom rule\nOptions -Indexes\n";
+        $otherContentBottom = "\n# Bottom custom rule\nErrorDocument 404 /404.html";
+        
+        $bypassBlock = "\n# BEGIN Sucuri WAF Bypass Prevention\n" .
+                       "Some Rules\n" .
+                       "# END Sucuri WAF Bypass Prevention\n";
+
+        $fullContent = $otherContentTop . $bypassBlock . $otherContentBottom;
+        file_put_contents($htaccessPath, $fullContent);
+
+        $result = $hardening->unhardenBypassPrevention(SUCURI_DATA_STORAGE);
+        $this->assertTrue($result, "Unhardening should succeed");
+
+        $newContent = file_get_contents($htaccessPath);
+        
+        $this->assertStringNotContainsString('Sucuri WAF Bypass Prevention', $newContent);
+        $this->assertStringContainsString('Options -Indexes', $newContent);
+        $this->assertStringContainsString('ErrorDocument 404 /404.html', $newContent);
+    }
+
+    private function callPrivateHtaccessMethod($folder) {
+        $reflection = new ReflectionClass('SucuriScanHardening');
+        $method = $reflection->getMethod('htaccess');
+        $method->setAccessible(true);
+
+        return $method->invoke(null, $folder);
+    }
 }

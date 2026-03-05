@@ -271,6 +271,7 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
 
 .sucuriscan-header {
     margin-top: 4px;
+    display: flex;
 }
 
 .sucuriscan-logo-wrapper {
@@ -339,6 +340,11 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
     align-items: center;
     text-decoration: none;
     margin-right: 15px;
+}
+
+.sucuriscan-navbar {
+    margin-left: auto;
+    align-self: center;
 }
 
 .sucuriscan-navbar ul {

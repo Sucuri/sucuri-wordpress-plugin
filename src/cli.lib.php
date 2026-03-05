@@ -163,6 +163,58 @@ class SucuriScanCLI extends WP_CLI_Command
             WP_CLI::success("'{$file_path}' file successfully unignored.");
         }
     }
+
+    /**
+     * Manage Sucuri WAF Bypass Prevention.
+     *
+     * ## OPTIONS
+     *
+     * <action>
+     * : The action to be taken (enable or disable).
+     *
+     * ## EXAMPLES
+     *
+     *     # Enable Bypass Prevention
+     *     wp sucuri bypass_prevention enable
+     *     Success: WAF Bypass Prevention has been enabled.
+     *
+     *     # Disable Bypass Prevention
+     *     wp sucuri bypass_prevention disable
+     *     Success: WAF Bypass Prevention has been disabled.
+     *
+     * @param  array $args Arguments from the command line interface.
+     *
+     * @return void
+     */
+    public function bypass_prevention($args)
+    {
+        list($action) = $args;
+
+        $allowed_actions = array('enable', 'disable');
+
+        if (!in_array($action, $allowed_actions, true)) {
+            WP_CLI::error("Requested action '{$action}' is not supported.");
+        }
+
+        try {
+            if ('enable' === $action) {
+                if (SucuriScanHardening::hardenBypassPrevention()) {
+                    WP_CLI::success('WAF Bypass Prevention has been enabled.');
+                } else {
+                    WP_CLI::error('Failed to enable WAF Bypass Prevention.');
+                }
+            } elseif ('disable' === $action) {
+                if (SucuriScanHardening::unhardenBypassPrevention()) {
+                    WP_CLI::success('WAF Bypass Prevention has been disabled.');
+                } else {
+                    WP_CLI::error('Failed to disable WAF Bypass Prevention.');
+                }
+            }
+        } catch (Exception $e) {
+            WP_CLI::error($e->getMessage());
+        }
+    }
 }
+
 
 WP_CLI::add_command('sucuri', 'SucuriScanCLI');

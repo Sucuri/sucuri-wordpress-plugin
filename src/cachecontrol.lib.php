@@ -130,6 +130,10 @@ class SucuriScanCacheHeaders extends SucuriScan
     {
         $cacheOptions = SucuriScanOption::getOption(':headers_cache_control_options');
 
+        if (!isset($cacheOptions[$optionName])) {
+            return $this->getCacheDirectives(false, false, false, false);
+        }
+
         $option = $cacheOptions[$optionName];
 
         $maxAge = intval($option['max_age']);

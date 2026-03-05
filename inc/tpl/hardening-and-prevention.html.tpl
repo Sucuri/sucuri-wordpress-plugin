@@ -5,6 +5,8 @@
         <div class="hardening-prevention">
             %%%SUCURI.Settings.Hardening.Firewall%%%
 
+            %%%SUCURI.Settings.Hardening.BypassPrevention%%%
+
             %%%SUCURI.Settings.Hardening.WPVersion%%%
 
             %%%SUCURI.Settings.Hardening.RemoveGenerator%%%

@@ -298,6 +298,7 @@ function sucuriscan_hardening_prevention_page()
 
     /* settings - hardening */
     $params['Settings.Hardening.Firewall'] = SucuriScanHardeningPage::firewall();
+    $params['Settings.Hardening.BypassPrevention'] = SucuriScanHardeningPage::bypassPrevention();
     $params['Settings.Hardening.WPVersion'] = SucuriScanHardeningPage::wpversion();
     $params['Settings.Hardening.RemoveGenerator'] = SucuriScanHardeningPage::wpgenerator();
     $params['Settings.Hardening.NginxPHPFPM'] = SucuriScanHardeningPage::nginxphp();

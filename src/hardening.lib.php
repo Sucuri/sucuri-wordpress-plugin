@@ -518,4 +518,163 @@ class SucuriScanHardening extends SucuriScan
 
         return $allowlist;
     }
+
+    /**
+     * Adds Sucuri WAF bypass prevention rules to the root .htaccess file.
+     *
+     * @param string $directory Optional directory to apply hardening (defaults to ABSPATH).
+     *
+     * @return bool True if the rules are successfully added, false otherwise.
+     */
+    public static function hardenBypassPrevention($directory = null)
+    {
+        $current_username = 'CLI';
+        if (function_exists('wp_get_current_user')) {
+            $current_user = wp_get_current_user();
+            $current_username = (is_object($current_user) && isset($current_user->user_login)) ? $current_user->user_login : 'CLI';
+        }
+
+        $directory = $directory !== null ? $directory : ABSPATH;
+        $file_path = self::htaccess($directory);
+
+        if (!is_writable($directory) || (file_exists($file_path) && !is_writable($file_path))) {
+            return self::throwException(esc_html__('Directory or file is not writable', 'sucuri-scanner'));
+        }
+
+        if (SucuriScan::isNginxServer() || SucuriScan::isIISServer()) {
+            return self::throwException(esc_html__('Access control file is not supported', 'sucuri-scanner'));
+        }
+
+        /* Ensure we don't duplicate rules by removing any existing block first */
+        self::unhardenBypassPrevention($directory, false);
+
+        $fhandle = false;
+        if (file_exists($file_path)) {
+            $fhandle = @fopen($file_path, 'a');
+        } else {
+            $fhandle = @fopen($file_path, 'w');
+        }
+
+        if (!$fhandle) {
+            return false;
+        }
+
+        $rules = array(
+            '# BEGIN Sucuri WAF Bypass Prevention',
+            '<FilesMatch ".*">',
+            '    <IfModule !mod_authz_core.c>',
+            '        Order deny,allow',
+            '        Deny from all',
+            '        Allow from 127.0.0.1',
+            '        Allow from ::1',
+            '        Allow from 192.88.134.0/23',
+            '        Allow from 185.93.228.0/22',
+            '        Allow from 2a02:fe80::/29',
+            '        Allow from 66.248.200.0/22',
+            '        Allow from 208.109.0.0/22',
+            '    </IfModule>',
+            '    <IfModule mod_authz_core.c>',
+            '        Require ip 127.0.0.1',
+            '        Require ip ::1',
+            '        Require ip 192.88.134.0/23',
+            '        Require ip 185.93.228.0/22',
+            '        Require ip 2a02:fe80::/29',
+            '        Require ip 66.248.200.0/22',
+            '        Require ip 208.109.0.0/22',
+            '    </IfModule>',
+            '</FilesMatch>',
+            '# END Sucuri WAF Bypass Prevention',
+        );
+
+        $rules_text = implode("\n", $rules);
+        $written = @fwrite($fhandle, "\n" . $rules_text . "\n");
+        @fclose($fhandle);
+
+        if ($written !== false) {
+            // translators: %s is the username of the user who enabled the WAF Bypass Prevention hardening.
+            SucuriScanEvent::reportNoticeEvent(sprintf(__('WAF Bypass Prevention enabled by %s', 'sucuri-scanner'), $current_username));
+        }
+
+        return (bool) ($written !== false);
+    }
+
+    /**
+     * Removes Sucuri WAF bypass prevention rules from the root .htaccess file.
+     *
+     * @param string $directory Optional directory to remove hardening from (defaults to ABSPATH).
+     * @param bool $log_event Whether to emit an audit log event.
+     *
+     * @return bool True if the rules are successfully removed, false otherwise.
+     */
+    public static function unhardenBypassPrevention($directory = null, $log_event = true)
+    {
+        $current_username = 'CLI';
+        if (function_exists('wp_get_current_user')) {
+            $current_user = wp_get_current_user();
+            $current_username = (is_object($current_user) && isset($current_user->user_login)) ? $current_user->user_login : 'CLI';
+        }
+
+        $directory = $directory !== null ? $directory : ABSPATH;
+        $file_path = self::htaccess($directory);
+
+        if (!file_exists($file_path)) {
+            return true; /* File does not exist, implicitly unhardened */
+        }
+
+        if (!is_writable($file_path)) {
+            return self::throwException(esc_html__('File is not writable', 'sucuri-scanner'));
+        }
+
+        $content = SucuriScanFileInfo::fileContent($file_path);
+
+        $marker_start = '# BEGIN Sucuri WAF Bypass Prevention';
+        $marker_end   = '# END Sucuri WAF Bypass Prevention';
+
+        /* Regex to match content between and including markers */
+        $pattern = '/' . preg_quote($marker_start, '/') . '.*?' . preg_quote($marker_end, '/') . '\s*/s';
+
+        /* If markers are not found, assume it is not hardened or customized */
+        if (!preg_match($pattern, $content)) {
+            return true;
+        }
+
+        $replaced_content = preg_replace($pattern, '', $content);
+
+        if ($replaced_content === null) {
+            return self::throwException(esc_html__('Failed to update .htaccess content', 'sucuri-scanner'));
+        }
+
+        $content = $replaced_content;
+        $written = @file_put_contents($file_path, trim($content) . "\n");
+
+        if ($written === false) {
+            return self::throwException(esc_html__('Failed to write to .htaccess', 'sucuri-scanner'));
+        }
+
+        if ($log_event) {
+            // translators: %s is the username of the user who disabled the WAF Bypass Prevention hardening.
+            SucuriScanEvent::reportNoticeEvent(sprintf(__('WAF Bypass Prevention disabled by %s', 'sucuri-scanner'), $current_username));
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks if the bypass prevention is enabled.
+     *
+     * @param string $directory Optional directory to check (defaults to ABSPATH).
+     * @return bool True if enabled.
+     */
+    public static function isBypassPreventionEnabled($directory = null)
+    {
+        $directory = $directory !== null ? $directory : ABSPATH;
+        $file_path = self::htaccess($directory);
+
+        if (!file_exists($file_path)) {
+            return false;
+        }
+
+        $content = SucuriScanFileInfo::fileContent($file_path);
+        return strpos($content, '# BEGIN Sucuri WAF Bypass Prevention') !== false;
+    }
 }

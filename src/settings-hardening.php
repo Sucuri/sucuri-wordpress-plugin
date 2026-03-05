@@ -53,6 +53,7 @@ class SucuriScanHardeningPage extends SucuriScan
         $params['Hardening.FieldText'] = '';
         $params['Hardening.FieldAttrs'] = '';
         $params['Hardening.Description'] = '';
+        $params['Hardening.Modal'] = '';
 
         foreach ($args as $keyname => $value) {
             $params[$keyname] = $value;
@@ -120,6 +121,77 @@ class SucuriScanHardeningPage extends SucuriScan
             $params['Hardening.Status'] = 1;
             $params['Hardening.FieldAttrs'] = 'disabled';
             $params['Hardening.FieldText'] = __('Revert Hardening', 'sucuri-scanner');
+        }
+
+        return self::drawSection($params);
+    }
+
+    /**
+     * Prevents access to the site if the request does not come from Sucuri Firewall.
+     *
+     * @return string HTML code with the replaced template variables.
+     */
+    public static function bypassPrevention()
+    {
+        if (SucuriScan::isNginxServer() || SucuriScan::isIISServer()) {
+            return ''; /* empty page */
+        }
+
+        $params = array();
+
+	    $params['URL.Hardening'] = admin_url('admin.php?page=sucuriscan_hardening_prevention');
+
+        if (self::processRequest(__FUNCTION__)) {
+            $result = SucuriScanHardening::hardenBypassPrevention();
+
+            if ($result === true) {
+                SucuriScanInterface::info(__('Hardening applied for Bypass Prevention', 'sucuri-scanner'));
+            } else {
+                SucuriScanInterface::error(__('Error applying hardening, check the permissions.', 'sucuri-scanner'));
+            }
+        }
+
+        if (self::processRequest(__FUNCTION__ . '_revert')) {
+            $result = SucuriScanHardening::unhardenBypassPrevention();
+
+            if ($result === true) {
+                SucuriScanInterface::info(__('Hardening reverted for Bypass Prevention', 'sucuri-scanner'));
+            } else {
+                SucuriScanInterface::error(__('Access file is not writable, check the permissions.', 'sucuri-scanner'));
+            }
+        }
+
+        $params['Hardening.Title'] = __('Block Direct Access (Bypass Prevention)', 'sucuri-scanner');
+        $params['Hardening.Description'] = __(
+            'Prevent attackers from bypassing the WAF by blocking direct access to your origin server. This adds rules to your .htaccess file to only allow traffic from Sucuri IP addresses. Note: You must be behind the Sucuri Firewall to enable this feature.',
+            'sucuri-scanner'
+        );
+
+        if (!SucuriScan::isBehindFirewall()) {
+             $params['Hardening.Status'] = 0;
+             $params['Hardening.FieldText'] = __('Apply Hardening', 'sucuri-scanner');
+             $params['Hardening.FieldAttrs'] = 'disabled';
+        } elseif (SucuriScanHardening::isBypassPreventionEnabled()) {
+            $params['Hardening.Status'] = 1;
+            $params['Hardening.FieldName'] = __FUNCTION__ . '_revert';
+            $params['Hardening.FieldText'] = __('Revert Hardening', 'sucuri-scanner');
+        } else {
+            $params['Hardening.Status'] = 0;
+            $params['Hardening.FieldName'] = __FUNCTION__;
+            $params['Hardening.FieldText'] = __('Apply Hardening', 'sucuri-scanner');
+
+            /* WAF Bypass Modal */
+            $modal_params = array(
+                'Modal.Title'        => __('Enable WAF Bypass Prevention', 'sucuri-scanner'),
+                'Modal.WarningLabel' => __('Warning:', 'sucuri-scanner'),
+                'Modal.WarningText'  => __('This option will block all access to your site except from Sucuri Firewall IPs. You first need to be behind the Sucuri Firewall to enable this feature.', 'sucuri-scanner'),
+                'Modal.RevertText'   => __('If you disable the Sucuri Firewall service in the future, you MUST revert this setting first, or you will lose access to your site.', 'sucuri-scanner'),
+                'Modal.ConfirmLabel' => __('To confirm, type ENABLE in the box below:', 'sucuri-scanner'),
+                'Modal.Button'       => __('Enable', 'sucuri-scanner'),
+                'Modal.Placeholder'  => __('Type ENABLE to confirm', 'sucuri-scanner'),
+            );
+            
+            $params['Hardening.Modal'] = SucuriScanTemplate::getSection('hardening-bypass-modal-content', $modal_params);
         }
 
         return self::drawSection($params);
