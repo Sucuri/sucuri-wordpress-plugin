@@ -1219,8 +1219,11 @@ class SucuriScanOption extends SucuriScanRequest
 
             if (array_key_exists($option, $options)) {
                 $value = $options[$option];
-                self::updateSecretOption($option, $value);
-                self::deleteOptionFromFile($option);
+                $written = self::updateSecretOption($option, $value);
+
+                if ($written === true) {
+                    self::deleteOptionFromFile($option);
+                }
                 return $value;
             }
 
