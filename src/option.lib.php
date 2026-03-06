@@ -1229,7 +1229,19 @@ class SucuriScanOption extends SucuriScanRequest
 
             if (strpos($option, SUCURISCAN . '_') === 0) {
                 $value = self::getDefaultOptions($option);
-                self::updateSecretOption($option, $value);
+
+                /**
+                 * Do not persist "unset" default values for secret options.
+                 *
+                 * For some secret options (e.g. WAF key) the default is an
+                 * empty string. Persisting that value into secret storage
+                 * makes it harder to distinguish between an option that has
+                 * never been set and one that was explicitly set to an
+                 * empty value. Only persist non-empty defaults.
+                 */
+                if ($value !== '' && $value !== null) {
+                    self::updateSecretOption($option, $value);
+                }
                 return $value;
             }
 
