@@ -25,27 +25,8 @@ function readSettingsFileJson() {
   });
 }
 
-function seedLegacyWafKey() {
-  const php = `php -r '${
-    `\$path=${JSON.stringify(settingsFilePath)};` +
-    "$content=@file_get_contents($path);" +
-    'if($content===false){echo "";exit(0);} ' +
-    '$lines=explode("\\n",$content,2);' +
-    'if(count($lines)<2){echo "";exit(0);} ' +
-    "$json=trim($lines[1]);" +
-    "echo $json;"
-  }'`;
-
-  return runWpCli(php).then((output) => {
-    if (!output) {
-      return {};
-    }
-    return JSON.parse(output);
-  });
-}
-
 function ensureLegacyWafKey() {
-  return seedLegacyWafKey().then((settings) => {
+  return readSettingsFileJson().then((settings) => {
     if (settings.sucuriscan_cloudproxy_apikey) {
       return settings;
     }
