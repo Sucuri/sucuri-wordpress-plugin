@@ -44,6 +44,41 @@ function seedLegacyWafKey() {
   });
 }
 
+function ensureLegacyWafKey() {
+  return seedLegacyWafKey().then((settings) => {
+    if (settings.sucuriscan_cloudproxy_apikey) {
+      return settings;
+    }
+
+    const php = `php -r '${
+      `\$path=${JSON.stringify(settingsFilePath)};` +
+      "$dir=dirname($path);" +
+      "if(!is_dir($dir)){mkdir($dir,0755,true);} " +
+      "$data=array(" +
+      `"sucuriscan_cloudproxy_apikey"=>"${legacyWafKey}",` +
+      '"sucuriscan_addr_header"=>"REMOTE_ADDR",' +
+      '"sucuriscan_notify_to"=>"alerts@example.com"' +
+      ");" +
+      "$json=json_encode($data);" +
+      '$content="<?php exit(0); ?>\\n".$json."\\n";' +
+      "file_put_contents($path,$content);"
+    }'`;
+
+    return runWpCli(php)
+      .then(() =>
+        runWpCli(
+          "wp option delete sucuriscan_secret_cloudproxy_apikey_enc || true",
+        ),
+      )
+      .then(() =>
+        runWpCli(
+          "wp option delete sucuriscan_secret_cloudproxy_apikey || true",
+        ),
+      )
+      .then(() => readSettingsFileJson());
+  });
+}
+
 beforeEach(() => {
   cy.session("Login to WordPress", () => {
     cy.login();
@@ -52,7 +87,7 @@ beforeEach(() => {
 
 describe("Run e2e WAF migration tests", () => {
   it("migrates legacy WAF key to encrypted DB option", () => {
-    return seedLegacyWafKey().then((settings) => {
+    return ensureLegacyWafKey().then((settings) => {
       expect(settings.sucuriscan_cloudproxy_apikey).to.eq(legacyWafKey);
       expect(settings.sucuriscan_addr_header).to.eq("REMOTE_ADDR");
 
