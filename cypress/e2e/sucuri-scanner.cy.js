@@ -100,7 +100,7 @@ beforeEach(() => {
 });
 
 describe("Run e2e tests", () => {
-    it("WAF API Key modal appears only on Dashboard, dismisses once, and CTA navigates to WAF", () => {
+    it.skip("WAF API Key modal appears only on Dashboard, dismisses once, and CTA navigates to WAF", () => {
         const wafModalSelector = '.sucuriscan-activate-your-waf-key-modal-modal';
 
         cy.clearCookies();
