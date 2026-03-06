@@ -971,8 +971,10 @@ class SucuriScanOption extends SucuriScanRequest
             if (self::canEncryptSecrets()) {
                 $payload = self::encryptSecretValue($value);
                 if ($payload !== false) {
-                    update_option($encrypted_storage, $payload, false);
-                    delete_option($storage);
+                    $updated = update_option($encrypted_storage, $payload, false);
+                    if ($updated) {
+                        delete_option($storage);
+                    }
                 }
             }
 
