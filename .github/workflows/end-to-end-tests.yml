@@ -98,7 +98,9 @@ jobs:
           make e2e-scanner
 
       - name: Run WAF migration tests (E2E)
-        run: npx cypress run --spec cypress/e2e/sucuri-scanner-waf-migration.cy.js
+        run: |
+          npx wp-env run tests-cli bash wp-content/plugins/sucuri-scanner/tests/e2e-seed-waf-migration.sh
+          npx cypress run --spec cypress/e2e/sucuri-scanner-waf-migration.cy.js
 
       - name: Run Firewall tests (E2E)
         if: env.cypress_waf_api_key
