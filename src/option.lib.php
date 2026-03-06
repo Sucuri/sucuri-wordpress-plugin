@@ -1075,6 +1075,37 @@ class SucuriScanOption extends SucuriScanRequest
     }
 
     /**
+     * Retrieve a secret option value from the DB or settings file.
+     *
+     * @param string $option Option name.
+     * @param array $options Settings file options.
+     * @return mixed
+     */
+    private static function getSecretOptionValue($option, $options)
+    {
+        $value = self::getSecretOption($option);
+
+        if ($value !== null) {
+            return $value;
+        }
+
+        if (array_key_exists($option, $options)) {
+            $value = $options[$option];
+            self::updateSecretOption($option, $value);
+            self::deleteOptionFromFile($option);
+            return $value;
+        }
+
+        if (strpos($option, SUCURISCAN . '_') === 0) {
+            $value = self::getDefaultOptions($option);
+            self::updateSecretOption($option, $value);
+            return $value;
+        }
+
+        return false;
+    }
+
+    /**
      * Name of all valid plugin's options.
      *
      * @return array Name of all valid plugin's options.
@@ -1213,41 +1244,7 @@ class SucuriScanOption extends SucuriScanRequest
         $option = self::varPrefix($option);
 
         if (self::isSecretOption($option)) {
-            $value = self::getSecretOption($option);
-
-            if ($value !== null) {
-                return $value;
-            }
-
-            if (array_key_exists($option, $options)) {
-                $value = $options[$option];
-                $written = self::updateSecretOption($option, $value);
-
-                if ($written === true) {
-                    self::deleteOptionFromFile($option);
-                }
-                return $value;
-            }
-
-            if (strpos($option, SUCURISCAN . '_') === 0) {
-                $value = self::getDefaultOptions($option);
-
-                /**
-                 * Do not persist "unset" default values for secret options.
-                 *
-                 * For some secret options (e.g. WAF key) the default is an
-                 * empty string. Persisting that value into secret storage
-                 * makes it harder to distinguish between an option that has
-                 * never been set and one that was explicitly set to an
-                 * empty value. Only persist non-empty defaults.
-                 */
-                if ($value !== '' && $value !== null) {
-                    self::updateSecretOption($option, $value);
-                }
-                return $value;
-            }
-
-            return false;
+            return self::getSecretOptionValue($option, $options);
         }
 
         if (array_key_exists($option, $options)) {
