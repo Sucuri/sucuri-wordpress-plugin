@@ -1325,6 +1325,10 @@ class SucuriScanAPI extends SucuriScanOption
 			'timeout' => 30
 		);
 
+		if (SucuriScan::isBehindFirewall()) {
+			$args['headers']['X-Sucuri-WAF'] = '1';
+		}
+
 		$response = wp_remote_get($url, $args);
 
 		if (is_wp_error($response)) {
