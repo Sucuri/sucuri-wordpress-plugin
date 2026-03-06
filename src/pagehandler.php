@@ -158,6 +158,7 @@ function sucuriscan_page()
     $params = array();
 
     SucuriScanInterface::startupChecks();
+    SucuriScanOption::renderWafKeyDecryptNotice();
 
     /* load data for the Integrity section */
     $params['Integrity'] = SucuriScanIntegrity::pageIntegrity();
@@ -207,6 +208,7 @@ function sucuriscan_page()
 function sucuriscan_firewall_page()
 {
     SucuriScanInterface::startupChecks();
+    SucuriScanOption::renderWafKeyDecryptNotice();
 
     $params = array(
         'Firewall.Settings' => SucuriScanFirewall::settingsPage(),
@@ -465,4 +467,3 @@ function sucuriscan_ajax()
 
     wp_send_json(array('ok' => false, 'error' => 'invalid ajax action'), 200);
 }
-
