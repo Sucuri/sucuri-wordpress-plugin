@@ -99,7 +99,7 @@ jobs:
 
       - name: Run WAF migration tests (E2E)
         run: |
-          npx wp-env run tests-cli bash wp-content/plugins/sucuri-scanner/tests/e2e-seed-waf-migration.sh
+          npx wp-env run tests-cli bash /var/www/html/wp-content/plugins/sucuri-scanner/tests/e2e-seed-waf-migration.sh
           npx cypress run --spec cypress/e2e/sucuri-scanner-waf-migration.cy.js
 
       - name: Run Firewall tests (E2E)
