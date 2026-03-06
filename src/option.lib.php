@@ -654,6 +654,138 @@ class SucuriScanOption extends SucuriScanRequest
     }
 
     /**
+     * Map of options that must be stored as secrets.
+     *
+     * @return array
+     */
+    private static function getSecretOptionMap()
+    {
+        return array(
+            'sucuriscan_cloudproxy_apikey' => 'sucuriscan_secret_cloudproxy_apikey',
+        );
+    }
+
+    /**
+     * Check whether an option is stored as a secret.
+     *
+     * @param string $option Option name.
+     * @return bool
+     */
+    private static function isSecretOption($option = '')
+    {
+        $option = self::varPrefix($option);
+        $map = self::getSecretOptionMap();
+
+        return array_key_exists($option, $map);
+    }
+
+    /**
+     * Resolve the storage name for a secret option.
+     *
+     * @param string $option Option name.
+     * @return string
+     */
+    private static function getSecretStorageName($option = '')
+    {
+        $option = self::varPrefix($option);
+        $map = self::getSecretOptionMap();
+
+        return array_key_exists($option, $map) ? $map[$option] : $option;
+    }
+
+    /**
+     * Retrieve a secret option from the database.
+     *
+     * @param string $option Option name.
+     * @return mixed|null
+     */
+    private static function getSecretOption($option = '')
+    {
+        if (!function_exists('get_option')) {
+            return null;
+        }
+
+        $option = self::varPrefix($option);
+        $storage = self::getSecretStorageName($option);
+        $value = get_option($storage, null);
+
+        if ($value !== null) {
+            return $value;
+        }
+
+        // Backward compatibility: migrate legacy DB value to secret storage.
+        $legacy = get_option($option, null);
+        if ($legacy !== null) {
+            self::updateSecretOption($option, $legacy);
+            delete_option($option);
+            return $legacy;
+        }
+
+        return null;
+    }
+
+    /**
+     * Update a secret option in the database (non-autoloaded).
+     *
+     * @param string $option Option name.
+     * @param mixed $value Option value.
+     * @return bool
+     */
+    private static function updateSecretOption($option = '', $value = '')
+    {
+        if (!function_exists('update_option')) {
+            return false;
+        }
+
+        $option = self::varPrefix($option);
+        $storage = self::getSecretStorageName($option);
+
+        return update_option($storage, $value, false);
+    }
+
+    /**
+     * Delete a secret option from the database.
+     *
+     * @param string $option Option name.
+     * @return bool
+     */
+    private static function deleteSecretOption($option = '')
+    {
+        if (!function_exists('delete_option')) {
+            return false;
+        }
+
+        $option = self::varPrefix($option);
+        $storage = self::getSecretStorageName($option);
+
+        $deleted = delete_option($storage);
+
+        // Remove legacy storage if still present.
+        delete_option($option);
+
+        return $deleted;
+    }
+
+    /**
+     * Delete an option from the settings file only.
+     *
+     * @param string $option Option name.
+     * @return bool
+     */
+    private static function deleteOptionFromFile($option = '')
+    {
+        $options = self::getAllOptions();
+        $option = self::varPrefix($option);
+
+        if (array_key_exists($option, $options)) {
+            unset($options[$option]);
+            return self::writeNewOptions($options);
+        }
+
+        return false;
+    }
+
+    /**
      * Name of all valid plugin's options.
      *
      * @return array Name of all valid plugin's options.
@@ -791,6 +923,29 @@ class SucuriScanOption extends SucuriScanRequest
         $options = self::getAllOptions();
         $option = self::varPrefix($option);
 
+        if (self::isSecretOption($option)) {
+            $value = self::getSecretOption($option);
+
+            if ($value !== null) {
+                return $value;
+            }
+
+            if (array_key_exists($option, $options)) {
+                $value = $options[$option];
+                self::updateSecretOption($option, $value);
+                self::deleteOptionFromFile($option);
+                return $value;
+            }
+
+            if (strpos($option, SUCURISCAN . '_') === 0) {
+                $value = self::getDefaultOptions($option);
+                self::updateSecretOption($option, $value);
+                return $value;
+            }
+
+            return false;
+        }
+
         if (array_key_exists($option, $options)) {
             return $options[$option];
         }
@@ -861,6 +1016,10 @@ class SucuriScanOption extends SucuriScanRequest
      */
     public static function updateOption($option = '', $value = '')
     {
+        if (self::isSecretOption($option)) {
+            return self::updateSecretOption($option, $value);
+        }
+
         if (strpos($option, ':') === 0 || strpos($option, SUCURISCAN) === 0) {
             $options = self::getAllOptions();
             $option = self::varPrefix($option);
@@ -884,6 +1043,10 @@ class SucuriScanOption extends SucuriScanRequest
      */
     public static function deleteOption($option = '')
     {
+        if (self::isSecretOption($option)) {
+            return self::deleteSecretOption($option);
+        }
+
         if (strpos($option, ':') === 0 || strpos($option, SUCURISCAN) === 0) {
             $options = self::getAllOptions();
             $option = self::varPrefix($option);
