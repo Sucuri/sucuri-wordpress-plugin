@@ -654,6 +654,458 @@ class SucuriScanOption extends SucuriScanRequest
     }
 
     /**
+     * Map of options that must be stored as secrets.
+     *
+     * @return array
+     */
+    private static function getSecretOptionMap()
+    {
+        return array(
+            'sucuriscan_cloudproxy_apikey' => 'sucuriscan_secret_cloudproxy_apikey',
+        );
+    }
+
+    /**
+     * Check whether an option is stored as a secret.
+     *
+     * @param string $option Option name.
+     * @return bool
+     */
+    private static function isSecretOption($option = '')
+    {
+        $option = self::varPrefix($option);
+        $map = self::getSecretOptionMap();
+
+        return array_key_exists($option, $map);
+    }
+
+    /**
+     * Resolve the storage name for a secret option.
+     *
+     * @param string $option Option name.
+     * @return string
+     */
+    private static function getSecretStorageName($option = '')
+    {
+        $option = self::varPrefix($option);
+        $map = self::getSecretOptionMap();
+
+        return array_key_exists($option, $map) ? $map[$option] : $option;
+    }
+
+    /**
+     * Resolve the storage name for encrypted secret payloads.
+     *
+     * @param string $option Option name.
+     * @return string
+     */
+    private static function getSecretEncryptedStorageName($option = '')
+    {
+        return self::getSecretStorageName($option) . '_enc';
+    }
+
+    /**
+     * Check whether secret encryption can be enabled.
+     *
+     * @return bool
+     */
+    private static function canEncryptSecrets()
+    {
+        if (!function_exists('openssl_encrypt') || !function_exists('openssl_decrypt')) {
+            return false;
+        }
+
+        if (!function_exists('openssl_get_cipher_methods') || !function_exists('wp_salt')) {
+            return false;
+        }
+
+        $methods = openssl_get_cipher_methods();
+
+        return is_array($methods) && in_array('aes-256-gcm', $methods, true);
+    }
+
+    /**
+     * Build encryption key from WordPress salts.
+     *
+     * @return string|bool
+     */
+    private static function getSecretEncryptionKey()
+    {
+        if (!function_exists('wp_salt')) {
+            return false;
+        }
+
+        $context = 'sucuriscan_waf_key_v1';
+
+        return substr(hash_hmac('sha256', $context, wp_salt('auth'), true), 0, 32);
+    }
+
+    /**
+     * Generate random bytes for encryption.
+     *
+     * @param int $length Number of bytes.
+     * @return string|bool
+     */
+    private static function getSecretRandomBytes($length)
+    {
+        if (function_exists('random_bytes')) {
+            return random_bytes($length);
+        }
+
+        if (function_exists('openssl_random_pseudo_bytes')) {
+            return openssl_random_pseudo_bytes($length);
+        }
+
+        return false;
+    }
+
+    /**
+     * Encrypt a secret value with AES-256-GCM.
+     *
+     * @param string $plaintext Secret value.
+     * @return array|bool
+     */
+    private static function encryptSecretValue($plaintext)
+    {
+        if (!self::canEncryptSecrets()) {
+            return false;
+        }
+
+        $key = self::getSecretEncryptionKey();
+        if (!$key) {
+            return false;
+        }
+
+        $iv = self::getSecretRandomBytes(12);
+        if (!$iv) {
+            return false;
+        }
+
+        $tag = '';
+        $ciphertext = openssl_encrypt(
+            $plaintext,
+            'aes-256-gcm',
+            $key,
+            OPENSSL_RAW_DATA,
+            $iv,
+            $tag
+        );
+
+        if ($ciphertext === false || $tag === '') {
+            return false;
+        }
+
+        return array(
+            'v' => 1,
+            'alg' => 'aes-256-gcm',
+            'iv' => base64_encode($iv),
+            'tag' => base64_encode($tag),
+            'ct' => base64_encode($ciphertext),
+        );
+    }
+
+    /**
+     * Decrypt a secret payload.
+     *
+     * @param array $payload Encrypted payload.
+     * @return string|bool
+     */
+    private static function decryptSecretValue($payload)
+    {
+        if (!self::canEncryptSecrets()) {
+            return false;
+        }
+
+        if (!is_array($payload)
+            || !isset($payload['v'])
+            || !isset($payload['alg'])
+            || !isset($payload['iv'])
+            || !isset($payload['tag'])
+            || !isset($payload['ct'])
+        ) {
+            return false;
+        }
+
+        if ((int) $payload['v'] !== 1 || $payload['alg'] !== 'aes-256-gcm') {
+            return false;
+        }
+
+        $key = self::getSecretEncryptionKey();
+        if (!$key) {
+            return false;
+        }
+
+        $iv = base64_decode($payload['iv']);
+        $tag = base64_decode($payload['tag']);
+        $ct = base64_decode($payload['ct']);
+
+        if ($iv === false || $tag === false || $ct === false) {
+            return false;
+        }
+
+        return openssl_decrypt(
+            $ct,
+            'aes-256-gcm',
+            $key,
+            OPENSSL_RAW_DATA,
+            $iv,
+            $tag
+        );
+    }
+
+    /**
+     * Return the option name for decrypt error flags.
+     *
+     * @return string
+     */
+    private static function wafKeyDecryptErrorOption()
+    {
+        return 'sucuriscan_waf_key_decrypt_error';
+    }
+
+    /**
+     * Set a decryption error flag for the WAF key.
+     *
+     * @param string $message Error detail for logging.
+     * @return void
+     */
+    private static function setWafKeyDecryptError($message = '')
+    {
+        if (!function_exists('get_option') || !function_exists('update_option')) {
+            return;
+        }
+
+        if ($message) {
+            $message = sprintf(
+                /* translators: %s: error message */
+                __('Firewall API key decryption failed: %s', 'sucuri-scanner'),
+                $message
+            );
+        }
+
+        $option = self::wafKeyDecryptErrorOption();
+        $current = get_option($option, array());
+        $timestamp = isset($current['ts']) ? (int) $current['ts'] : 0;
+
+        if ($timestamp && (time() - $timestamp) < 3600) {
+            return;
+        }
+
+        update_option($option, array('ts' => time(), 'message' => (string) $message), false);
+
+        if ($message) {
+            SucuriScanEvent::reportWarningEvent($message);
+        }
+    }
+
+    /**
+     * Clear the WAF key decryption error flag.
+     *
+     * @return void
+     */
+    private static function clearWafKeyDecryptError()
+    {
+        if (function_exists('delete_option')) {
+            delete_option(self::wafKeyDecryptErrorOption());
+        }
+    }
+
+    /**
+     * Render a decryption error notice on selected admin pages.
+     *
+     * @return void
+     */
+    public static function renderWafKeyDecryptNotice()
+    {
+        if (!function_exists('get_option')) {
+            return;
+        }
+
+        if (!SucuriScanPermissions::canManagePlugin()) {
+            return;
+        }
+
+        $flag = get_option(self::wafKeyDecryptErrorOption(), array());
+        if (empty($flag) || !is_array($flag)) {
+            return;
+        }
+
+        SucuriScanInterface::error(
+            __('The Sucuri WAF API key could not be decrypted. Please re-save the key in the Firewall settings to restore functionality.', 'sucuri-scanner')
+        );
+    }
+
+    /**
+     * Retrieve a secret option from the database.
+     *
+     * @param string $option Option name.
+     * @return mixed|null
+     */
+    private static function getSecretOption($option = '')
+    {
+        if (!function_exists('get_option')) {
+            return null;
+        }
+
+        $option = self::varPrefix($option);
+        $storage = self::getSecretStorageName($option);
+        $encrypted_storage = self::getSecretEncryptedStorageName($option);
+
+        $encrypted_payload = get_option($encrypted_storage, null);
+        if ($encrypted_payload !== null) {
+            $payload = is_array($encrypted_payload) ? $encrypted_payload : @json_decode($encrypted_payload, true);
+            $decrypted = self::decryptSecretValue($payload);
+
+            if ($decrypted !== false) {
+                self::clearWafKeyDecryptError();
+                return $decrypted;
+            }
+
+            self::setWafKeyDecryptError('decryption failed; please re-save the key.');
+            return false;
+        }
+
+        $value = get_option($storage, null);
+
+        if ($value !== null) {
+            if (self::canEncryptSecrets()) {
+                $payload = self::encryptSecretValue($value);
+                if ($payload !== false) {
+                    $updated = update_option($encrypted_storage, $payload, false);
+                    if ($updated) {
+                        delete_option($storage);
+                    }
+                }
+            }
+
+            self::clearWafKeyDecryptError();
+            return $value;
+        }
+
+        // Backward compatibility: migrate legacy DB value to secret storage.
+        $legacy = get_option($option, null);
+        if ($legacy !== null) {
+            self::updateSecretOption($option, $legacy);
+            delete_option($option);
+            return $legacy;
+        }
+
+        return null;
+    }
+
+    /**
+     * Update a secret option in the database (non-autoloaded).
+     *
+     * @param string $option Option name.
+     * @param mixed $value Option value.
+     * @return bool
+     */
+    private static function updateSecretOption($option = '', $value = '')
+    {
+        if (!function_exists('update_option')) {
+            return false;
+        }
+
+        $option = self::varPrefix($option);
+        $storage = self::getSecretStorageName($option);
+        $encrypted_storage = self::getSecretEncryptedStorageName($option);
+
+        if (self::canEncryptSecrets()) {
+            $payload = self::encryptSecretValue($value);
+            if ($payload !== false) {
+                $encrypted_result = update_option($encrypted_storage, $payload, false);
+                if ($encrypted_result) {
+                    delete_option($storage);
+                    self::clearWafKeyDecryptError();
+                    return true;
+                }
+            }
+        }
+
+        delete_option($encrypted_storage);
+        $result = update_option($storage, $value, false);
+        self::clearWafKeyDecryptError();
+        return $result;
+    }
+
+    /**
+     * Delete a secret option from the database.
+     *
+     * @param string $option Option name.
+     * @return bool
+     */
+    private static function deleteSecretOption($option = '')
+    {
+        if (!function_exists('delete_option')) {
+            return false;
+        }
+
+        $option = self::varPrefix($option);
+        $storage = self::getSecretStorageName($option);
+        $encrypted_storage = self::getSecretEncryptedStorageName($option);
+
+        delete_option($encrypted_storage);
+        $deleted = delete_option($storage);
+
+        // Remove legacy storage if still present.
+        delete_option($option);
+
+        self::clearWafKeyDecryptError();
+
+        return $deleted;
+    }
+
+    /**
+     * Delete an option from the settings file only.
+     *
+     * @param string $option Option name.
+     * @return bool
+     */
+    private static function deleteOptionFromFile($option = '')
+    {
+        $options = self::getAllOptions();
+        $option = self::varPrefix($option);
+
+        if (array_key_exists($option, $options)) {
+            unset($options[$option]);
+            return self::writeNewOptions($options);
+        }
+
+        return false;
+    }
+
+    /**
+     * Retrieve a secret option value from the DB or settings file.
+     *
+     * @param string $option Option name.
+     * @param array $options Settings file options.
+     * @return mixed
+     */
+    private static function getSecretOptionValue($option, $options)
+    {
+        $value = self::getSecretOption($option);
+
+        if ($value !== null) {
+            return $value;
+        }
+
+        if (array_key_exists($option, $options)) {
+            $value = $options[$option];
+            self::updateSecretOption($option, $value);
+            self::deleteOptionFromFile($option);
+            return $value;
+        }
+
+        if (strpos($option, SUCURISCAN . '_') === 0) {
+            $value = self::getDefaultOptions($option);
+            self::updateSecretOption($option, $value);
+            return $value;
+        }
+
+        return false;
+    }
+
+    /**
      * Name of all valid plugin's options.
      *
      * @return array Name of all valid plugin's options.
@@ -791,6 +1243,10 @@ class SucuriScanOption extends SucuriScanRequest
         $options = self::getAllOptions();
         $option = self::varPrefix($option);
 
+        if (self::isSecretOption($option)) {
+            return self::getSecretOptionValue($option, $options);
+        }
+
         if (array_key_exists($option, $options)) {
             return $options[$option];
         }
@@ -861,6 +1317,10 @@ class SucuriScanOption extends SucuriScanRequest
      */
     public static function updateOption($option = '', $value = '')
     {
+        if (self::isSecretOption($option)) {
+            return self::updateSecretOption($option, $value);
+        }
+
         if (strpos($option, ':') === 0 || strpos($option, SUCURISCAN) === 0) {
             $options = self::getAllOptions();
             $option = self::varPrefix($option);
@@ -884,6 +1344,10 @@ class SucuriScanOption extends SucuriScanRequest
      */
     public static function deleteOption($option = '')
     {
+        if (self::isSecretOption($option)) {
+            return self::deleteSecretOption($option);
+        }
+
         if (strpos($option, ':') === 0 || strpos($option, SUCURISCAN) === 0) {
             $options = self::getAllOptions();
             $option = self::varPrefix($option);
