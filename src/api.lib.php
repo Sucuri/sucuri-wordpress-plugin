@@ -186,8 +186,7 @@ class SucuriScanAPI extends SucuriScanOption
         if (!empty($api_key)) {
             SucuriScanEvent::notifyEvent(
                 'plugin_change',
-                /* translators: %s: API key */
-                sprintf(__('API key was successfully set: %s', 'sucuri-scanner'), $api_key)
+                __('API key was successfully set.', 'sucuri-scanner')
             );
         }
 
@@ -302,7 +301,7 @@ class SucuriScanAPI extends SucuriScanOption
         if (stripos($raw, 'wrong api key') !== false) {
             $key = SucuriScanOption::getOption(':cloudproxy_apikey');
             $key = SucuriScan::escape($key);
-            $msg .= sprintf('; invalid firewall API key: %s', $key);
+            $msg .= '; invalid firewall API key.';
 
             SucuriScanOption::setRevProxy('disable', true);
             SucuriScanOption::setAddrHeader('REMOTE_ADDR', true);
@@ -1324,6 +1323,10 @@ class SucuriScanAPI extends SucuriScanOption
 			),
 			'timeout' => 30
 		);
+
+		if (SucuriScan::isBehindFirewall()) {
+			$args['headers']['X-Sucuri-WAF'] = '1';
+		}
 
 		$response = wp_remote_get($url, $args);
 

@@ -403,7 +403,6 @@ function sucuriscan_settings_general_importexport($nonce)
         ':addr_header',
         ':api_protocol',
         ':api_service',
-        ':cloudproxy_apikey',
         ':diff_utility',
         ':dns_lookups',
         ':email_subject',

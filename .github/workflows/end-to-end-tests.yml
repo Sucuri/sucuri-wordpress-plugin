@@ -1,7 +1,7 @@
 name: End-to-end tests
 
 # Triggers the workflow on push or pull request events
-on: [ push, pull_request ]
+on: [push, pull_request]
 
 jobs:
   # Runs the end-to-end test suite.
@@ -56,7 +56,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 25
-          cache: 'npm'
+          cache: "npm"
 
       - name: Install Dependencies
         run: npm ci
@@ -97,6 +97,9 @@ jobs:
           cp cypress.config.js.example cypress.config.js
           make e2e-scanner
 
+      - name: Run WAF migration tests (E2E)
+        run: make e2e-waf-migration
+
       - name: Run Firewall tests (E2E)
         if: env.cypress_waf_api_key
         env:
@@ -111,4 +114,3 @@ jobs:
           path: |
             cypress/videos
             cypress/screenshots
-        
