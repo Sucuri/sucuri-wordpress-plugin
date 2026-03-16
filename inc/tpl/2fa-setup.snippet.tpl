@@ -57,6 +57,7 @@
 <div class="sucuri-2fa-info">
     <div id="two-factor-info" class="sucuriscan-2fa-info-box">
      <div id="two-factor-info-deactivated">
+         <h3 class="sucuriscan-title">{{Two-Factor Authentication}}</h3>
         <p class="sucuri-with-icon"><strong>Two factor authentication is not activated.</strong><br>Please scan the QR below, or input the key manually in your app,
             then click on verify to activate it. <br> Please be mindful that activating this option for other users will block them from login until they activate
             two-factor.</p>
@@ -71,7 +72,7 @@
         </div>
     </div>
 
-    <div id="sucuriscan-totp-form" class="sucuriscan-2fa-info-box">
+    <div class="sucuriscan-2fa-info-box">
         <div id="sucuriscan-topt-qr" class="sucuriscan-topt-qr"></div>
         <p class="sucuriscan-2fa-secret"><code class="sucuriscan-2fa-secret-code">%%SUCURI.SecretManual%%</code></p>
         <form id="sucuriscan-totp-form" class="sucuriscan-2fa-form">

@@ -2327,19 +2327,33 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
     box-sizing: border-box;
 }
 
+.sucuriscan-panel:has(.sucuri-2fa-info) {
+    border: none;
+}
+
 .sucuriscan-2fa-info-box {
     width: calc(50% - 15px);
     margin-bottom: 8px;
     background-color: var(--sucuri-color-background-secondary);
     border-radius: var(--sucuri-border-radius);
+    border: 1px solid var(--sucuri-color-border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
 }
 
 #two-factor-info {
-    width: calc(60% - 15px);
+    flex: 1;
+    border: none;
+    background: none;
+    margin: 0;
+    padding: 0;
 }
 
 #sucuriscan-totp-form{
-    width: calc(40% - 15px);
+    width: 240px;
 }
 .sucuriscan-tag {
     border-radius: var(--sucuri-border-radius);
@@ -2586,6 +2600,7 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
 
 .sucuriscan-2fa-form {
     margin-top: 8px;
+    width: 240px;
 }
 
 .sucuriscan-2fa-code-input {
