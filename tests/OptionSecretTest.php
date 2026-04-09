@@ -14,6 +14,8 @@ final class OptionSecretTest extends TestCase
     private $cache = array();
     private $settingsFile = '';
     private $originalSettingsContent = '';
+    /** @var string Temporary wp-config.php used to verify writePluginSaltToConfig(). */
+    private $tempWpConfig = '';
 
     protected function setUp(): void
     {
@@ -24,6 +26,14 @@ final class OptionSecretTest extends TestCase
         $this->originalSettingsContent = file_exists($this->settingsFile)
             ? (string) file_get_contents($this->settingsFile)
             : '';
+
+        // Create a minimal wp-config.php in the ABSPATH directory so that
+        // writePluginSaltToConfig() can write to it during tests.
+        $this->tempWpConfig = rtrim(ABSPATH, '/') . '/wp-config.php';
+        file_put_contents(
+            $this->tempWpConfig,
+            "<?php\n/* That's all, stop editing! Happy publishing. */\n"
+        );
 
         $self = $this;
 
@@ -73,6 +83,10 @@ final class OptionSecretTest extends TestCase
     {
         if ($this->settingsFile) {
             file_put_contents($this->settingsFile, $this->originalSettingsContent);
+        }
+
+        if ($this->tempWpConfig && file_exists($this->tempWpConfig)) {
+            unlink($this->tempWpConfig);
         }
 
         Monkey\tearDown();
@@ -153,6 +167,191 @@ final class OptionSecretTest extends TestCase
         $this->assertArrayNotHasKey('sucuriscan_waf_key_decrypt_error', $this->options);
     }
 
+    public function testPlaintextMigrationUsesPlugSalt()
+    {
+        // Plaintext stored in the intermediate secret option (not yet encrypted).
+        $key = str_repeat('p', 32) . '/' . str_repeat('q', 32);
+        $this->options['sucuriscan_secret_cloudproxy_apikey'] = $key;
+
+        $value = SucuriScanOption::getOption(':cloudproxy_apikey');
+
+        $this->assertSame($key, $value);
+
+        // Must be stored as an encrypted v:2 payload (SUCURI_PLUG_* scheme).
+        $this->assertArrayHasKey('sucuriscan_secret_cloudproxy_apikey_enc', $this->options);
+        $payload = $this->options['sucuriscan_secret_cloudproxy_apikey_enc'];
+        $this->assertIsArray($payload);
+        $this->assertSame(2, $payload['v']);
+    }
+
+    public function testPlugSaltWrittenToWpConfig()
+    {
+        // Trigger a first-run initialisation by encrypting a key.
+        $key = str_repeat('r', 32) . '/' . str_repeat('s', 32);
+        SucuriScanOption::updateOption(':cloudproxy_apikey', $key);
+
+        // The temp wp-config.php must now contain define() statements for both constants.
+        $config = file_get_contents($this->tempWpConfig);
+        $this->assertStringContainsString("define('SUCURI_PLUG_KEY'", $config);
+        $this->assertStringContainsString("define('SUCURI_PLUG_SALT'", $config);
+
+        // Both constant values must be 64-char hex strings.
+        preg_match("/define\('SUCURI_PLUG_KEY',\s*'([0-9a-f]{64})'\)/", $config, $keyMatch);
+        preg_match("/define\('SUCURI_PLUG_SALT',\s*'([0-9a-f]{64})'\)/", $config, $saltMatch);
+        $this->assertNotEmpty($keyMatch[1] ?? '');
+        $this->assertNotEmpty($saltMatch[1] ?? '');
+    }
+
+    public function testPlugSaltInsertedBeforeStopMarker()
+    {
+        $key = str_repeat('r', 32) . '/' . str_repeat('s', 32);
+        SucuriScanOption::updateOption(':cloudproxy_apikey', $key);
+
+        $config = file_get_contents($this->tempWpConfig);
+        $plugPos = strpos($config, 'SUCURI_PLUG_KEY');
+        $stopPos = strpos($config, "/* That's all");
+
+        $this->assertNotFalse($plugPos);
+        $this->assertNotFalse($stopPos);
+        $this->assertLessThan($stopPos, $plugPos, 'SUCURI_PLUG_KEY must appear before the stop-editing marker');
+    }
+
+    public function testPlugSaltReplacedNotDuplicatedOnReSave()
+    {
+        // Each save regenerates: old lines removed, new lines written.
+        // After two saves there must still be exactly one occurrence of each constant.
+        $key = str_repeat('r', 32) . '/' . str_repeat('s', 32);
+        SucuriScanOption::updateOption(':cloudproxy_apikey', $key);
+        SucuriScanOption::updateOption(':cloudproxy_apikey', $key);
+
+        $config = file_get_contents($this->tempWpConfig);
+        $this->assertSame(1, substr_count($config, 'SUCURI_PLUG_KEY'));
+        $this->assertSame(1, substr_count($config, 'SUCURI_PLUG_SALT'));
+    }
+
+    public function testReSaveReEncryptsWithNewSalt()
+    {
+        $key = str_repeat('r', 32) . '/' . str_repeat('s', 32);
+
+        // First save.
+        SucuriScanOption::updateOption(':cloudproxy_apikey', $key);
+        $config1 = file_get_contents($this->tempWpConfig);
+        $payload1 = $this->options['sucuriscan_secret_cloudproxy_apikey_enc'];
+
+        // Extract constant values from the config file after first save.
+        preg_match("/define\('SUCURI_PLUG_KEY',\s*'([0-9a-f]{64})'\)/", $config1, $km1);
+        preg_match("/define\('SUCURI_PLUG_SALT',\s*'([0-9a-f]{64})'\)/", $config1, $sm1);
+
+        // Second save — regenerates salt.
+        SucuriScanOption::updateOption(':cloudproxy_apikey', $key);
+        $config2 = file_get_contents($this->tempWpConfig);
+        $payload2 = $this->options['sucuriscan_secret_cloudproxy_apikey_enc'];
+
+        preg_match("/define\('SUCURI_PLUG_KEY',\s*'([0-9a-f]{64})'\)/", $config2, $km2);
+        preg_match("/define\('SUCURI_PLUG_SALT',\s*'([0-9a-f]{64})'\)/", $config2, $sm2);
+
+        // Both saves produced valid v:2 payloads.
+        $this->assertSame(2, $payload1['v']);
+        $this->assertSame(2, $payload2['v']);
+
+        // The ciphertext must differ between saves (different IVs and keys).
+        $this->assertNotSame($payload1['ct'], $payload2['ct']);
+
+        // Since both saves derive from the same wp_salt('auth') = 'test-salt',
+        // the written constant values must be identical across saves.
+        $this->assertSame($km1[1] ?? 'a', $km2[1] ?? 'b');
+        $this->assertSame($sm1[1] ?? 'a', $sm2[1] ?? 'b');
+    }
+
+    public function testReSavedPayloadCanBeDecryptedAfterSaltRegeneration()
+    {
+        $key = str_repeat('r', 32) . '/' . str_repeat('s', 32);
+
+        // Simulate a corrupt/stale payload by placing a bad one in the store first.
+        $bad_payload = array(
+            'v' => 2,
+            'alg' => 'aes-256-gcm',
+            'iv' => base64_encode(str_repeat("\x00", 12)),
+            'tag' => base64_encode(str_repeat("\x00", 16)),
+            'ct' => base64_encode('garbage'),
+        );
+        $this->options['sucuriscan_secret_cloudproxy_apikey_enc'] = $bad_payload;
+
+        // Re-save the key — should regenerate salt and store a fresh payload.
+        SucuriScanOption::updateOption(':cloudproxy_apikey', $key);
+
+        // The freshly stored payload must be readable via the normal read path.
+        // Because constants are still set to old values in this PHP process, we
+        // decrypt manually using the values now in wp-config.php.
+        $config = file_get_contents($this->tempWpConfig);
+        preg_match("/define\('SUCURI_PLUG_KEY',\s*'([0-9a-f]{64})'\)/", $config, $km);
+        preg_match("/define\('SUCURI_PLUG_SALT',\s*'([0-9a-f]{64})'\)/", $config, $sm);
+
+        $plug_raw = ($km[1] ?? '') . ($sm[1] ?? '');
+        $enc_key = substr(hash_hmac('sha256', 'sucuriscan_waf_key_v1', $plug_raw, true), 0, 32);
+        $stored = $this->options['sucuriscan_secret_cloudproxy_apikey_enc'];
+
+        $iv = base64_decode($stored['iv']);
+        $tag = base64_decode($stored['tag']);
+        $ct = base64_decode($stored['ct']);
+        $decrypted = openssl_decrypt($ct, 'aes-256-gcm', $enc_key, OPENSSL_RAW_DATA, $iv, $tag);
+
+        $this->assertSame($key, $decrypted);
+    }
+
+    public function testV1PayloadMigratedToV2OnRead()
+    {
+        // Store a v:1 payload (AUTH_SALT scheme).
+        $secret = str_repeat('t', 32) . '/' . str_repeat('u', 32);
+        $payload = $this->encryptV1Payload($secret);
+        $this->options['sucuriscan_secret_cloudproxy_apikey_enc'] = $payload;
+
+        $value = SucuriScanOption::getOption(':cloudproxy_apikey');
+
+        $this->assertSame($secret, $value);
+
+        // The stored payload must now be v:2.
+        $stored = $this->options['sucuriscan_secret_cloudproxy_apikey_enc'];
+        $this->assertIsArray($stored);
+        $this->assertSame(2, $stored['v']);
+    }
+
+    public function testV2PayloadDecryptedWithPlugSalt()
+    {
+        // Store a v:2 payload encrypted with SUCURI_PLUG_* (derived from 'test-salt').
+        $secret = str_repeat('v', 32) . '/' . str_repeat('w', 32);
+        $payload = $this->encryptV2Payload($secret);
+        $this->options['sucuriscan_secret_cloudproxy_apikey_enc'] = $payload;
+
+        $value = SucuriScanOption::getOption(':cloudproxy_apikey');
+
+        $this->assertSame($secret, $value);
+        // Payload stays as v:2 (no migration needed).
+        $this->assertSame(2, $this->options['sucuriscan_secret_cloudproxy_apikey_enc']['v']);
+    }
+
+    public function testV1DecryptionUsesAuthSaltNotPlugSalt()
+    {
+        // A v:1 payload must always decrypt with the AUTH_SALT key, even though
+        // new encryptions use the SUCURI_PLUG_* key (which is different because
+        // it goes through an extra HMAC round before the final key derivation).
+        $secret = str_repeat('z', 32) . '/' . str_repeat('a', 32);
+        $payload = $this->encryptV1Payload($secret);
+        $this->options['sucuriscan_secret_cloudproxy_apikey_enc'] = $payload;
+
+        $value = SucuriScanOption::getOption(':cloudproxy_apikey');
+
+        $this->assertSame($secret, $value);
+
+        // Confirm AUTH_SALT key and SUCURI_PLUG_* key are indeed different,
+        // so this test is non-trivial.
+        $auth_key = substr(hash_hmac('sha256', 'sucuriscan_waf_key_v1', 'test-salt', true), 0, 32);
+        $plug_raw = hash_hmac('sha256', 'sucuri_plug_key_v1', 'test-salt')
+            . hash_hmac('sha256', 'sucuri_plug_salt_v1', 'test-salt');
+        $plug_key = substr(hash_hmac('sha256', 'sucuriscan_waf_key_v1', $plug_raw, true), 0, 32);
+        $this->assertNotSame($auth_key, $plug_key);
+    }
+
     private function writeSettingsFile(array $options)
     {
         $content = "<?php exit(0); ?>\n";
@@ -174,7 +373,18 @@ final class OptionSecretTest extends TestCase
         return is_array($data) ? $data : array();
     }
 
+    /**
+     * Build a v:1 payload encrypted with the AUTH_SALT scheme (wp_salt('auth') = 'test-salt').
+     */
     private function encryptPayload($plaintext)
+    {
+        return $this->encryptV1Payload($plaintext);
+    }
+
+    /**
+     * v:1 — AUTH_SALT scheme: key derived from wp_salt('auth') = 'test-salt'.
+     */
+    private function encryptV1Payload($plaintext)
     {
         $key = substr(hash_hmac('sha256', 'sucuriscan_waf_key_v1', 'test-salt', true), 0, 32);
         $iv = str_repeat("\x01", 12);
@@ -183,6 +393,31 @@ final class OptionSecretTest extends TestCase
 
         return array(
             'v' => 1,
+            'alg' => 'aes-256-gcm',
+            'iv' => base64_encode($iv),
+            'tag' => base64_encode($tag),
+            'ct' => base64_encode($ciphertext),
+        );
+    }
+
+    /**
+     * v:2 — SUCURI_PLUG_* scheme: key derived from plug_key + plug_salt, which are
+     * themselves HMAC-derived from wp_salt('auth') = 'test-salt'.
+     */
+    private function encryptV2Payload($plaintext)
+    {
+        $auth_raw = 'test-salt';
+        $plug_key = hash_hmac('sha256', 'sucuri_plug_key_v1', $auth_raw);
+        $plug_salt = hash_hmac('sha256', 'sucuri_plug_salt_v1', $auth_raw);
+        $plug_raw = $plug_key . $plug_salt;
+
+        $key = substr(hash_hmac('sha256', 'sucuriscan_waf_key_v1', $plug_raw, true), 0, 32);
+        $iv = str_repeat("\x02", 12);
+        $tag = '';
+        $ciphertext = openssl_encrypt($plaintext, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag);
+
+        return array(
+            'v' => 2,
             'alg' => 'aes-256-gcm',
             'iv' => base64_encode($iv),
             'tag' => base64_encode($tag),
