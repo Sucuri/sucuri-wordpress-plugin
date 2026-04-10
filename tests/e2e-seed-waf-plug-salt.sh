@@ -33,7 +33,7 @@ if ( ! file_exists( $config_path ) ) {
 $config_path = realpath( $config_path );
 if ( $config_path ) {
     $content = file_get_contents( $config_path );
-    $content = preg_replace( "/^define\(['\"]SUCURI_PLUG_(KEY|SALT)['\"].*\n/m", "", $content );
+    $content = preg_replace( "/^define\([\x27\"]SUCURI_PLUG_(KEY|SALT)[\x27\"].*\n/m", "", $content );
     file_put_contents( $config_path, $content, LOCK_EX );
 }
 
