@@ -740,9 +740,7 @@ class SucuriScanOption extends SucuriScanRequest
 
         $content = (string) file_get_contents($config_path); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 
-        if (strpos($content, 'SUCURI_PLUG_KEY') === false
-            && strpos($content, 'SUCURI_PLUG_SALT') === false
-        ) {
+        if (!preg_match('/^\s*define\s*\(\s*[\'"]SUCURI_PLUG_(?:KEY|SALT)[\'"]/m', $content)) {
             return true; // Nothing to remove.
         }
 
@@ -754,6 +752,11 @@ class SucuriScanOption extends SucuriScanRequest
 
         return (bool) file_put_contents($config_path, $new_content, LOCK_EX); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
     }
+
+    /**
+     * TODO hook regeneration to an admin action and provide a UI button for manual rotation, 
+     * with a warning about breaking changes if the plugin is active on multiple sites without network support.
+     */
 
     /**
      * Regenerate the SUCURI_PLUG_* salt pair.
@@ -809,8 +812,8 @@ class SucuriScanOption extends SucuriScanRequest
             return false;
         }
 
-        $has_key  = strpos($content, 'SUCURI_PLUG_KEY') !== false;
-        $has_salt = strpos($content, 'SUCURI_PLUG_SALT') !== false;
+        $has_key  = (bool) preg_match('/^\s*define\s*\(\s*[\'"]SUCURI_PLUG_KEY[\'"]/m', $content);
+        $has_salt = (bool) preg_match('/^\s*define\s*\(\s*[\'"]SUCURI_PLUG_SALT[\'"]/m', $content);
 
         if ($has_key && $has_salt) {
             return true; // Already present — nothing to do.
@@ -886,7 +889,9 @@ class SucuriScanOption extends SucuriScanRequest
         $plug_key = hash_hmac('sha256', 'sucuri_plug_key_v1', $auth_raw);
         $plug_salt = hash_hmac('sha256', 'sucuri_plug_salt_v1', $auth_raw);
 
-        self::writePluginSaltToConfig($plug_key, $plug_salt);
+        if (!self::writePluginSaltToConfig($plug_key, $plug_salt)) {
+            return false;
+        }
 
         return $plug_key . $plug_salt;
     }

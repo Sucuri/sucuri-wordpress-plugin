@@ -1604,8 +1604,27 @@ describe("Run e2e tests", () => {
 
         cy.visit("/wp-admin/admin.php?page=sucuriscan_firewall");
 
-        cy.get("[name=sucuriscan_cloudproxy_apikey]").type(FAKE_API_KEY);
+        // If a key is already stored the entry form is hidden behind an "Update" click;
+        // reveal it before typing so the test is safe to re-run against a dirty environment.
+        cy.get('#sucuriscan-waf-key-form').then(($form) => {
+            if ($form.hasClass('sucuriscan-hidden')) {
+                cy.get('#sucuriscan-waf-key-options option[value="update"]').click();
+            }
+        });
+
+        cy.get("[name=sucuriscan_cloudproxy_apikey]").clear().type(FAKE_API_KEY);
         cy.get("[data-cy=sucuriscan-save-wafkey]").click();
+        // Confirm the key was actually saved before navigating away.
+        cy.get('.sucuriscan-alert-updated').contains('Firewall API key was successfully saved');
+
+        // Stub the vulnerability scan AJAX to return a failure immediately,
+        // avoiding a ~60-second wait for two sequential 30-second external API timeouts.
+        cy.intercept('POST', '**/admin-ajax.php', (req) => {
+            const body = typeof req.body === 'string' ? req.body : new URLSearchParams(req.body).toString();
+            if (body.includes('vulnerabilities_scan_core_php')) {
+                req.reply({ statusCode: 200, body: { success: false, data: 'Could not fetch data' } });
+            }
+        }).as('vulnScan');
 
         cy.visit("wp-admin/admin.php?page=sucuriscan");
 

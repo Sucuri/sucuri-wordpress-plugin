@@ -113,7 +113,7 @@ final class OptionSecretTest extends TestCase
         $secret = str_repeat('c', 32) . '/' . str_repeat('d', 32);
         $fileKey = str_repeat('e', 32) . '/' . str_repeat('f', 32);
 
-        $payload = $this->encryptPayload($secret);
+        $payload = $this->encryptV1Payload($secret);
         $this->options['sucuriscan_secret_cloudproxy_apikey_enc'] = $payload;
         $this->writeSettingsFile(array('sucuriscan_cloudproxy_apikey' => $fileKey));
 
@@ -146,7 +146,7 @@ final class OptionSecretTest extends TestCase
 
     public function testDecryptSuccessClearsNoticeFlag()
     {
-        $payload = $this->encryptPayload('secret');
+        $payload = $this->encryptV1Payload('secret');
 
         $this->options['sucuriscan_waf_key_decrypt_error'] = array('ts' => time());
         $this->options['sucuriscan_secret_cloudproxy_apikey_enc'] = $payload;
@@ -371,14 +371,6 @@ final class OptionSecretTest extends TestCase
 
         $data = json_decode($lines[1], true);
         return is_array($data) ? $data : array();
-    }
-
-    /**
-     * Build a v:1 payload encrypted with the AUTH_SALT scheme (wp_salt('auth') = 'test-salt').
-     */
-    private function encryptPayload($plaintext)
-    {
-        return $this->encryptV1Payload($plaintext);
     }
 
     /**
