@@ -464,10 +464,12 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
     background: var(--sucuri-color-card-background);
     border-radius: 10px;
     border: 1px solid var(--sucuri-color-border);
-    margin-top: 30px;
     padding: 30px;
 }
 
+.sucuriscan-tabs-header {
+        margin-top: 30px;
+}
 .sucuriscan-tabs-containers .sucuriscan-panel:first-child {
     margin-top: 0;
 }

@@ -115,7 +115,7 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_use_wpmail' => 'enabled',
             'sucuriscan_twofactor_mode' => 'disabled',
             'sucuriscan_twofactor_users' => array(),
-            'sucuriscan_preferred_theme' => 'dark',
+            'sucuriscan_preferred_theme' => 'light',
             'sucuriscan_headers_cache_control' => 'disabled',
             'sucuriscan_headers_cache_control_options' => array(
                 'front_page' => array(
