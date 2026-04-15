@@ -16,6 +16,8 @@ final class OptionSecretTest extends TestCase
     private $originalSettingsContent = '';
     /** @var string Temporary wp-config.php used to verify writePluginSaltToConfig(). */
     private $tempWpConfig = '';
+    /** @var bool When true the update_option mock returns false (simulates DB failure). */
+    private $updateOptionFails = false;
 
     protected function setUp(): void
     {
@@ -67,6 +69,9 @@ final class OptionSecretTest extends TestCase
         });
 
         Functions\when('update_option')->alias(function ($option, $value, $autoload = null) use ($self) {
+            if ($self->updateOptionFails) {
+                return false;
+            }
             $self->options[$option] = $value;
             $self->autoload[$option] = $autoload;
             return true;
@@ -106,6 +111,28 @@ final class OptionSecretTest extends TestCase
 
         $data = $this->readSettingsFile();
         $this->assertArrayNotHasKey('sucuriscan_cloudproxy_apikey', $data);
+    }
+
+    public function testMigrationKeepsFileKeyIfWriteFails()
+    {
+        $key = str_repeat('a', 32) . '/' . str_repeat('b', 32);
+        $this->writeSettingsFile(array('sucuriscan_cloudproxy_apikey' => $key));
+
+        // Simulate a complete DB failure so update_option() always returns false.
+        $this->updateOptionFails = true;
+        $value = SucuriScanOption::getOption(':cloudproxy_apikey');
+        $this->updateOptionFails = false;
+
+        // The value is still returned for the current request.
+        $this->assertSame($key, $value);
+
+        // The key must NOT have been deleted from the settings file.
+        $data = $this->readSettingsFile();
+        $this->assertArrayHasKey('sucuriscan_cloudproxy_apikey', $data);
+
+        // Nothing must have been written to wp_options.
+        $this->assertArrayNotHasKey('sucuriscan_secret_cloudproxy_apikey_enc', $this->options);
+        $this->assertArrayNotHasKey('sucuriscan_secret_cloudproxy_apikey', $this->options);
     }
 
     public function testSecretOptionTakesPrecedenceOverFile()
