@@ -1,41 +1,36 @@
 # Copyright (C) 2026 Sucuri Inc.
-# This file is distributed under the GPL v2 or later.
+# This file is distributed under the same license as the Sucuri Security - Auditing, Malware Scanner and Hardening plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Sucuri Security - Auditing, Malware Scanner and Hardening 2.7\n"
+"Project-Id-Version: Sucuri Security - Auditing, Malware Scanner and Hardening 2.7.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/sucuri-scanner\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-03-06T14:41:08+00:00\n"
+"POT-Creation-Date: 2026-04-15T18:13:02+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.12.0\n"
+"X-Generator: WP-CLI 2.4.0\n"
 "X-Domain: sucuri-scanner\n"
 
 #. Plugin Name of the plugin
-#: sucuri.php
 msgid "Sucuri Security - Auditing, Malware Scanner and Hardening"
 msgstr ""
 
 #. Plugin URI of the plugin
-#: sucuri.php
 msgid "https://wordpress.sucuri.net/"
 msgstr ""
 
 #. Description of the plugin
-#: sucuri.php
 msgid "The <a href=\"https://sucuri.net/\" target=\"_blank\">Sucuri</a> plugin provides the website owner the best Activity Auditing, SiteCheck Remote Malware Scanning, Effective Security Hardening and Post-Hack features. SiteCheck will check for malware, spam, blocklisting and other security issues like .htaccess redirects, hidden eval code, etc. The best thing about it is it's completely free."
 msgstr ""
 
 #. Author of the plugin
-#: sucuri.php
 msgid "Sucuri Inc."
 msgstr ""
 
 #. Author URI of the plugin
-#: sucuri.php
 msgid "https://sucuri.net/"
 msgstr ""
 
@@ -51,161 +46,157 @@ msgstr ""
 msgid "Invalid API key format"
 msgstr ""
 
-#. translators: %s: API key
-#: src/api.lib.php:190
-#, php-format
-msgid "API key was successfully set: %s"
+#: src/api.lib.php:189
+msgid "API key was successfully set."
 msgstr ""
 
-#: src/api.lib.php:286
+#: src/api.lib.php:285
 msgid "Unknown error, there is no information"
 msgstr ""
 
-#: src/api.lib.php:326
+#: src/api.lib.php:325
 msgid "Invalid email format or the host is missing MX records."
 msgstr ""
 
-#: src/api.lib.php:361
+#: src/api.lib.php:360
 msgid "API key was generated and set"
 msgstr ""
 
-#: src/api.lib.php:363
+#: src/api.lib.php:362
 msgid "API key successfully generated and saved."
 msgstr ""
 
 #. translators: %s: domain name
-#: src/api.lib.php:392
-#, php-format
+#: src/api.lib.php:391
 msgid "API key recovery for domain: %s"
 msgstr ""
 
-#: src/api.lib.php:496
+#: src/api.lib.php:495
 msgid "All Time"
 msgstr ""
 
-#: src/api.lib.php:500
+#: src/api.lib.php:499
 #: src/auditlogs.lib.php:385
 msgid "Today"
 msgstr ""
 
-#: src/api.lib.php:504
+#: src/api.lib.php:503
 msgid "Yesterday"
 msgstr ""
 
-#: src/api.lib.php:508
+#: src/api.lib.php:507
 msgid "This Week"
 msgstr ""
 
-#: src/api.lib.php:512
+#: src/api.lib.php:511
 msgid "Last 7 Days"
 msgstr ""
 
-#: src/api.lib.php:516
+#: src/api.lib.php:515
 msgid "Last Week"
 msgstr ""
 
-#: src/api.lib.php:520
+#: src/api.lib.php:519
 msgid "Last 14 Days"
 msgstr ""
 
-#: src/api.lib.php:524
+#: src/api.lib.php:523
 msgid "This Month"
 msgstr ""
 
-#: src/api.lib.php:528
+#: src/api.lib.php:527
 msgid "Last 30 Days"
 msgstr ""
 
-#: src/api.lib.php:532
+#: src/api.lib.php:531
 msgid "Last Month"
 msgstr ""
 
-#: src/api.lib.php:536
+#: src/api.lib.php:535
 msgid "This Year"
 msgstr ""
 
-#: src/api.lib.php:540
+#: src/api.lib.php:539
 msgid "Last Year"
 msgstr ""
 
-#: src/api.lib.php:544
+#: src/api.lib.php:543
 msgid "Custom"
 msgstr ""
 
-#: src/api.lib.php:552
+#: src/api.lib.php:551
 msgid "All Posts"
 msgstr ""
 
-#: src/api.lib.php:556
-#: src/api.lib.php:588
+#: src/api.lib.php:555
+#: src/api.lib.php:587
 msgid "Created"
 msgstr ""
 
-#: src/api.lib.php:560
+#: src/api.lib.php:559
 msgid "Updated"
 msgstr ""
 
-#: src/api.lib.php:564
-#: src/api.lib.php:596
+#: src/api.lib.php:563
+#: src/api.lib.php:595
 msgid "Deleted"
 msgstr ""
 
-#: src/api.lib.php:570
+#: src/api.lib.php:569
 msgid "All Logins"
 msgstr ""
 
-#: src/api.lib.php:574
+#: src/api.lib.php:573
 msgid "Failed"
 msgstr ""
 
-#: src/api.lib.php:578
+#: src/api.lib.php:577
 msgid "Succeeded"
 msgstr ""
 
-#: src/api.lib.php:584
+#: src/api.lib.php:583
 #: src/strings.php:205
 msgid "All Users"
 msgstr ""
 
-#: src/api.lib.php:592
+#: src/api.lib.php:591
 msgid "Edited"
 msgstr ""
 
-#: src/api.lib.php:602
+#: src/api.lib.php:601
 msgid "All Plugins"
 msgstr ""
 
-#: src/api.lib.php:606
+#: src/api.lib.php:605
 msgid "Installed"
 msgstr ""
 
-#: src/api.lib.php:610
+#: src/api.lib.php:609
 #: src/topt.lib.php:1370
 msgid "Activated"
 msgstr ""
 
-#: src/api.lib.php:614
+#: src/api.lib.php:613
 #: src/topt.lib.php:1370
 #: src/topt.lib.php:1402
 msgid "Deactivated"
 msgstr ""
 
-#: src/api.lib.php:620
+#: src/api.lib.php:619
 msgid "All Files"
 msgstr ""
 
-#: src/api.lib.php:624
+#: src/api.lib.php:623
 msgid "Added"
 msgstr ""
 
 #. translators: %1$s: plugin or theme name, %2$d: unique post or page identifier
-#: src/api.lib.php:945
-#, php-format
+#: src/api.lib.php:944
 msgid "WP Engine PHP Compatibility Checker: %1$s (created post #%2$d as cache)"
 msgstr ""
 
-#: src/api.lib.php:1288
-#: src/api.lib.php:1293
+#: src/api.lib.php:1287
+#: src/api.lib.php:1292
 msgid "WordPress version is not supported anymore"
 msgstr ""
 
@@ -215,7 +206,6 @@ msgstr ""
 
 #. translators: %s: number of seconds
 #: src/auditlogs.lib.php:194
-#, php-format
 msgid "API %s secs"
 msgstr ""
 
@@ -256,7 +246,6 @@ msgstr ""
 
 #. translators: %1$s: display name, %2$d: time interval
 #: src/event.lib.php:90
-#, php-format
 msgid "%1$s (every %2$d seconds)"
 msgstr ""
 
@@ -287,7 +276,6 @@ msgstr ""
 
 #. translators: %s: WordPress version
 #: src/event.lib.php:227
-#, php-format
 msgid "WordPress version detected %s"
 msgstr ""
 
@@ -326,7 +314,6 @@ msgstr ""
 
 #. translators: %1$s: settings url, %2$s: settings url
 #: src/event.lib.php:614
-#, php-format
 msgid ""
 "<br><br>\n"
 "\n"
@@ -344,19 +331,16 @@ msgstr ""
 
 #. translators: %s: file path
 #: src/event.lib.php:939
-#, php-format
 msgid "%s cannot be deleted."
 msgstr ""
 
 #. translators: %s: comma-separated list of filenames
 #: src/event.lib.php:951
-#, php-format
 msgid "%s log files were deleted."
 msgstr ""
 
 #. translators: %s: filename
 #: src/event.lib.php:953
-#, php-format
 msgid "%s log file was deleted."
 msgstr ""
 
@@ -471,13 +455,11 @@ msgstr ""
 
 #. translators: %s: IP address
 #: src/firewall.lib.php:618
-#, php-format
 msgid "IP has been added to the blocklist: %s"
 msgstr ""
 
 #. translators: %s: IP address
 #: src/firewall.lib.php:658
-#, php-format
 msgid "IP has been removed from the blocklist: %s"
 msgstr ""
 
@@ -566,7 +548,6 @@ msgstr ""
 
 #. translators: %1$s: media id, %2$s: media title, %3$s: mime type
 #: src/hook.lib.php:69
-#, php-format
 msgid "Media file added; ID: %1$s; name: %2$s; type: %3$s"
 msgstr ""
 
@@ -595,13 +576,11 @@ msgstr ""
 
 #. translators: %1$s: user_id, %2$s: role, %3$s: blog_id, %4$s: name, %5$s: email
 #: src/hook.lib.php:94
-#, php-format
 msgid "User added to website; user_id: %1$s; role: %2$s; blog_id: %3$s; name: %4$s; email: %5$s"
 msgstr ""
 
 #. translators: %1$s: user_id, %2$s: blog_id, %3$s: name, %4$s: email
 #: src/hook.lib.php:123
-#, php-format
 msgid "User removed from website; user_id: %1$s; blog_id: %2$s; name: %3$s; email: %4$s"
 msgstr ""
 
@@ -620,31 +599,26 @@ msgstr ""
 
 #. translators: %1$s: category ID, %2$s: category name
 #: src/hook.lib.php:143
-#, php-format
 msgid "Category created; ID: %1$s; name: %2$s"
 msgstr ""
 
 #. translators: %s: WordPress version
 #: src/hook.lib.php:158
-#, php-format
 msgid "WordPress updated to version: %s"
 msgstr ""
 
 #. translators: %1$s: link ID, %2$s: name, %3$s: url, %4$s: target
 #: src/hook.lib.php:184
-#, php-format
 msgid "Bookmark link added; ID: %1$s; name: %2$s; url: %3$s; target: %4$s"
 msgstr ""
 
 #. translators: %1$s: link ID, %2$s: name, %3$s: url, %4$s: target
 #: src/hook.lib.php:215
-#, php-format
 msgid "Bookmark link edited; ID: %1$s; name: %2$s; url: %3$s; target: %4$s"
 msgstr ""
 
 #. translators: %s: username
 #: src/hook.lib.php:238
-#, php-format
 msgid "User authentication failed: %s"
 msgstr ""
 
@@ -654,13 +628,11 @@ msgstr ""
 
 #. translators: %s: username
 #: src/hook.lib.php:307
-#, php-format
 msgid "User authentication succeeded: %s"
 msgstr ""
 
 #. translators: %1$s: option name, %2$s: old value, %3$s: new value
 #: src/hook.lib.php:339
-#, php-format
 msgid ""
 "The value of the option <b>%1$s</b> was changed from <b>'%2$s'</b> to <b>'%3$s'</b>.<br>\n"
 ""
@@ -668,7 +640,6 @@ msgstr ""
 
 #. translators: %1$s: option name, %2$s: old value, %3$s: new value
 #: src/hook.lib.php:346
-#, php-format
 msgid "%1$s: from '%2$s' to '%3$s',"
 msgstr ""
 
@@ -682,19 +653,16 @@ msgstr ""
 
 #. translators: %s: name of the settings page
 #: src/hook.lib.php:375
-#, php-format
 msgid "%s settings changed"
 msgstr ""
 
 #. translators: %1$s: message, %2$s: list of changed options
 #: src/hook.lib.php:379
-#, php-format
 msgid "%1$s: (multiple entries): %2$s"
 msgstr ""
 
 #. translators: %1$s: action (activated/deactivated), %2$s: plugin name, %3$s: version, %4$s: plugin path, %5$s: network status
 #: src/hook.lib.php:438
-#, php-format
 msgid "Plugin %1$s: %2$s (v%3$s; %4$s%5$s)"
 msgstr ""
 
@@ -708,13 +676,11 @@ msgstr ""
 
 #. translators: %s: filename of the edited plugin
 #: src/hook.lib.php:530
-#, php-format
 msgid "Plugin editor used in: %s"
 msgstr ""
 
 #. translators: %s: name of the installed plugin
 #: src/hook.lib.php:556
-#, php-format
 msgid "Plugin installed: %s"
 msgstr ""
 
@@ -728,7 +694,6 @@ msgstr ""
 
 #. translators: %s: list of post details
 #: src/hook.lib.php:692
-#, php-format
 msgid "Post deleted: (multiple entries): %s"
 msgstr ""
 
@@ -754,37 +719,31 @@ msgstr ""
 
 #. translators: %s: ID of the post
 #: src/hook.lib.php:753
-#, php-format
 msgid "ID: %s"
 msgstr ""
 
 #. translators: %s: old status of the post
 #: src/hook.lib.php:755
-#, php-format
 msgid "Old status: %s"
 msgstr ""
 
 #. translators: %s: new status of the post
 #: src/hook.lib.php:757
-#, php-format
 msgid "New status: %s"
 msgstr ""
 
 #. translators: %s: title of the post
 #: src/hook.lib.php:761
-#, php-format
 msgid "Title: %s"
 msgstr ""
 
 #. translators: %s: type of the post (e.g. Post, Page)
 #: src/hook.lib.php:765
-#, php-format
 msgid "%s status has been changed"
 msgstr ""
 
 #. translators: %1$s: ID of the post, %2$s: title of the post, %3$s: status of the post
 #: src/hook.lib.php:792
-#, php-format
 msgid "Post moved to trash; ID: %1$s; name: %2$s; status: %3$s"
 msgstr ""
 
@@ -794,37 +753,31 @@ msgstr ""
 
 #. translators: %1$s: post type, %2$s: action (created/updated), %3$s: post ID, %4$s: post title
 #: src/hook.lib.php:828
-#, php-format
 msgid "%1$s was %2$s; ID: %3$s; name: %4$s"
 msgstr ""
 
 #. translators: %s: username or email of the account
 #: src/hook.lib.php:894
-#, php-format
 msgid "Password retrieval attempt: %s"
 msgstr ""
 
 #. translators: %s: name of the deleted theme
 #: src/hook.lib.php:915
-#, php-format
 msgid "Theme deleted: %s"
 msgstr ""
 
 #. translators: %1$s: theme name, %2$s: filename
 #: src/hook.lib.php:940
-#, php-format
 msgid "Theme editor used in: %1$s/%2$s"
 msgstr ""
 
 #. translators: %s: name of the installed theme
 #: src/hook.lib.php:963
-#, php-format
 msgid "Theme installed: %s"
 msgstr ""
 
 #. translators: %s: name of the new theme
 #: src/hook.lib.php:979
-#, php-format
 msgid "Theme activated: %s"
 msgstr ""
 
@@ -838,25 +791,21 @@ msgstr ""
 
 #. translators: %d: ID of the deleted user user
 #: src/hook.lib.php:1044
-#, php-format
 msgid "User account deleted; ID: %d"
 msgstr ""
 
 #. translators: %1$s: ID, %2$s: name, %3$s: old name, %4$s: email, %5$s: old email, %6$s: roles, %7$s: old roles
 #: src/hook.lib.php:1077
-#, php-format
 msgid "User account edited; ID: %1$s; name: %2$s; old_name: %3$s; email: %4$s; old_email: %5$s; roles: %6$s; old_roles: %7$s"
 msgstr ""
 
 #. translators: %1$s: ID, %2$s: name, %3$s: email, %4$s: roles
 #: src/hook.lib.php:1110
-#, php-format
 msgid "User account created; ID: %1$s; name: %2$s; email: %3$s; roles: %4$s"
 msgstr ""
 
 #. translators: %1$s: base ID, %2$s: widget ID, %3$s: action (added to/deleted from), %4$s: sidebar ID, %5$d: widget number, %6$d: width, %7$d: height
 #: src/hook.lib.php:1155
-#, php-format
 msgid "Widget %1$s (%2$s) %3$s %4$s (#%5$d; size %6$dx%7$d)"
 msgstr ""
 
@@ -893,13 +842,11 @@ msgstr ""
 
 #. translators: %1$d: number of processed files, %2$d: total number of files
 #: src/integrity.lib.php:241
-#, php-format
 msgid "Only <b>%1$d</b> out of <b>%2$d</b> files were processed."
 msgstr ""
 
 #. translators: %1$d: number of processed files, %2$d: total number of files
 #: src/integrity.lib.php:251
-#, php-format
 msgid "<b>%1$d</b> out of <b>%2$d</b> files were successfully processed."
 msgstr ""
 
@@ -927,7 +874,6 @@ msgstr ""
 
 #. translators: %s: absolute path of the settings file
 #: src/interface.lib.php:219
-#, php-format
 msgid "Storage is not writable: <code>%s</code>"
 msgstr ""
 
@@ -941,7 +887,6 @@ msgstr ""
 
 #. translators: %s: Plugin name
 #: src/interface.lib.php:276
-#, php-format
 msgid "Access denied by %s"
 msgstr ""
 
@@ -991,7 +936,6 @@ msgstr ""
 
 #. translators: %s: file path
 #: src/lastlogins.php:131
-#, php-format
 msgid "Last-logins data file is not writable: <code>%s</code>"
 msgstr ""
 
@@ -1005,7 +949,6 @@ msgstr ""
 
 #. translators: %1$s: date and time, %2$s: IP address, %3$s: hostname, %4$s: page url
 #: src/lastlogins.php:462
-#, php-format
 msgid "Last login was at <b>%1$s</b> from <b>%2$s</b> <em>(%3$s)</em> <a href=\"%4$s\" target=\"_self\">view all logs</a>"
 msgstr ""
 
@@ -1015,7 +958,6 @@ msgstr ""
 
 #. translators: %1$s: User display name, %2$s: User login
 #: src/mail.lib.php:190
-#, php-format
 msgid "User: %1$s (%2$s)"
 msgstr ""
 
@@ -1385,22 +1327,20 @@ msgid "Specifies how long the results of a preflight request can be cached."
 msgstr ""
 
 #. translators: %s: error message
-#: src/option.lib.php:881
-#, php-format
+#: src/option.lib.php:1098
 msgid "Firewall API key decryption failed: %s"
 msgstr ""
 
-#: src/option.lib.php:934
+#: src/option.lib.php:1151
 msgid "The Sucuri WAF API key could not be decrypted. Please re-save the key in the Firewall settings to restore functionality."
 msgstr ""
 
 #. translators: %1$s: domain, %2$s: event, %3$s: remote address
 #. translators: %1$s: specific info like domain, event, etc
-#: src/option.lib.php:1138
+#: src/option.lib.php:1409
 #: src/settings-alerts.php:243
 #: src/settings-alerts.php:245
 #: src/settings-alerts.php:247
-#, php-format
 msgid "Sucuri Alert, %1$s, %2$s, %3$s"
 msgstr ""
 
@@ -1442,13 +1382,11 @@ msgstr ""
 
 #. translators: %s: email address
 #: src/settings-alerts.php:60
-#, php-format
 msgid "The email alerts will be sent to: <code>%s</code>"
 msgstr ""
 
 #. translators: %s: email address
 #: src/settings-alerts.php:67
-#, php-format
 msgid "The email alerts will be sent to: %s"
 msgstr ""
 
@@ -1458,13 +1396,11 @@ msgstr ""
 
 #. translators: %s: list of email addresses
 #: src/settings-alerts.php:94
-#, php-format
 msgid "These emails will stop receiving alerts: <code>%s</code>"
 msgstr ""
 
 #. translators: %s: list of email addresses
 #: src/settings-alerts.php:101
-#, php-format
 msgid "These emails will stop receiving alerts: %s"
 msgstr ""
 
@@ -1474,7 +1410,6 @@ msgstr ""
 
 #. translators: %s: time of the event
 #: src/settings-alerts.php:116
-#, php-format
 msgid "Test email alert sent at %s"
 msgstr ""
 
@@ -1492,13 +1427,11 @@ msgstr ""
 
 #. translators: %s: IP address
 #: src/settings-alerts.php:174
-#, php-format
 msgid "IP has been trusted: %s"
 msgstr ""
 
 #. translators: %s: IP address
 #: src/settings-alerts.php:179
-#, php-format
 msgid "Events generated from this IP will be ignored: <code>%s</code>"
 msgstr ""
 
@@ -1518,13 +1451,11 @@ msgstr ""
 #: src/settings-alerts.php:241
 #: src/settings-alerts.php:249
 #: src/settings-alerts.php:251
-#, php-format
 msgid "Sucuri Alert, %1$s, %2$s"
 msgstr ""
 
 #. translators: %s: event name
 #: src/settings-alerts.php:253
-#, php-format
 msgid "Sucuri Alert, %s"
 msgstr ""
 
@@ -1534,7 +1465,6 @@ msgstr ""
 
 #. translators: %s: email subject
 #: src/settings-alerts.php:291
-#, php-format
 msgid "Email subject set to <code>%s</code>"
 msgstr ""
 
@@ -1572,7 +1502,6 @@ msgstr ""
 
 #. translators: %s: maximum number
 #: src/settings-alerts.php:365
-#, php-format
 msgid "Maximum alerts per hour set to <code>%s</code>"
 msgstr ""
 
@@ -1606,13 +1535,11 @@ msgstr ""
 
 #. translators: %s: number of failed logins
 #: src/settings-alerts.php:413
-#, php-format
 msgid "Consider brute-force attack after <code>%s</code> failed logins per hour"
 msgstr ""
 
 #. translators: %s: number of failed logins
 #: src/settings-alerts.php:422
-#, php-format
 msgid "The plugin will assume that your website is under a brute-force attack after %s failed logins are detected during the same hour"
 msgstr ""
 
@@ -1722,7 +1649,6 @@ msgstr ""
 
 #. translators: %s: number of events
 #: src/settings-alerts.php:521
-#, php-format
 msgid "A total of %s alert events were changed"
 msgstr ""
 
@@ -1744,7 +1670,6 @@ msgstr ""
 
 #. translators: %s: post or page type (e.g. post, page, attachment)
 #: src/settings-alerts.php:610
-#, php-format
 msgid "Changes in <code>%s</code> post-type will be ignored"
 msgstr ""
 
@@ -1775,7 +1700,6 @@ msgstr ""
 
 #. translators: %s: status of the API (enabled/disabled)
 #: src/settings-apiservice.php:48
-#, php-format
 msgid "API service communication was <code>%s</code>"
 msgstr ""
 
@@ -1840,7 +1764,6 @@ msgstr ""
 #. translators: %s: URL of the checksum API
 #: src/settings-apiservice.php:146
 #: src/settings-apiservice.php:154
-#, php-format
 msgid "Core integrity API changed: %s"
 msgstr ""
 
@@ -1860,7 +1783,6 @@ msgstr ""
 
 #. translators: %s: number of seconds
 #: src/settings-general.php:65
-#, php-format
 msgid "Cache to store the system logs obtained from the API service; expires after %s seconds."
 msgstr ""
 
@@ -1898,7 +1820,6 @@ msgstr ""
 
 #. translators: %s: number of seconds
 #: src/settings-general.php:75
-#, php-format
 msgid "Cache to store the data associated to the installed plugins listed in the Post-Hack page. Expires after %s seconds."
 msgstr ""
 
@@ -1908,7 +1829,6 @@ msgstr ""
 
 #. translators: %s: number of seconds
 #: src/settings-general.php:78
-#, php-format
 msgid "Cache to store the result of the malware scanner. Expires after %s seconds, reset at any time to force a re-scan."
 msgstr ""
 
@@ -1918,13 +1838,11 @@ msgstr ""
 
 #. translators: %s: comma-separated list of filenames
 #: src/settings-general.php:115
-#, php-format
 msgid "%s were deleted."
 msgstr ""
 
 #. translators: %1$d: number of deleted files, %2$d: total number of files
 #: src/settings-general.php:123
-#, php-format
 msgid "%1$d out of %2$d files have been deleted."
 msgstr ""
 
@@ -1980,7 +1898,6 @@ msgstr ""
 
 #. translators: %s: status (enabled/disabled)
 #: src/settings-general.php:345
-#, php-format
 msgid "DNS lookups for reverse proxy detection <code>%s</code>"
 msgstr ""
 
@@ -1990,7 +1907,6 @@ msgstr ""
 
 #. translators: %1$d: number of imported options, %2$d: total options
 #: src/settings-general.php:498
-#, php-format
 msgid "%1$d out of %2$d option have been successfully imported"
 msgstr ""
 
@@ -2000,7 +1916,6 @@ msgstr ""
 
 #. translators: %s: timezone
 #: src/settings-general.php:563
-#, php-format
 msgid "Timezone override will use %s"
 msgstr ""
 
@@ -2145,7 +2060,6 @@ msgstr ""
 
 #. translators: %s: path to the wordpress root
 #: src/settings-hardening.php:452
-#, php-format
 msgid "Cannot delete <code>%s/readme.html</code>"
 msgstr ""
 
@@ -2320,7 +2234,6 @@ msgstr ""
 
 #. translators: %s: status (enabled/disabled)
 #: src/settings-integrity.php:70
-#, php-format
 msgid "Integrity diff utility has been <code>%s</code>"
 msgstr ""
 
@@ -2330,7 +2243,6 @@ msgstr ""
 
 #. translators: %s: comma-separated list of filenames
 #: src/settings-integrity.php:115
-#, php-format
 msgid "Core files that will not be ignored anymore: (multiple entries): %s"
 msgstr ""
 
@@ -2368,7 +2280,6 @@ msgstr ""
 
 #. translators: %d: user ID
 #: src/settings-posthack.php:265
-#, php-format
 msgid "Password changed for user #%d"
 msgstr ""
 
@@ -2398,7 +2309,6 @@ msgstr ""
 
 #. translators: %s: version number
 #: src/settings-posthack.php:409
-#, php-format
 msgid "Installed v%s"
 msgstr ""
 
@@ -2412,37 +2322,31 @@ msgstr ""
 
 #. translators: %d: number of tasks
 #: src/settings-scanner.php:71
-#, php-format
 msgid "%d tasks has been scheduled to run in the next ten seconds."
 msgstr ""
 
 #. translators: %s: list of tasks
 #: src/settings-scanner.php:78
-#, php-format
 msgid "Force execution of scheduled tasks: (multiple entries): %s"
 msgstr ""
 
 #. translators: %d: number of tasks
 #: src/settings-scanner.php:91
-#, php-format
 msgid "%d scheduled tasks have been removed."
 msgstr ""
 
 #. translators: %s: list of tasks
 #: src/settings-scanner.php:98
-#, php-format
 msgid "Delete scheduled tasks: (multiple entries): %s"
 msgstr ""
 
 #. translators: %1$d: number of tasks, %2$s: frequency
 #: src/settings-scanner.php:110
-#, php-format
 msgid "%1$d tasks has been re-scheduled to run <code>%2$s</code>."
 msgstr ""
 
 #. translators: %1$s: frequency, %2$s: list of tasks
 #: src/settings-scanner.php:118
-#, php-format
 msgid "Re-configure scheduled tasks %1$s: (multiple entries): %2$s"
 msgstr ""
 
@@ -2461,7 +2365,6 @@ msgstr ""
 
 #. translators: %s: directory path
 #: src/settings-scanner.php:217
-#, php-format
 msgid "This directory will not be scanned: %s"
 msgstr ""
 
@@ -2479,25 +2382,21 @@ msgstr ""
 
 #. translators: %s: PHP version
 #: src/sitecheck.lib.php:179
-#, php-format
 msgid "PHP Version: %s"
 msgstr ""
 
 #. translators: %s: WordPress version
 #: src/sitecheck.lib.php:181
-#, php-format
 msgid "Version: %s"
 msgstr ""
 
 #. translators: %s: Hosting provider name
 #: src/sitecheck.lib.php:193
-#, php-format
 msgid "Hosting: %s"
 msgstr ""
 
 #. translators: %s: CMS name
 #: src/sitecheck.lib.php:198
-#, php-format
 msgid "CMS: %s"
 msgstr ""
 
@@ -2519,19 +2418,16 @@ msgstr ""
 
 #. translators: %d: number of iframes
 #: src/sitecheck.lib.php:401
-#, php-format
 msgid "iFrames: %d"
 msgstr ""
 
 #. translators: %d: number of links
 #: src/sitecheck.lib.php:417
-#, php-format
 msgid "Links: %d"
 msgstr ""
 
 #. translators: %d: number of scripts
 #: src/sitecheck.lib.php:439
-#, php-format
 msgid "Scripts: %d"
 msgstr ""
 

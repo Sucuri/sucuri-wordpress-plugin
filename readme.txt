@@ -259,6 +259,10 @@ This version removes the API communication service dependency on https://wordpre
 This version adds an option to refresh the malware scan results on demand, as well as several small bug fixes and improvements.
 
 == Changelog ==
+= 2.7.1 =
+* Update on the encryption process for the WAF API key due to problems reported on some users.
+
+
 = 2.7 =
 * Fixes a lot of readiness warning/errors from PCP.
 * Updates how the plugin stores WAF API key.
