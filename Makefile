@@ -1,6 +1,6 @@
 #!/bin/sh
 
-.PHONY: e2e e2e-prepare e2e-scanner e2e-firewall unit-test update-translations
+.PHONY: e2e e2e-prepare e2e-scanner e2e-firewall e2e-waf-migration-prepare e2e-waf-migration e2e-waf-plug-salt-prepare e2e-waf-plug-salt unit-test update-translations
 
 e2e: e2e-prepare e2e-scanner e2e-firewall
 
@@ -15,6 +15,20 @@ e2e-scanner:
 
 e2e-firewall:
 	npx cypress run --spec cypress/e2e/sucuri-scanner-firewall.cy.js
+
+e2e-waf-migration-prepare:
+	chmod +x tests/e2e-seed-waf-migration.sh
+	npx wp-env run tests-cli bash wp-content/plugins/$(notdir $(CURDIR))/tests/e2e-seed-waf-migration.sh
+
+e2e-waf-migration: e2e-waf-migration-prepare
+	npx cypress run --spec cypress/e2e/sucuri-scanner-waf-migration.cy.js
+
+e2e-waf-plug-salt-prepare:
+	chmod +x tests/e2e-seed-waf-plug-salt.sh
+	npx wp-env run tests-cli bash wp-content/plugins/$(notdir $(CURDIR))/tests/e2e-seed-waf-plug-salt.sh
+
+e2e-waf-plug-salt: e2e-waf-plug-salt-prepare
+	npx cypress run --spec cypress/e2e/sucuri-scanner-waf-plug-salt.cy.js
 
 unit-test:
 	./vendor/bin/phpunit

@@ -654,6 +654,729 @@ class SucuriScanOption extends SucuriScanRequest
     }
 
     /**
+     * Map of options that must be stored as secrets.
+     *
+     * @return array
+     */
+    private static function getSecretOptionMap()
+    {
+        return array(
+            'sucuriscan_cloudproxy_apikey' => 'sucuriscan_secret_cloudproxy_apikey',
+        );
+    }
+
+    /**
+     * Check whether an option is stored as a secret.
+     *
+     * @param string $option Option name.
+     * @return bool
+     */
+    private static function isSecretOption($option = '')
+    {
+        $option = self::varPrefix($option);
+        $map = self::getSecretOptionMap();
+
+        return array_key_exists($option, $map);
+    }
+
+    /**
+     * Resolve the storage name for a secret option.
+     *
+     * @param string $option Option name.
+     * @return string
+     */
+    private static function getSecretStorageName($option = '')
+    {
+        $option = self::varPrefix($option);
+        $map = self::getSecretOptionMap();
+
+        return array_key_exists($option, $map) ? $map[$option] : $option;
+    }
+
+    /**
+     * Resolve the storage name for encrypted secret payloads.
+     *
+     * @param string $option Option name.
+     * @return string
+     */
+    private static function getSecretEncryptedStorageName($option = '')
+    {
+        return self::getSecretStorageName($option) . '_enc';
+    }
+
+    /**
+     * Check whether secret encryption can be enabled.
+     *
+     * @return bool
+     */
+    private static function canEncryptSecrets()
+    {
+        if (!function_exists('openssl_encrypt') || !function_exists('openssl_decrypt')) {
+            return false;
+        }
+
+        if (!function_exists('openssl_get_cipher_methods') || !function_exists('wp_salt')) {
+            return false;
+        }
+
+        $methods = openssl_get_cipher_methods();
+
+        return is_array($methods) && in_array('aes-256-gcm', $methods, true);
+    }
+
+    /**
+     * Remove any existing SUCURI_PLUG_KEY and SUCURI_PLUG_SALT define() lines
+     * from wp-config.php.
+     *
+     * @return bool True when the file was written (or had nothing to remove).
+     */
+    private static function removePluginSaltFromConfig()
+    {
+        $config_path = self::getConfigPath();
+
+        if (!$config_path || !is_writable($config_path)) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
+            return false;
+        }
+
+        $content = (string) file_get_contents($config_path); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+
+        if (!preg_match('/^\s*define\s*\(\s*[\'"]SUCURI_PLUG_(?:KEY|SALT)[\'"]/m', $content)) {
+            return true; // Nothing to remove.
+        }
+
+        $new_content = preg_replace(
+            '/^[^\n]*define\s*\(\s*[\'"]SUCURI_PLUG_(?:KEY|SALT)[\'"][^\n]*\n?/m',
+            '',
+            $content
+        );
+
+        return (bool) file_put_contents($config_path, $new_content, LOCK_EX); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+    }
+
+    /**
+     * TODO hook regeneration to an admin action and provide a UI button for manual rotation, 
+     * with a warning about breaking changes if the plugin is active on multiple sites without network support.
+     */
+
+    /**
+     * Regenerate the SUCURI_PLUG_* salt pair.
+     *
+     * Removes the existing constants from wp-config.php, derives a fresh pair
+     * from the current WordPress AUTH salts, and writes them back.
+     *
+     * Because PHP constants cannot be re-defined within the same request, the
+     * newly derived raw string is returned directly so callers can use it
+     * without relying on the still-stale in-memory constants.
+     *
+     * @return string|bool New combined plug-key + plug-salt string, or false on failure.
+     */
+    private static function regeneratePluginSaltRaw()
+    {
+        if (!function_exists('wp_salt')) {
+            return false;
+        }
+
+        self::removePluginSaltFromConfig();
+
+        $auth_raw = wp_salt('auth');
+        $plug_key = hash_hmac('sha256', 'sucuri_plug_key_v1', $auth_raw);
+        $plug_salt = hash_hmac('sha256', 'sucuri_plug_salt_v1', $auth_raw);
+
+        self::writePluginSaltToConfig($plug_key, $plug_salt);
+
+        return $plug_key . $plug_salt;
+    }
+
+    /**
+     * Append SUCURI_PLUG_KEY and SUCURI_PLUG_SALT define() lines to wp-config.php.
+     *
+     * The constants are inserted just before the "That's all" stop-editing comment.
+     * If that marker is absent they are inserted before the wp-settings.php include.
+     * Returns true when the constants are already present (no write needed) or when
+     * the file was updated successfully.
+     *
+     * @param string $plug_key  64-char hex string.
+     * @param string $plug_salt 64-char hex string.
+     * @return bool
+     */
+    private static function writePluginSaltToConfig($plug_key, $plug_salt)
+    {
+        $config_path = self::getConfigPath();
+
+        if (!$config_path || !is_writable($config_path)) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
+            return false;
+        }
+
+        $content = (string) file_get_contents($config_path); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+        if ($content === '') {
+            return false;
+        }
+
+        $has_key  = (bool) preg_match('/^\s*define\s*\(\s*[\'"]SUCURI_PLUG_KEY[\'"]/m', $content);
+        $has_salt = (bool) preg_match('/^\s*define\s*\(\s*[\'"]SUCURI_PLUG_SALT[\'"]/m', $content);
+
+        if ($has_key && $has_salt) {
+            return true; // Already present — nothing to do.
+        }
+
+        if ($has_key || $has_salt) {
+            // Partial/broken state — one constant is missing but we cannot
+            // safely re-write the block without duplicating the existing one.
+            return false;
+        }
+
+        $block = sprintf(
+            "define('SUCURI_PLUG_KEY',  '%s');\ndefine('SUCURI_PLUG_SALT', '%s');\n",
+            $plug_key,
+            $plug_salt
+        );
+
+        // Insert before the canonical stop-editing marker.
+        $stop_marker = "/* That's all, stop editing!";
+        $stop_pos = strpos($content, $stop_marker);
+
+        if ($stop_pos !== false) {
+            $new_content = substr($content, 0, $stop_pos)
+                . $block
+                . substr($content, $stop_pos);
+        } else {
+            // Fallback: insert before the wp-settings.php inclusion line.
+            $lines = explode("\n", $content);
+            $insert_at = count($lines);
+
+            foreach ($lines as $i => $line) {
+                if (preg_match('/require|include/i', $line)
+                    && strpos($line, 'wp-settings.php') !== false
+                ) {
+                    $insert_at = $i;
+                    break;
+                }
+            }
+
+            array_splice($lines, $insert_at, 0, array(rtrim($block)));
+            $new_content = implode("\n", $lines);
+        }
+
+        return (bool) file_put_contents($config_path, $new_content, LOCK_EX); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+    }
+
+    /**
+     * Get or initialize the plugin-specific raw salt string.
+     *
+     * Priority:
+     *  1. PHP constants SUCURI_PLUG_KEY and SUCURI_PLUG_SALT are already defined
+     *     (written to wp-config.php on a previous run, or user-managed).
+     *  2. First run: derive from the current WordPress AUTH salts, write the
+     *     constants to wp-config.php, and return the combined string.
+     *
+     * @return string|bool Combined plug-key and plug-salt string, or false on failure.
+     */
+    private static function getPluginSaltRaw()
+    {
+        // Constants already available — either loaded from wp-config.php or
+        // defined by the site owner before the plugin loaded.
+        if (defined('SUCURI_PLUG_KEY') && defined('SUCURI_PLUG_SALT')) {
+            return SUCURI_PLUG_KEY . SUCURI_PLUG_SALT;
+        }
+
+        // First run: derive plugin-specific values from WordPress AUTH salts and
+        // persist them in wp-config.php so they survive future WP salt rotations.
+        if (!function_exists('wp_salt')) {
+            return false;
+        }
+
+        $auth_raw = wp_salt('auth');
+        $plug_key = hash_hmac('sha256', 'sucuri_plug_key_v1', $auth_raw);
+        $plug_salt = hash_hmac('sha256', 'sucuri_plug_salt_v1', $auth_raw);
+
+        if (!self::writePluginSaltToConfig($plug_key, $plug_salt)) {
+            return false;
+        }
+
+        return $plug_key . $plug_salt;
+    }
+
+    /**
+     * Build encryption key from WordPress AUTH salts (legacy scheme, payload v:1).
+     *
+     * @return string|bool 32-byte key, or false on failure.
+     */
+    private static function getAuthEncryptionKey()
+    {
+        if (!function_exists('wp_salt')) {
+            return false;
+        }
+
+        $context = 'sucuriscan_waf_key_v1';
+
+        return substr(hash_hmac('sha256', $context, wp_salt('auth'), true), 0, 32);
+    }
+
+    /**
+     * Build encryption key from plugin-specific SUCURI_PLUG_* salts (payload v:2).
+     *
+     * @return string|bool 32-byte key, or false on failure.
+     */
+    private static function getSecretEncryptionKey()
+    {
+        $plug_raw = self::getPluginSaltRaw();
+
+        if ($plug_raw === false) {
+            return false;
+        }
+
+        $context = 'sucuriscan_waf_key_v1';
+
+        return substr(hash_hmac('sha256', $context, $plug_raw, true), 0, 32);
+    }
+
+    /**
+     * Generate random bytes for encryption.
+     *
+     * @param int $length Number of bytes.
+     * @return string|bool
+     */
+    private static function getSecretRandomBytes($length)
+    {
+        if (function_exists('random_bytes')) {
+            return random_bytes($length);
+        }
+
+        if (function_exists('openssl_random_pseudo_bytes')) {
+            return openssl_random_pseudo_bytes($length);
+        }
+
+        return false;
+    }
+
+    /**
+     * Encrypt a secret value with AES-256-GCM.
+     *
+     * @param string      $plaintext Secret value.
+     * @param string|null $raw_salt  Optional raw plug salt to use instead of
+     *                               reading the runtime constants.  Pass this
+     *                               when the constants have just been regenerated
+     *                               and the new values are not yet available as
+     *                               PHP constants (constants cannot be redefined
+     *                               within the same request).
+     * @return array|bool
+     */
+    private static function encryptSecretValue($plaintext, $raw_salt = null)
+    {
+        if (!self::canEncryptSecrets()) {
+            return false;
+        }
+
+        if ($raw_salt !== null) {
+            $context = 'sucuriscan_waf_key_v1';
+            $key = substr(hash_hmac('sha256', $context, $raw_salt, true), 0, 32);
+        } else {
+            $key = self::getSecretEncryptionKey();
+        }
+
+        if (!$key) {
+            return false;
+        }
+
+        $iv = self::getSecretRandomBytes(12);
+        if (!$iv) {
+            return false;
+        }
+
+        $tag = '';
+        $ciphertext = openssl_encrypt(
+            $plaintext,
+            'aes-256-gcm',
+            $key,
+            OPENSSL_RAW_DATA,
+            $iv,
+            $tag
+        );
+
+        if ($ciphertext === false || $tag === '') {
+            return false;
+        }
+
+        return array(
+            'v' => 2,
+            'alg' => 'aes-256-gcm',
+            'iv' => base64_encode($iv),
+            'tag' => base64_encode($tag),
+            'ct' => base64_encode($ciphertext),
+        );
+    }
+
+    /**
+     * Decrypt a secret payload.
+     *
+     * @param array $payload Encrypted payload.
+     * @return string|bool
+     */
+    private static function decryptSecretValue($payload, $raw_salt = null)
+    {
+        if (!self::canEncryptSecrets()) {
+            return false;
+        }
+
+        if (!is_array($payload)
+            || !isset($payload['v'])
+            || !isset($payload['alg'])
+            || !isset($payload['iv'])
+            || !isset($payload['tag'])
+            || !isset($payload['ct'])
+        ) {
+            return false;
+        }
+
+        $version = (int) $payload['v'];
+
+        if ($payload['alg'] !== 'aes-256-gcm') {
+            return false;
+        }
+
+        // Route decryption key by payload version:
+        //   v:1 — legacy, encrypted with WordPress AUTH_SALT via wp_salt('auth').
+        //   v:2 — current, encrypted with plugin-specific SUCURI_PLUG_* salt.
+        // An explicit $raw_salt overrides version-based routing (used for fallback recovery).
+        if ($raw_salt !== null) {
+            $key = substr(hash_hmac('sha256', 'sucuriscan_waf_key_v1', $raw_salt, true), 0, 32);
+        } elseif ($version === 1) {
+            $key = self::getAuthEncryptionKey();
+        } elseif ($version === 2) {
+            $key = self::getSecretEncryptionKey();
+        } else {
+            return false;
+        }
+
+        if (!$key) {
+            return false;
+        }
+
+        $iv = base64_decode($payload['iv']);
+        $tag = base64_decode($payload['tag']);
+        $ct = base64_decode($payload['ct']);
+
+        if ($iv === false || $tag === false || $ct === false) {
+            return false;
+        }
+
+        return openssl_decrypt(
+            $ct,
+            'aes-256-gcm',
+            $key,
+            OPENSSL_RAW_DATA,
+            $iv,
+            $tag
+        );
+    }
+
+    /**
+     * Return the option name for decrypt error flags.
+     *
+     * @return string
+     */
+    private static function wafKeyDecryptErrorOption()
+    {
+        return 'sucuriscan_waf_key_decrypt_error';
+    }
+
+    /**
+     * Set a decryption error flag for the WAF key.
+     *
+     * @param string $message Error detail for logging.
+     * @return void
+     */
+    private static function setWafKeyDecryptError($message = '')
+    {
+        if (!function_exists('get_option') || !function_exists('update_option')) {
+            return;
+        }
+
+        if ($message) {
+            $message = sprintf(
+                /* translators: %s: error message */
+                __('Firewall API key decryption failed: %s', 'sucuri-scanner'),
+                $message
+            );
+        }
+
+        $option = self::wafKeyDecryptErrorOption();
+        $current = get_option($option, array());
+        $timestamp = isset($current['ts']) ? (int) $current['ts'] : 0;
+
+        if ($timestamp && (time() - $timestamp) < 3600) {
+            return;
+        }
+
+        update_option($option, array('ts' => time(), 'message' => (string) $message), false);
+
+        if ($message) {
+            SucuriScanEvent::reportWarningEvent($message);
+        }
+    }
+
+    /**
+     * Clear the WAF key decryption error flag.
+     *
+     * @return void
+     */
+    private static function clearWafKeyDecryptError()
+    {
+        if (function_exists('delete_option')) {
+            delete_option(self::wafKeyDecryptErrorOption());
+        }
+    }
+
+    /**
+     * Render a decryption error notice on selected admin pages.
+     *
+     * @return void
+     */
+    public static function renderWafKeyDecryptNotice()
+    {
+        if (!function_exists('get_option')) {
+            return;
+        }
+
+        if (!SucuriScanPermissions::canManagePlugin()) {
+            return;
+        }
+
+        $flag = get_option(self::wafKeyDecryptErrorOption(), array());
+        if (empty($flag) || !is_array($flag)) {
+            return;
+        }
+
+        SucuriScanInterface::error(
+            __('The Sucuri WAF API key could not be decrypted. Please re-save the key in the Firewall settings to restore functionality.', 'sucuri-scanner')
+        );
+    }
+
+    /**
+     * Retrieve a secret option from the database.
+     *
+     * @param string $option Option name.
+     * @return mixed|null
+     */
+    private static function getSecretOption($option = '')
+    {
+        if (!function_exists('get_option')) {
+            return null;
+        }
+
+        $option = self::varPrefix($option);
+        $storage = self::getSecretStorageName($option);
+        $encrypted_storage = self::getSecretEncryptedStorageName($option);
+
+        $encrypted_payload = get_option($encrypted_storage, null);
+        if ($encrypted_payload !== null) {
+            $payload = is_array($encrypted_payload) ? $encrypted_payload : @json_decode($encrypted_payload, true);
+            $decrypted = self::decryptSecretValue($payload);
+
+            if ($decrypted !== false) {
+                // Auto-migrate v:1 payloads (AUTH_SALT scheme) to v:2 (SUCURI_PLUG_* scheme).
+                if (is_array($payload) && isset($payload['v']) && (int) $payload['v'] === 1
+                    && self::canEncryptSecrets()
+                ) {
+                    $new_payload = self::encryptSecretValue($decrypted);
+                    if ($new_payload !== false) {
+                        update_option($encrypted_storage, $new_payload, false);
+                    }
+                }
+
+                self::clearWafKeyDecryptError();
+                return $decrypted;
+            }
+
+            // Fallback: the payload may have been encrypted with the raw salt derived
+            // directly from wp_salt('auth') — this happens when SUCURI_PLUG_* constants
+            // in wp-config.php were stale or user-defined (e.g. conditional defines that
+            // survived the removal step), so the in-memory constants diverged from what
+            // regeneratePluginSaltRaw() used during the save.  Try that key so the
+            // system can self-heal without requiring a manual re-save.
+            if (function_exists('wp_salt')
+                && is_array($payload)
+                && isset($payload['v'])
+                && (int) $payload['v'] === 2
+            ) {
+                $auth_raw     = wp_salt('auth');
+                $fallback_raw = hash_hmac('sha256', 'sucuri_plug_key_v1', $auth_raw)
+                              . hash_hmac('sha256', 'sucuri_plug_salt_v1', $auth_raw);
+                $decrypted = self::decryptSecretValue($payload, $fallback_raw);
+
+                if ($decrypted !== false) {
+                    // Re-encrypt with the constants-based key so subsequent reads succeed.
+                    if (self::canEncryptSecrets()) {
+                        $new_payload = self::encryptSecretValue($decrypted);
+                        if ($new_payload !== false) {
+                            update_option($encrypted_storage, $new_payload, false);
+                        }
+                    }
+                    self::clearWafKeyDecryptError();
+                    return $decrypted;
+                }
+            }
+
+            self::setWafKeyDecryptError('decryption failed; please re-save the key.');
+            return false;
+        }
+
+        $value = get_option($storage, null);
+
+        if ($value !== null) {
+            if (self::canEncryptSecrets()) {
+                $payload = self::encryptSecretValue($value);
+                if ($payload !== false) {
+                    $updated = update_option($encrypted_storage, $payload, false);
+                    if ($updated) {
+                        delete_option($storage);
+                    }
+                }
+            }
+
+            self::clearWafKeyDecryptError();
+            return $value;
+        }
+
+        // Backward compatibility: migrate legacy DB value to secret storage.
+        $legacy = get_option($option, null);
+        if ($legacy !== null) {
+            self::updateSecretOption($option, $legacy);
+            delete_option($option);
+            return $legacy;
+        }
+
+        return null;
+    }
+
+    /**
+     * Update a secret option in the database (non-autoloaded).
+     *
+     * Encrypts the value with the stable SUCURI_PLUG_* salt (written to
+     * wp-config.php once on first run via getPluginSaltRaw()).  The salt is
+     * never rotated on save — doing so rewrote wp-config.php on every key
+     * insert and caused within-request key mismatches.
+     *
+     * @param string $option Option name.
+     * @param mixed $value Option value.
+     * @return bool
+     */
+    private static function updateSecretOption($option = '', $value = '')
+    {
+        if (!function_exists('update_option')) {
+            return false;
+        }
+
+        $option = self::varPrefix($option);
+        $storage = self::getSecretStorageName($option);
+        $encrypted_storage = self::getSecretEncryptedStorageName($option);
+
+        if (self::canEncryptSecrets()) {
+            // Use the stable plugin-specific salt (written to wp-config.php once on
+            // first run, never rotated).  Rotating on every save caused wp-config.php
+            // to be rewritten on every key insert and created within-request key
+            // mismatches because PHP constants cannot be redefined.
+            $payload = self::encryptSecretValue($value);
+
+            if ($payload !== false) {
+                $encrypted_result = update_option($encrypted_storage, $payload, false);
+                if ($encrypted_result) {
+                    delete_option($storage);
+                    self::clearWafKeyDecryptError();
+                    return true;
+                }
+            }
+        }
+
+        delete_option($encrypted_storage);
+        $result = update_option($storage, $value, false);
+        self::clearWafKeyDecryptError();
+        return $result;
+    }
+
+    /**
+     * Delete a secret option from the database.
+     *
+     * @param string $option Option name.
+     * @return bool
+     */
+    private static function deleteSecretOption($option = '')
+    {
+        if (!function_exists('delete_option')) {
+            return false;
+        }
+
+        $option = self::varPrefix($option);
+        $storage = self::getSecretStorageName($option);
+        $encrypted_storage = self::getSecretEncryptedStorageName($option);
+
+        delete_option($encrypted_storage);
+        $deleted = delete_option($storage);
+
+        // Remove legacy storage if still present.
+        delete_option($option);
+
+        self::clearWafKeyDecryptError();
+
+        return $deleted;
+    }
+
+    /**
+     * Delete an option from the settings file only.
+     *
+     * @param string $option Option name.
+     * @return bool
+     */
+    private static function deleteOptionFromFile($option = '')
+    {
+        $options = self::getAllOptions();
+        $option = self::varPrefix($option);
+
+        if (array_key_exists($option, $options)) {
+            unset($options[$option]);
+            return self::writeNewOptions($options);
+        }
+
+        return false;
+    }
+
+    /**
+     * Retrieve a secret option value from the DB or settings file.
+     *
+     * @param string $option Option name.
+     * @param array $options Settings file options.
+     * @return mixed
+     */
+    private static function getSecretOptionValue($option, $options)
+    {
+        $value = self::getSecretOption($option);
+
+        if ($value !== null) {
+            return $value;
+        }
+
+        if (array_key_exists($option, $options)) {
+            $value = $options[$option];
+            if (self::updateSecretOption($option, $value)) {
+                self::deleteOptionFromFile($option);
+            }
+            return $value;
+        }
+
+        if (strpos($option, SUCURISCAN . '_') === 0) {
+            $value = self::getDefaultOptions($option);
+            // Only promote to secret storage when there is a real value.
+            // An empty default must not trigger wp-config.php writes.
+            if ($value !== '' && $value !== false && $value !== null) {
+                self::updateSecretOption($option, $value);
+            }
+            return $value;
+        }
+
+        return false;
+    }
+
+    /**
      * Name of all valid plugin's options.
      *
      * @return array Name of all valid plugin's options.
@@ -791,6 +1514,10 @@ class SucuriScanOption extends SucuriScanRequest
         $options = self::getAllOptions();
         $option = self::varPrefix($option);
 
+        if (self::isSecretOption($option)) {
+            return self::getSecretOptionValue($option, $options);
+        }
+
         if (array_key_exists($option, $options)) {
             return $options[$option];
         }
@@ -861,6 +1588,10 @@ class SucuriScanOption extends SucuriScanRequest
      */
     public static function updateOption($option = '', $value = '')
     {
+        if (self::isSecretOption($option)) {
+            return self::updateSecretOption($option, $value);
+        }
+
         if (strpos($option, ':') === 0 || strpos($option, SUCURISCAN) === 0) {
             $options = self::getAllOptions();
             $option = self::varPrefix($option);
@@ -884,6 +1615,10 @@ class SucuriScanOption extends SucuriScanRequest
      */
     public static function deleteOption($option = '')
     {
+        if (self::isSecretOption($option)) {
+            return self::deleteSecretOption($option);
+        }
+
         if (strpos($option, ':') === 0 || strpos($option, SUCURISCAN) === 0) {
             $options = self::getAllOptions();
             $option = self::varPrefix($option);
