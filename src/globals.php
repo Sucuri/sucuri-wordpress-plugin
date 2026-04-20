@@ -67,6 +67,7 @@ if (defined('SUCURISCAN')) {
     if (SucuriScan::runAdminInit()) {
         add_action('admin_init', 'SucuriScanInterface::handleOldPlugins');
         add_action('admin_init', 'SucuriScanInterface::createStorageFolder');
+        add_action('admin_init', 'SucuriScanOption::maybeHealMisplacedPluginSalt');
     }
 
     /**
