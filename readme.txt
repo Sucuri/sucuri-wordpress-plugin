@@ -259,6 +259,11 @@ This version removes the API communication service dependency on https://wordpre
 This version adds an option to refresh the malware scan results on demand, as well as several small bug fixes and improvements.
 
 == Changelog ==
+= 2.7.2 =
+* Improve 2FA section with more UI clarity.
+* Make light-mode default, in case it is not defined. Corrected inverted icons.
+* Correct improper variable handling for non-english sites.
+
 = 2.7.1 =
 * Update on the encryption process for the WAF API key due to problems reported on some users.
 
