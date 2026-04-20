@@ -754,9 +754,76 @@ class SucuriScanOption extends SucuriScanRequest
     }
 
     /**
-     * TODO hook regeneration to an admin action and provide a UI button for manual rotation, 
+     * TODO hook regeneration to an admin action and provide a UI button for manual rotation,
      * with a warning about breaking changes if the plugin is active on multiple sites without network support.
      */
+
+    /**
+     * One-time migration: detect and fix SUCURI_PLUG_* constants that were written
+     * outside PHP context in wp-config.php by a previous version of the plugin.
+     *
+     * A previous bug caused the define() lines to be appended after a PHP close
+     * tag (?>), which made PHP emit them as literal HTML text on every page load,
+     * leaking the key value to site visitors.
+     *
+     * Detection: the constants exist as text in the file but are not defined as
+     * PHP constants (because PHP never executed those lines).
+     *
+     * Fix: delegates to regeneratePluginSaltRaw(), which removes the misplaced
+     * lines and rewrites them in the correct position via the now-fixed
+     * writePluginSaltToConfig().
+     *
+     * A WordPress option flag is set on success so this check never runs again.
+     * If wp-config.php is not writable the flag is left unset so the next
+     * admin_init will retry automatically.
+     *
+     * @return void
+     */
+    public static function maybeHealMisplacedPluginSalt()
+    {
+        // Already processed — skip immediately (option is cached by WordPress).
+        if (get_option('sucuriscan_plug_salt_position_healed')) {
+            return;
+        }
+
+        // Constants are loaded from PHP context — the file position is correct.
+        // Mark done so this check never runs again.
+        if (defined('SUCURI_PLUG_KEY') && defined('SUCURI_PLUG_SALT')) {
+            update_option('sucuriscan_plug_salt_position_healed', true, false);
+            return;
+        }
+
+        // Constants are not defined.  Check whether their define() lines exist
+        // in wp-config.php at all — if they do, they must be outside PHP context.
+        $config_path = self::getConfigPath();
+
+        if (!$config_path || !file_exists($config_path)) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_exists
+            // No config file accessible — nothing we can fix.
+            update_option('sucuriscan_plug_salt_position_healed', true, false);
+            return;
+        }
+
+        $content  = (string) file_get_contents($config_path); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+        $has_key  = (bool) preg_match('/^\s*define\s*\(\s*[\'"]SUCURI_PLUG_KEY[\'"]/m', $content);
+        $has_salt = (bool) preg_match('/^\s*define\s*\(\s*[\'"]SUCURI_PLUG_SALT[\'"]/m', $content);
+
+        if (!$has_key && !$has_salt) {
+            // Lines are not in the file — no misplacement to fix.
+            update_option('sucuriscan_plug_salt_position_healed', true, false);
+            return;
+        }
+
+        // The define() lines are present in the file but the constants are not
+        // loaded into PHP — they are outside a PHP block and being emitted as
+        // plain HTML on every page.  Remove and rewrite in the correct position.
+        $result = self::regeneratePluginSaltRaw();
+
+        if ($result !== false) {
+            update_option('sucuriscan_plug_salt_position_healed', true, false);
+        }
+        // If the fix failed (e.g. wp-config.php not writable), leave the flag
+        // unset so the next admin_init will retry.
+    }
 
     /**
      * Regenerate the SUCURI_PLUG_* salt pair.
@@ -790,8 +857,13 @@ class SucuriScanOption extends SucuriScanRequest
     /**
      * Append SUCURI_PLUG_KEY and SUCURI_PLUG_SALT define() lines to wp-config.php.
      *
-     * The constants are inserted just before the "That's all" stop-editing comment.
-     * If that marker is absent they are inserted before the wp-settings.php include.
+     * Insertion is attempted in this order:
+     *  1. Just before the English stop-editing comment ("That's all, stop editing!").
+     *  2. Just before the ABSPATH guard (language-independent, present in all WP).
+     *  3. Just before the wp-settings.php require/include line.
+     *  4. End of file, but before any trailing PHP close tag (?>), so the block
+     *     is never placed outside PHP context.
+     *
      * Returns true when the constants are already present (no write needed) or when
      * the file was updated successfully.
      *
@@ -831,7 +903,7 @@ class SucuriScanOption extends SucuriScanRequest
             $plug_salt
         );
 
-        // Insert before the canonical stop-editing marker.
+        // Insert before the canonical stop-editing marker (English).
         $stop_marker = "/* That's all, stop editing!";
         $stop_pos = strpos($content, $stop_marker);
 
@@ -840,15 +912,50 @@ class SucuriScanOption extends SucuriScanRequest
                 . $block
                 . substr($content, $stop_pos);
         } else {
-            // Fallback: insert before the wp-settings.php inclusion line.
+            // Fallback: use line-based insertion.
+            // Prefer the ABSPATH guard over the wp-settings.php include because
+            // the ABSPATH guard is universal (never translated) and always appears
+            // just after the site-specific configuration section — exactly the
+            // same logical position as the English stop-editing comment.
+            // The wp-settings.php include is kept as a secondary target, and a
+            // final safety-net strips any trailing PHP close-tag so the block
+            // is never placed outside PHP context.
             $lines = explode("\n", $content);
-            $insert_at = count($lines);
+            $n = count($lines);
+            $insert_at = $n; // Default: end of file.
 
+            // 1. Look for the ABSPATH guard (language-independent).
             foreach ($lines as $i => $line) {
-                if (preg_match('/require|include/i', $line)
-                    && strpos($line, 'wp-settings.php') !== false
-                ) {
+                if (preg_match('/if\s*\(\s*!?\s*defined\s*\(\s*[\'"]ABSPATH[\'"]/i', $line)) {
                     $insert_at = $i;
+                    break;
+                }
+            }
+
+            // 2. Fall back to the wp-settings.php inclusion line.
+            if ($insert_at === $n) {
+                foreach ($lines as $i => $line) {
+                    if (preg_match('/require|include/i', $line)
+                        && strpos($line, 'wp-settings.php') !== false
+                    ) {
+                        $insert_at = $i;
+                        break;
+                    }
+                }
+            }
+
+            // 3. Last-resort safety net: if we are about to append at the very
+            // end of the file, walk back past any trailing blank lines and PHP
+            // close tags so the block is always inside PHP context.
+            if ($insert_at === $n) {
+                for ($j = $n - 1; $j >= 0; $j--) {
+                    $trimmed = trim($lines[$j]);
+                    if ($trimmed === '') {
+                        continue;
+                    }
+                    if ($trimmed === '?>') {
+                        $insert_at = $j; // Insert before the closing tag.
+                    }
                     break;
                 }
             }
