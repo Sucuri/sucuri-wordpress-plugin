@@ -754,6 +754,70 @@ class SucuriScanOption extends SucuriScanRequest
     }
 
     /**
+     * Determine whether a byte offset within $content falls inside a PHP block.
+     *
+     * Uses token_get_all() so it correctly accounts for nested open/close tags.
+     *
+     * @param string $content Full file content.
+     * @param int    $offset  Byte offset to test.
+     * @return bool
+     */
+    private static function isOffsetInsidePhp($content, $offset)
+    {
+        $tokens = @token_get_all($content);
+        $pos = 0;
+        $in_php = false;
+
+        foreach ($tokens as $token) {
+            $text = is_array($token) ? $token[1] : $token;
+            $len = strlen($text);
+
+            // Return the pre-token state: if the offset falls inside this token,
+            // the state change it triggers has not yet taken effect at that position.
+            if ($pos + $len > $offset) {
+                return $in_php;
+            }
+
+            if (is_array($token)) {
+                if ($token[0] === T_OPEN_TAG || $token[0] === T_OPEN_TAG_WITH_ECHO) {
+                    $in_php = true;
+                } elseif ($token[0] === T_CLOSE_TAG) {
+                    $in_php = false;
+                }
+            }
+
+            $pos += $len;
+        }
+
+        return $in_php;
+    }
+
+    /**
+     * Return true when any SUCURI_PLUG_KEY or SUCURI_PLUG_SALT define() line
+     * exists outside a PHP block in $content.
+     *
+     * @param string $content Full file content.
+     * @return bool
+     */
+    private static function hasPluginSaltOutsidePhp($content)
+    {
+        preg_match_all(
+            '/^[^\n]*define\s*\(\s*[\'"]SUCURI_PLUG_(?:KEY|SALT)[\'"][^\n]*/m',
+            $content,
+            $matches,
+            PREG_OFFSET_CAPTURE
+        );
+
+        foreach ($matches[0] as $match) {
+            if (!self::isOffsetInsidePhp($content, $match[1])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * TODO hook regeneration to an admin action and provide a UI button for manual rotation,
      * with a warning about breaking changes if the plugin is active on multiple sites without network support.
      */
@@ -793,8 +857,9 @@ class SucuriScanOption extends SucuriScanRequest
             return;
         }
 
-        // Constants are not defined.  Check whether their define() lines exist
-        // in wp-config.php at all — if they do, they must be outside PHP context.
+        // Use token-based detection to find define() lines placed outside PHP context.
+        // This covers full misplacement (both defines outside) and mixed states
+        // (one define inside, one outside).
         $config_path = self::getConfigPath();
 
         if (!$config_path || !file_exists($config_path)) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_exists
@@ -803,19 +868,15 @@ class SucuriScanOption extends SucuriScanRequest
             return;
         }
 
-        $content  = (string) file_get_contents($config_path); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-        $has_key  = (bool) preg_match('/^\s*define\s*\(\s*[\'"]SUCURI_PLUG_KEY[\'"]/m', $content);
-        $has_salt = (bool) preg_match('/^\s*define\s*\(\s*[\'"]SUCURI_PLUG_SALT[\'"]/m', $content);
+        $content = (string) file_get_contents($config_path); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 
-        if (!$has_key && !$has_salt) {
-            // Lines are not in the file — no misplacement to fix.
+        if (!self::hasPluginSaltOutsidePhp($content)) {
+            // All define() lines are inside PHP (or absent) — nothing to fix.
             update_option('sucuriscan_plug_salt_position_healed', true, false);
             return;
         }
 
-        // The define() lines are present in the file but the constants are not
-        // loaded into PHP — they are outside a PHP block and being emitted as
-        // plain HTML on every page.  Remove and rewrite in the correct position.
+        // At least one define() line is outside PHP context.  Remove and rewrite.
         $result = self::regeneratePluginSaltRaw();
 
         if ($result !== false) {
@@ -843,13 +904,17 @@ class SucuriScanOption extends SucuriScanRequest
             return false;
         }
 
-        self::removePluginSaltFromConfig();
+        if (!self::removePluginSaltFromConfig()) {
+            return false;
+        }
 
         $auth_raw = wp_salt('auth');
         $plug_key = hash_hmac('sha256', 'sucuri_plug_key_v1', $auth_raw);
         $plug_salt = hash_hmac('sha256', 'sucuri_plug_salt_v1', $auth_raw);
 
-        self::writePluginSaltToConfig($plug_key, $plug_salt);
+        if (!self::writePluginSaltToConfig($plug_key, $plug_salt)) {
+            return false;
+        }
 
         return $plug_key . $plug_salt;
     }
@@ -908,8 +973,11 @@ class SucuriScanOption extends SucuriScanRequest
         $stop_pos = strpos($content, $stop_marker);
 
         if ($stop_pos !== false) {
+            $insert_block = self::isOffsetInsidePhp($content, $stop_pos)
+                ? $block
+                : "<?php\n" . $block . "?>\n";
             $new_content = substr($content, 0, $stop_pos)
-                . $block
+                . $insert_block
                 . substr($content, $stop_pos);
         } else {
             // Fallback: use line-based insertion.
@@ -917,50 +985,47 @@ class SucuriScanOption extends SucuriScanRequest
             // the ABSPATH guard is universal (never translated) and always appears
             // just after the site-specific configuration section — exactly the
             // same logical position as the English stop-editing comment.
-            // The wp-settings.php include is kept as a secondary target, and a
-            // final safety-net strips any trailing PHP close-tag so the block
-            // is never placed outside PHP context.
+            // The wp-settings.php include is kept as a secondary target.
+            // isOffsetInsidePhp() is used as a safety net so the block is always
+            // placed inside PHP context regardless of which insertion point is chosen.
             $lines = explode("\n", $content);
             $n = count($lines);
             $insert_at = $n; // Default: end of file.
+            $insert_offset = strlen($content);
 
             // 1. Look for the ABSPATH guard (language-independent).
+            $cum_len = 0;
             foreach ($lines as $i => $line) {
                 if (preg_match('/if\s*\(\s*!?\s*defined\s*\(\s*[\'"]ABSPATH[\'"]/i', $line)) {
                     $insert_at = $i;
+                    $insert_offset = $cum_len;
                     break;
                 }
+                $cum_len += strlen($line) + 1; // +1 for the "\n" separator
             }
 
             // 2. Fall back to the wp-settings.php inclusion line.
             if ($insert_at === $n) {
+                $wp_len = 0;
                 foreach ($lines as $i => $line) {
                     if (preg_match('/require|include/i', $line)
                         && strpos($line, 'wp-settings.php') !== false
                     ) {
                         $insert_at = $i;
+                        $insert_offset = $wp_len;
                         break;
                     }
+                    $wp_len += strlen($line) + 1;
                 }
             }
 
-            // 3. Last-resort safety net: if we are about to append at the very
-            // end of the file, walk back past any trailing blank lines and PHP
-            // close tags so the block is always inside PHP context.
-            if ($insert_at === $n) {
-                for ($j = $n - 1; $j >= 0; $j--) {
-                    $trimmed = trim($lines[$j]);
-                    if ($trimmed === '') {
-                        continue;
-                    }
-                    if ($trimmed === '?>') {
-                        $insert_at = $j; // Insert before the closing tag.
-                    }
-                    break;
-                }
-            }
+            // 3. Safety net: wrap the block in a PHP open/close pair if the
+            // insertion point is outside PHP context (e.g. after a close tag).
+            $insert_block = self::isOffsetInsidePhp($content, $insert_offset)
+                ? $block
+                : "<?php\n" . $block . "?>\n";
 
-            array_splice($lines, $insert_at, 0, array(rtrim($block)));
+            array_splice($lines, $insert_at, 0, array(rtrim($insert_block)));
             $new_content = implode("\n", $lines);
         }
 

@@ -550,6 +550,168 @@ final class OptionSecretTest extends TestCase
         $this->assertNotSame($auth_key, $plug_key);
     }
 
+    /**
+     * Test A: stop marker present but outside PHP context — defines must still
+     * land inside a valid PHP block.
+     */
+    public function testStopMarkerOutsidePhpInsertsDefinesInsidePhp()
+    {
+        $phpClose = '?' . '>';
+        // Config where the stop marker itself sits outside PHP (after a close tag).
+        $config = '<' . "?php\ndefine('DB_NAME', 'test');\n"
+            . $phpClose . "\n"
+            . "/* That's all, stop editing! Happy publishing. */\n";
+
+        file_put_contents($this->tempWpConfig, $config);
+
+        $key = str_repeat('c', 32) . '/' . str_repeat('d', 32);
+        SucuriScanOption::updateOption(':cloudproxy_apikey', $key);
+
+        $result = file_get_contents($this->tempWpConfig);
+        $plugPos = strpos($result, 'SUCURI_PLUG_KEY');
+        $this->assertNotFalse($plugPos, 'SUCURI_PLUG_KEY must be written');
+
+        // The define must be inside PHP context — verify by tokenizing.
+        $tokens = token_get_all($result);
+        $pos = 0;
+        $inPhp = false;
+        $definePos = null;
+        foreach ($tokens as $t) {
+            $text = is_array($t) ? $t[1] : $t;
+            $len  = strlen($text);
+            if (is_array($t)) {
+                if ($t[0] === T_OPEN_TAG || $t[0] === T_OPEN_TAG_WITH_ECHO) {
+                    $inPhp = true;
+                } elseif ($t[0] === T_CLOSE_TAG) {
+                    $inPhp = false;
+                }
+            }
+            if ($definePos === null && $pos + $len > $plugPos) {
+                $definePos = $inPhp;
+            }
+            $pos += $len;
+        }
+        $this->assertTrue($definePos, 'SUCURI_PLUG_KEY define must be inside PHP context');
+    }
+
+    /**
+     * Test B: when wp-config.php is not writable, the healed flag must NOT be set.
+     */
+    public function testHealingFailureDoesNotSetHealedFlag()
+    {
+        if (defined('SUCURI_PLUG_KEY') || defined('SUCURI_PLUG_SALT')) {
+            $this->markTestSkipped('SUCURI_PLUG_* constants are already defined');
+        }
+        if (posix_getuid() === 0) {
+            $this->markTestSkipped('Running as root — chmod restriction is ineffective');
+        }
+
+        $phpClose = '?' . '>';
+        $fakeKey  = str_repeat('e', 64);
+        $fakeSalt = str_repeat('f', 64);
+
+        // Broken config: defines outside PHP.
+        $brokenConfig = '<' . "?php\ndefine('DB_NAME', 'test');\n"
+            . $phpClose . "\n"
+            . "define('SUCURI_PLUG_KEY',  '" . $fakeKey  . "');\n"
+            . "define('SUCURI_PLUG_SALT', '" . $fakeSalt . "');\n";
+
+        file_put_contents($this->tempWpConfig, $brokenConfig);
+        chmod($this->tempWpConfig, 0444); // read-only
+
+        try {
+            SucuriScanOption::maybeHealMisplacedPluginSalt();
+        } finally {
+            chmod($this->tempWpConfig, 0644); // restore for tearDown
+        }
+
+        $this->assertArrayNotHasKey(
+            'sucuriscan_plug_salt_position_healed',
+            $this->options,
+            'Healed flag must NOT be set when the file write fails'
+        );
+    }
+
+    /**
+     * Test C: file ends with a PHP close tag and trailing text — fallback path
+     * must insert defines inside PHP context.
+     */
+    public function testEofFallbackWithTrailingCloseTagInsertsDefinesInsidePhp()
+    {
+        $phpClose = '?' . '>';
+        // No stop marker, no ABSPATH guard, no wp-settings.php — pure fallback.
+        $config = '<' . "?php\ndefine('DB_NAME', 'test');\n"
+            . $phpClose . "\n"
+            . "Some trailing plain text.\n";
+
+        file_put_contents($this->tempWpConfig, $config);
+
+        $key = str_repeat('g', 32) . '/' . str_repeat('h', 32);
+        SucuriScanOption::updateOption(':cloudproxy_apikey', $key);
+
+        $result = file_get_contents($this->tempWpConfig);
+        $plugPos = strpos($result, 'SUCURI_PLUG_KEY');
+        $this->assertNotFalse($plugPos, 'SUCURI_PLUG_KEY must be written');
+
+        $tokens = token_get_all($result);
+        $pos = 0;
+        $inPhp = false;
+        $definePos = null;
+        foreach ($tokens as $t) {
+            $text = is_array($t) ? $t[1] : $t;
+            $len  = strlen($text);
+            if (is_array($t)) {
+                if ($t[0] === T_OPEN_TAG || $t[0] === T_OPEN_TAG_WITH_ECHO) {
+                    $inPhp = true;
+                } elseif ($t[0] === T_CLOSE_TAG) {
+                    $inPhp = false;
+                }
+            }
+            if ($definePos === null && $pos + $len > $plugPos) {
+                $definePos = $inPhp;
+            }
+            $pos += $len;
+        }
+        $this->assertTrue($definePos, 'SUCURI_PLUG_KEY define must be inside PHP context');
+    }
+
+    /**
+     * Test D: mixed state — one define inside PHP, one outside. Healing must
+     * produce a fully corrected config and set the healed flag.
+     */
+    public function testMixedStateOneInsideOneOutsideIsFullyHealed()
+    {
+        if (defined('SUCURI_PLUG_KEY') || defined('SUCURI_PLUG_SALT')) {
+            $this->markTestSkipped('SUCURI_PLUG_* constants are already defined');
+        }
+
+        $phpClose = '?' . '>';
+        $fakeKey  = str_repeat('i', 64);
+        $fakeSalt = str_repeat('j', 64);
+
+        // SUCURI_PLUG_KEY inside PHP, SUCURI_PLUG_SALT outside PHP.
+        $mixedConfig = '<' . "?php\n"
+            . "define('SUCURI_PLUG_KEY',  '" . $fakeKey  . "');\n"
+            . "define('DB_NAME', 'test');\n"
+            . $phpClose . "\n"
+            . "define('SUCURI_PLUG_SALT', '" . $fakeSalt . "');\n";
+
+        file_put_contents($this->tempWpConfig, $mixedConfig);
+
+        SucuriScanOption::maybeHealMisplacedPluginSalt();
+
+        $this->assertTrue(
+            (bool) ($this->options['sucuriscan_plug_salt_position_healed'] ?? false),
+            'Healed flag must be set after mixed-state fix'
+        );
+
+        $config = file_get_contents($this->tempWpConfig);
+        $this->assertStringContainsString("define('SUCURI_PLUG_KEY'", $config);
+        $this->assertStringContainsString("define('SUCURI_PLUG_SALT'", $config);
+        $this->assertSame(1, substr_count($config, 'SUCURI_PLUG_KEY'), 'Exactly one KEY define expected');
+        $this->assertSame(1, substr_count($config, 'SUCURI_PLUG_SALT'), 'Exactly one SALT define expected');
+    }
+
     private function writeSettingsFile(array $options)
     {
         $content = "<?php exit(0); ?>\n";
