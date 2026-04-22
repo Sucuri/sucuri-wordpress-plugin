@@ -84,6 +84,13 @@ if (!function_exists('current_user_can')) {
     }
 }
 
+if (!function_exists('wp_doing_ajax')) {
+    function wp_doing_ajax()
+    {
+        return false;
+    }
+}
+
 if (!function_exists('wp_get_current_user')) {
     function wp_get_current_user()
     {
