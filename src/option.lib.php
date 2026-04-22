@@ -872,10 +872,13 @@ class SucuriScanOption extends SucuriScanRequest
      */
     public static function maybeHealMisplacedPluginSalt()
     {
-        if (wp_doing_ajax()) {
-            return;
+        if (function_exists('wp_doing_ajax') && wp_doing_ajax()) { 
+            return; 
         }
-
+        
+        if (function_exists('wp_doing_cron') && wp_doing_cron()) {
+            return; 
+        }
         if (!SucuriScanPermissions::canManagePlugin()) {
             return;
         }
