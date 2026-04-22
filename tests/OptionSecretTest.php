@@ -355,7 +355,7 @@ final class OptionSecretTest extends TestCase
         // Build a broken wp-config.php: constants sit after the PHP close tag.
         $brokenConfig = '<' . "?php\n"
             . "define('DB_NAME', 'test');\n"
-            . "require_once ABSPATH . 'wp-settings.php';\n"
+            . "/* That's all, stop editing! Happy publishing. */\n"
             . $phpClose . "\n"
             . "define('SUCURI_PLUG_KEY',  '" . $fakeKey  . "');\n"
             . "define('SUCURI_PLUG_SALT', '" . $fakeSalt . "');\n";
@@ -633,16 +633,14 @@ final class OptionSecretTest extends TestCase
     }
 
     /**
-     * Test C: file ends with a PHP close tag and trailing text — fallback path
-     * must insert defines inside PHP context.
+     * Test C: no stop-editing marker present — fallback must use the ABSPATH
+     * guard as the insertion point and place defines inside PHP context.
      */
-    public function testEofFallbackWithTrailingCloseTagInsertsDefinesInsidePhp()
+    public function testAbspathFallbackInsertsDefinesInsidePhp()
     {
-        $phpClose = '?' . '>';
-        // No stop marker, no ABSPATH guard, no wp-settings.php — pure fallback.
+        // No stop marker; ABSPATH guard is the only safe target.
         $config = '<' . "?php\ndefine('DB_NAME', 'test');\n"
-            . $phpClose . "\n"
-            . "Some trailing plain text.\n";
+            . "if (!defined('ABSPATH')) { define('ABSPATH', dirname(__FILE__) . '/'); }\n";
 
         file_put_contents($this->tempWpConfig, $config);
 
@@ -652,6 +650,10 @@ final class OptionSecretTest extends TestCase
         $result = file_get_contents($this->tempWpConfig);
         $plugPos = strpos($result, 'SUCURI_PLUG_KEY');
         $this->assertNotFalse($plugPos, 'SUCURI_PLUG_KEY must be written');
+
+        // Define must appear before the ABSPATH guard.
+        $absPos = strpos($result, "defined('ABSPATH')");
+        $this->assertLessThan($absPos, $plugPos, 'SUCURI_PLUG_KEY must be inserted before ABSPATH guard');
 
         $tokens = token_get_all($result);
         $pos = 0;
@@ -690,9 +692,11 @@ final class OptionSecretTest extends TestCase
         $fakeSalt = str_repeat('j', 64);
 
         // SUCURI_PLUG_KEY inside PHP, SUCURI_PLUG_SALT outside PHP.
+        // Stop marker is present so writePluginSaltToConfig can re-insert after healing.
         $mixedConfig = '<' . "?php\n"
             . "define('SUCURI_PLUG_KEY',  '" . $fakeKey  . "');\n"
             . "define('DB_NAME', 'test');\n"
+            . "/* That's all, stop editing! Happy publishing. */\n"
             . $phpClose . "\n"
             . "define('SUCURI_PLUG_SALT', '" . $fakeSalt . "');\n";
 
