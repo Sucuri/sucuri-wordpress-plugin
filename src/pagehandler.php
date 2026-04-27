@@ -473,7 +473,7 @@ function sucuriscan_ajax()
     SucuriScanInterface::checkPageVisibility();
 
     if (SucuriScanInterface::checkNonce()) {
-        $action = SucuriScanRequest::post('form_action', '[a-z0-9_]+');
+        $action = SucuriScanRequest::post('form_action', '^[a-z0-9_]+$');
 
         if ($action !== false) {
             $handlers = sucuriscan_ajax_handlers();

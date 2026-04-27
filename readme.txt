@@ -263,7 +263,6 @@ This version adds an option to refresh the malware scan results on demand, as we
 = 2.7.2 =
 * Fix salt bug in the wp-config file.
 
-
 = 2.7.1 =
 * Update on the encryption process for the WAF API key due to problems reported on some users.
 
