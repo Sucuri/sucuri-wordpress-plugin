@@ -249,7 +249,7 @@ function sucuriscan_2fa_page()
     }
 
     $params = array();
-    $params['URL.2FA'] = admin_url('admin.php?page=sucuriscan_2fa');
+    $params['URL.2FA'] = SucuriScan::adminURL('admin.php?page=sucuriscan_2fa');
     $params['PremiumVisibility'] = SucuriScanInterface::isPremium() ? '' : 'sucuriscan-hidden';
     $params['Theme'] = SucuriScanInterface::getPreferredTheme();
     $params['TwoFactor.CurrentUser'] = SucuriScanTwoFactor::current_user_block();
