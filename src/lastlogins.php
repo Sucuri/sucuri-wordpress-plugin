@@ -263,6 +263,11 @@ if (!function_exists('sucuriscan_set_lastlogin')) {
         }
 
         $current_user = get_user_by('login', $user_login);
+
+        if (!$current_user) {
+            return false;
+        }
+
         $remote_addr = SucuriScan::getRemoteAddr();
 
         $login_info = array(
@@ -307,71 +312,51 @@ function sucuriscan_get_logins($limit = 10, $offset = 0, $user_id = 0)
         return SucuriScan::throwException(__('Invalid last-logins storage file', 'sucuri-scanner'));
     }
 
-    $parsed_lines = 0;
     $data_lines = SucuriScanFileInfo::fileLines($datastore_filepath);
 
     if (!$data_lines) {
         return SucuriScan::throwException(__('No last-logins data is available', 'sucuri-scanner'));
     }
 
-    /**
-     * This count will not be 100% accurate considering that we are checking the
-     * syntax of each line in the loop bellow, there may be some lines without the
-     * right syntax which will differ from the total entries returned, but there's
-     * not other EASY way to do this without affect the performance of the code.
-     *
-     * @var integer
-     */
-    $total_lines = count($data_lines);
-    $last_logins['total'] = $total_lines;
-
-    // Get a list with the latest entries in the first positions.
-    $reversed_lines = array_reverse($data_lines);
-
-    /**
-     * Only the user accounts with administrative privileges can see the logs of all
-     * the users, for the rest of the accounts they will only see their own logins.
-     *
-     * @var object
-     */
-    $user_ids = array();
     $current_user = wp_get_current_user();
     $is_admin_user = (bool) SucuriScanPermissions::canManagePlugin();
 
-    for ($i = $offset; $i < $total_lines; $i++) {
-        $line = $reversed_lines[$i] ? trim($reversed_lines[$i]) : '';
+    // Collect all matching entries (most recent first) before applying offset/limit,
+    // so that total and pagination are based on the filtered count rather than the
+    // raw line count. The previous approach applied offset to all lines regardless
+    // of filters, causing non-admin users to see empty pages past page 1.
+    $matched = array();
 
-        // Check if the data is serialized (which we will consider as insecure).
-        $last_login = @json_decode($line, true);
+    foreach (array_reverse($data_lines) as $line) {
+        $last_login = @json_decode(trim($line), true);
 
         if (!$last_login) {
-            $last_logins['total'] -= 1;
             continue;
         }
 
-        $last_login['user_lastlogin_timestamp'] = strtotime($last_login['user_lastlogin']);
-        $last_login['user_registered_timestamp'] = 0;
-
-        // Only administrators can see all login stats.
-        if (!$is_admin_user && $current_user->user_login != $last_login['user_login']) {
+        if (!$is_admin_user && $current_user->user_login !== $last_login['user_login']) {
             continue;
         }
 
-        // Filter the user identifiers using the value passed tot his function.
         if ($user_id > 0 && $last_login['user_id'] != $user_id) {
             continue;
         }
 
+        $matched[] = $last_login;
+    }
+
+    $last_logins['total'] = count($matched);
+
+    $user_ids = array();
+    $slice = array_slice($matched, $offset, $limit > 0 ? $limit : null);
+
+    foreach ($slice as $pos => $last_login) {
+        $last_login['user_lastlogin_timestamp'] = strtotime($last_login['user_lastlogin']);
+        $last_login['user_registered_timestamp'] = 0;
         $last_login['user_exists'] = false;
+        $last_login['line_num'] = $offset + $pos + 1;
         $user_ids[] = $last_login['user_id'];
-
-        $last_login['line_num'] = $i + 1;
         $last_logins['entries'][] = $last_login;
-        $parsed_lines += 1;
-
-        if ($limit > 0 && $parsed_lines >= $limit) {
-            break;
-        }
     }
 
     /* no need for database query */
