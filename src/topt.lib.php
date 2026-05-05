@@ -1377,8 +1377,9 @@ class SucuriScanTwoFactor extends SucuriScan
         $page_users  = $dbquery->get_results();
 
         // Single query: count of all users with 2FA activated (for the status badge).
+        // JOIN against users table excludes orphaned usermeta rows left by deleted users.
         $activated_count = (int) $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(DISTINCT user_id) FROM {$wpdb->usermeta} WHERE meta_key = %s AND meta_value != ''",
+            "SELECT COUNT(DISTINCT um.user_id) FROM {$wpdb->usermeta} um INNER JOIN {$wpdb->users} u ON u.ID = um.user_id WHERE um.meta_key = %s AND um.meta_value != ''",
             self::SECRET_META_KEY
         ));
 
