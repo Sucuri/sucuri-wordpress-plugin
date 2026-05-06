@@ -398,7 +398,7 @@ class SucuriScanInterface
         $user_id = get_current_user_id();
 
         if (!$user_id) {
-            return 'dark';
+            return 'light';
         }
 
         $current_theme = get_user_meta($user_id, 'sucuriscan_preferred_theme', true);
@@ -407,6 +407,6 @@ class SucuriScanInterface
             return $current_theme;
         }
 
-        return 'dark';
+        return 'light';
     }
 }

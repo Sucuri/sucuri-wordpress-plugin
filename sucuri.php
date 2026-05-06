@@ -87,7 +87,7 @@ define('SUCURISCAN', 'sucuriscan');
 /**
  * Current version of the plugin's code.
  */
-define('SUCURISCAN_VERSION', '2.7.2');
+define('SUCURISCAN_VERSION', '2.7.3');
 
 /**
  * Defines the human readable name of the plugin.

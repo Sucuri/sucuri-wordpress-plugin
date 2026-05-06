@@ -464,10 +464,12 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
     background: var(--sucuri-color-card-background);
     border-radius: 10px;
     border: 1px solid var(--sucuri-color-border);
-    margin-top: 30px;
     padding: 30px;
 }
 
+.sucuriscan-tabs-header {
+        margin-top: 30px;
+}
 .sucuriscan-tabs-containers .sucuriscan-panel:first-child {
     margin-top: 0;
 }
@@ -2318,6 +2320,43 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
     box-sizing: border-box;
 }
 
+.sucuri-2fa-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    box-sizing: border-box;
+}
+
+.sucuriscan-panel:has(.sucuri-2fa-info) {
+    border: none;
+}
+
+.sucuriscan-2fa-info-box {
+    width: calc(50% - 15px);
+    margin-bottom: 8px;
+    background-color: var(--sucuri-color-background-secondary);
+    border-radius: var(--sucuri-border-radius);
+    border: 1px solid var(--sucuri-color-border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+#two-factor-info {
+    flex: 1;
+    border: none;
+    background: none;
+    margin: 0;
+    padding: 0;
+}
+
+#sucuriscan-totp-form{
+    width: 240px;
+}
 .sucuriscan-tag {
     border-radius: var(--sucuri-border-radius);
     padding: 4px 8px;
@@ -2563,6 +2602,7 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
 
 .sucuriscan-2fa-form {
     margin-top: 8px;
+    width: 240px;
 }
 
 .sucuriscan-2fa-code-input {
@@ -2572,6 +2612,7 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
 }
 
 .sucuriscan-2fa-enforce {
+    width: 240px;
     display: block;
     margin-top: 6px !important;
     margin-bottom: 8px !important;
@@ -2678,4 +2719,64 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
 .wpaas-show-sso-login #loginform>p,
 .wpaas-show-sso-login #nav {
     display: block !important;
+}
+.sucuriscan-panel ol.circle-numbers {
+    list-style: none;
+    counter-reset: step;
+    padding-left: 2.0rem;
+    margin: 1.0rem 0;
+    padding-top: 0.7rem;
+}
+
+.sucuriscan-panel ol.circle-numbers > li {
+    counter-increment: step;
+    position: relative;
+    margin: 0 0 1.0rem 0;
+    padding-left: 0.2rem;
+    padding-top: 0.2rem;
+}
+
+.sucuriscan-panel ol.circle-numbers > li::before {
+    content: counter(step);
+    position: absolute;
+    left: -2.1rem;
+    width: 1.3rem;
+    height: 1.3rem;
+    line-height: 1.3rem;
+    text-align: center;
+    background: transparent;
+    font-weight: bold;
+    border: 1px solid #25BB9E;
+    color: var(--sucuri-color-text-main);
+    border-radius: 50%;
+    font-size: 0.8rem;
+}
+
+.sucuri-with-icon {
+    position: relative;
+    padding-left: 24px;
+}
+
+.sucuri-with-icon::before {
+    content: "×";
+    position: absolute;
+    left: 0;
+    top: 0.7rem;
+    transform: translateY(-50%);
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #ED5565;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 15px;
+    text-align: center;
+}
+
+.status-success::before {
+    content: "✔";
+    background: #2ecc71;
+    font-size: 12px;
+    line-height: 15px;
 }

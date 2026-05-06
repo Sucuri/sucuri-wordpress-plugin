@@ -15,6 +15,13 @@
             </thead>
             <tbody>
                 %%%SUCURI.Rows%%%
+                <tr id="twofactor-users" class="sucuriscan-%%SUCURI.TwoFactor.PaginationVisibility%%">
+                    <td colspan="4">
+                        <ul class="sucuriscan-pagination">
+                            %%%SUCURI.TwoFactor.PaginationLinks%%%
+                        </ul>
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>

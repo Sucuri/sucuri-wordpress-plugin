@@ -1349,7 +1349,7 @@ class SucuriScanTwoFactor extends SucuriScan
     /**
      * Render the 2FA users admin section (list of users with status and bulk actions).
      * Only shown if current user can 'list_users'.
-     * 
+     *
      * @return string HTML (empty if no permission)
      */
     public static function users_admin_section()
@@ -1358,25 +1358,89 @@ class SucuriScanTwoFactor extends SucuriScan
             return '';
         }
 
+        global $wpdb;
+
+        // TODO: add a per-section selector so the admin can choose how many users to display per page.
+        $twofa_users_per_page = 10;
+        $per_page = $twofa_users_per_page;
+        $page_number = SucuriScanTemplate::pageNumber();
+        $offset = ($page_number - 1) * $per_page;
+
+        // Paginated query — avoids loading the entire user table into memory.
+        $dbquery = new WP_User_Query(array(
+            'fields'  => array('ID', 'user_login', 'user_email'),
+            'number'  => $per_page,
+            'offset'  => $offset,
+            'orderby' => 'ID',
+            'order'   => 'ASC',
+        ));
+
+        $total_users = (int) $dbquery->get_total();
+        $page_users  = $dbquery->get_results();
+
+        // Single query: count of all users with 2FA activated (for the status badge).
+        // JOIN against users table excludes orphaned usermeta rows left by deleted users.
+        $activated_count = (int) $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(DISTINCT um.user_id) FROM {$wpdb->usermeta} um INNER JOIN {$wpdb->users} u ON u.ID = um.user_id WHERE um.meta_key = %s AND um.meta_value != ''",
+            self::SECRET_META_KEY
+        ));
+
+        // Single query: which of the current page's users have 2FA active (eliminates N+1).
+        $activated_set = array();
+
+        if (!empty($page_users)) {
+            $page_ids = array_map(function ($u) { return (int) $u->ID; }, $page_users);
+            $placeholders = implode(',', array_fill(0, count($page_ids), '%d'));
+            $args = array_merge(array(self::SECRET_META_KEY), $page_ids);
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
+            $rows_with_key = $wpdb->get_col($wpdb->prepare(
+                "SELECT user_id FROM {$wpdb->usermeta} WHERE meta_key = %s AND meta_value != '' AND user_id IN ({$placeholders})",
+                $args
+            ));
+
+            foreach ($rows_with_key as $uid) {
+                $activated_set[(int) $uid] = true;
+            }
+        }
+
+        // Pre-compute enforcement state once — avoids repeated option reads inside the loop.
+        $mode = (string) SucuriScanOption::getOption(':twofactor_mode');
+        $enforced_set = array();
+
+        if ($mode === 'selected_users') {
+            $list = SucuriScanOption::getOption(':twofactor_users');
+
+            if (is_array($list)) {
+                foreach ($list as $id) {
+                    $id = (int) $id;
+
+                    if ($id > 0) {
+                        $enforced_set[$id] = true;
+                    }
+                }
+            }
+        }
+
         $rows = '';
-        $users = get_users(array('fields' => array('ID', 'user_login', 'user_email', 'roles')));
-        $total_users = is_array($users) ? count($users) : 0;
-        $activated_count = 0;
 
-        if (is_array($users)) {
-            foreach ($users as $user) {
+        if (is_array($page_users)) {
+            foreach ($page_users as $user) {
                 $uid = (int) $user->ID;
-                $secret = self::get_user_totp_key($uid);
-                $status = empty($secret) ? __('Deactivated', 'sucuri-scanner') : __('Activated', 'sucuri-scanner');
+                $is_active = isset($activated_set[$uid]);
+                $is_enforced = ($mode === 'all_users') || isset($enforced_set[$uid]);
 
-                if (!empty($secret)) {
-                    $activated_count++;
+                if ($is_active) {
+                    $status = __('Activated', 'sucuri-scanner');
+                } elseif ($is_enforced) {
+                    $status = __('Enforced / not active', 'sucuri-scanner');
+                } else {
+                    $status = __('Deactivated', 'sucuri-scanner');
                 }
 
                 $rows .= SucuriScanTemplate::getSnippet('2fa-user-row', array(
-                    'ID' => $uid,
-                    'Login' => $user->user_login,
-                    'Email' => $user->user_email,
+                    'ID'     => $uid,
+                    'Login'  => $user->user_login,
+                    'Email'  => $user->user_email,
                     'Status' => $status,
                 ));
             }
@@ -1385,13 +1449,13 @@ class SucuriScanTwoFactor extends SucuriScan
         $bulkOptions = '';
 
         $bulkMap = array(
-            'activate_all' => __('Activate two factor for all users', 'sucuri-scanner'),
-            'activate_selected' => __('Activate two factor for selected users', 'sucuri-scanner'),
-            'deactivate_all' => __('Deactivate two factor for all users', 'sucuri-scanner'),
+            'activate_all'        => __('Activate two factor for all users', 'sucuri-scanner'),
+            'activate_selected'   => __('Activate two factor for selected users', 'sucuri-scanner'),
+            'deactivate_all'      => __('Deactivate two factor for all users', 'sucuri-scanner'),
             'deactivate_selected' => __('Deactivate two factor for selected users', 'sucuri-scanner'),
-            'reset_selected' => __('Reset two factor for selected users (keep enforcement)', 'sucuri-scanner'),
-            'reset_all' => __('Reset two factor for all users (keep enforcement)', 'sucuri-scanner'),
-            'reset_everything' => __('Delete all two-factor data and disable enforcement', 'sucuri-scanner'),
+            'reset_selected'      => __('Reset two factor for selected users (keep enforcement)', 'sucuri-scanner'),
+            'reset_all'           => __('Reset two factor for all users (keep enforcement)', 'sucuri-scanner'),
+            'reset_everything'    => __('Delete all two-factor data and disable enforcement', 'sucuri-scanner'),
         );
 
         foreach ($bulkMap as $val => $label) {
@@ -1403,19 +1467,27 @@ class SucuriScanTwoFactor extends SucuriScan
 
         if ($activated_count > 0) {
             if ($total_users > 0 && $activated_count >= $total_users) {
-                $status_id = 1;
+                $status_id   = 1;
                 $status_text = __('Activated for all users', 'sucuri-scanner');
             } else {
-                $status_id = 2;
+                $status_id   = 2;
                 $status_text = __('Activated for some users', 'sucuri-scanner');
             }
         }
 
+        $pagination_links = SucuriScanTemplate::pagination(
+            '%%SUCURI.URL.2FA%%#twofactor-users',
+            $total_users,
+            $per_page
+        );
+
         return SucuriScanTemplate::getSection('2fa-users', array(
-            'Rows' => $rows,
-            'BulkOptions' => $bulkOptions,
-            'TwoFactor.Status' => (string) $status_id,
-            'TwoFactor.StatusText' => $status_text,
+            'Rows'                           => $rows,
+            'BulkOptions'                    => $bulkOptions,
+            'TwoFactor.Status'               => (string) $status_id,
+            'TwoFactor.StatusText'           => $status_text,
+            'TwoFactor.PaginationLinks'      => $pagination_links,
+            'TwoFactor.PaginationVisibility' => ($total_users > $per_page) ? 'visible' : 'hidden',
         ));
     }
 

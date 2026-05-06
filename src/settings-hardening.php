@@ -95,7 +95,7 @@ class SucuriScanHardeningPage extends SucuriScan
     {
         $params = array();
 
-	    $params['URL.Hardening'] = admin_url('admin.php?page=sucuriscan_hardening_prevention');
+	    $params['URL.Hardening'] = SucuriScan::adminURL('admin.php?page=sucuriscan_hardening_prevention');
 
 	    if (self::processRequest(__FUNCTION__)) {
             SucuriScanInterface::error(
@@ -140,12 +140,12 @@ class SucuriScanHardeningPage extends SucuriScan
     {
         $params = array();
 
-	    $params['URL.Hardening'] = admin_url('admin.php?page=sucuriscan_hardening_prevention');
+	    $params['URL.Hardening'] = SucuriScan::adminURL('admin.php?page=sucuriscan_hardening_prevention');
 
 	    $updates = get_core_updates();
         $site_version = SucuriScan::siteVersion();
 
-        $params['URL.Settings'] = admin_url('update-core.php');
+        $params['URL.Settings'] = SucuriScan::adminURL('update-core.php');
         $params['Hardening.Status'] = 0;
         $params['Hardening.FieldText'] = __('Check Updates Now', 'sucuri-scanner');
         $params['Hardening.Title'] = __('Verify WordPress Version', 'sucuri-scanner');
@@ -176,7 +176,7 @@ class SucuriScanHardeningPage extends SucuriScan
     {
         $params = array();
 
-	    $params['URL.Hardening'] = admin_url('admin.php?page=sucuriscan_hardening_prevention');
+	    $params['URL.Hardening'] = SucuriScan::adminURL('admin.php?page=sucuriscan_hardening_prevention');
 
 	    $params['Hardening.Title'] = __('Remove WordPress Version', 'sucuri-scanner');
         $params['Hardening.Status'] = 1;
@@ -203,7 +203,7 @@ class SucuriScanHardeningPage extends SucuriScan
 
         $params = array();
 
-	    $params['URL.Hardening'] = admin_url('admin.php?page=sucuriscan_hardening_prevention');
+	    $params['URL.Hardening'] = SucuriScan::adminURL('admin.php?page=sucuriscan_hardening_prevention');
 
 	    if (self::processRequest(__FUNCTION__)) {
             SucuriScanInterface::error(
@@ -244,7 +244,7 @@ class SucuriScanHardeningPage extends SucuriScan
         $params = array();
         $folder = WP_CONTENT_DIR . '/uploads';
 
-	    $params['URL.Hardening'] = admin_url('admin.php?page=sucuriscan_hardening_prevention');
+	    $params['URL.Hardening'] = SucuriScan::adminURL('admin.php?page=sucuriscan_hardening_prevention');
 
 	    if (self::processRequest(__FUNCTION__)) {
             $result = SucuriScanHardening::hardenDirectory($folder);
@@ -308,7 +308,7 @@ class SucuriScanHardeningPage extends SucuriScan
 
         $params = array();
 
-	    $params['URL.Hardening'] = admin_url('admin.php?page=sucuriscan_hardening_prevention');
+	    $params['URL.Hardening'] = SucuriScan::adminURL('admin.php?page=sucuriscan_hardening_prevention');
 
 	    if (self::processRequest(__FUNCTION__)) {
             $result = SucuriScanHardening::hardenDirectory(WP_CONTENT_DIR);
@@ -374,7 +374,7 @@ class SucuriScanHardeningPage extends SucuriScan
         $params = array();
         $folder = ABSPATH . '/wp-includes';
 
-	    $params['URL.Hardening'] = admin_url('admin.php?page=sucuriscan_hardening_prevention');
+	    $params['URL.Hardening'] = SucuriScan::adminURL('admin.php?page=sucuriscan_hardening_prevention');
 
 	    if (self::processRequest(__FUNCTION__)) {
             $result = SucuriScanHardening::hardenDirectory($folder);
@@ -443,7 +443,7 @@ class SucuriScanHardeningPage extends SucuriScan
     {
         $params = array();
 
-	    $params['URL.Hardening'] = admin_url('admin.php?page=sucuriscan_hardening_prevention');
+	    $params['URL.Hardening'] = SucuriScan::adminURL('admin.php?page=sucuriscan_hardening_prevention');
 
 	    if (self::processRequest(__FUNCTION__)) {
             if (@unlink(ABSPATH . '/readme.html') === false) {
@@ -493,7 +493,7 @@ class SucuriScanHardeningPage extends SucuriScan
     {
         $params = array();
 
-	    $params['URL.Hardening'] = admin_url('admin.php?page=sucuriscan_hardening_prevention');
+	    $params['URL.Hardening'] = SucuriScan::adminURL('admin.php?page=sucuriscan_hardening_prevention');
 
 	    $user_query = new WP_User_Query(
             array(
@@ -504,7 +504,7 @@ class SucuriScanHardeningPage extends SucuriScan
         );
         $results = $user_query->get_results();
 
-        $params['URL.Hardening'] = admin_url('users.php?role=administrator');
+        $params['URL.Hardening'] = SucuriScan::adminURL('users.php?role=administrator');
         $params['Hardening.Title'] = __('Verify Default Admin Account', 'sucuri-scanner');
         $params['Hardening.Description'] = __(
             'Check if the primary user account still uses the name "admin". This allows malicious users to easily identify which account has the highest privileges to target an attack.',
@@ -533,7 +533,7 @@ class SucuriScanHardeningPage extends SucuriScan
     {
         $params = array();
 
-	    $params['URL.Hardening'] = admin_url('admin.php?page=sucuriscan_hardening_prevention');
+	    $params['URL.Hardening'] = SucuriScan::adminURL('admin.php?page=sucuriscan_hardening_prevention');
 
 	    $fileEditorWasDisabled = (bool)(defined('DISALLOW_FILE_EDIT') && DISALLOW_FILE_EDIT);
 
@@ -681,7 +681,7 @@ class SucuriScanHardeningPage extends SucuriScan
 
         // Set status of auto secret key update.
         $params = array();
-	    $params['URL.Hardening'] = admin_url('admin.php?page=sucuriscan_hardening_prevention');
+	    $params['URL.Hardening'] = SucuriScan::adminURL('admin.php?page=sucuriscan_hardening_prevention');
 	    $params['Hardening.Title'] = __('Activate Automatic Secret Keys Updater', 'sucuri-scanner');
         $params['Hardening.Description'] = __(
             'Changing the Secret Keys will invalidate all existing cookies, forcing all logged in users to login again. Doing this frequently will decrease the chances of misuse of sessions left open on unprotected devices.',
@@ -720,7 +720,7 @@ class SucuriScanHardeningPage extends SucuriScan
             'HardeningAllowlist.NoItemsVisibility' => 'visible',
         );
 
-	    $params['URL.Hardening'] = admin_url('admin.php?page=sucuriscan_hardening_prevention');
+	    $params['URL.Hardening'] = SucuriScan::adminURL('admin.php?page=sucuriscan_hardening_prevention');
 
 	    $upload_dir = wp_upload_dir();
         $allowed_folders = array(

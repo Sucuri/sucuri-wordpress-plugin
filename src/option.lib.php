@@ -1037,6 +1037,7 @@ class SucuriScanOption extends SucuriScanRequest
             $insert_offset = null;
             $cum_len = 0;
 
+            // 1. Look for the ABSPATH guard (language-independent).
             foreach ($lines as $i => $line) {
                 if (preg_match('/if\s*\(\s*!?\s*defined\s*\(\s*[\'"]ABSPATH[\'"]/i', $line)) {
                     $insert_at = $i;

@@ -249,7 +249,7 @@ function sucuriscan_2fa_page()
     }
 
     $params = array();
-    $params['URL.2FA'] = admin_url('admin.php?page=sucuriscan_2fa');
+    $params['URL.2FA'] = SucuriScan::adminURL('admin.php?page=sucuriscan_2fa');
     $params['PremiumVisibility'] = SucuriScanInterface::isPremium() ? '' : 'sucuriscan-hidden';
     $params['Theme'] = SucuriScanInterface::getPreferredTheme();
     $params['TwoFactor.CurrentUser'] = SucuriScanTwoFactor::current_user_block();
@@ -430,7 +430,41 @@ function sucuriscan_settings_page()
 }
 
 /**
- * Handles all the AJAX plugin's requests.
+ * Returns the map of supported AJAX actions to their handler callbacks.
+ *
+ * @return array
+ */
+function sucuriscan_ajax_handlers()
+{
+    return array(
+        'get_audit_logs' => array('SucuriScanAuditLogs', 'ajaxAuditLogs'),
+        'auditlogs_send_logs' => array('SucuriScanAuditLogs', 'ajaxAuditLogsSendLogs'),
+        'malware_scan' => array('SucuriScanSiteCheck', 'ajaxMalwareScan'),
+        'check_wordpress_integrity' => array('SucuriScanIntegrity', 'ajaxIntegrity'),
+        'integrity_diff_utility' => array('SucuriScanIntegrity', 'ajaxIntegrityDiffUtility'),
+        'get_firewall_logs' => array('SucuriScanFirewall', 'auditlogsAjax'),
+        'firewall_ipaccess' => array('SucuriScanFirewall', 'ipAccessAjax'),
+        'firewall_blocklist' => array('SucuriScanFirewall', 'blocklistAjax'),
+        'firewall_deblocklist' => array('SucuriScanFirewall', 'deblocklistAjax'),
+        'firewall_settings' => array('SucuriScanFirewall', 'getSettingsAjax'),
+        'firewall_clear_cache' => array('SucuriScanFirewall', 'clearCacheAjax'),
+        'firewall_auto_clear_cache' => array('SucuriScanFirewall', 'clearAutoCacheAjax'),
+        'get_cronjobs' => array('SucuriScanSettingsScanner', 'cronjobsAjax'),
+        'get_available_updates' => array('SucuriScanSettingsPosthack', 'availableUpdatesAjax'),
+        'get_plugins_data' => array('SucuriScanSettingsPosthack', 'getPluginsAjax'),
+        'reset_user_password' => array('SucuriScanSettingsPosthack', 'resetPasswordAjax'),
+        'reset_plugin' => array('SucuriScanSettingsPosthack', 'resetPluginAjax'),
+        'vulnerabilities_scan_core_php' => array('SucuriScanVulnerability', 'renderVulnerabilitiesPanelAjax'),
+        'plugin_vulnerabilities_scan' => array('SucuriScanVulnerability', 'vulnerabilitiesPluginAjax'),
+        'theme_vulnerabilities_scan' => array('SucuriScanVulnerability', 'vulnerabilitiesThemeAjax'),
+        'toggle_theme' => 'sucuriscan_theme_toggle',
+        'dismiss_waf_prompt' => 'sucuriscan_dismiss_waf_prompt',
+        'totp_verify' => array('SucuriScanTwoFactor', 'totp_verify'),
+    );
+}
+
+/**
+ * Handles all plugin AJAX requests through one explicit dispatcher.
  *
  * @return void
  */
@@ -439,30 +473,16 @@ function sucuriscan_ajax()
     SucuriScanInterface::checkPageVisibility();
 
     if (SucuriScanInterface::checkNonce()) {
+        $action = SucuriScanRequest::post('form_action', '^[a-z0-9_]+$');
 
-        SucuriScanAuditLogs::ajaxAuditLogs();
-        SucuriScanAuditLogs::ajaxAuditLogsSendLogs();
-        SucuriScanSiteCheck::ajaxMalwareScan();
-        SucuriScanIntegrity::ajaxIntegrity();
-        SucuriScanIntegrity::ajaxIntegrityDiffUtility();
-        SucuriScanFirewall::auditlogsAjax();
-        SucuriScanFirewall::ipAccessAjax();
-        SucuriScanFirewall::blocklistAjax();
-        SucuriScanFirewall::deblocklistAjax();
-        SucuriScanFirewall::getSettingsAjax();
-        SucuriScanFirewall::clearCacheAjax();
-        SucuriScanFirewall::clearAutoCacheAjax();
-        SucuriScanSettingsScanner::cronjobsAjax();
-        SucuriScanSettingsPosthack::availableUpdatesAjax();
-        SucuriScanSettingsPosthack::getPluginsAjax();
-        SucuriScanSettingsPosthack::resetPasswordAjax();
-        SucuriScanSettingsPosthack::resetPluginAjax();
-        SucuriScanVulnerability::renderVulnerabilitiesPanelAjax();
-        SucuriScanVulnerability::vulnerabilitiesPluginAjax();
-        SucuriScanVulnerability::vulnerabilitiesThemeAjax();
-        sucuriscan_theme_toggle();
-        sucuriscan_dismiss_waf_prompt();
-        SucuriScanTwoFactor::totp_verify();
+        if ($action !== false) {
+            $handlers = sucuriscan_ajax_handlers();
+            $action = (string) $action;
+
+            if (isset($handlers[$action]) && is_callable($handlers[$action])) {
+                call_user_func($handlers[$action]);
+            }
+        }
     }
 
     wp_send_json(array('ok' => false, 'error' => 'invalid ajax action'), 200);
