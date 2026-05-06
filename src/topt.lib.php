@@ -1360,7 +1360,9 @@ class SucuriScanTwoFactor extends SucuriScan
 
         global $wpdb;
 
-        $per_page = SUCURISCAN_MAX_PAGINATION_BUTTONS;
+        // TODO: add a per-section selector so the admin can choose how many users to display per page.
+        $twofa_users_per_page = 10;
+        $per_page = $twofa_users_per_page;
         $page_number = SucuriScanTemplate::pageNumber();
         $offset = ($page_number - 1) * $per_page;
 
