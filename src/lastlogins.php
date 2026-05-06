@@ -321,11 +321,12 @@ function sucuriscan_get_logins($limit = 10, $offset = 0, $user_id = 0)
     $current_user = wp_get_current_user();
     $is_admin_user = (bool) SucuriScanPermissions::canManagePlugin();
 
-    // Collect all matching entries (most recent first) before applying offset/limit,
-    // so that total and pagination are based on the filtered count rather than the
-    // raw line count. The previous approach applied offset to all lines regardless
-    // of filters, causing non-admin users to see empty pages past page 1.
-    $matched = array();
+    // Single pass: count every matching entry for a correct total, but only
+    // accumulate entries that fall within the requested page window. This keeps
+    // pagination correct for filtered views (e.g. non-admin users) without
+    // holding the entire matched set in memory.
+    $total = 0;
+    $in_page = array();
 
     foreach (array_reverse($data_lines) as $line) {
         $last_login = @json_decode(trim($line), true);
@@ -342,15 +343,18 @@ function sucuriscan_get_logins($limit = 10, $offset = 0, $user_id = 0)
             continue;
         }
 
-        $matched[] = $last_login;
+        if ($total >= $offset && ($limit <= 0 || count($in_page) < $limit)) {
+            $in_page[] = $last_login;
+        }
+
+        $total++;
     }
 
-    $last_logins['total'] = count($matched);
+    $last_logins['total'] = $total;
 
     $user_ids = array();
-    $slice = array_slice($matched, $offset, $limit > 0 ? $limit : null);
 
-    foreach ($slice as $pos => $last_login) {
+    foreach ($in_page as $pos => $last_login) {
         $last_login['user_lastlogin_timestamp'] = strtotime($last_login['user_lastlogin']);
         $last_login['user_registered_timestamp'] = 0;
         $last_login['user_exists'] = false;
