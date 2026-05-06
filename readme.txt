@@ -4,7 +4,7 @@ Donate Link: https://sucuri.net/
 Tags: malware, security, firewall, scan, spam, virus, sucuri, protection, blocklist, detection, hardening, file integrity
 Requires at least: 3.6
 Tested up to: 6.9
-Stable tag: 2.7.2
+Stable tag: 2.7.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -259,6 +259,14 @@ This version removes the API communication service dependency on https://wordpre
 This version adds an option to refresh the malware scan results on demand, as well as several small bug fixes and improvements.
 
 == Changelog ==
+
+= 2.7.3 =
+* Fixed switch button for light/dark mode.
+* Added pagination for slowness on 2FA section.
+* Last logins pages loads only values that will be presented on each page.
+* Design tweaks on 2FA section.
+* Refactor central AJAX aggregation.
+* Fixed load of admin pages for multisite future support.
 
 = 2.7.2 =
 * Fix salt bug in the wp-config file.
