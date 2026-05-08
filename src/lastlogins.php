@@ -312,12 +312,6 @@ function sucuriscan_get_logins($limit = 10, $offset = 0, $user_id = 0)
         return SucuriScan::throwException(__('Invalid last-logins storage file', 'sucuri-scanner'));
     }
 
-    $data_lines = SucuriScanFileInfo::fileLines($datastore_filepath);
-
-    if (!$data_lines) {
-        return SucuriScan::throwException(__('No last-logins data is available', 'sucuri-scanner'));
-    }
-
     $current_user = wp_get_current_user();
     $is_admin_user = (bool) SucuriScanPermissions::canManagePlugin();
 
@@ -328,7 +322,7 @@ function sucuriscan_get_logins($limit = 10, $offset = 0, $user_id = 0)
     $total = 0;
     $in_page = array();
 
-    foreach (array_reverse($data_lines) as $line) {
+    foreach (SucuriScanFileInfo::fileLinesReverse($datastore_filepath) as $line) {
         $last_login = @json_decode(trim($line), true);
 
         if (!$last_login) {
