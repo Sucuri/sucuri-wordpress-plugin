@@ -1718,7 +1718,7 @@ class SucuriScanOption extends SucuriScanRequest
         $content = "<?php exit(0); ?>\n";
         $content .= @json_encode($options) . "\n";
 
-        return (bool) @file_put_contents($fpath, $content);
+        return (bool) @file_put_contents($fpath, $content, LOCK_EX);
     }
 
     /**
@@ -2139,11 +2139,12 @@ class SucuriScanOption extends SucuriScanRequest
         self::updateOption(':revproxy', $action_d);
 
         SucuriScanEvent::reportInfoEvent($message);
-        SucuriScanEvent::notifyEvent('plugin_change', $message);
 
         if ($silent) {
             return true;
         }
+
+        SucuriScanEvent::notifyEvent('plugin_change', $message);
 
         return SucuriScanInterface::info(
             sprintf(
@@ -2174,11 +2175,12 @@ class SucuriScanOption extends SucuriScanRequest
         self::updateOption(':addr_header', $header);
 
         SucuriScanEvent::reportInfoEvent($message);
-        SucuriScanEvent::notifyEvent('plugin_change', $message);
 
         if ($silent) {
             return true;
         }
+
+        SucuriScanEvent::notifyEvent('plugin_change', $message);
 
         return SucuriScanInterface::info(
             sprintf(
