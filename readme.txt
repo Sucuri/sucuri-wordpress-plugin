@@ -262,8 +262,8 @@ This version adds an option to refresh the malware scan results on demand, as we
 
 = 2.7.3 =
 * Fixed switch button for light/dark mode.
-* Added pagination for slowness on 2FA section.
-* Last logins pages loads only values that will be presented on each page.
+* Pagination to improve 2FA performance.
+* Last logins page now loads only entries needed for the current page.
 * Design tweaks on 2FA section.
 * Refactor central AJAX aggregation.
 * Fixed load of admin pages for multisite future support.
