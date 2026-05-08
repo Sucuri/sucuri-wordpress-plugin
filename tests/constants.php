@@ -11,10 +11,24 @@ define('BASE_DIR', __DIR__ . '/..');
 define('SUCURISCAN_URL', 'https://example.com/wp-content/plugins/sucuri-scanner');
 define('SUCURISCAN_PLUGIN_PATH', BASE_DIR);
 
-// TODO: Copy fixtures to a temporary location in the future,
-// so they can be mutated when needed.
+// Copy fixtures to a per-run temp directory so tests that write audit events
+// or cache entries cannot mutate the committed fixture files.
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
-define('SUCURI_DATA_STORAGE', BASE_DIR . '/tests/fixtures');
+$sucuriTmpDataStore = __DIR__ . '/tmp-' . getmypid();
+mkdir($sucuriTmpDataStore, 0755, true);
+foreach (glob(BASE_DIR . '/tests/fixtures/*') as $sucuriFixture) {
+    if (is_file($sucuriFixture)) {
+        copy($sucuriFixture, $sucuriTmpDataStore . '/' . basename($sucuriFixture));
+    }
+}
+register_shutdown_function(function () use ($sucuriTmpDataStore) {
+    foreach (glob($sucuriTmpDataStore . '/*') ?: [] as $f) {
+        @unlink($f); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+    }
+    @rmdir($sucuriTmpDataStore);
+});
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
+define('SUCURI_DATA_STORAGE', $sucuriTmpDataStore);
 define('ABSPATH', __DIR__ . '/../');
 if (!defined('WPINC')) {
     define('WPINC', 'wp-includes');

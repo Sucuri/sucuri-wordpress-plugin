@@ -28,5 +28,4 @@ exit(0);
 1727319790_1806:"Warning: admin, 1.2.3.4; Plugin activated: Activity Log (v2.11.0; test\/test.php)"
 1727147013_2892:"Warning: admin, 1.2.3.4; User account created; ID: 2; name: contributor; email: test@test.com
 1727833493_147:"Notice: 1.2.3.4; User authentication succeeded: admin"
-1727833493_147:"Notice: admin, 1.2.3.4; Post was updated; ID: 1; name: Hello world!"1778198639_9628:"Warning: 127.0.0.1; Firewall API key decryption failed: decryption failed; please re-save the key."
-1778198660_1451:"Warning: 127.0.0.1; Firewall API key decryption failed: decryption failed; please re-save the key."
+1727833493_147:"Notice: admin, 1.2.3.4; Post was updated; ID: 1; name: Hello world!"
