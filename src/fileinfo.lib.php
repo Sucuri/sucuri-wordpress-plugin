@@ -432,48 +432,20 @@ class SucuriScanFileInfo extends SucuriScan
     }
 
     /**
-     * Yields lines of a file in reverse order without loading it all into memory.
+     * Returns the lines of a file in reverse order.
      *
-     * Reads backward in fixed-size chunks via fseek/fread. Peak memory is bounded
-     * to roughly chunk_size + longest-line bytes regardless of file size.
-     *
-     * @param  string $filepath   Path to the file.
-     * @param  int    $chunk_size Bytes read per seek step.
-     * @return \Generator
+     * @param  string $filepath Path to the file.
+     * @return array            Lines of the file in reverse order, empty array on failure.
      */
-    public static function fileLinesReverse($filepath, $chunk_size = 8192)
+    public static function fileLinesReverse($filepath)
     {
-        $fp = @fopen($filepath, 'r'); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
-        if (!$fp) {
-            return;
+        $lines = @file($filepath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+
+        if (!$lines) {
+            return array();
         }
 
-        fseek($fp, 0, SEEK_END);
-        $pos = ftell($fp);
-        $carry = '';
-
-        while ($pos > 0) {
-            $read_size = min($chunk_size, $pos);
-            $pos -= $read_size;
-            fseek($fp, $pos);
-            $chunk = fread($fp, $read_size); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fread
-            // Prepend: the chunk sits BEFORE carry in the file.
-            $lines = explode("\n", $chunk . $carry);
-            // lines[0] may be an incomplete fragment that continues in the next
-            // (earlier) chunk; save it and yield the rest from back to front.
-            $carry = array_shift($lines);
-            for ($i = count($lines) - 1; $i >= 0; $i--) {
-                if ($lines[$i] !== '') {
-                    yield $lines[$i];
-                }
-            }
-        }
-
-        if ($carry !== '') {
-            yield $carry;
-        }
-
-        fclose($fp); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+        return array_reverse($lines);
     }
 
     /**
