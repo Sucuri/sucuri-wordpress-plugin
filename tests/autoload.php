@@ -38,65 +38,21 @@ if (!function_exists('wp_kses_post')) {
     }
 }
 
+// Patchwork must be loaded before any stub functions that Brain\Monkey
+// will need to mock, so its stream wrapper is active when those files
+// are require'd and can preprocess the function definitions.
+$patchworkPath = BASE_DIR . '/vendor/antecedent/patchwork/Patchwork.php';
+if (file_exists($patchworkPath)) {
+    require_once $patchworkPath;
+}
+
 if (file_exists(BASE_DIR . '/vendor/autoload.php')) {
     require BASE_DIR . '/vendor/autoload.php';
 }
 
-if (!function_exists('wp_create_nonce')) {
-    function wp_create_nonce($s)
-    {
-        return 'nonce';
-    }
-}
-
-if (!function_exists('admin_url')) {
-    function admin_url($path = '')
-    {
-        return 'https://example.com/wp-admin/' . ltrim($path, '/');
-    }
-}
-
-if (!function_exists('network_admin_url')) {
-    function network_admin_url($path = '')
-    {
-        return 'https://example.com/wp-admin/network/' . ltrim($path, '/');
-    }
-}
-
-
-if (!function_exists('apply_filters')) {
-    function apply_filters($hook, $value)
-    {
-        return $value;
-    }
-}
-
-if (!function_exists('current_user_can')) {
-    /**
-     * Test stub for current_user_can. Accepts optional cap for compatibility.
-     *
-     * @param mixed $cap Optional capability name (ignored in tests).
-     * @return bool Always true in test context.
-     */
-    function current_user_can($cap = null)
-    {
-        return true;
-    }
-}
-
-if (!function_exists('wp_doing_ajax')) {
-    function wp_doing_ajax()
-    {
-        return false;
-    }
-}
-
-if (!function_exists('wp_get_current_user')) {
-    function wp_get_current_user()
-    {
-        return (object) ['user_login' => 'admin', 'user_email' => 'admin@example.com', 'display_name' => 'Admin'];
-    }
-}
+// WordPress stubs in a separate file so Patchwork's stream wrapper
+// preprocesses them, allowing Brain\Monkey to mock them via Functions\when().
+require __DIR__ . '/wp-stubs.php';
 
 require BASE_DIR . '/src/base.lib.php';
 require BASE_DIR . '/src/request.lib.php';
