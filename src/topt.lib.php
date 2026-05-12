@@ -1358,8 +1358,6 @@ class SucuriScanTwoFactor extends SucuriScan
             return '';
         }
 
-        global $wpdb;
-
         // TODO: add a per-section selector so the admin can choose how many users to display per page.
         $twofa_users_per_page = 10;
         $per_page = $twofa_users_per_page;
@@ -1378,27 +1376,42 @@ class SucuriScanTwoFactor extends SucuriScan
         $total_users = (int) $dbquery->get_total();
         $page_users  = $dbquery->get_results();
 
-        // Single query: count of all users with 2FA activated (for the status badge).
-        // JOIN against users table excludes orphaned usermeta rows left by deleted users.
-        $activated_count = (int) $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(DISTINCT um.user_id) FROM {$wpdb->usermeta} um INNER JOIN {$wpdb->users} u ON u.ID = um.user_id WHERE um.meta_key = %s AND um.meta_value != ''",
-            self::SECRET_META_KEY
+        // Count all users with 2FA activated (for the status badge).
+        // WP_User_Query joins the users table, naturally excluding orphaned usermeta rows.
+        $count_query = new WP_User_Query(array(
+            'meta_query'  => array(
+                array(
+                    'key'     => self::SECRET_META_KEY,
+                    'value'   => '',
+                    'compare' => '!=',
+                ),
+            ),
+            'fields'      => 'ID',
+            'number'      => 1,
+            'count_total' => true,
         ));
+        $activated_count = (int) $count_query->get_total();
 
-        // Single query: which of the current page's users have 2FA active (eliminates N+1).
+        // Determine which of the current page's users have 2FA active (eliminates N+1).
         $activated_set = array();
 
         if (!empty($page_users)) {
             $page_ids = array_map(function ($u) { return (int) $u->ID; }, $page_users);
-            $placeholders = implode(',', array_fill(0, count($page_ids), '%d'));
-            $args = array_merge(array(self::SECRET_META_KEY), $page_ids);
-            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
-            $rows_with_key = $wpdb->get_col($wpdb->prepare(
-                "SELECT user_id FROM {$wpdb->usermeta} WHERE meta_key = %s AND meta_value != '' AND user_id IN ({$placeholders})",
-                $args
+
+            $active_query = new WP_User_Query(array(
+                'include'    => $page_ids,
+                'meta_query' => array(
+                    array(
+                        'key'     => self::SECRET_META_KEY,
+                        'value'   => '',
+                        'compare' => '!=',
+                    ),
+                ),
+                'fields' => 'ID',
+                'number' => count($page_ids),
             ));
 
-            foreach ($rows_with_key as $uid) {
+            foreach ($active_query->get_results() as $uid) {
                 $activated_set[(int) $uid] = true;
             }
         }
