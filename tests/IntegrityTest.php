@@ -75,6 +75,72 @@ final class IntegrityTest extends TestCase
         parent::tearDown();
     }
 
+    private function callIsFilepathSafe(string $path): bool
+    {
+        $ref = new ReflectionClass('SucuriScanIntegrity');
+        $method = $ref->getMethod('isFilepathSafe');
+        $method->setAccessible(true);
+        return (bool) $method->invoke(null, $path);
+    }
+
+    /** @dataProvider traversalPathProvider */
+    public function testTraversalPathsAreBlocked(string $path): void
+    {
+        $this->assertFalse($this->callIsFilepathSafe($path));
+    }
+
+    public function traversalPathProvider(): array
+    {
+        return [
+            'dot-dot-slash prefix'          => ['../../wp-config.php'],
+            'dot-dot-slash in middle'        => ['wp-includes/../../../etc/passwd'],
+            'single dot-dot-slash'           => ['../wp-config.php'],
+            'dot-slash prefix'               => ['./wp-config.php'],
+            'unix absolute path'             => ['/etc/passwd'],
+            'unix absolute nested'           => ['/var/www/html/outside.php'],
+            'windows backslash absolute'     => ['\\windows\\system32\\config'],
+            'windows drive letter'           => ['C:\\windows\\system32\\config'],
+            'empty string'                   => [''],
+        ];
+    }
+
+    /** @dataProvider safePathProvider */
+    public function testSafePathsAreAllowed(string $path): void
+    {
+        $this->assertTrue($this->callIsFilepathSafe($path));
+    }
+
+    public function safePathProvider(): array
+    {
+        return [
+            'simple filename at root'        => ['wp-config.php'],
+            'nested wp-includes path'        => ['wp-includes/post.php'],
+            'deeply nested plugin path'      => ['wp-content/plugins/some-plugin/file.php'],
+            'file that exists in ABSPATH'    => ['sucuri.php'],
+        ];
+    }
+
+    public function testSymlinkEscapeOutsideAbspathIsBlocked(): void
+    {
+        $outside = tempnam(sys_get_temp_dir(), 'sucuri_test_');
+        file_put_contents($outside, 'outside content');
+
+        $linkName = 'sucuri_test_symlink_' . uniqid() . '.php';
+        $linkPath = rtrim((string) realpath(ABSPATH), '/\\') . DIRECTORY_SEPARATOR . $linkName;
+
+        if (!@symlink($outside, $linkPath)) {
+            @unlink($outside);
+            $this->markTestSkipped('Cannot create symlinks in this environment.');
+        }
+
+        try {
+            $this->assertFalse($this->callIsFilepathSafe($linkName));
+        } finally {
+            @unlink($linkPath);
+            @unlink($outside);
+        }
+    }
+
     private function callIgnoreIntegrityFilepath(string $path): bool
     {
         $ref = new ReflectionClass('SucuriScanIntegrity');

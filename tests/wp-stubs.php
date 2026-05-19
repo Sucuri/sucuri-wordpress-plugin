@@ -88,3 +88,25 @@ if (!function_exists('is_multisite')) {
         return false;
     }
 }
+
+if (!function_exists('validate_file')) {
+    function validate_file($file, $allowed_files = array())
+    {
+        if (!is_scalar($file) || '' === $file) {
+            return 0;
+        }
+        if ('../' === $file || preg_match('|\.\./|', $file)) {
+            return 1;
+        }
+        if (strpos($file, './') === 0) {
+            return 2;
+        }
+        if (':' === substr($file, 1, 1)) {
+            return 3;
+        }
+        if (!empty($allowed_files) && !in_array($file, $allowed_files, true)) {
+            return 4;
+        }
+        return 0;
+    }
+}

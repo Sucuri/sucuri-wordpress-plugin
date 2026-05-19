@@ -91,6 +91,39 @@ class SucuriScanIntegrity
     }
 
     /**
+     * Returns true when a file path is safe to use in integrity file operations.
+     *
+     * Blocks path traversal sequences, Unix/Windows absolute paths, and any
+     * already-resolved path that escapes ABSPATH (e.g. via a symlink).
+     *
+     * @param  string $file_path Relative path as supplied by the POST request.
+     * @return bool
+     */
+    private static function isFilepathSafe(string $file_path): bool
+    {
+        if ($file_path === '') {
+            return false;
+        }
+
+        /* reject '../', './' prefix, and Windows drive letters (e.g. C:) */
+        if (validate_file($file_path) !== 0) {
+            return false;
+        }
+
+        /* reject Unix/Windows absolute paths — validate_file does not cover '/' */
+        if ($file_path[0] === '/' || $file_path[0] === '\\') {
+            return false;
+        }
+
+        /* for files that already exist, confirm the resolved path stays inside ABSPATH */
+        $real_base = realpath(ABSPATH);
+        $real_path = realpath(ABSPATH . '/' . $file_path);
+
+        return $real_path === false
+            || strpos($real_path, $real_base . DIRECTORY_SEPARATOR) === 0;
+    }
+
+    /**
      * Mark as fixed, restore or delete flagged integrity files.
      *
      * Process the HTTP requests sent by the form submissions originated in the
@@ -163,6 +196,10 @@ class SucuriScanIntegrity
             }
 
             $full_path = ABSPATH . '/' . $file_path;
+
+            if (!self::isFilepathSafe($file_path)) {
+                continue;
+            }
 
             if ($action === 'fixed' && ($status_type === 'added' || $status_type === 'removed' || $status_type === 'modified')) {
                 $cache_key = md5($file_path);
