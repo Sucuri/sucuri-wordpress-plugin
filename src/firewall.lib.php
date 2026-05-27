@@ -36,6 +36,124 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
 class SucuriScanFirewall extends SucuriScanAPI
 {
     /**
+     * Sucuri Firewall CDN IP ranges — last-resort fallback.
+     *
+     * Used only when the WAF API is unreachable AND the local cache is empty.
+     * Do not treat these as authoritative; the live list is fetched via fetchProxyIPs().
+     *
+     * @return array List of IPv4 CIDR ranges.
+     */
+    public static function defaultProxyIPs()
+    {
+        return array(
+            '192.88.134.0/23',
+            '185.93.228.0/22',
+            '66.248.200.0/22',
+            '208.109.0.0/22',
+        );
+    }
+
+    /**
+     * Check whether a single string is a valid IPv4 address or CIDR range.
+     *
+     * @param  string $entry The value to test.
+     * @return bool          TRUE if $entry is a plain IPv4 or a valid CIDR.
+     */
+    private static function isValidProxyIPEntry($entry)
+    {
+        if (SucuriScan::isValidIP($entry)) {
+            return true;
+        }
+
+        if (strpos($entry, '/') !== false) {
+            list($subnet, $prefix) = explode('/', $entry, 2);
+            $prefix = (int) $prefix;
+            return SucuriScan::isValidIP($subnet) && $prefix >= 0 && $prefix <= 32;
+        }
+
+        return false;
+    }
+
+    /**
+     * Retrieve the current Sucuri Firewall CDN IP ranges from the WAF API.
+     *
+     * Sends a GET request to the WAF API with action "get_ips".  The response
+     * is expected to carry a list of IPv4 addresses or CIDR ranges under
+     * output.ips (object form) or directly as output (array form).
+     *
+     * Returns an array of valid IPv4/CIDR strings on success, or FALSE when
+     * the API call fails, the API key is missing, or the response contains no
+     * usable addresses.
+     *
+     * @return array|false List of CIDR strings, or FALSE on failure.
+     */
+    public static function fetchProxyIPs()
+    {
+        $response = self::apiCallFirewall('GET', array('a' => 'get_ips'));
+
+        if (!self::handleResponse($response)) {
+            return false;
+        }
+
+        $raw = isset($response['output']) ? $response['output'] : array();
+
+        /* Handle {"output": {"ips": [...]}} */
+        if (is_array($raw) && isset($raw['ips']) && is_array($raw['ips'])) {
+            $raw = $raw['ips'];
+        }
+
+        if (!is_array($raw)) {
+            return false;
+        }
+
+        $valid = array();
+
+        foreach ($raw as $entry) {
+            if (is_string($entry)) {
+                $entry = trim($entry);
+
+                if (self::isValidProxyIPEntry($entry)) {
+                    $valid[] = $entry;
+                }
+            }
+        }
+
+        return empty($valid) ? false : $valid;
+    }
+
+    /**
+     * Refresh the cached Sucuri Firewall proxy IP list.
+     *
+     * Tries the WAF API first.  On failure, seeds the cache with the hardcoded
+     * fallback list only when the cache is currently empty (so a temporary API
+     * outage does not overwrite a previously good list).
+     *
+     * Only runs when reverse-proxy support is enabled.
+     *
+     * @return void
+     */
+    public static function refreshProxyIPCache()
+    {
+        if (!SucuriScan::supportReverseProxy()) {
+            return;
+        }
+
+        $ips = self::fetchProxyIPs();
+
+        if ($ips !== false) {
+            SucuriScanOption::updateOption(':trusted_proxy_ips_fetched', implode("\n", $ips));
+            return;
+        }
+
+        /* API unavailable — seed the cache with the hardcoded fallback only
+         * when there is nothing there yet (avoids clobbering a stale-but-valid
+         * list from a previous successful fetch). */
+        if (!SucuriScanOption::getOption(':trusted_proxy_ips_fetched')) {
+            SucuriScanOption::updateOption(':trusted_proxy_ips_fetched', implode("\n", self::defaultProxyIPs()));
+        }
+    }
+
+    /**
      * Check whether the firewall API key is valid or not.
      *
      * @param  string $api_key      The firewall API key.
@@ -161,6 +279,7 @@ class SucuriScanFirewall extends SucuriScanAPI
                     SucuriScanInterface::info(__('Firewall API key was successfully saved', 'sucuri-scanner'));
                     SucuriScanOption::setRevProxy('enable');
                     SucuriScanOption::setAddrHeader('HTTP_X_SUCURI_CLIENTIP');
+                    self::refreshProxyIPCache();
                 } else {
                     SucuriScanInterface::error('Invalid firewall API key');
                 }

@@ -106,6 +106,8 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_plugin_version' => '0.0',
             'sucuriscan_prettify_mails' => 'disabled',
             'sucuriscan_revproxy' => 'disabled',
+            'sucuriscan_trusted_proxy_ips' => '',
+            'sucuriscan_trusted_proxy_ips_fetched' => '',
             'sucuriscan_runtime' => 0,
             'sucuriscan_selfhosting_fpath' => '',
             'sucuriscan_selfhosting_monitor' => 'disabled',

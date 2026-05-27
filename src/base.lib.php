@@ -411,6 +411,7 @@ class SucuriScan
     {
         SucuriScanEvent::filesystemScan();
         SucuriScanEvent::reportSiteVersion();
+        SucuriScanFirewall::refreshProxyIPCache();
         SucuriScanIntegrity::getIntegrityStatus(true);
         SucuriScanSettingsPosthack::availableUpdatesContent(true);
         SucuriScanEvent::sendLogsFromQueue(); /* blocking; keep at the end */
@@ -493,6 +494,13 @@ class SucuriScan
     /**
      * Retrieve the real ip address of the user in the current request.
      *
+     * Proxy headers (anything other than REMOTE_ADDR) are only trusted when the
+     * TCP peer that opened the connection is a known proxy.  The TCP peer is read
+     * from SUCURIREAL_REMOTE_ADDR (set by SucuriScanInterface::initialize() before
+     * it overwrites REMOTE_ADDR) or from REMOTE_ADDR itself when initialize() has
+     * not yet run.  This prevents unauthenticated clients from spoofing their IP by
+     * sending a forged X-Sucuri-ClientIP (or similar) header.
+     *
      * @param  bool $with_header Return HTTP header where the IP address was found.
      * @return string            Real IP address of the user in the current request.
      */
@@ -502,7 +510,34 @@ class SucuriScan
         $header_used = 'unknown';
         $headers = self::orderedHttpHeaders();
 
+        /*
+         * Determine the original TCP peer.  initialize() saves it to
+         * SUCURIREAL_REMOTE_ADDR before overwriting REMOTE_ADDR, so use that
+         * when available.  Before initialize() runs, REMOTE_ADDR is still the
+         * raw TCP peer.
+         */
+        $tcp_peer = SucuriScanRequest::server('SUCURIREAL_REMOTE_ADDR');
+        if (!$tcp_peer || !self::isValidIP($tcp_peer)) {
+            $tcp_peer = SucuriScanRequest::server('REMOTE_ADDR');
+        }
+
+        $proxy_trusted = self::isTrustedProxy($tcp_peer);
+
         foreach ($headers as $header) {
+            if ($header === 'REMOTE_ADDR') {
+                /* Always fall back to the unmodified TCP peer. */
+                if (self::isValidIP($tcp_peer)) {
+                    $remote_addr = $tcp_peer;
+                    $header_used = 'REMOTE_ADDR';
+                }
+                break;
+            }
+
+            if (!$proxy_trusted) {
+                /* TCP peer is not a trusted proxy — skip all forwarded headers. */
+                continue;
+            }
+
             $possible_addr = SucuriScanRequest::server($header);
 
             if (self::isValidIP($possible_addr)) {
@@ -763,6 +798,91 @@ class SucuriScan
 
         if (preg_match('/^([0-9\.]{7,15})\/(8|16|24)$/', $remote_addr, $match)) {
             return self::isValidIP($match[1]);
+        }
+
+        return false;
+    }
+
+    /**
+     * Check whether an IPv4 address falls within a CIDR range.
+     *
+     * Supports any prefix length (0-32), not just /8, /16, /24.
+     *
+     * @param  string $ip   IPv4 address to test.
+     * @param  string $cidr CIDR range, e.g. "192.88.134.0/23".
+     * @return bool         TRUE if $ip is within $cidr, FALSE otherwise.
+     */
+    public static function isIPInCIDR($ip, $cidr)
+    {
+        if (!is_string($cidr) || strpos($cidr, '/') === false) {
+            return false;
+        }
+
+        list($subnet, $prefix) = explode('/', $cidr, 2);
+        $prefix = (int) $prefix;
+
+        if (!self::isValidIP($subnet) || !self::isValidIP($ip)) {
+            return false;
+        }
+
+        if ($prefix < 0 || $prefix > 32) {
+            return false;
+        }
+
+        $ip_long     = ip2long($ip);
+        $subnet_long = ip2long($subnet);
+
+        if ($ip_long === false || $subnet_long === false) {
+            return false;
+        }
+
+        /* A /32 mask covers exactly one address; /0 covers all. */
+        $mask = $prefix === 0 ? 0 : (~0 << (32 - $prefix));
+
+        return ($ip_long & $mask) === ($subnet_long & $mask);
+    }
+
+    /**
+     * Check whether a given IP address is an allowed reverse-proxy source.
+     *
+     * When the admin has configured `trusted_proxy_ips`, only requests whose
+     * TCP peer (REMOTE_ADDR before any override) appears in that list have their
+     * proxy headers trusted.  An empty list keeps the pre-existing behaviour of
+     * trusting all sources (backward compatibility for sites that have not yet
+     * configured the option).
+     *
+     * @param  string $ip The TCP peer IP to test.
+     * @return bool       TRUE if proxy headers from this peer should be trusted.
+     */
+    public static function isTrustedProxy($ip)
+    {
+        /* Admin-configured list takes precedence over the auto-fetched cache. */
+        $list = SucuriScanOption::getOption(':trusted_proxy_ips');
+
+        /* Fall back to the list last fetched from the Sucuri WAF API. */
+        if (!$list) {
+            $list = SucuriScanOption::getOption(':trusted_proxy_ips_fetched');
+        }
+
+        /* Neither list is configured — preserve historic behaviour (trust all). */
+        if (!$list) {
+            return true;
+        }
+
+        $entries = array_filter(array_map('trim', explode("\n", $list)));
+
+        if (empty($entries)) {
+            return true;
+        }
+
+        foreach ($entries as $entry) {
+            if ($entry === $ip) {
+                return true;
+            }
+
+            if (self::isIPInCIDR($ip, $entry)) {
+                return true;
+            }
         }
 
         return false;
