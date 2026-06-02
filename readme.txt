@@ -263,8 +263,6 @@ This version adds an option to refresh the malware scan results on demand, as we
 * Refactor AJAX handler to an explicit dispatch map for improved security and efficiency.
 * Improve 2FA section with more UI clarity.
 * Make light-mode default when no preference is defined. Correct inverted dark/light mode icons.
-* Fix improper variable handling for non-English sites (wp-config.php insertion).
-* Add one-time migration to heal SUCURI_PLUG_* constants written outside PHP context.
 * Fix i18n regression in 2FA status and setup templates.
 * Fix duplicate CSS property declarations.
 
