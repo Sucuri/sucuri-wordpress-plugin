@@ -481,6 +481,7 @@ function sucuriscan_ajax()
 
             if (isset($handlers[$action]) && is_callable($handlers[$action])) {
                 call_user_func($handlers[$action]);
+                return;
             }
         }
     }

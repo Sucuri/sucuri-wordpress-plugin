@@ -9,7 +9,7 @@
             const qrWrapper = $('#sucuriscan-topt-qr');
             const qr = qrcode(0, 'M');
 
-            qr.addData("%%SUCURI.topt_url%%");
+            qr.addData("%%%SUCURI.topt_url%%%");
             qr.make();
 
             qrWrapper.html(qr.createImgTag(6, 4));
@@ -35,6 +35,7 @@
 
                     $('#sucuriscan-topt-qr').hide();
                     $('#sucuriscan-totp-form').hide();
+                    $('.sucuriscan-2fa-secret').hide();
                     $('#two-factor-info-deactivated').hide();
                     $('#two-factor-info-activated').show();
 

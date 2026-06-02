@@ -1367,12 +1367,11 @@ class SucuriScanTwoFactor extends SucuriScan
             foreach ($users as $user) {
                 $uid = (int) $user->ID;
                 $secret = self::get_user_totp_key($uid);
-                $is_enforced = self::is_enforced_for_user($uid);
 
                 if (!empty($secret)) {
                     $status = __('Activated', 'sucuri-scanner');
                     $activated_count++;
-                } elseif ($is_enforced) {
+                } elseif (self::is_enforced_for_user($uid)) {
                     $status = __('Enforced / not active', 'sucuri-scanner');
                 } else {
                     $status = __('Deactivated', 'sucuri-scanner');
