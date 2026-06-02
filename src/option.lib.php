@@ -754,9 +754,100 @@ class SucuriScanOption extends SucuriScanRequest
     }
 
     /**
-     * TODO hook regeneration to an admin action and provide a UI button for manual rotation,
-     * with a warning about breaking changes if the plugin is active on multiple sites without network support.
+     * Determine whether a byte offset within $content falls inside a PHP block.
+     *
+     * Uses token_get_all() so it correctly accounts for nested open/close tags.
+     *
+     * @param string $content Full file content.
+     * @param int    $offset  Byte offset to test.
+     * @return bool
      */
+    private static function isOffsetInsidePhp($content, $offset)
+    {
+        $tokens = @token_get_all($content);
+        $pos = 0;
+        $in_php = false;
+
+        foreach ($tokens as $token) {
+            $text = is_array($token) ? $token[1] : $token;
+            $len = strlen($text);
+
+            // Return the pre-token state: if the offset falls inside this token,
+            // the state change it triggers has not yet taken effect at that position.
+            if ($pos + $len > $offset) {
+                return $in_php;
+            }
+
+            if (is_array($token)) {
+                if ($token[0] === T_OPEN_TAG || $token[0] === T_OPEN_TAG_WITH_ECHO) {
+                    $in_php = true;
+                } elseif ($token[0] === T_CLOSE_TAG) {
+                    $in_php = false;
+                }
+            }
+
+            $pos += $len;
+        }
+
+        return $in_php;
+    }
+
+    /**
+     * Returns the byte offset of the last T_CLOSE_TAG token that begins strictly
+     * before $before_offset, or null if no such token exists.
+     *
+     * Used to find an existing PHP close tag so inserts can be placed just before
+     * it, keeping the new code inside the preceding PHP block.
+     *
+     * @param string $content       Full file content.
+     * @param int    $before_offset Upper bound (exclusive).
+     * @return int|null
+     */
+    private static function lastPhpCloseTagBefore($content, $before_offset)
+    {
+        $tokens = @token_get_all($content);
+        $pos = 0;
+        $last_close = null;
+
+        foreach ($tokens as $token) {
+            if ($pos >= $before_offset) {
+                break;
+            }
+            $text = is_array($token) ? $token[1] : $token;
+            if (is_array($token) && $token[0] === T_CLOSE_TAG) {
+                $last_close = $pos;
+            }
+            $pos += strlen($text);
+        }
+
+        return $last_close;
+    }
+
+    /**
+     * Return true when any SUCURI_PLUG_KEY or SUCURI_PLUG_SALT define() line
+     * exists outside a PHP block in $content.
+     *
+     * @param string $content Full file content.
+     * @return bool
+     */
+    private static function hasPluginSaltOutsidePhp($content)
+    {
+        preg_match_all(
+            '/^[^\n]*define\s*\(\s*[\'"]SUCURI_PLUG_(?:KEY|SALT)[\'"][^\n]*/m',
+            $content,
+            $matches,
+            PREG_OFFSET_CAPTURE
+        );
+
+        foreach ($matches[0] as $match) {
+            if (!self::isOffsetInsidePhp($content, $match[1])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 
     /**
      * One-time migration: detect and fix SUCURI_PLUG_* constants that were written
@@ -781,6 +872,17 @@ class SucuriScanOption extends SucuriScanRequest
      */
     public static function maybeHealMisplacedPluginSalt()
     {
+        if (function_exists('wp_doing_ajax') && wp_doing_ajax()) { 
+            return; 
+        }
+        
+        if (function_exists('wp_doing_cron') && wp_doing_cron()) {
+            return; 
+        }
+        if (!SucuriScanPermissions::canManagePlugin()) {
+            return;
+        }
+
         // Already processed — skip immediately (option is cached by WordPress).
         if (get_option('sucuriscan_plug_salt_position_healed')) {
             return;
@@ -793,8 +895,9 @@ class SucuriScanOption extends SucuriScanRequest
             return;
         }
 
-        // Constants are not defined.  Check whether their define() lines exist
-        // in wp-config.php at all — if they do, they must be outside PHP context.
+        // Use token-based detection to find define() lines placed outside PHP context.
+        // This covers full misplacement (both defines outside) and mixed states
+        // (one define inside, one outside).
         $config_path = self::getConfigPath();
 
         if (!$config_path || !file_exists($config_path)) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_exists
@@ -803,19 +906,15 @@ class SucuriScanOption extends SucuriScanRequest
             return;
         }
 
-        $content  = (string) file_get_contents($config_path); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-        $has_key  = (bool) preg_match('/^\s*define\s*\(\s*[\'"]SUCURI_PLUG_KEY[\'"]/m', $content);
-        $has_salt = (bool) preg_match('/^\s*define\s*\(\s*[\'"]SUCURI_PLUG_SALT[\'"]/m', $content);
+        $content = (string) file_get_contents($config_path); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 
-        if (!$has_key && !$has_salt) {
-            // Lines are not in the file — no misplacement to fix.
+        if (!self::hasPluginSaltOutsidePhp($content)) {
+            // All define() lines are inside PHP (or absent) — nothing to fix.
             update_option('sucuriscan_plug_salt_position_healed', true, false);
             return;
         }
 
-        // The define() lines are present in the file but the constants are not
-        // loaded into PHP — they are outside a PHP block and being emitted as
-        // plain HTML on every page.  Remove and rewrite in the correct position.
+        // At least one define() line is outside PHP context.  Remove and rewrite.
         $result = self::regeneratePluginSaltRaw();
 
         if ($result !== false) {
@@ -843,13 +942,17 @@ class SucuriScanOption extends SucuriScanRequest
             return false;
         }
 
-        self::removePluginSaltFromConfig();
+        if (!self::removePluginSaltFromConfig()) {
+            return false;
+        }
 
         $auth_raw = wp_salt('auth');
         $plug_key = hash_hmac('sha256', 'sucuri_plug_key_v1', $auth_raw);
         $plug_salt = hash_hmac('sha256', 'sucuri_plug_salt_v1', $auth_raw);
 
-        self::writePluginSaltToConfig($plug_key, $plug_salt);
+        if (!self::writePluginSaltToConfig($plug_key, $plug_salt)) {
+            return false;
+        }
 
         return $plug_key . $plug_salt;
     }
@@ -892,9 +995,13 @@ class SucuriScanOption extends SucuriScanRequest
         }
 
         if ($has_key || $has_salt) {
-            // Partial/broken state — one constant is missing but we cannot
-            // safely re-write the block without duplicating the existing one.
-            return false;
+            // Partial state: strip the orphaned define(s) in-memory so a
+            // complete, correct block can be written atomically below.
+            $content = (string) preg_replace(
+                '/^[^\n]*define\s*\(\s*[\'"]SUCURI_PLUG_(?:KEY|SALT)[\'"][^\n]*\n?/m',
+                '',
+                $content
+            );
         }
 
         $block = sprintf(
@@ -908,60 +1015,54 @@ class SucuriScanOption extends SucuriScanRequest
         $stop_pos = strpos($content, $stop_marker);
 
         if ($stop_pos !== false) {
-            $new_content = substr($content, 0, $stop_pos)
-                . $block
-                . substr($content, $stop_pos);
+            if (self::isOffsetInsidePhp($content, $stop_pos)) {
+                $new_content = substr($content, 0, $stop_pos)
+                    . $block
+                    . substr($content, $stop_pos);
+            } else {
+                // Stop marker is outside PHP — insert before the preceding close tag.
+                $close_pos = self::lastPhpCloseTagBefore($content, $stop_pos);
+                if ($close_pos === null) {
+                    return false;
+                }
+                $new_content = substr($content, 0, $close_pos)
+                    . $block
+                    . substr($content, $close_pos);
+            }
         } else {
-            // Fallback: use line-based insertion.
-            // Prefer the ABSPATH guard over the wp-settings.php include because
-            // the ABSPATH guard is universal (never translated) and always appears
-            // just after the site-specific configuration section — exactly the
-            // same logical position as the English stop-editing comment.
-            // The wp-settings.php include is kept as a secondary target, and a
-            // final safety-net strips any trailing PHP close-tag so the block
-            // is never placed outside PHP context.
+            // Fallback: insert before the ABSPATH guard (language-independent,
+            // always in the user-config section, never after the bootstrap code).
             $lines = explode("\n", $content);
-            $n = count($lines);
-            $insert_at = $n; // Default: end of file.
+            $insert_at = null;
+            $insert_offset = null;
+            $cum_len = 0;
 
-            // 1. Look for the ABSPATH guard (language-independent).
             foreach ($lines as $i => $line) {
                 if (preg_match('/if\s*\(\s*!?\s*defined\s*\(\s*[\'"]ABSPATH[\'"]/i', $line)) {
                     $insert_at = $i;
+                    $insert_offset = $cum_len;
                     break;
                 }
+                $cum_len += strlen($line) + 1; // +1 for the "\n" separator
             }
 
-            // 2. Fall back to the wp-settings.php inclusion line.
-            if ($insert_at === $n) {
-                foreach ($lines as $i => $line) {
-                    if (preg_match('/require|include/i', $line)
-                        && strpos($line, 'wp-settings.php') !== false
-                    ) {
-                        $insert_at = $i;
-                        break;
-                    }
+            if ($insert_at === null) {
+                return false; // No safe insertion point found.
+            }
+
+            if (self::isOffsetInsidePhp($content, $insert_offset)) {
+                array_splice($lines, $insert_at, 0, array(rtrim($block)));
+                $new_content = implode("\n", $lines);
+            } else {
+                // Insertion point is outside PHP — insert before the preceding close tag.
+                $close_pos = self::lastPhpCloseTagBefore($content, $insert_offset);
+                if ($close_pos === null) {
+                    return false;
                 }
+                $new_content = substr($content, 0, $close_pos)
+                    . $block
+                    . substr($content, $close_pos);
             }
-
-            // 3. Last-resort safety net: if we are about to append at the very
-            // end of the file, walk back past any trailing blank lines and PHP
-            // close tags so the block is always inside PHP context.
-            if ($insert_at === $n) {
-                for ($j = $n - 1; $j >= 0; $j--) {
-                    $trimmed = trim($lines[$j]);
-                    if ($trimmed === '') {
-                        continue;
-                    }
-                    if ($trimmed === '?>') {
-                        $insert_at = $j; // Insert before the closing tag.
-                    }
-                    break;
-                }
-            }
-
-            array_splice($lines, $insert_at, 0, array(rtrim($block)));
-            $new_content = implode("\n", $lines);
         }
 
         return (bool) file_put_contents($config_path, $new_content, LOCK_EX); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
@@ -1188,6 +1289,19 @@ class SucuriScanOption extends SucuriScanRequest
     }
 
     /**
+     * Return the option name for the no-salt-encryption flag.
+     *
+     * When this flag is set the WAF key is stored as plaintext in the DB
+     * because wp-config.php could not be written on the initial save.
+     *
+     * @return string
+     */
+    private static function noSaltEncryptionOption()
+    {
+        return 'sucuriscan_no_salt_encryption';
+    }
+
+    /**
      * Set a decryption error flag for the WAF key.
      *
      * @param string $message Error detail for logging.
@@ -1274,6 +1388,10 @@ class SucuriScanOption extends SucuriScanRequest
         $option = self::varPrefix($option);
         $storage = self::getSecretStorageName($option);
         $encrypted_storage = self::getSecretEncryptedStorageName($option);
+
+        if (get_option(self::noSaltEncryptionOption(), false)) {
+            return get_option($storage, null);
+        }
 
         $encrypted_payload = get_option($encrypted_storage, null);
         if ($encrypted_payload !== null) {
@@ -1389,6 +1507,7 @@ class SucuriScanOption extends SucuriScanRequest
                 $encrypted_result = update_option($encrypted_storage, $payload, false);
                 if ($encrypted_result) {
                     delete_option($storage);
+                    delete_option(self::noSaltEncryptionOption());
                     self::clearWafKeyDecryptError();
                     return true;
                 }
@@ -1397,6 +1516,9 @@ class SucuriScanOption extends SucuriScanRequest
 
         delete_option($encrypted_storage);
         $result = update_option($storage, $value, false);
+        if ($result) {
+            update_option(self::noSaltEncryptionOption(), true, false);
+        }
         self::clearWafKeyDecryptError();
         return $result;
     }
@@ -1423,6 +1545,7 @@ class SucuriScanOption extends SucuriScanRequest
         // Remove legacy storage if still present.
         delete_option($option);
 
+        delete_option(self::noSaltEncryptionOption());
         self::clearWafKeyDecryptError();
 
         return $deleted;

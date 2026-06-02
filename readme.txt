@@ -4,7 +4,7 @@ Donate Link: https://sucuri.net/
 Tags: malware, security, firewall, scan, spam, virus, sucuri, protection, blocklist, detection, hardening, file integrity
 Requires at least: 3.6
 Tested up to: 6.9
-Stable tag: 2.7.1
+Stable tag: 2.7.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -259,10 +259,17 @@ This version removes the API communication service dependency on https://wordpre
 This version adds an option to refresh the malware scan results on demand, as well as several small bug fixes and improvements.
 
 == Changelog ==
-= 2.7.2 =
+= 2.7.3 =
+* Refactor AJAX handler to an explicit dispatch map for improved security and efficiency.
 * Improve 2FA section with more UI clarity.
-* Make light-mode default, in case it is not defined. Corrected inverted icons.
-* Correct improper variable handling for non-english sites.
+* Make light-mode default when no preference is defined. Correct inverted dark/light mode icons.
+* Fix improper variable handling for non-English sites (wp-config.php insertion).
+* Add one-time migration to heal SUCURI_PLUG_* constants written outside PHP context.
+* Fix i18n regression in 2FA status and setup templates.
+* Fix duplicate CSS property declarations.
+
+= 2.7.2 =
+* Fix salt bug in the wp-config file.
 
 = 2.7.1 =
 * Update on the encryption process for the WAF API key due to problems reported on some users.
