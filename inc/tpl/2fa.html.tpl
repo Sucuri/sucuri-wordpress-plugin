@@ -68,7 +68,6 @@
 
 <div id="sucuriscan-tabs-headers">
     <div class="sucuriscan-panel">
-        <h3 class="sucuriscan-title">{{Two-Factor Authentication}}</h3>
 
         %%%SUCURI.TwoFactor.CurrentUser%%%
     </div>

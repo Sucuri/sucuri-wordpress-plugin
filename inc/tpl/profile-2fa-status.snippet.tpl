@@ -2,7 +2,7 @@
     <p class="sucuriscan-mb-5" data-cy="sucuriscan-2fa-status-text">
         <span class="dashicons dashicons-yes sucuriscan-2fa-status-icon sucuriscan-2fa-status-icon-success"
             aria-hidden="true"></span>
-        Two-Factor Authentication is enabled for this account.
+        Two-Factor Authentication <strong>is enabled</strong> for this account.
     </p>
 
     <p class="sucuriscan-2fa-reset-row">
