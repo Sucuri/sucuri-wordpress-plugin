@@ -259,6 +259,17 @@ class SucuriScanSettingsPosthack extends SucuriScanSettings
         $response = 'Error';
         $user_id = intval(SucuriScanRequest::post('user_id'));
 
+        /*
+         * Confirm the current user is allowed to edit the target account before resetting
+         * its password. setNewPassword() resolves the user by numeric ID with
+         * get_userdata(), and current_user_can('edit_user') enforces the appropriate
+         * capability and multisite boundaries for that user.
+         */
+        if (!current_user_can('edit_user', $user_id)) {
+            wp_send_json($response, 403);
+            return;
+        }
+
         if (SucuriScanEvent::setNewPassword($user_id)) {
             $response = 'Done';
             /* translators: %d: user ID */
