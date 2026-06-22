@@ -151,6 +151,14 @@ define('SUCURISCAN_AUDITLOGS_PER_PAGE', 25);
 define('SUCURISCAN_INTEGRITY_FILES_PER_PAGE', 15);
 
 /**
+ * The maximum quantity of users that will be displayed per page in the
+ * Two-Factor Authentication users table. Keeping this bounded prevents the
+ * page from loading every registered user at once, which previously broke
+ * the 2FA page on sites with hundreds/thousands of users (e.g. WooCommerce).
+ */
+define('SUCURISCAN_TWOFACTOR_USERS_PER_PAGE', 25);
+
+/**
  * The maximum quantity of buttons in the paginations.
  */
 define('SUCURISCAN_MAX_PAGINATION_BUTTONS', 16);

@@ -24,11 +24,13 @@ function setModeAllUsers(mode = 'activate_all') {
 
 function setModeSelectedUsersFor(users, mode = 'activate_selected') {
     go2faPage();
+    waitForUsersTable();
 
     cy.get('[data-cy="twofactor-user-checkbox-1"]').check({ force: true });
     cy.get('[data-cy=sucuriscan_twofactor_bulk_control] select').select('deactivate_all', { force: true });
     cy.get('[data-cy=sucuriscan_twofactor_bulk_control] input[type=submit]').click();
 
+    waitForUsersTable();
     users.forEach((u) => {
         cy.contains('table tr', u.login, { matchCase: false })
             .find('input[name="sucuriscan_twofactor_users[]"]').check({ force: true });
@@ -40,12 +42,22 @@ function setModeSelectedUsersFor(users, mode = 'activate_selected') {
 
 function resetForSelectedUsers(users) {
     go2faPage();
+    waitForUsersTable();
     users.forEach((u) => {
         cy.contains('table tr', u.login, { matchCase: false })
             .find('input[name="sucuriscan_twofactor_users[]"]').check({ force: true });
     });
     cy.get('[data-cy=sucuriscan_twofactor_bulk_control] select').select('reset_selected');
     cy.get('[data-cy=sucuriscan_twofactor_bulk_control] input[type=submit]').click();
+}
+
+// Wait for the AJAX-loaded 2FA users table to finish loading (the table body
+// starts with a "Loading..." placeholder and is replaced once the request
+// resolves).
+function waitForUsersTable() {
+    cy.get('[data-cy=sucuriscan_twofactor_users_response]', { timeout: 15000 })
+        .find('input[name="sucuriscan_twofactor_users[]"]', { timeout: 15000 })
+        .should('have.length.greaterThan', 0);
 }
 
 
@@ -1645,6 +1657,7 @@ describe('Two-Factor Authentication', () => {
 
         setModeAllUsers();
 
+        waitForUsersTable();
         cy.contains('table tr', testAdminUser.login, { matchCase: false })
             .find('input[name="sucuriscan_twofactor_users[]"]').check({ force: true });
         cy.get('[data-cy=sucuriscan_twofactor_bulk_control] select').select('reset_selected');
@@ -1732,6 +1745,7 @@ describe('Two-Factor Authentication', () => {
 
         go2faPage();
 
+        waitForUsersTable();
         cy.contains('table tr', extraUser.login, { matchCase: false })
             .find('input[name="sucuriscan_twofactor_users[]"]').check({ force: true });
         cy.get('[data-cy=sucuriscan_twofactor_bulk_control] select').select('reset_selected');
@@ -1895,5 +1909,92 @@ describe('Two-Factor Authentication', () => {
         loginAndExpect2FA(testAdminUser.login, testAdminUser.pass, 'verify');
         loginAndExpect2FA(extraUser.login, extraUser.pass, 'setup');
         loginAndExpect2FA(adminUser.login, adminUser.pass, 'setup');
+    });
+});
+
+describe('Two-Factor Authentication users table (pagination & search)', () => {
+    beforeEach(() => {
+        cy.login();
+    });
+
+    it('loads the users table via AJAX without rendering every user at once', () => {
+        go2faPage();
+        waitForUsersTable();
+
+        // Only one bounded page (25) of users is rendered at a time, even though
+        // the test environment is seeded with many more users.
+        cy.get('[data-cy=sucuriscan_twofactor_users_response]')
+            .find('input[name="sucuriscan_twofactor_users[]"]')
+            .should('have.length.lte', 25);
+
+        // The pagination panel becomes visible when there is more than one page.
+        cy.get('.sucuriscan-2fa-pagination-panel').should('not.have.class', 'sucuriscan-hidden');
+        cy.get('.sucuriscan-2fa-pagination .sucuriscan-pagination-link').should('have.length.greaterThan', 0);
+    });
+
+    it('navigates to a different page via AJAX and shows different users', () => {
+        go2faPage();
+        waitForUsersTable();
+
+        // Capture the first checkbox value (user ID) rendered on page one.
+        cy.get('[data-cy=sucuriscan_twofactor_users_response]')
+            .find('input[name="sucuriscan_twofactor_users[]"]')
+            .first()
+            .invoke('val')
+            .then((firstPageTopId) => {
+                // Navigate to page two via AJAX (no full reload).
+                cy.get('.sucuriscan-2fa-pagination .sucuriscan-pagination-link[data-page="2"]').click();
+                waitForUsersTable();
+
+                // The set of users changed: the first row is now a different user.
+                cy.get('[data-cy=sucuriscan_twofactor_users_response]')
+                    .find('input[name="sucuriscan_twofactor_users[]"]')
+                    .first()
+                    .invoke('val')
+                    .should((secondPageTopId) => {
+                        expect(secondPageTopId).to.not.equal(firstPageTopId);
+                    });
+            });
+    });
+
+    it('searches users by username and narrows the table to the match', () => {
+        go2faPage();
+        waitForUsersTable();
+
+        cy.get('[data-cy=sucuriscan_twofactor_search]').clear().type('bulkuser-055');
+        cy.get('[data-cy=sucuriscan_twofactor_search_btn]').click();
+        waitForUsersTable();
+
+        cy.get('[data-cy=sucuriscan_twofactor_users_response]').should('contain.text', 'bulkuser-055');
+        cy.get('[data-cy=sucuriscan_twofactor_users_response]')
+            .find('input[name="sucuriscan_twofactor_users[]"]')
+            .should('have.length', 1);
+
+        // Clearing the search restores the full, paginated listing.
+        cy.get('[data-cy=sucuriscan_twofactor_search_clear]').click();
+        waitForUsersTable();
+        cy.get('[data-cy=sucuriscan_twofactor_users_response]')
+            .find('input[name="sucuriscan_twofactor_users[]"]')
+            .should('have.length.greaterThan', 1);
+    });
+
+    it('applies a per-page bulk selection while the table is paginated', () => {
+        setModeAllUsers('reset_all');
+
+        go2faPage();
+        waitForUsersTable();
+
+        // Select a user visible on the current page and enforce 2FA for it.
+        cy.contains('[data-cy=sucuriscan_twofactor_users_response] tr', testAdminUser.login, { matchCase: false })
+            .find('input[name="sucuriscan_twofactor_users[]"]').check({ force: true });
+        cy.get('[data-cy=sucuriscan_twofactor_bulk_control] select').select('activate_selected');
+        cy.get('[data-cy=sucuriscan_twofactor_bulk_control] input[type=submit]').click();
+
+        cy.get('.sucuriscan-alert, .updated, .notice').should('contain.text', 'Two-Factor');
+
+        loginAndExpect2FA(testAdminUser.login, testAdminUser.pass, 'setup');
+
+        cy.login();
+        setModeAllUsers('reset_all');
     });
 });
