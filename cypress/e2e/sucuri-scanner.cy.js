@@ -1913,6 +1913,31 @@ describe('Two-Factor Authentication', () => {
 });
 
 describe('Two-Factor Authentication users table (pagination & search)', () => {
+    before(() => {
+        // A previous suite can leave 2FA enforced for all users with no secret
+        // for the admin, which makes cy.login() land on the 2FA setup screen
+        // instead of the dashboard. Authenticate the admin (completing the
+        // challenge if it is presented) and turn enforcement off so these table
+        // tests start from a known-clean state.
+        Cypress.session.clearAllSavedSessions();
+        cy.clearCookies();
+
+        cy.setCookie('sucuriscan_waf_dismissed', '1');
+        cy.visit('/wp-login.php');
+        cy.get('#user_login').clear().wait(100).type(adminUser.login);
+        cy.get('#user_pass').clear().wait(100).type(adminUser.pass);
+        cy.get('#wp-submit').click();
+
+        cy.url().then((url) => {
+            if (url.includes('action=sucuri-2fa-setup')) {
+                completeSetupWithGeneratedCode();
+            }
+        });
+
+        setModeAllUsers('reset_all');
+        setModeAllUsers('deactivate_all');
+    });
+
     beforeEach(() => {
         cy.login();
     });
@@ -1996,5 +2021,6 @@ describe('Two-Factor Authentication users table (pagination & search)', () => {
 
         cy.login();
         setModeAllUsers('reset_all');
+        setModeAllUsers('deactivate_all');
     });
 });
