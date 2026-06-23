@@ -260,7 +260,9 @@ This version adds an option to refresh the malware scan results on demand, as we
 
 == Changelog ==
 = 2.7.4 =
-* strengthen input validation, access checks, and output escaping.
+* Improve the Two-Factor Authentication page to load the users list in pages, so it stays fast and reliable on sites with hundreds or thousands of users (for example, WooCommerce stores).
+* Add a search box to the Two-Factor Authentication page to quickly find users by username, email, or display name.
+* Strengthen input validation, access checks, and output escaping.
 
 = 2.7.3 =
 * Refactor AJAX handler to an explicit dispatch map for improved security and efficiency.
