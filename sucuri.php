@@ -108,7 +108,14 @@ define('SUCURISCAN_PLUGIN_FOLDER', basename(dirname(__FILE__)));
 /**
  * The fullpath where the plugin's files will be located.
  */
-define('SUCURISCAN_PLUGIN_PATH', WP_PLUGIN_DIR . '/' . SUCURISCAN_PLUGIN_FOLDER);
+ $sucuriscanPluginPath = WP_PLUGIN_DIR . '/' . SUCURISCAN_PLUGIN_FOLDER;
+ if (!is_dir($sucuriscanPluginPath) && is_dir(WPMU_PLUGIN_DIR . '/' . SUCURISCAN_PLUGIN_FOLDER)) {
+    $sucuriscanPluginPath = WPMU_PLUGIN_DIR . '/' . SUCURISCAN_PLUGIN_FOLDER;
+ } elseif(!is_dir($sucuriscanPluginPath)) {
+     throw new \RuntimeException('Sucuri scan plugin cannot be found in plugins or must-use plugins.');
+ }
+
+define('SUCURISCAN_PLUGIN_PATH', $sucuriscanPluginPath);
 
 /**
  * The local URL where the plugin's files and assets are served.
