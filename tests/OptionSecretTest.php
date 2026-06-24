@@ -18,6 +18,10 @@ final class OptionSecretTest extends TestCase
     private $tempWpConfig = '';
     /** @var bool When true the update_option mock returns false (simulates DB failure). */
     private $updateOptionFails = false;
+    /** @var string Original content of the audit-queue fixture, restored in tearDown. */
+    private $originalAuditQueueContent = '';
+    /** @var string Path to the audit-queue fixture file. */
+    private $auditQueueFile = '';
 
     protected function setUp(): void
     {
@@ -27,6 +31,14 @@ final class OptionSecretTest extends TestCase
         $this->settingsFile = SucuriScanOption::optionsFilePath();
         $this->originalSettingsContent = file_exists($this->settingsFile)
             ? (string) file_get_contents($this->settingsFile)
+            : '';
+
+        // Snapshot the audit-queue fixture so event-logging side effects (e.g.
+        // the decryption-failure notice in testDecryptFailureSetsNoticeFlag) are
+        // rolled back in tearDown and never bleed into subsequent tests.
+        $this->auditQueueFile = SUCURI_DATA_STORAGE . '/sucuri-auditqueue.php';
+        $this->originalAuditQueueContent = file_exists($this->auditQueueFile)
+            ? (string) file_get_contents($this->auditQueueFile)
             : '';
 
         // Create a minimal wp-config.php in the ABSPATH directory so that
@@ -88,6 +100,17 @@ final class OptionSecretTest extends TestCase
     {
         if ($this->settingsFile) {
             file_put_contents($this->settingsFile, $this->originalSettingsContent);
+        }
+
+        // Restore the audit-queue fixture and remove any .htaccess written by
+        // createStorageFolder() when event logging fired during this test.
+        if ($this->auditQueueFile) {
+            file_put_contents($this->auditQueueFile, $this->originalAuditQueueContent);
+        }
+
+        $htaccess = SUCURI_DATA_STORAGE . '/.htaccess';
+        if (file_exists($htaccess)) {
+            unlink($htaccess);
         }
 
         if ($this->tempWpConfig && file_exists($this->tempWpConfig)) {

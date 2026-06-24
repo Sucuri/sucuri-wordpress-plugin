@@ -1347,9 +1347,13 @@ class SucuriScanTwoFactor extends SucuriScan
     }
 
     /**
-     * Render the 2FA users admin section (list of users with status and bulk actions).
-     * Only shown if current user can 'list_users'.
-     * 
+     * Render the 2FA users admin section shell (search box, table container,
+     * pagination panel and bulk-action control). The actual user rows are
+     * loaded asynchronously and paginated via ajaxUsersList() so the page does
+     * not have to load every registered user at once.
+     *
+     * Only shown if the current user can 'list_users'.
+     *
      * @return string HTML (empty if no permission)
      */
     public static function users_admin_section()
@@ -1358,34 +1362,227 @@ class SucuriScanTwoFactor extends SucuriScan
             return '';
         }
 
-        $rows = '';
-        $users = get_users(array('fields' => array('ID', 'user_login', 'user_email', 'roles')));
-        $total_users = is_array($users) ? count($users) : 0;
-        $activated_count = 0;
+        list($status_id, $status_text) = self::compute_policy_status();
 
-        if (is_array($users)) {
-            foreach ($users as $user) {
-                $uid = (int) $user->ID;
-                $secret = self::get_user_totp_key($uid);
+        return SucuriScanTemplate::getSection('2fa-users', array(
+            'BulkOptions' => self::build_bulk_options(),
+            'TwoFactor.Status' => (string) $status_id,
+            'TwoFactor.StatusText' => $status_text,
+        ));
+    }
 
-                if (!empty($secret)) {
-                    $status = __('Activated', 'sucuri-scanner');
-                    $activated_count++;
-                } elseif (self::is_enforced_for_user($uid)) {
-                    $status = __('Enforced / not active', 'sucuri-scanner');
-                } else {
-                    $status = __('Deactivated', 'sucuri-scanner');
-                }
-
-                $rows .= SucuriScanTemplate::getSnippet('2fa-user-row', array(
-                    'ID' => $uid,
-                    'Login' => $user->user_login,
-                    'Email' => $user->user_email,
-                    'Status' => $status,
-                ));
-            }
+    /**
+     * AJAX handler that returns a single paginated (and optionally searched)
+     * page of users for the Two-Factor users table.
+     *
+     * Only a bounded number of users (SUCURISCAN_TWOFACTOR_USERS_PER_PAGE) are
+     * loaded and rendered per request, which keeps the page responsive on
+     * sites with hundreds/thousands of registered users (e.g. WooCommerce).
+     *
+     * Output is JSON: { content, pagination, total, statusId, statusText }.
+     *
+     * @return void (sends JSON response and exits)
+     */
+    public static function ajaxUsersList()
+    {
+        if (SucuriScanRequest::post('form_action') !== 'get_twofactor_users') {
+            return;
         }
 
+        if (!SucuriScanPermissions::canListUsers()) {
+            wp_send_json(array(
+                'content' => '',
+                'pagination' => '',
+                'total' => 0,
+                'statusId' => 0,
+                'statusText' => __('You are not allowed to list users.', 'sucuri-scanner'),
+            ), 200);
+
+            return;
+        }
+
+        $perPage = (int) SUCURISCAN_TWOFACTOR_USERS_PER_PAGE;
+        $pageNumber = SucuriScanTemplate::pageNumber();
+
+        if ($pageNumber < 1) {
+            $pageNumber = 1;
+        }
+
+        $search = self::get_users_search_term();
+        $args = self::build_users_query_args($pageNumber, $perPage, $search);
+
+        $query = new WP_User_Query($args);
+        $users = (array) $query->get_results();
+        $total = (int) $query->get_total();
+
+        $rows = self::render_user_rows($users);
+
+        $pagination = '';
+
+        if ($total > $perPage) {
+            $pagination = SucuriScanTemplate::pagination(
+                SucuriScanTemplate::getUrl('2fa'),
+                $total,
+                $perPage,
+                $search !== '' ? array('twofactor_search' => $search) : array()
+            );
+        }
+
+        wp_send_json(array(
+            'content' => $rows,
+            'pagination' => $pagination,
+            'total' => $total,
+        ), 200);
+    }
+
+    /**
+     * Build the WP_User_Query arguments for a single bounded page of the
+     * Two-Factor users table.
+     *
+     * Keeping this isolated makes the scalability-critical behavior (bounded
+     * `number`, correct `offset`, and a safe `search`) easy to unit test.
+     *
+     * @param int    $pageNumber 1-based page number.
+     * @param int    $perPage    Maximum users per page.
+     * @param string $search     Sanitized search term ('' when absent).
+     * @return array WP_User_Query arguments.
+     */
+    protected static function build_users_query_args($pageNumber, $perPage, $search)
+    {
+        $pageNumber = (int) $pageNumber;
+        $perPage = (int) $perPage;
+
+        if ($pageNumber < 1) {
+            $pageNumber = 1;
+        }
+
+        if ($perPage < 1) {
+            $perPage = (int) SUCURISCAN_TWOFACTOR_USERS_PER_PAGE;
+        }
+
+        $offset = ($pageNumber * $perPage) - $perPage;
+
+        $args = array(
+            'fields' => array('ID', 'user_login', 'user_email', 'display_name'),
+            'number' => $perPage,
+            'offset' => $offset,
+            'orderby' => 'ID',
+            'order' => 'ASC',
+            'count_total' => true,
+        );
+
+        if (is_string($search) && $search !== '') {
+            $args['search'] = '*' . $search . '*';
+            $args['search_columns'] = array('user_login', 'user_email', 'display_name');
+        }
+
+        return $args;
+    }
+
+    /**
+     * Read and sanitize the user search term coming from the request.
+     *
+     * The value is read directly from the request superglobals rather than
+     * through SucuriScanRequest, which HTML-encodes the value (e.g. an
+     * apostrophe becomes &#039;). That encoding would prevent matching against
+     * real database values: while user_login is restricted by WordPress to a
+     * safe character set, display_name legitimately contains apostrophes
+     * ("O'Brien") and ampersands, and user_email may contain '&' or '\'' in its
+     * local part. The raw value is then passed through sanitize_text_field()
+     * (which strips tags) and length-bounded.
+     *
+     * This runs only inside ajaxUsersList(), after the nonce and list_users
+     * capability checks. The result reaches the DB exclusively through
+     * WP_User_Query's prepared "search" argument (no SQL injection) and the
+     * pagination links via http_build_query() (URL-encoded; no HTML injection),
+     * so reading it raw is safe.
+     *
+     * @return string Bounded, sanitized search term ('' when absent).
+     */
+    protected static function get_users_search_term()
+    {
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        if (isset($_POST['twofactor_search'])) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing
+            $raw = $_POST['twofactor_search'];
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        } elseif (isset($_GET['twofactor_search'])) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+            $raw = $_GET['twofactor_search'];
+        } else {
+            return '';
+        }
+
+        if (!is_scalar($raw)) {
+            return '';
+        }
+
+        if (function_exists('wp_unslash')) {
+            $raw = wp_unslash($raw);
+        }
+
+        $search = function_exists('sanitize_text_field')
+            ? sanitize_text_field($raw)
+            : trim((string) $raw);
+
+        $search = trim((string) $search);
+
+        // Bound the length to avoid pathological queries.
+        if (strlen($search) > 128) {
+            $search = substr($search, 0, 128);
+        }
+
+        return $search;
+    }
+
+    /**
+     * Render the table rows for a list of user objects (one bounded page).
+     *
+     * @param array $users List of user objects with ID/user_login/user_email.
+     * @return string HTML rows (escaped via the snippet template).
+     */
+    protected static function render_user_rows($users)
+    {
+        $rows = '';
+
+        if (!is_array($users)) {
+            return $rows;
+        }
+
+        foreach ($users as $user) {
+            if (!is_object($user) || !isset($user->ID)) {
+                continue;
+            }
+
+            $uid = (int) $user->ID;
+            $secret = self::get_user_totp_key($uid);
+
+            if (!empty($secret)) {
+                $status = __('Activated', 'sucuri-scanner');
+            } elseif (self::is_enforced_for_user($uid)) {
+                $status = __('Enforced / not active', 'sucuri-scanner');
+            } else {
+                $status = __('Deactivated', 'sucuri-scanner');
+            }
+
+            $rows .= SucuriScanTemplate::getSnippet('2fa-user-row', array(
+                'ID' => $uid,
+                'Login' => isset($user->user_login) ? $user->user_login : '',
+                'Email' => isset($user->user_email) ? $user->user_email : '',
+                'Status' => $status,
+            ));
+        }
+
+        return $rows;
+    }
+
+    /**
+     * Build the <option> list for the bulk-action dropdown.
+     *
+     * @return string HTML <option> elements.
+     */
+    protected static function build_bulk_options()
+    {
         $bulkOptions = '';
 
         $bulkMap = array(
@@ -1402,6 +1599,20 @@ class SucuriScanTwoFactor extends SucuriScan
             $bulkOptions .= sprintf('<option value="%s">%s</option>', esc_attr($val), esc_html($label));
         }
 
+        return $bulkOptions;
+    }
+
+    /**
+     * Compute the overall policy status for the header badge using efficient
+     * COUNT queries instead of iterating over every registered user.
+     *
+     * @return array [int $status_id, string $status_text]
+     */
+    protected static function compute_policy_status()
+    {
+        $total_users = self::count_total_users();
+        $activated_count = self::count_activated_users();
+
         $status_id = 0;
         $status_text = __('Deactivated', 'sucuri-scanner');
 
@@ -1415,12 +1626,42 @@ class SucuriScanTwoFactor extends SucuriScan
             }
         }
 
-        return SucuriScanTemplate::getSection('2fa-users', array(
-            'Rows' => $rows,
-            'BulkOptions' => $bulkOptions,
-            'TwoFactor.Status' => (string) $status_id,
-            'TwoFactor.StatusText' => $status_text,
+        return array($status_id, $status_text);
+    }
+
+    /**
+     * Count the total number of registered users without loading them.
+     *
+     * @return int
+     */
+    protected static function count_total_users()
+    {
+        $query = new WP_User_Query(array(
+            'fields' => 'ID',
+            'number' => 1,
+            'count_total' => true,
         ));
+
+        return (int) $query->get_total();
+    }
+
+    /**
+     * Count how many users have an active Two-Factor secret stored, using a
+     * single meta EXISTS query instead of iterating over every user.
+     *
+     * @return int
+     */
+    protected static function count_activated_users()
+    {
+        $query = new WP_User_Query(array(
+            'fields' => 'ID',
+            'number' => 1,
+            'count_total' => true,
+            'meta_key' => self::SECRET_META_KEY,
+            'meta_compare' => 'EXISTS',
+        ));
+
+        return (int) $query->get_total();
     }
 
     /**
@@ -1647,6 +1888,16 @@ class SucuriScanTwoFactor extends SucuriScan
                 break;
 
             case 'reset_all':
+                /*
+                 * NOTE (scale): this iterates over every registered user ID and
+                 * issues two delete_user_meta() calls each. On sites with many
+                 * thousands of users (e.g. large WooCommerce stores) this is an
+                 * O(N) operation and can be slow. This is a deliberate, rarely
+                 * used administrative action triggered explicitly by an admin,
+                 * so the cost is accepted as-is rather than batched/queued. If
+                 * this ever becomes a problem, restrict the loop to users that
+                 * actually have the SECRET_META_KEY set (meta EXISTS query).
+                 */
                 foreach ($all_ids as $uid) {
                     delete_user_meta($uid, self::SECRET_META_KEY);
                     delete_user_meta($uid, self::LAST_SUCCESS_META_KEY);
@@ -1660,6 +1911,10 @@ class SucuriScanTwoFactor extends SucuriScan
                 break;
 
             case 'reset_everything':
+                /*
+                 * NOTE (scale): same O(N) consideration as 'reset_all' above;
+                 * accepted as-is for this explicit, infrequent admin action.
+                 */
                 foreach ($all_ids as $uid) {
                     delete_user_meta($uid, self::SECRET_META_KEY);
                     delete_user_meta($uid, self::LAST_SUCCESS_META_KEY);

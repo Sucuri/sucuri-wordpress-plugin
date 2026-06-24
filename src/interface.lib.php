@@ -49,7 +49,7 @@ class SucuriScanInterface
     {
         SucuriScanEvent::installScheduledTask();
 
-        if (SucuriScan::supportReverseProxy() || SucuriScan::isBehindFirewall()) {
+        if (SucuriScan::supportReverseProxy()) {
             $remote_addr = SucuriScanRequest::server('REMOTE_ADDR');
             $_SERVER['SUCURIREAL_REMOTE_ADDR'] = $remote_addr;
             $_SERVER['REMOTE_ADDR'] = SucuriScan::getRemoteAddr();

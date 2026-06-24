@@ -282,8 +282,13 @@ class SucuriScanHardening extends SucuriScan
             . "  </If>\n"
             . "</Files>\n",
             basename($filepath),
-            rtrim($relative_folder, '/'),
-            ltrim($filepath, '/')
+            /*
+             * These two values are interpolated into the <If> PCRE (delimiter '#'), so
+             * any regex metacharacters in the path are escaped to keep the REQUEST_URI
+             * condition matching the intended file literally.
+             */
+            preg_quote(rtrim($relative_folder, '/'), '#'),
+            preg_quote(ltrim($filepath, '/'), '#')
         );
 
         return $path;

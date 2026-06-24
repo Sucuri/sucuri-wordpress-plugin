@@ -460,6 +460,7 @@ function sucuriscan_ajax_handlers()
         'toggle_theme' => 'sucuriscan_theme_toggle',
         'dismiss_waf_prompt' => 'sucuriscan_dismiss_waf_prompt',
         'totp_verify' => array('SucuriScanTwoFactor', 'totp_verify'),
+        'get_twofactor_users' => array('SucuriScanTwoFactor', 'ajaxUsersList'),
     );
 }
 

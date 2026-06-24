@@ -138,6 +138,22 @@ class SucuriScanIntegrity
             return SucuriScanInterface::error(__('Nothing was selected from the list.', 'sucuri-scanner'));
         }
 
+        /*
+         * Build an allowlist of the files the integrity scan flagged, grouped by status.
+         * The delete and restore actions only act on files that the scan reported with
+         * the matching status.
+         */
+        $latest_hashes = self::checkIntegrityIntegrity();
+
+        if (!is_array($latest_hashes)) {
+            return SucuriScanInterface::error(__(
+                'Integrity data is currently unavailable; please try again later.',
+                'sucuri-scanner'
+            ));
+        }
+
+        $flagged = self::flaggedFilesByStatus($latest_hashes);
+
         /* process files until the maximum execution time is reached */
         $startTime = microtime(true);
         $displayTimeoutAlert = false;
@@ -162,7 +178,20 @@ class SucuriScanIntegrity
                 continue;
             }
 
-            $full_path = ABSPATH . '/' . $file_path;
+            /*
+             * Resolve the path and confirm it stays inside the WordPress installation
+             * before the delete and restore actions touch the file system.
+             */
+            $full_path = self::resolveIntegrityPath($file_path);
+
+            if ($full_path === false) {
+                continue;
+            }
+
+            /* only operate on files the integrity scan flagged with this status */
+            if (!isset($flagged[$status_type][$file_path])) {
+                continue;
+            }
 
             if ($action === 'fixed' && ($status_type === 'added' || $status_type === 'removed' || $status_type === 'modified')) {
                 $cache_key = md5($file_path);
@@ -253,6 +282,98 @@ class SucuriScanIntegrity
                 $files_selected
             )
         );
+    }
+
+    /**
+     * Build the absolute path for an integrity entry and confirm it stays within ABSPATH.
+     *
+     * Entries arrive from the integrity form as "<status>@<relative/path>" and the path
+     * portion is concatenated with ABSPATH before the delete and restore actions touch
+     * the file system. The value is normalized lexically (resolving "." and ".." without
+     * requiring the target to exist, so restores into not-yet-created directories keep
+     * working) and rejected when it escapes the WordPress installation directory.
+     *
+     * @param string $file_path Relative path supplied by the request.
+     * @return string|false Normalized absolute path inside ABSPATH, or false when it escapes.
+     */
+    private static function resolveIntegrityPath($file_path)
+    {
+        $base = self::normalizePath(ABSPATH);
+        $full_path = self::normalizePath(ABSPATH . '/' . $file_path);
+
+        if ($base === '' || $full_path === '') {
+            return false;
+        }
+
+        if ($full_path !== $base && strpos($full_path, $base . '/') !== 0) {
+            return false; /* escapes the WordPress installation directory */
+        }
+
+        return $full_path;
+    }
+
+    /**
+     * Resolve "." and ".." segments in a path without consulting the file system.
+     *
+     * Unlike realpath() this works for paths that do not exist yet and never follows
+     * symlinks, which makes it safe to use before creating or deleting a file.
+     *
+     * @param string $path Path to normalize.
+     * @return string Normalized path using forward slashes.
+     */
+    private static function normalizePath($path)
+    {
+        $path = str_replace('\\', '/', (string) $path);
+        $is_absolute = (isset($path[0]) && $path[0] === '/');
+        $resolved = array();
+
+        foreach (explode('/', $path) as $segment) {
+            if ($segment === '' || $segment === '.') {
+                continue;
+            }
+
+            if ($segment === '..') {
+                array_pop($resolved);
+                continue;
+            }
+
+            $resolved[] = $segment;
+        }
+
+        return ($is_absolute ? '/' : '') . implode('/', $resolved);
+    }
+
+    /**
+     * Group the files reported by the integrity scan into an allowlist keyed by status.
+     *
+     * Only the actionable statuses (added, removed, modified) are included. The resulting
+     * map lets pageIntegritySubmission() confirm that a submitted entry refers to a file
+     * the scan flagged with that status before it is deleted or restored.
+     *
+     * @param array|bool $latest_hashes Result of checkIntegrityIntegrity().
+     * @return array Map of status => array(filepath => true).
+     */
+    private static function flaggedFilesByStatus($latest_hashes)
+    {
+        $flagged = array('added' => array(), 'removed' => array(), 'modified' => array());
+
+        if (!is_array($latest_hashes)) {
+            return $flagged;
+        }
+
+        foreach (array_keys($flagged) as $list_type) {
+            if (empty($latest_hashes[$list_type])) {
+                continue;
+            }
+
+            foreach ($latest_hashes[$list_type] as $file_info) {
+                if (isset($file_info['filepath'])) {
+                    $flagged[$list_type][$file_info['filepath']] = true;
+                }
+            }
+        }
+
+        return $flagged;
     }
 
     public static function getTotalAffectedFiles($latest_hashes, $ignored_files)

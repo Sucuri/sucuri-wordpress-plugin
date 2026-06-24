@@ -294,7 +294,7 @@ class SucuriScanAuditLogs
 
             /* simplify the details of events with low metadata */
             if (strpos($audit_log['message'], __('status has been changed', 'sucuri-scanner'))) {
-                $snippet_data['AuditLog.Extra'] = implode(",\x20", $audit_log['file_list']);
+                $snippet_data['AuditLog.Extra'] = self::formatChangedStatusFiles($audit_log['file_list']);
             }
 
             $response['content'] .= SucuriScanTemplate::getSnippet('auditlogs', $snippet_data);
@@ -365,6 +365,24 @@ class SucuriScanAuditLogs
         }
 
         return ($a['timestamp'] > $b['timestamp']) ? -1 : 1;
+    }
+
+    /**
+     * Format the file list shown for a "status has been changed" audit entry.
+     *
+     * The result is assigned to AuditLog.Extra, which the audit-log template renders
+     * with the raw "%%%...%%%" tag, so each file name is HTML-escaped here before it is
+     * joined into the displayed string.
+     *
+     * @param array $file_list File names from the audit-log entry.
+     * @return string Comma-separated, HTML-escaped list.
+     */
+    private static function formatChangedStatusFiles($file_list)
+    {
+        return implode(
+            ",\x20",
+            array_map(array('SucuriScan', 'escape'), (array) $file_list)
+        );
     }
 
     /**

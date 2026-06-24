@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Sucuri Security - Auditing, Malware Scanner and Hardening 2.7.3\n"
+"Project-Id-Version: Sucuri Security - Auditing, Malware Scanner and Hardening 2.7.4\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/sucuri-scanner\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-06-02T23:51:18+00:00\n"
+"POT-Creation-Date: 2026-06-22T04:25:17+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: sucuri-scanner\n"
@@ -82,7 +82,7 @@ msgid "All Time"
 msgstr ""
 
 #: src/api.lib.php:499
-#: src/auditlogs.lib.php:385
+#: src/auditlogs.lib.php:403
 msgid "Today"
 msgstr ""
 
@@ -178,13 +178,13 @@ msgid "Installed"
 msgstr ""
 
 #: src/api.lib.php:609
-#: src/topt.lib.php:1372
+#: src/topt.lib.php:1561
 msgid "Activated"
 msgstr ""
 
 #: src/api.lib.php:613
-#: src/topt.lib.php:1377
-#: src/topt.lib.php:1406
+#: src/topt.lib.php:1565
+#: src/topt.lib.php:1617
 msgid "Deactivated"
 msgstr ""
 
@@ -539,7 +539,7 @@ msgid "Directory is not usable"
 msgstr ""
 
 #: src/hardening.lib.php:127
-#: src/hardening.lib.php:336
+#: src/hardening.lib.php:341
 msgid "Access control file is not supported"
 msgstr ""
 
@@ -547,19 +547,19 @@ msgstr ""
 msgid "Directory is not hardened"
 msgstr ""
 
-#: src/hardening.lib.php:342
+#: src/hardening.lib.php:347
 msgid "Access control file does not exists"
 msgstr ""
 
-#: src/hardening.lib.php:346
+#: src/hardening.lib.php:351
 msgid "Access control file is not writable"
 msgstr ""
 
-#: src/hardening.lib.php:353
+#: src/hardening.lib.php:358
 msgid "File is already in the allowlist"
 msgstr ""
 
-#: src/hardening.lib.php:386
+#: src/hardening.lib.php:391
 msgid "Cannot remove file from the allowlist; no permissions."
 msgstr ""
 
@@ -575,11 +575,11 @@ msgstr ""
 #: src/hook.lib.php:1054
 #: src/hook.lib.php:1065
 #: src/hook.lib.php:1097
-#: src/settings-general.php:320
-#: src/settings-general.php:321
-#: src/settings-general.php:322
-#: src/settings-general.php:323
-#: src/settings-general.php:324
+#: src/settings-general.php:327
+#: src/settings-general.php:328
+#: src/settings-general.php:329
+#: src/settings-general.php:330
+#: src/settings-general.php:331
 #: src/settings-webinfo.php:40
 msgid "unknown"
 msgstr ""
@@ -861,7 +861,7 @@ msgstr ""
 
 #: src/integrity.lib.php:113
 #: src/settings-general.php:46
-#: src/settings-general.php:507
+#: src/settings-general.php:521
 #: src/settings-posthack.php:59
 msgid "You need to confirm that you understand the risk of this operation."
 msgstr ""
@@ -886,35 +886,39 @@ msgstr ""
 msgid "Nothing was selected from the list."
 msgstr ""
 
-#: src/integrity.lib.php:231
+#: src/integrity.lib.php:149
+msgid "Integrity data is currently unavailable; please try again later."
+msgstr ""
+
+#: src/integrity.lib.php:260
 msgid "Server is not fast enough to process this action; maximum execution time reached"
 msgstr ""
 
 #. translators: %1$d: number of processed files, %2$d: total number of files
-#: src/integrity.lib.php:241
+#: src/integrity.lib.php:270
 #, php-format
 msgid "Only <b>%1$d</b> out of <b>%2$d</b> files were processed."
 msgstr ""
 
 #. translators: %1$d: number of processed files, %2$d: total number of files
-#: src/integrity.lib.php:251
+#: src/integrity.lib.php:280
 #, php-format
 msgid "<b>%1$d</b> out of <b>%2$d</b> files were successfully processed."
 msgstr ""
 
-#: src/integrity.lib.php:400
+#: src/integrity.lib.php:521
 msgid "The plugin has no permission to delete this file because it was created by a different system user who has more privileges than your account. Please use FTP to delete it."
 msgstr ""
 
-#: src/integrity.lib.php:405
+#: src/integrity.lib.php:526
 msgid "The plugin has no permission to restore this file because it was modified by a different system user who has more privileges than your account. Please use FTP to restore it."
 msgstr ""
 
-#: src/integrity.lib.php:410
+#: src/integrity.lib.php:531
 msgid "The plugin has no permission to restore this file because its directory is owned by a different system user who has more privileges than your account. Please use FTP to restore it."
 msgstr ""
 
-#: src/integrity.lib.php:513
+#: src/integrity.lib.php:634
 #: src/strings.php:662
 #: src/strings.php:667
 msgid "WordPress Integrity Diff Utility"
@@ -1784,8 +1788,8 @@ msgstr ""
 
 #: src/settings-apiservice.php:62
 #: src/settings-general.php:216
-#: src/settings-general.php:282
-#: src/settings-general.php:329
+#: src/settings-general.php:289
+#: src/settings-general.php:336
 #: src/settings-headers.php:139
 #: src/settings-headers.php:396
 #: src/settings-headers.php:439
@@ -1797,16 +1801,16 @@ msgstr ""
 
 #: src/settings-apiservice.php:63
 #: src/settings-general.php:217
-#: src/settings-general.php:283
-#: src/settings-general.php:330
+#: src/settings-general.php:290
+#: src/settings-general.php:337
 #: src/settings-integrity.php:83
 msgid "Disable"
 msgstr ""
 
 #: src/settings-apiservice.php:71
-#: src/settings-general.php:259
-#: src/settings-general.php:303
-#: src/settings-general.php:365
+#: src/settings-general.php:266
+#: src/settings-general.php:310
+#: src/settings-general.php:372
 #: src/settings-headers.php:139
 #: src/settings-headers.php:317
 #: src/settings-headers.php:361
@@ -1818,9 +1822,9 @@ msgid "Disabled"
 msgstr ""
 
 #: src/settings-apiservice.php:72
-#: src/settings-general.php:260
-#: src/settings-general.php:304
-#: src/settings-general.php:366
+#: src/settings-general.php:267
+#: src/settings-general.php:311
+#: src/settings-general.php:373
 msgid "Enable"
 msgstr ""
 
@@ -1928,7 +1932,7 @@ msgid "%1$d out of %2$d files have been deleted."
 msgstr ""
 
 #: src/settings-general.php:141
-#: src/settings-posthack.php:370
+#: src/settings-posthack.php:381
 msgid "Not Writable"
 msgstr ""
 
@@ -1953,57 +1957,61 @@ msgstr ""
 msgid "The log exporter feature has been disabled"
 msgstr ""
 
-#: src/settings-general.php:236
+#: src/settings-general.php:241
+msgid "Cannot verify the path is safe because DOCUMENT_ROOT is not set."
+msgstr ""
+
+#: src/settings-general.php:243
 msgid "File should not be publicly accessible."
 msgstr ""
 
-#: src/settings-general.php:238
+#: src/settings-general.php:245
 msgid "File already exists and will not be overwritten."
 msgstr ""
 
-#: src/settings-general.php:240
+#: src/settings-general.php:247
 msgid "File parent directory is not writable."
 msgstr ""
 
-#: src/settings-general.php:244
+#: src/settings-general.php:251
 msgid "Log exporter file path was correctly set"
 msgstr ""
 
-#: src/settings-general.php:250
+#: src/settings-general.php:257
 msgid "The log exporter feature has been enabled and the data file was successfully set."
 msgstr ""
 
-#: src/settings-general.php:326
+#: src/settings-general.php:333
 msgid "INVALID"
 msgstr ""
 
 #. translators: %s: status (enabled/disabled)
-#: src/settings-general.php:345
+#: src/settings-general.php:352
 #, php-format
 msgid "DNS lookups for reverse proxy detection <code>%s</code>"
 msgstr ""
 
-#: src/settings-general.php:350
+#: src/settings-general.php:357
 msgid "The status of the DNS lookups for the reverse proxy detection has been changed"
 msgstr ""
 
 #. translators: %1$d: number of imported options, %2$d: total options
-#: src/settings-general.php:498
+#: src/settings-general.php:512
 #, php-format
 msgid "%1$d out of %2$d option have been successfully imported"
 msgstr ""
 
-#: src/settings-general.php:504
+#: src/settings-general.php:518
 msgid "Data is incorrectly encoded"
 msgstr ""
 
 #. translators: %s: timezone
-#: src/settings-general.php:563
+#: src/settings-general.php:577
 #, php-format
 msgid "Timezone override will use %s"
 msgstr ""
 
-#: src/settings-general.php:568
+#: src/settings-general.php:582
 msgid "The timezone for the date and time in the audit logs has been changed"
 msgstr ""
 
@@ -2366,46 +2374,46 @@ msgid "No frequency selected for the automatic secret key updater."
 msgstr ""
 
 #. translators: %d: user ID
-#: src/settings-posthack.php:265
+#: src/settings-posthack.php:276
 #, php-format
 msgid "Password changed for user #%d"
 msgstr ""
 
-#: src/settings-posthack.php:360
+#: src/settings-posthack.php:371
 msgid "not installed"
 msgstr ""
 
-#: src/settings-posthack.php:367
+#: src/settings-posthack.php:378
 msgid "Plugin is Premium"
 msgstr ""
 
-#: src/settings-posthack.php:373
+#: src/settings-posthack.php:384
 msgid "Missing Library"
 msgstr ""
 
-#: src/settings-posthack.php:383
+#: src/settings-posthack.php:394
 msgid "Cannot Download"
 msgstr ""
 
-#: src/settings-posthack.php:386
+#: src/settings-posthack.php:397
 msgid "Cannot Backup"
 msgstr ""
 
-#: src/settings-posthack.php:399
+#: src/settings-posthack.php:410
 msgid "Cannot Install"
 msgstr ""
 
 #. translators: %s: version number
-#: src/settings-posthack.php:409
+#: src/settings-posthack.php:420
 #, php-format
 msgid "Installed v%s"
 msgstr ""
 
-#: src/settings-posthack.php:483
+#: src/settings-posthack.php:494
 msgid "Newest WordPress"
 msgstr ""
 
-#: src/settings-posthack.php:521
+#: src/settings-posthack.php:532
 msgid "There are no updates available."
 msgstr ""
 
@@ -3854,13 +3862,13 @@ msgid "Two-Factor is already enabled."
 msgstr ""
 
 #: src/topt.lib.php:1277
-#: src/topt.lib.php:1699
+#: src/topt.lib.php:1954
 msgid "Incorrect nonce."
 msgstr ""
 
 #: src/topt.lib.php:1283
 #: src/topt.lib.php:1323
-#: src/topt.lib.php:1705
+#: src/topt.lib.php:1960
 msgid "Incorrect user."
 msgstr ""
 
@@ -3869,85 +3877,89 @@ msgstr ""
 msgid "Unable to generate secret."
 msgstr ""
 
-#: src/topt.lib.php:1375
+#: src/topt.lib.php:1398
+msgid "You are not allowed to list users."
+msgstr ""
+
+#: src/topt.lib.php:1563
 msgid "Enforced / not active"
 msgstr ""
 
-#: src/topt.lib.php:1392
+#: src/topt.lib.php:1589
 msgid "Activate two factor for all users"
 msgstr ""
 
-#: src/topt.lib.php:1393
+#: src/topt.lib.php:1590
 msgid "Activate two factor for selected users"
 msgstr ""
 
-#: src/topt.lib.php:1394
+#: src/topt.lib.php:1591
 msgid "Deactivate two factor for all users"
 msgstr ""
 
-#: src/topt.lib.php:1395
+#: src/topt.lib.php:1592
 msgid "Deactivate two factor for selected users"
 msgstr ""
 
-#: src/topt.lib.php:1396
+#: src/topt.lib.php:1593
 msgid "Reset two factor for selected users (keep enforcement)"
 msgstr ""
 
-#: src/topt.lib.php:1397
+#: src/topt.lib.php:1594
 msgid "Reset two factor for all users (keep enforcement)"
 msgstr ""
 
-#: src/topt.lib.php:1398
+#: src/topt.lib.php:1595
 msgid "Delete all two-factor data and disable enforcement"
 msgstr ""
 
-#: src/topt.lib.php:1411
+#: src/topt.lib.php:1622
 msgid "Activated for all users"
 msgstr ""
 
-#: src/topt.lib.php:1414
+#: src/topt.lib.php:1625
 msgid "Activated for some users"
 msgstr ""
 
-#: src/topt.lib.php:1541
+#: src/topt.lib.php:1782
 msgid "You are not allowed to modify Two-Factor settings."
 msgstr ""
 
-#: src/topt.lib.php:1557
+#: src/topt.lib.php:1798
 msgid "Two-Factor enforced for all users."
 msgstr ""
 
-#: src/topt.lib.php:1567
+#: src/topt.lib.php:1808
 msgid "Two-Factor deactivated for all users."
 msgstr ""
 
-#: src/topt.lib.php:1574
-#: src/topt.lib.php:1592
-#: src/topt.lib.php:1633
+#: src/topt.lib.php:1815
+#: src/topt.lib.php:1833
+#: src/topt.lib.php:1874
 msgid "No users selected."
 msgstr ""
 
-#: src/topt.lib.php:1585
+#: src/topt.lib.php:1826
 msgid "Two-Factor enforced for selected users."
 msgstr ""
 
-#: src/topt.lib.php:1627
+#: src/topt.lib.php:1868
 msgid "Two-Factor deactivated for selected users."
 msgstr ""
 
-#: src/topt.lib.php:1644
+#: src/topt.lib.php:1885
 msgid "Two-Factor settings reset for selected users."
 msgstr ""
 
-#: src/topt.lib.php:1657
+#: src/topt.lib.php:1908
 msgid "Two-Factor settings reset for all users."
 msgstr ""
 
-#: src/topt.lib.php:1671
+#: src/topt.lib.php:1926
 msgid "All Two-Factor data deleted and enforcement disabled."
 msgstr ""
 
-#: src/topt.lib.php:1677
+#: src/topt.lib.php:1932
 msgid "Invalid two-factor action selected."
 msgstr ""
 
@@ -4043,6 +4055,6 @@ msgstr ""
 msgid "Your WordPress install is following <a href=\"https://sucuri.net/guides/wordpress-security\" target=\"_blank\" rel=\"noopener\">the security best practices</a>."
 msgstr ""
 
-#: sucuri.php:351
+#: sucuri.php:359
 msgid "Sucuri plugin has been uninstalled"
 msgstr ""

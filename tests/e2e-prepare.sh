@@ -6,6 +6,15 @@ wp user create sucuri sucuri@sucuri.net --role=author --user_pass=password
 wp user create sucuri-admin sucuri-admin@sucuri.net --role=administrator --user_pass=password
 wp user create sucuri-reset sucuri-reset@sucuri.net --role=author --user_pass=password
 
+# Create a large batch of users to exercise the paginated/searchable
+# Two-Factor users table (mirrors WooCommerce-scale sites). These are created
+# AFTER the named users above so the named users stay on the first page when
+# ordered by ID ascending (25 users per page).
+for i in $(seq 1 60); do
+    n=$(printf '%03d' "$i")
+    wp user create "bulkuser-$n" "bulkuser-$n@sucuri.net" --role=subscriber --user_pass=password >/dev/null
+done
+
 # Install plugins
 wp plugin install akismet --activate
 
