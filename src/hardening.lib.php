@@ -523,4 +523,64 @@ class SucuriScanHardening extends SucuriScan
 
         return $allowlist;
     }
+
+    /**
+     * Plugins known to depend on XML-RPC for core functionality, keyed by the
+     * plugin basename used by is_plugin_active() and mapped to a human-readable
+     * name used in the hardening warning. Add more entries here as they are
+     * identified; no other code needs to change.
+     *
+     * @var array
+     */
+    private static $xmlrpcDependentPlugins = array(
+        'jetpack/jetpack.php' => 'Jetpack',
+    );
+
+    /**
+     * Filters WordPress core's `xmlrpc_enabled` value based on the persisted
+     * "Disable XML-RPC" hardening option.
+     *
+     * Registered unconditionally from globals.php; the option is re-read on
+     * every invocation rather than deciding once at hook-registration time, so
+     * toggling the setting takes effect immediately.
+     *
+     * @param bool $enabled Current XML-RPC enabled state.
+     * @return bool          False if the hardening option is enabled (XML-RPC
+     *                       disabled); otherwise $enabled is returned unchanged.
+     */
+    public static function xmlrpcEnabled($enabled = true)
+    {
+        if (SucuriScanOption::isEnabled(':hardening_xmlrpc')) {
+            return false;
+        }
+
+        return $enabled;
+    }
+
+    /**
+     * Returns the display names of any known XML-RPC-dependent plugins that are
+     * currently active, so the hardening page can warn the admin before they
+     * disable XML-RPC.
+     *
+     * @return array List of human-readable plugin names (empty if none active).
+     */
+    public static function activeXMLRPCDependentPlugins()
+    {
+        if (!function_exists('is_plugin_active')) {
+            include_once ABSPATH . 'wp-admin/includes/plugin.php';
+        }
+
+        $active = array();
+
+        foreach (self::$xmlrpcDependentPlugins as $basename => $name) {
+            $isActive = is_plugin_active($basename)
+                || (self::isMultiSite() && is_plugin_active_for_network($basename));
+
+            if ($isActive) {
+                $active[] = $name;
+            }
+        }
+
+        return $active;
+    }
 }

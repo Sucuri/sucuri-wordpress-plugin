@@ -48,6 +48,16 @@ if (defined('SUCURISCAN')) {
     remove_action('wp_head', 'wp_generator');
 
     /**
+     * Hardening: enforce the "Disable XML-RPC" option, if enabled, by filtering
+     * WordPress core's `xmlrpc_enabled` value. The callback re-checks the
+     * persisted `sucuriscan_hardening_xmlrpc` option on every request, so it is
+     * safe to always register this filter unconditionally.
+     *
+     * @see SucuriScanHardeningPage::xmlrpc()
+     */
+    add_filter('xmlrpc_enabled', 'SucuriScanHardening::xmlrpcEnabled');
+
+    /**
      * Run a specific method defined in the plugin's code to locate every
      * directory and file, collect their checksum and file size, and send this
      * information to the Sucuri API service where a security and integrity scan

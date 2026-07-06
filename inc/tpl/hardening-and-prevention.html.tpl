@@ -24,6 +24,8 @@
             %%%SUCURI.Settings.Hardening.FileEditor%%%
 
             %%%SUCURI.Settings.Hardening.SecKeyUpdater%%%
+
+            %%%SUCURI.Settings.Hardening.XMLRPC%%%
         </div>
     </div>
 
