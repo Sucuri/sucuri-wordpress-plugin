@@ -186,22 +186,16 @@ class SucuriScanCookie extends SucuriScan
             $secure = true;
         }
 
-        $supportsArray = version_compare(PHP_VERSION, '7.3', '>=');
+        $validSameSite = in_array($sameSite, array('None', 'Lax', 'Strict'), true) ? $sameSite : 'Lax';
 
-        if ($supportsArray) {
-            $validSameSite = in_array($sameSite, array('None', 'Lax', 'Strict'), true) ? $sameSite : 'Lax';
-
-            return setcookie($name, $value, array(
-                'expires' => $expire,
-                'path' => $path,
-                'domain' => $domain,
-                'secure' => $secure,
-                'httponly' => $httpOnly,
-                'samesite' => $validSameSite,
-            ));
-        }
-
-        return setcookie($name, $value, $expire, $path, $domain, $secure, $httpOnly);
+        return setcookie($name, $value, array(
+            'expires' => $expire,
+            'path' => $path,
+            'domain' => $domain,
+            'secure' => $secure,
+            'httponly' => $httpOnly,
+            'samesite' => $validSameSite,
+        ));
     }
 
     /**

@@ -101,7 +101,7 @@ class SucuriWordPressRecommendations
          * Check PHP version.
          * @see https://www.php.net/supported-versions.php
          */
-        if (version_compare(phpversion(), '7.2', '>')) {
+        if (version_compare(phpversion(), '7.4', '>=')) {
             unset($recommendations['PHPVersionCheck']);
         }
 
