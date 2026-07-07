@@ -1,34 +1,41 @@
 #!/bin/sh
 
-.PHONY: e2e e2e-prepare e2e-scanner e2e-firewall e2e-waf-migration-prepare e2e-waf-migration e2e-waf-plug-salt-prepare e2e-waf-plug-salt unit-test update-translations
+.PHONY: e2e e2e-prepare e2e-install e2e-test e2e-features e2e-mutations e2e-ui e2e-report unit-test update-translations git-archive
 
-e2e: e2e-prepare e2e-scanner e2e-firewall
+# Full local run: (re)provision a clean WordPress, then run the Playwright suite.
+e2e: e2e-prepare e2e-test
 
+# Start wp-env, reset to a clean state, and seed users / files / hardening
+# fixtures. `wp-env clean all` makes this idempotent across runs.
 e2e-prepare:
 	npx wp-env start
 	npx wp-env clean all
-	chmod +x tests/e2e-prepare.sh
+	chmod +x tests/*.sh
 	npx wp-env run tests-cli bash wp-content/plugins/$(notdir $(CURDIR))/tests/e2e-prepare.sh
 
-e2e-scanner:
-	npx cypress run --spec cypress/e2e/sucuri-scanner.cy.js
+# Install the Playwright browser (chromium) and its OS dependencies.
+e2e-install:
+	npx playwright install --with-deps chromium
 
-e2e-firewall:
-	npx cypress run --spec cypress/e2e/sucuri-scanner-firewall.cy.js
+# Run the whole Playwright suite (setup -> features -> mutations).
+e2e-test:
+	npx playwright test
 
-e2e-waf-migration-prepare:
-	chmod +x tests/e2e-seed-waf-migration.sh
-	npx wp-env run tests-cli bash wp-content/plugins/$(notdir $(CURDIR))/tests/e2e-seed-waf-migration.sh
+# Run only the non-destructive feature specs (setup runs automatically).
+e2e-features:
+	npx playwright test --project=features
 
-e2e-waf-migration: e2e-waf-migration-prepare
-	npx cypress run --spec cypress/e2e/sucuri-scanner-waf-migration.cy.js
+# Run the destructive / auth-affecting specs (setup + features run as deps).
+e2e-mutations:
+	npx playwright test --project=mutations
 
-e2e-waf-plug-salt-prepare:
-	chmod +x tests/e2e-seed-waf-plug-salt.sh
-	npx wp-env run tests-cli bash wp-content/plugins/$(notdir $(CURDIR))/tests/e2e-seed-waf-plug-salt.sh
+# Interactive UI mode for debugging.
+e2e-ui:
+	npx playwright test --ui
 
-e2e-waf-plug-salt: e2e-waf-plug-salt-prepare
-	npx cypress run --spec cypress/e2e/sucuri-scanner-waf-plug-salt.cy.js
+# Open the last HTML report.
+e2e-report:
+	npx playwright show-report playwright/.report
 
 unit-test:
 	./vendor/bin/phpunit
