@@ -310,6 +310,7 @@ function sucuriscan_hardening_prevention_page()
     $params['Settings.Hardening.AdminUser'] = SucuriScanHardeningPage::adminuser();
     $params['Settings.Hardening.FileEditor'] = SucuriScanHardeningPage::fileeditor();
     $params['Settings.Hardening.SecKeyUpdater'] = SucuriScanHardeningPage::autoSecretKeyUpdater();
+    $params['Settings.Hardening.XMLRPC'] = SucuriScanHardeningPage::xmlrpc();
     $params['Settings.Hardening.AllowlistPHPFiles'] = SucuriScanHardeningPage::AllowPHPFiles();
     $params['PremiumVisibility'] = SucuriScanInterface::isPremium() ? '' : 'sucuriscan-hidden';
     $params['Theme'] = SucuriScanInterface::getPreferredTheme();

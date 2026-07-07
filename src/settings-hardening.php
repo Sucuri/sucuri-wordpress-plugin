@@ -702,6 +702,72 @@ class SucuriScanHardeningPage extends SucuriScan
     }
 
     /**
+     * Enable or disable WordPress' XML-RPC interface (xmlrpc.php).
+     *
+     * XML-RPC is a legacy remote API with almost no legitimate use on modern
+     * WordPress sites and is a common brute-force / pingback-based DDoS
+     * amplification vector. This hardening option disables it via the
+     * `xmlrpc_enabled` filter (see SucuriScanHardening::xmlrpcEnabled()).
+     *
+     * @return string HTML code with the replaced template variables.
+     */
+    public static function xmlrpc()
+    {
+        $params = array();
+
+	    $params['URL.Hardening'] = admin_url('admin.php?page=sucuriscan_hardening_prevention');
+
+	    if (self::processRequest(__FUNCTION__)) {
+            if (SucuriScanOption::updateOption(':hardening_xmlrpc', 'enabled')) {
+                SucuriScanEvent::reportNoticeEvent(__('XML-RPC was disabled', 'sucuri-scanner'));
+                SucuriScanInterface::info(__('XML-RPC (xmlrpc.php) has been disabled.', 'sucuri-scanner'));
+            } else {
+                SucuriScanInterface::error(__('Something went wrong.', 'sucuri-scanner'));
+            }
+        }
+
+        if (self::processRequest(__FUNCTION__ . '_revert')) {
+            if (SucuriScanOption::updateOption(':hardening_xmlrpc', 'disabled')) {
+                SucuriScanEvent::reportErrorEvent(__('XML-RPC was re-enabled', 'sucuri-scanner'));
+                SucuriScanInterface::info(__('XML-RPC (xmlrpc.php) has been re-enabled.', 'sucuri-scanner'));
+            } else {
+                SucuriScanInterface::error(__('Something went wrong.', 'sucuri-scanner'));
+            }
+        }
+
+        $params['Hardening.Title'] = __('Disable XML-RPC', 'sucuri-scanner');
+
+        $description = __(
+            'XML-RPC (xmlrpc.php) is a legacy remote API with almost no legitimate use on modern WordPress sites. It is one of the most common vectors for brute-force login attempts and pingback-based DDoS amplification attacks. Disabling it closes this attack surface.',
+            'sucuri-scanner'
+        );
+
+        $dependentPlugins = SucuriScanHardening::activeXMLRPCDependentPlugins();
+
+        if (!empty($dependentPlugins)) {
+            $description .= ' ' . sprintf(
+                /* translators: %s: comma-separated list of active plugin names, e.g. "Jetpack". */
+                __('Warning: the following active plugin(s) may rely on XML-RPC and could stop working correctly if you disable it: %s.', 'sucuri-scanner'),
+                implode(', ', $dependentPlugins)
+            );
+        }
+
+        $params['Hardening.Description'] = $description;
+
+        if (SucuriScanOption::isEnabled(':hardening_xmlrpc')) {
+            $params['Hardening.Status'] = 1;
+            $params['Hardening.FieldName'] = __FUNCTION__ . '_revert';
+            $params['Hardening.FieldText'] = __('Revert Hardening', 'sucuri-scanner');
+        } else {
+            $params['Hardening.Status'] = 0;
+            $params['Hardening.FieldName'] = __FUNCTION__;
+            $params['Hardening.FieldText'] = __('Apply Hardening', 'sucuri-scanner');
+        }
+
+        return self::drawSection($params);
+    }
+
+    /**
      * Allow individual PHP files.
      *
      * Allows an admin to allow individual PHP files after the directory has

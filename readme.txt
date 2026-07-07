@@ -263,6 +263,8 @@ This version adds an option to refresh the malware scan results on demand, as we
 * Improve the Two-Factor Authentication page to load the users list in pages, so it stays fast and reliable on sites with hundreds or thousands of users (for example, WooCommerce stores).
 * Add a search box to the Two-Factor Authentication page to quickly find users by username, email, or display name.
 * Strengthen input validation, access checks, and output escaping.
+* Add a one-click "Disable XML-RPC" option to the Hardening page to close a common brute-force and pingback-based DDoS attack vector, with a warning if an active plugin (e.g. Jetpack) depends on XML-RPC.
+* Fix a fatal error on PHP 8 when the API returns the "messages" field as a string instead of an array.
 
 = 2.7.3 =
 * Refactor AJAX handler to an explicit dispatch map for improved security and efficiency.
