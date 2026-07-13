@@ -1147,15 +1147,11 @@ class SucuriScanOption extends SucuriScanRequest
      */
     private static function getSecretRandomBytes($length)
     {
-        if (function_exists('random_bytes')) {
+        try {
             return random_bytes($length);
+        } catch (Exception $e) {
+            return false;
         }
-
-        if (function_exists('openssl_random_pseudo_bytes')) {
-            return openssl_random_pseudo_bytes($length);
-        }
-
-        return false;
     }
 
     /**

@@ -2,7 +2,7 @@
 /**
  * Code related to the TOTP implementation.
  *
- * PHP version 5
+ * PHP version 7.4
  *
  * @category   Library
  * @package    Sucuri
@@ -23,34 +23,6 @@ if (!defined('SUCURISCAN_INIT') || SUCURISCAN_INIT !== true) {
     exit(1);
 }
 
-// Polyfill hash_equals() for PHP < 5.6
-// WordPress ships a polyfill in newer versions, but we defensively include
-// one here in case very old environments are still in play. This preserves
-// constant-time comparison semantics for TOTP code verification.
-if (!function_exists('hash_equals')) {
-    function hash_equals($known_string, $user_string)
-    {
-        if (!is_string($known_string) || !is_string($user_string)) {
-            return false;
-        }
-
-        $ks = strlen($known_string);
-        $us = strlen($user_string);
-
-        if ($ks !== $us) {
-            return false;
-        }
-
-        $res = 0;
-
-        for ($i = 0; $i < $ks; $i++) {
-            $res |= ord($known_string[$i]) ^ ord($user_string[$i]);
-        }
-
-        return $res === 0;
-    }
-}
-
 class SucuriScanTOTP extends SucuriScan
 {
     const DEFAULT_KEY_BIT_SIZE = 160;
@@ -63,30 +35,21 @@ class SucuriScanTOTP extends SucuriScan
 
     /**
      * This function generates a random key suitable for TOTP.
-     * 
-     * PHP 7 and up will use random_bytes() to generate cryptographically secure keys.
-     * The fallback is wp_generate_password() with special characters enabled.
-     * 
+     *
+     * Uses random_bytes() to generate a cryptographically secure key, falling
+     * back to wp_generate_password() if no CSPRNG source is available.
+     *
      * @param mixed $bitsize
-     * 
+     *
      * @return string
      */
     public static function generate_key($bitsize = self::DEFAULT_KEY_BIT_SIZE)
     {
-        $secret = '';
-
         $bytes = (int) ceil($bitsize / 8);
 
-        // PHP 7 and up.
-        if (function_exists('random_bytes')) {
-            try {
-                $secret = random_bytes($bytes);
-            } catch (Exception $e) {
-                $secret = '';
-            }
-        }
-
-        if (empty($secret)) {
+        try {
+            $secret = random_bytes($bytes);
+        } catch (Exception $e) {
             $secret = wp_generate_password($bytes, true, true);
         }
 
@@ -316,13 +279,12 @@ class SucuriScanTOTP extends SucuriScan
     /**
      * Pack an unsigned 64-bit counter as 8-byte **big-endian** (RFC 4226 / TOTP).
      *
-     * Uses 'J' on PHP >= 5.6.3 (unsigned 64-bit, big-endian). Falls back to two
-     * 32-bit big-endian words ('N2') otherwise.
+     * Uses 'J' (unsigned 64-bit, big-endian) on 64-bit PHP builds.
      *
      * @param int $value Non-negative step counter (fits in 64 bits).
-     * 
+     *
      * @return string 8-byte binary string (big-endian).
-     * 
+     *
      * @throws Exception If $value is negative, non-integer, or cannot be represented.
      */
     public static function pack64($value)
@@ -332,13 +294,7 @@ class SucuriScanTOTP extends SucuriScan
         }
 
         if (PHP_INT_SIZE >= 8) {
-            if (version_compare(PHP_VERSION, '5.6.3', '>=')) {
-                return pack('J', $value);
-            }
-
-            $hi = ($value >> 32) & 0xFFFFFFFF;
-            $lo = $value & 0xFFFFFFFF;
-            return pack('N2', $hi, $lo);
+            return pack('J', $value);
         }
 
         if ($value > 0xFFFFFFFF) {

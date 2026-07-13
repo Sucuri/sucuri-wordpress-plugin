@@ -9,10 +9,11 @@
  * Text Domain: sucuri-scanner
  * Domain Path: /lang
  * Version: 2.7.4
+ * Requires PHP: 7.4
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  *
- * PHP version 7
+ * PHP version 7.4
  *
  * @category   Library
  * @package    Sucuri

@@ -207,7 +207,7 @@ class SucuriScanInterface
 
         if (!SucuriScanFileInfo::isSplAvailable()) {
             /* display a warning when system dependencies are not met */
-            self::error(__('The plugin requires PHP 5 >= 5.3.0 - OR - PHP 7', 'sucuri-scanner'));
+            self::error(__('The plugin requires PHP 7.4 or greater', 'sucuri-scanner'));
         }
 
         $filename = SucuriScanOption::optionsFilePath();
