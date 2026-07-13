@@ -39,7 +39,13 @@
                     $('#two-factor-info-deactivated').hide();
                     $('#two-factor-info-activated').show();
 
-                    window.location.reload();
+                    const reload = function () { window.location.reload(); };
+
+                    if (typeof window.sucuriShowBackupCodesModal === 'function') {
+                        window.sucuriShowBackupCodesModal(resp.backupCodes, reload);
+                    } else {
+                        reload();
+                    }
                 } else {
                     var err = (resp && resp.error) ? resp.error : 'Verification failed';
                     error(err);

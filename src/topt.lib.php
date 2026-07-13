@@ -18,6 +18,7 @@ class SucuriScanTwoFactor extends SucuriScan
     const LAST_SUCCESS_META_KEY = 'sucuriscan_topt_last_success';
     const LOGIN_TOKEN_TTL = 600;
     const LOGIN_TOKEN_MAX_ATTEMPTS = 5;
+    const BACKUP_TOKEN_MAX_ATTEMPTS = 3;
     const DEFAULT_CODE_ERROR = 'sucuriscan_profile_error';
     const LOGIN_TRANSIENT_PREFIX = 'sucuri_2fa_';
     const LOGIN_TOKEN_PATTERN = '[A-Za-z0-9]{10,128}';
@@ -37,6 +38,8 @@ class SucuriScanTwoFactor extends SucuriScan
         add_action('admin_enqueue_scripts', array(__CLASS__, 'enqueue_profile_assets'));
         add_action('wp_ajax_sucuri_profile_2fa_enable', array(__CLASS__, 'ajax_profile_enable'));
         add_action('wp_ajax_sucuri_profile_2fa_reset', array(__CLASS__, 'ajax_profile_reset'));
+        add_action('wp_ajax_sucuri_profile_2fa_backup_regen', array(__CLASS__, 'ajax_profile_backup_regen'));
+        add_action('admin_notices', array(__CLASS__, 'render_backup_codes_reveal_notice'));
     }
 
     protected static $profile_error_queue = array();
@@ -245,6 +248,7 @@ class SucuriScanTwoFactor extends SucuriScan
         }
 
         self::ensure_qr_script();
+        self::ensure_backup_codes_script();
     }
 
     protected static function create_login_token($user_id, $remember, $redirect_to, $secret_for_setup = '')
@@ -429,9 +433,37 @@ class SucuriScanTwoFactor extends SucuriScan
     }
 
     /**
+     * Extract a submitted login credential that may be either a 6-digit TOTP
+     * code or an 8-character backup code (optionally dash-separated).
+     * Wider than extract_submitted_code() since SucuriScanRequest anchors
+     * its pattern match (^...$), so a single non-digit character in a
+     * backup code would otherwise make the whole value come back false.
+     *
+     * Only strips whitespace/dashes and uppercases — it must NOT run the
+     * value through SucuriScanBackupCodes::normalize_code() here, since
+     * that filters out characters (e.g. digits "0"/"1") that are valid in a
+     * TOTP code but excluded from the backup-code alphabet, which would
+     * corrupt legitimate TOTP submissions before they're even branched on.
+     *
+     * @param string $field
+     *
+     * @return string Normalized (dashes/whitespace stripped, uppercased).
+     */
+    protected static function extract_submitted_login_credential($field)
+    {
+        $raw = SucuriScanRequest::post($field, '[A-Za-z0-9 \-]+');
+
+        if ($raw === false) {
+            return '';
+        }
+
+        return (string) preg_replace('/[\s\-]+/', '', strtoupper((string) $raw));
+    }
+
+    /**
      * Record a failed attempt. If lockout threshold reached the session is cleared and user redirected.
      * Otherwise session is updated with incremented attempts.
-     * 
+     *
      * @param string $token
      * @param array  $session (by reference)
      *
@@ -442,6 +474,30 @@ class SucuriScanTwoFactor extends SucuriScan
         $session['attempts'] = isset($session['attempts']) ? ((int) $session['attempts'] + 1) : 1;
 
         if ($session['attempts'] >= self::LOGIN_TOKEN_MAX_ATTEMPTS) {
+            self::clear_login_session($token);
+            wp_safe_redirect(wp_login_url());
+            exit;
+        }
+
+        self::update_login_session($token, $session);
+    }
+
+    /**
+     * Record a failed backup-code attempt against its own, stricter budget:
+     * unlike a TOTP code (which rotates every 30s), a backup code is a
+     * static secret from a fixed set, so it gets a lower attempt ceiling
+     * than record_failed_attempt()'s general-purpose counter.
+     *
+     * @param string $token
+     * @param array  $session (by reference)
+     *
+     * @return void (never returns on lockout)
+     */
+    protected static function record_failed_backup_attempt($token, &$session)
+    {
+        $session['backup_attempts'] = isset($session['backup_attempts']) ? ((int) $session['backup_attempts'] + 1) : 1;
+
+        if ($session['backup_attempts'] >= self::BACKUP_TOKEN_MAX_ATTEMPTS) {
             self::clear_login_session($token);
             wp_safe_redirect(wp_login_url());
             exit;
@@ -474,6 +530,13 @@ class SucuriScanTwoFactor extends SucuriScan
     protected static function process_successful_setup($user_id, $secret_key, $valid_ts, $remember, $redirect_to, $token)
     {
         self::store_user_totp_key($user_id, $secret_key);
+
+        $backup_codes = SucuriScanBackupCodes::maybe_generate_for_user($user_id);
+
+        if (!empty($backup_codes)) {
+            SucuriScanBackupCodes::stash_reveal($user_id, $backup_codes, $redirect_to);
+            $redirect_to = admin_url('profile.php');
+        }
 
         if ($valid_ts) {
             update_user_meta($user_id, self::LAST_SUCCESS_META_KEY, $valid_ts);
@@ -609,13 +672,10 @@ class SucuriScanTwoFactor extends SucuriScan
         if (SucuriScanRequest::server('REQUEST_METHOD') === 'POST') {
             check_admin_referer($nonce_action);
 
-            $submitted_code = self::extract_submitted_code('sucuriscan_totp_code');
+            $credential = self::extract_submitted_login_credential('sucuriscan_totp_code');
             $invalid_message = esc_html__('Invalid two-factor authentication code.', 'sucuri-scanner');
 
-            if (strlen($submitted_code) !== SucuriScanTOTP::DEFAULT_DIGIT_COUNT) {
-                self::record_failed_attempt($token, $session);
-                $error = $invalid_message;
-            } else {
+            if (strlen($credential) === SucuriScanTOTP::DEFAULT_DIGIT_COUNT && ctype_digit($credential)) {
                 $secret_key = self::get_user_totp_key($user_id);
 
                 if (empty($secret_key)) {
@@ -626,7 +686,7 @@ class SucuriScanTwoFactor extends SucuriScan
 
                 $valid_ts = false;
                 try {
-                    $valid_ts = SucuriScanTOTP::get_authcode_valid_ticktime($secret_key, $submitted_code);
+                    $valid_ts = SucuriScanTOTP::get_authcode_valid_ticktime($secret_key, $credential);
                 } catch (Exception $e) {
                     $valid_ts = false;
                 }
@@ -645,11 +705,24 @@ class SucuriScanTwoFactor extends SucuriScan
 
                 self::record_failed_attempt($token, $session);
                 $error = $invalid_message;
+            } elseif (strlen($credential) === SucuriScanBackupCodes::CODE_LENGTH) {
+                // Backup codes are a static, single-use secret (unlike a TOTP
+                // code, which rotates every 30s) so they're throttled with
+                // their own, stricter attempt budget.
+                if (SucuriScanBackupCodes::validate_and_consume($user_id, $credential)) {
+                    self::complete_success_login($user_id, $remember, $redirect_to, $token, 0);
+                }
+
+                self::record_failed_backup_attempt($token, $session);
+                $error = esc_html__('Invalid backup code.', 'sucuri-scanner');
+            } else {
+                self::record_failed_attempt($token, $session);
+                $error = $invalid_message;
             }
         }
 
         $message_html = SucuriScanTemplate::getSnippet('login-message', array(
-            'Message' => esc_html__('Enter the 6-digit code from your authenticator app to continue.', 'sucuri-scanner'),
+            'Message' => esc_html__('Enter the 6-digit code from your authenticator app or an 8-character backup code to continue.', 'sucuri-scanner'),
         ));
 
         if (!empty($error)) {
@@ -799,6 +872,34 @@ class SucuriScanTwoFactor extends SucuriScan
     }
 
     /**
+     * Registers/enqueues the shared backup-codes reveal-modal script (Copy /
+     * Download / acknowledge-before-close UI, used by the enable, reset and
+     * regenerate flows).
+     *
+     * @return void
+     */
+    protected static function ensure_backup_codes_script()
+    {
+        if (!function_exists('wp_script_is') || !function_exists('wp_register_script') || !function_exists('wp_enqueue_script')) {
+            return;
+        }
+
+        if (!wp_script_is('sucuriscan-backup-codes', 'registered')) {
+            wp_register_script(
+                'sucuriscan-backup-codes',
+                trailingslashit(SUCURISCAN_URL) . 'inc/js/backup-codes.js',
+                array('sucuriscan'),
+                method_exists('SucuriScan', 'fileVersion') ? SucuriScan::fileVersion('inc/js/backup-codes.js') : false,
+                true
+            );
+        }
+
+        if (!wp_script_is('sucuriscan-backup-codes', 'enqueued')) {
+            wp_enqueue_script('sucuriscan-backup-codes');
+        }
+    }
+
+    /**
      * Retrieve the stored TOTP secret key for a given user.
      */
     public static function get_user_totp_key($user_id)
@@ -919,6 +1020,7 @@ class SucuriScanTwoFactor extends SucuriScan
             'ajax_url' => admin_url('admin-ajax.php'),
             'ajax_nonce' => wp_create_nonce('sucuri_profile_2fa_' . (int) $user_id),
             'user_id' => (int) $user_id,
+            'BackupCodesRemaining' => SucuriScanBackupCodes::remaining_count($user_id),
         ));
     }
 
@@ -940,6 +1042,52 @@ class SucuriScanTwoFactor extends SucuriScan
             'ajax_nonce' => wp_create_nonce('sucuri_profile_2fa_' . (int) $user_id),
             'user_id' => (int) $user_id,
         ));
+    }
+
+    /**
+     * Build the one-time backup-codes reveal snippet (a hidden data element
+     * consumed client-side by inc/js/backup-codes.js).
+     *
+     * @param string[] $codes Plaintext codes.
+     *
+     * @return string HTML.
+     */
+    protected static function backup_codes_reveal_snippet(array $codes, $redirect_to = '')
+    {
+        return SucuriScanTemplate::getSnippet('profile-2fa-backup-codes', array(
+            'CodesJSON' => wp_json_encode(array_values($codes)),
+            'RedirectURL' => wp_json_encode((string) $redirect_to),
+        ));
+    }
+
+    /**
+     * Renders a freshly-generated backup-codes reveal (if one was stashed by
+     * a redirect-based enable flow: classic profile POST or login-time
+     * forced setup) on the very next wp-admin page render, then discards it.
+     * AJAX-driven enable/regenerate flows do not need this — they return
+     * the plaintext codes directly in their JSON response instead.
+     *
+     * @return void
+     */
+    public static function render_backup_codes_reveal_notice()
+    {
+        $user_id = get_current_user_id();
+
+        if (!$user_id) {
+            return;
+        }
+
+        $codes = SucuriScanBackupCodes::consume_reveal($user_id);
+        $redirect_to = SucuriScanBackupCodes::consume_reveal_redirect($user_id);
+
+        if (empty($codes)) {
+            return;
+        }
+
+        self::ensure_backup_codes_script();
+
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+        echo self::backup_codes_reveal_snippet($codes, $redirect_to);
     }
 
     /**
@@ -1132,8 +1280,13 @@ class SucuriScanTwoFactor extends SucuriScan
             SucuriScanEvent::reportInfoEvent('Two-factor authentication enabled for user ID ' . (int) $user_id);
         }
 
+        $backup_codes = SucuriScanBackupCodes::maybe_generate_for_user($user_id);
+
         $html = self::profile_status_snippet($user_id);
-        wp_send_json_success(array('html' => $html));
+        wp_send_json_success(array(
+            'html' => $html,
+            'backupCodes' => !empty($backup_codes) ? $backup_codes : array(),
+        ));
     }
 
 
@@ -1155,6 +1308,7 @@ class SucuriScanTwoFactor extends SucuriScan
 
         delete_user_meta($user_id, self::SECRET_META_KEY);
         delete_user_meta($user_id, self::LAST_SUCCESS_META_KEY);
+        SucuriScanBackupCodes::delete_for_user($user_id);
 
         if (class_exists('SucuriScanEvent')) {
             SucuriScanEvent::reportInfoEvent('Two-factor authentication reset for user ID ' . (int) $user_id);
@@ -1179,6 +1333,42 @@ class SucuriScanTwoFactor extends SucuriScan
         wp_send_json_success(array('html' => $html));
     }
 
+    /**
+     * AJAX handler to regenerate (invalidate + replace) a user's backup codes.
+     * Requires an existing Two-Factor secret (backup codes are a fallback for
+     * TOTP, not a standalone method).
+     * Expects POST with: user_id (int, optional), nonce (string, required).
+     *
+     * @return void (sends JSON response and exits)
+     */
+    public static function ajax_profile_backup_regen()
+    {
+        if (!is_user_logged_in()) {
+            wp_send_json_error(array('message' => 'Forbidden'), 403);
+        }
+
+        $resolved = self::resolve_ajax_target_user();
+        $user_id = $resolved['target'];
+
+        $existing_secret = self::get_user_totp_key($user_id);
+
+        if (empty($existing_secret)) {
+            wp_send_json_error(array(
+                'message' => __('Two-Factor must be enabled before generating backup codes.', 'sucuri-scanner'),
+            ), 400);
+        }
+
+        $backup_codes = SucuriScanBackupCodes::generate_for_user($user_id);
+
+        if (class_exists('SucuriScanEvent')) {
+            SucuriScanEvent::reportInfoEvent('Two-factor backup codes regenerated for user ID ' . (int) $user_id);
+        }
+
+        wp_send_json_success(array(
+            'html' => self::profile_status_snippet($user_id),
+            'backupCodes' => $backup_codes,
+        ));
+    }
 
     /**
      * Process and save 2FA settings when a user profile is updated.
@@ -1246,6 +1436,12 @@ class SucuriScanTwoFactor extends SucuriScan
                 SucuriScanEvent::reportInfoEvent('Two-factor authentication enabled for user ID ' . (int) $user_id);
             }
 
+            $backup_codes = SucuriScanBackupCodes::maybe_generate_for_user($user_id);
+
+            if (!empty($backup_codes)) {
+                SucuriScanBackupCodes::stash_reveal($user_id, $backup_codes);
+            }
+
             return;
         }
 
@@ -1259,6 +1455,7 @@ class SucuriScanTwoFactor extends SucuriScan
             }
             delete_user_meta($user_id, self::SECRET_META_KEY);
             delete_user_meta($user_id, self::LAST_SUCCESS_META_KEY);
+            SucuriScanBackupCodes::delete_for_user($user_id);
             if (class_exists('SucuriScanEvent')) {
                 SucuriScanEvent::reportInfoEvent('Two-factor authentication reset for user ID ' . (int) $user_id);
             }
@@ -1878,6 +2075,7 @@ class SucuriScanTwoFactor extends SucuriScan
                 foreach ($selected as $uid) {
                     delete_user_meta($uid, self::SECRET_META_KEY);
                     delete_user_meta($uid, self::LAST_SUCCESS_META_KEY);
+                    SucuriScanBackupCodes::delete_for_user($uid);
                 }
 
                 $result['success'] = true;
@@ -1901,6 +2099,7 @@ class SucuriScanTwoFactor extends SucuriScan
                 foreach ($all_ids as $uid) {
                     delete_user_meta($uid, self::SECRET_META_KEY);
                     delete_user_meta($uid, self::LAST_SUCCESS_META_KEY);
+                    SucuriScanBackupCodes::delete_for_user($uid);
                 }
 
                 $result['success'] = true;
@@ -1918,6 +2117,7 @@ class SucuriScanTwoFactor extends SucuriScan
                 foreach ($all_ids as $uid) {
                     delete_user_meta($uid, self::SECRET_META_KEY);
                     delete_user_meta($uid, self::LAST_SUCCESS_META_KEY);
+                    SucuriScanBackupCodes::delete_for_user($uid);
                 }
                 SucuriScanOption::updateOption(':twofactor_mode', 'disabled');
                 SucuriScanOption::updateOption(':twofactor_users', array());
@@ -1976,6 +2176,8 @@ class SucuriScanTwoFactor extends SucuriScan
         self::store_user_totp_key($user_id, $secret);
         update_user_meta($user_id, self::LAST_SUCCESS_META_KEY, $verified['valid_ts']);
 
+        $backup_codes = SucuriScanBackupCodes::maybe_generate_for_user($user_id);
+
         $enforce_all = false;
         $enforce_all_raw = SucuriScanRequest::post('enforce_all', '[01]');
 
@@ -2002,6 +2204,10 @@ class SucuriScanTwoFactor extends SucuriScan
             SucuriScanOption::updateOption(':twofactor_mode', 'selected_users');
         }
 
-        wp_send_json(array('data' => 'activated', 'error' => ''), 200);
+        wp_send_json(array(
+            'data' => 'activated',
+            'error' => '',
+            'backupCodes' => !empty($backup_codes) ? $backup_codes : array(),
+        ), 200);
     }
 }

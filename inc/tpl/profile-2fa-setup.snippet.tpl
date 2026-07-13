@@ -85,6 +85,14 @@
                     if (container) { container.innerHTML = resp.data.html; }
 
                     setMessage('', '');
+
+                    const reload = function () { window.location.reload(); };
+
+                    if (resp.data.backupCodes && resp.data.backupCodes.length && typeof window.sucuriShowBackupCodesModal === 'function') {
+                        window.sucuriShowBackupCodesModal(resp.data.backupCodes, reload);
+                    } else {
+                        reload();
+                    }
                 } else {
                     const err = (resp && resp.data && (resp.data.message || resp.data.error)) || 'Verification failed';
 

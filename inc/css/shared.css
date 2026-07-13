@@ -589,6 +589,127 @@ body.sucuri-security_page_sucuriscan_firewall .sucuriscan-panel {
     top: -21px;
 }
 
+html.sucuriscan-backup-codes-modal-open,
+body.sucuriscan-backup-codes-modal-open {
+    overflow: hidden;
+}
+
+.sucuriscan-backup-codes-overlay {
+    align-items: center;
+    background: rgba(0, 0, 0, 0.7);
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    left: 0;
+    padding: 20px;
+    position: fixed;
+    right: 0;
+    overscroll-behavior: contain;
+    top: 0;
+    z-index: 100000;
+}
+
+.sucuriscan-backup-codes-modal {
+    background: var(--sucuri-surface-card-bg);
+    border: 1px solid var(--sucuri-surface-card-border);
+    border-radius: var(--sucuri-border-radius);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    box-sizing: border-box;
+    color: var(--sucuri-color-text-main);
+    max-height: calc(100vh - 40px);
+    max-width: 480px;
+    overscroll-behavior: contain;
+    overflow-y: auto;
+    padding: 24px;
+    width: 100%;
+}
+
+.sucuriscan-backup-codes-modal h2 {
+    color: var(--sucuri-color-text-main);
+    font-size: 24px;
+    line-height: 1.3;
+    margin: 0 0 12px;
+}
+
+.sucuriscan-backup-codes-modal p {
+    color: var(--sucuri-color-text-secondary);
+    margin: 0;
+}
+
+.sucuriscan-backup-codes-list {
+    display: grid;
+    font-size: 14px;
+    gap: 8px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    list-style: none;
+    margin: 16px 0;
+    padding: 0;
+}
+
+.sucuriscan-backup-codes-list code {
+    background: var(--sucuri-surface-list-bg);
+    border: 1px solid var(--sucuri-surface-panel-border);
+    border-radius: 3px;
+    color: var(--sucuri-color-text-main);
+    display: block;
+    padding: 6px 8px;
+    text-align: center;
+}
+
+.sucuriscan-backup-codes-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.sucuriscan-backup-codes-modal .button {
+    background: transparent;
+    border-color: var(--sucuri-color-primary);
+    border-radius: var(--sucuri-border-radius);
+    color: var(--sucuri-color-primary);
+}
+
+.sucuriscan-backup-codes-modal .button:hover,
+.sucuriscan-backup-codes-modal .button:focus {
+    background: var(--sucuri-color-primary);
+    border-color: var(--sucuri-color-primary);
+    color: var(--sucuri-color-white);
+}
+
+.sucuriscan-backup-codes-modal .button.button-primary {
+    background: var(--sucuri-color-primary);
+    border-color: var(--sucuri-color-primary);
+    color: var(--sucuri-color-white);
+}
+
+.sucuriscan-backup-codes-modal .button.button-primary:disabled {
+    background: var(--sucuri-surface-list-bg);
+    border-color: var(--sucuri-surface-panel-border);
+    color: var(--sucuri-color-text-disabled);
+}
+
+.sucuriscan-backup-codes-ack {
+    color: var(--sucuri-color-text-main);
+    display: block;
+    margin-bottom: 16px;
+}
+
+@media screen and (max-width: 480px) {
+    .sucuriscan-backup-codes-overlay {
+        padding: 12px;
+    }
+
+    .sucuriscan-backup-codes-modal {
+        max-height: calc(100vh - 24px);
+        padding: 20px;
+    }
+
+    .sucuriscan-backup-codes-list {
+        grid-template-columns: 1fr;
+    }
+}
+
 .sucuriscan-tabs {
     margin-top: 30px;
 }

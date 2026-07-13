@@ -5,6 +5,15 @@
         Two-Factor Authentication <strong>is enabled</strong> for this account.
     </p>
 
+    <p class="sucuriscan-2fa-backup-codes-row" data-cy="sucuriscan-2fa-backup-codes-row">
+        <span id="sucuri-2fa-backup-codes-count">%%SUCURI.BackupCodesRemaining%%</span> backup code(s) remaining.
+        <button type="button" class="button button-secondary" id="sucuri-2fa-backup-regen-btn"
+            aria-controls="sucuri-2fa-backup-regen-msg" data-cy="sucuriscan-2fa-backup-regen-btn">
+            Regenerate backup codes
+        </button>
+        <span id="sucuri-2fa-backup-regen-msg" class="sucuriscan-2fa-reset-msg" role="status" aria-live="polite"></span>
+    </p>
+
     <p class="sucuriscan-2fa-reset-row">
         <button type="button" class="button button-secondary" id="sucuri-2fa-reset-btn"
             aria-controls="sucuri-2fa-reset-msg" data-cy="sucuriscan-2fa-reset-btn">
@@ -96,6 +105,14 @@
                             const cell = $container.closest('td').get(0) || $container.get(0);
 
                             if (cell) cell.innerHTML = resp.data.html;
+
+                            const reload = () => window.location.reload();
+
+                            if (resp.data.backupCodes && resp.data.backupCodes.length && typeof window.sucuriShowBackupCodesModal === 'function') {
+                                window.sucuriShowBackupCodesModal(resp.data.backupCodes, reload);
+                            } else {
+                                reload();
+                            }
                         } else {
                             const err = (resp && resp.data && (resp.data.message || resp.data.error)) || 'Verification failed';
 
@@ -110,6 +127,41 @@
                 });
             }
         };
+
+        const $regenBtn = $('#sucuri-2fa-backup-regen-btn');
+        const $regenMsg = $('#sucuri-2fa-backup-regen-msg');
+        const $regenCount = $('#sucuri-2fa-backup-codes-count');
+
+        $regenBtn.on('click', () => {
+            if (!window.confirm('This will invalidate your existing backup codes and generate a new set. Continue?')) return;
+
+            $regenBtn.prop('disabled', true).attr('aria-disabled', 'true');
+            $regenMsg.text('Generating…').removeClass('sucuriscan-text-error sucuriscan-text-success');
+
+            $.ajax({
+                url: ajaxUrl,
+                method: 'POST',
+                dataType: 'json',
+                data: { action: 'sucuri_profile_2fa_backup_regen', nonce: ajaxNonce, user_id: userId }
+            }).done(resp => {
+                $regenBtn.prop('disabled', false).removeAttr('aria-disabled');
+                $regenMsg.text('');
+
+                if (resp && resp.success && resp.data && resp.data.backupCodes) {
+                    if ($regenCount.length) $regenCount.text(resp.data.backupCodes.length);
+
+                    if (typeof window.sucuriShowBackupCodesModal === 'function') {
+                        window.sucuriShowBackupCodesModal(resp.data.backupCodes);
+                    }
+                } else {
+                    const err = (resp && resp.data && (resp.data.message || resp.data.error)) || 'Could not regenerate backup codes';
+                    $regenMsg.text(err).addClass('sucuriscan-text-error');
+                }
+            }).fail(() => {
+                $regenBtn.prop('disabled', false).removeAttr('aria-disabled');
+                $regenMsg.text('Could not regenerate backup codes').addClass('sucuriscan-text-error');
+            });
+        });
 
         $btn.on('click', () => {
             if (!window.confirm('This will disable two-factor for this user. Continue?')) return;

@@ -136,4 +136,5 @@ require BASE_DIR . '/src/integrity.lib.php';
 require BASE_DIR . '/src/firewall.lib.php';
 require BASE_DIR . '/src/installer-skin.lib.php';
 require BASE_DIR . '/src/cachecontrol.lib.php';
+require BASE_DIR . '/src/backupcodes.lib.php';
 require BASE_DIR . '/src/topt.lib.php';
