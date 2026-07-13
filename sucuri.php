@@ -234,6 +234,7 @@ require_once 'src/cachecontrol.lib.php';
 require_once 'src/csp.lib.php';
 require_once 'src/cors.lib.php';
 require_once 'src/totp.core.php';
+require_once 'src/backupcodes.lib.php';
 require_once 'src/topt.lib.php';
 
 /* Load page and ajax handlers */
