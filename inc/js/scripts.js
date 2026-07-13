@@ -7,6 +7,31 @@ function sucuriscanAlertClose(id) {
 }
 /* jshint ignore:end */
 
+/**
+ * Download text already available in the browser without sending it to the
+ * server. Callers are responsible for supplying an appropriate filename.
+ *
+ * @param {string} filename Suggested download filename.
+ * @param {string} content Text content to download.
+ * @return {void}
+ */
+window.sucuriscanDownloadTextFile = function(filename, content) {
+    var blob = new Blob([String(content)], { type: 'text/plain;charset=utf-8' });
+    var url = window.URL.createObjectURL(blob);
+    var link = document.createElement('a');
+
+    link.href = url;
+    link.download = String(filename);
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    link.parentNode.removeChild(link);
+
+    window.setTimeout(function() {
+        window.URL.revokeObjectURL(url);
+    }, 1000);
+};
+
 jQuery(document).ready(function($) {
     $('.sucuriscan-container').on('click', '.sucuriscan-modal-button', function(event) {
         event.preventDefault();
