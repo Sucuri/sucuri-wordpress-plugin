@@ -2,6 +2,7 @@
     "core": null,
     "plugins": ["."],
     "config":{
-        "SUCURISCAN_API_URL": "https://sucuri.net"
+        "SUCURISCAN_API_URL": "https://sucuri.net",
+        "DISABLE_WP_CRON": true
     }
 }

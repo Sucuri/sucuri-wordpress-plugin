@@ -42,4 +42,18 @@ final class HardeningAllowlistRegexTest extends TestCase
         $this->assertStringContainsString('up\(loads\)', $rule);
         $this->assertStringNotContainsString('up(loads)/', $rule);
     }
+
+    public function testEscapedPathsAreDecodedWhenReadingTheAllowlist()
+    {
+        $rule = $this->rule('evil.(a|b)*.php', ABSPATH . 'wp-content');
+        $method = (new ReflectionClass('SucuriScanHardening'))->getMethod('getFilesWithNewPattern');
+        $method->setAccessible(true);
+
+        $files = $method->invoke(null, $rule, ABSPATH . 'wp-content');
+
+        $this->assertSame(array(array(
+            'file' => 'evil.(a|b)*.php',
+            'relative_path' => 'evil.(a|b)*.php',
+        )), $files);
+    }
 }

@@ -6,7 +6,7 @@
 # wp-config.php so the migration path is exercised from a clean state.
 set -e
 
-wp eval '
+wp eval --skip-plugins --skip-themes '
 $key_str = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
 $context  = "sucuriscan_waf_key_v1";
 $raw_salt = wp_salt( "auth" );
@@ -23,6 +23,8 @@ $payload  = array(
 );
 update_option( "sucuriscan_secret_cloudproxy_apikey_enc", $payload, false );
 delete_option( "sucuriscan_secret_cloudproxy_apikey" );
+delete_option( "sucuriscan_no_salt_encryption" );
+delete_option( "sucuriscan_waf_key_decrypt_error" );
 
 // Remove SUCURI_PLUG_* constants from wp-config.php so the first-run write
 // path is exercised from scratch.

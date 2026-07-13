@@ -181,20 +181,21 @@
                 sucuriscanLoadAuditLogs(0, filters);
             }
 
-            document.body.addEventListener('click', function (e) {
-                if (e.target.id == 'clear-filter-button') {
-                    sucuriscanLoadAuditLogs(0);
+        });
 
-                    $('#time').val('all time');
-                    $('#posts').val('all posts');
-                    $('#logins').val('all logins');
-                    $('#users').val('all users');
-                    $('#plugins').val('all plugins');
-                    $('#files').val('all files');
-                    $('#startDate').val('');
-                    $('#endDate').val('');
-                }
-            });
+        document.body.addEventListener('click', function (e) {
+            if (e.target.id == 'clear-filter-button') {
+                sucuriscanLoadAuditLogs(0);
+
+                $('#time').val('all time');
+                $('#posts').val('all posts');
+                $('#logins').val('all logins');
+                $('#users').val('all users');
+                $('#plugins').val('all plugins');
+                $('#files').val('all files');
+                $('#startDate').val('');
+                $('#endDate').val('');
+            }
         });
 
         document.body.addEventListener('change', function (e) {

@@ -1,34 +1,42 @@
 #!/bin/sh
 
-.PHONY: e2e e2e-prepare e2e-scanner e2e-firewall e2e-waf-migration-prepare e2e-waf-migration e2e-waf-plug-salt-prepare e2e-waf-plug-salt unit-test update-translations
+.PHONY: e2e e2e-start e2e-reset e2e-setup e2e-install e2e-test e2e-features e2e-mutations e2e-ui unit-test update-translations git-archive
 
-e2e: e2e-prepare e2e-scanner e2e-firewall
+# Normal runs preserve the existing tests environment and hold the workspace lock.
+e2e:
+	bash tests/e2e-with-lock.sh bash tests/e2e-run.sh
 
-e2e-prepare:
-	npx wp-env start
-	npx wp-env clean all
-	chmod +x tests/e2e-prepare.sh
-	npx wp-env run tests-cli bash wp-content/plugins/$(notdir $(CURDIR))/tests/e2e-prepare.sh
+# Start the shared local environment without resetting either database.
+e2e-start:
+	bash tests/e2e-with-lock.sh npx wp-env start
 
-e2e-scanner:
-	npx cypress run --spec cypress/e2e/sucuri-scanner.cy.js
+# Explicit destructive recovery for CI or an irreparably dirty tests environment.
+e2e-reset:
+	bash tests/e2e-with-lock.sh bash tests/e2e-reset-env.sh
 
-e2e-firewall:
-	npx cypress run --spec cypress/e2e/sucuri-scanner-firewall.cy.js
+# Refresh essential users, 2FA state, and authenticated storageState.
+e2e-setup:
+	bash tests/e2e-with-lock.sh bash tests/e2e-run.sh --project=setup
 
-e2e-waf-migration-prepare:
-	chmod +x tests/e2e-seed-waf-migration.sh
-	npx wp-env run tests-cli bash wp-content/plugins/$(notdir $(CURDIR))/tests/e2e-seed-waf-migration.sh
+# Install the Playwright browser (chromium) and its OS dependencies.
+e2e-install:
+	npx playwright install --with-deps chromium
 
-e2e-waf-migration: e2e-waf-migration-prepare
-	npx cypress run --spec cypress/e2e/sucuri-scanner-waf-migration.cy.js
+# Run the whole Playwright suite (setup -> features -> mutations).
+e2e-test:
+	npx playwright test
 
-e2e-waf-plug-salt-prepare:
-	chmod +x tests/e2e-seed-waf-plug-salt.sh
-	npx wp-env run tests-cli bash wp-content/plugins/$(notdir $(CURDIR))/tests/e2e-seed-waf-plug-salt.sh
+# Run only the non-destructive feature specs (setup runs automatically).
+e2e-features:
+	bash tests/e2e-with-lock.sh bash tests/e2e-run.sh --project=features
 
-e2e-waf-plug-salt: e2e-waf-plug-salt-prepare
-	npx cypress run --spec cypress/e2e/sucuri-scanner-waf-plug-salt.cy.js
+# Run the destructive / auth-affecting specs (setup runs automatically).
+e2e-mutations:
+	bash tests/e2e-with-lock.sh bash tests/e2e-run.sh --project=mutations
+
+# Interactive UI mode for debugging.
+e2e-ui:
+	bash tests/e2e-with-lock.sh bash tests/e2e-ui.sh
 
 unit-test:
 	./vendor/bin/phpunit

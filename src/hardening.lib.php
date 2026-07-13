@@ -443,6 +443,9 @@ class SucuriScanHardening extends SucuriScan
             }
 
             $cleaned_uri = str_replace(array('m#^', '$#'), '', $uri);
+            // allowlistRule() quotes path segments for the Apache PCRE. Decode
+            // those escapes so removal reconstructs the original rule exactly.
+            $cleaned_uri = preg_replace('/\\\\(.)/', '$1', $cleaned_uri);
 
             $relative_folder_uri = str_replace(ABSPATH, '', $folder);
             $relative_path = str_replace($relative_folder_uri, '', $cleaned_uri);

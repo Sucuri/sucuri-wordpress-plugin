@@ -5,7 +5,14 @@
   "main": "index.js",
   "scripts": {
     "start": "npx wp-env start",
-    "stop": "npx wp-env stop"
+    "stop": "npx wp-env stop",
+    "test:e2e": "bash tests/e2e-with-lock.sh bash tests/e2e-run.sh",
+    "test:e2e:reset": "make e2e-reset",
+    "test:e2e:setup": "bash tests/e2e-with-lock.sh bash tests/e2e-run.sh --project=setup",
+    "test:e2e:ui": "bash tests/e2e-with-lock.sh bash tests/e2e-ui.sh",
+    "test:e2e:headed": "bash tests/e2e-with-lock.sh bash tests/e2e-run.sh --headed",
+    "test:e2e:list": "playwright test --list",
+    "typecheck": "tsc --noEmit"
   },
   "repository": {
     "type": "git",
@@ -18,9 +25,11 @@
   },
   "homepage": "https://github.com/Sucuri/sucuri-wordpress-plugin#readme",
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
+    "@types/node": "^22.15.0",
     "@wordpress/env": "^10.27.0",
-    "cypress": "^14.3.0",
-    "prettier": "3.3.2"
+    "prettier": "3.3.2",
+    "typescript": "^5.7.0"
   },
   "dependencies": {
     "qrcode-generator": "^1.5.1"
