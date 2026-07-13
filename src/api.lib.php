@@ -285,7 +285,7 @@ class SucuriScanAPI extends SucuriScanOption
             return SucuriScanInterface::error(__('Unknown error, there is no information', 'sucuri-scanner'));
         }
 
-        $msg = implode(".\x20", $res['messages']);
+        $msg = implode(".\x20", self::normalizeMessages($res['messages']));
         $raw = $msg; /* Keep a copy of the original message. */
 
         // Special response for invalid API keys.
@@ -326,6 +326,21 @@ class SucuriScanAPI extends SucuriScanOption
         }
 
         return SucuriScanInterface::error($msg);
+    }
+
+    /**
+     * Normalize an API response "messages" value into an array of strings.
+     *
+     * The remote API is expected to return this field as an array, but some
+     * error responses emit a single string instead; implode() requires an
+     * array argument as of PHP 8, so callers must normalize before imploding.
+     *
+     * @param mixed $messages Raw "messages" value from an API response.
+     * @return array            Always an array, safe to pass to implode().
+     */
+    protected static function normalizeMessages($messages)
+    {
+        return is_array($messages) ? $messages : array($messages);
     }
 
     /**

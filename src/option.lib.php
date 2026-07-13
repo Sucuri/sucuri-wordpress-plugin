@@ -116,6 +116,7 @@ class SucuriScanOption extends SucuriScanRequest
             'sucuriscan_twofactor_mode' => 'disabled',
             'sucuriscan_twofactor_users' => array(),
             'sucuriscan_preferred_theme' => 'dark',
+            'sucuriscan_hardening_xmlrpc' => 'disabled',
             'sucuriscan_headers_cache_control' => 'disabled',
             'sucuriscan_headers_cache_control_options' => array(
                 'front_page' => array(
