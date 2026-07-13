@@ -26,8 +26,7 @@
  * Preconditions (asserted/relied upon): wp-config.php is writable by the wp-env
  * tests-cli user and contains the canonical "/* That's all, stop editing!"
  * marker. The seed/corrupt scripts live under tests/ and run inside the plugin
- * dir (slug "sucuri-scanner" — the old Cypress default "sucuri-wordpress-plugin"
- * was wrong for this repo; runPluginScript uses PLUGIN_SLUG).
+ * dir; runPluginScript derives PLUGIN_SLUG from the mounted checkout directory.
  */
 import { test, expect } from "@playwright/test";
 import type { Page } from "@playwright/test";

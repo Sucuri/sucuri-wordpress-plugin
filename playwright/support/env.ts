@@ -5,6 +5,7 @@
  * created by `tests/e2e-prepare.sh`. Everything is overridable via process.env
  * so the same suite runs locally and in CI without code changes.
  */
+import path from "node:path";
 
 /** Base URL of the wp-env WordPress instance (no trailing slash). */
 export const BASE_URL = (
@@ -58,11 +59,15 @@ export const WAF_DISMISS_COOKIE = "sucuriscan_waf_dismissed";
 
 /**
  * Plugin directory name inside the wp-env container. `.wp-env.json` mounts the
- * repo via `plugins: ["."]`, so the directory name equals the repo folder name.
- * NOTE: the old Cypress salt seed defaulted to `sucuri-wordpress-plugin`, which
- * was wrong for this repo — keep this as `sucuri-scanner`.
+ * repo via `plugins: ["."]`, so the directory name equals the checkout folder:
+ * `sucuri-scanner` locally and `sucuri-wordpress-plugin` in GitHub Actions.
  */
-export const PLUGIN_SLUG = process.env.PLUGIN_SLUG || "sucuri-scanner";
+export const PLUGIN_SLUG =
+  process.env.PLUGIN_SLUG || path.basename(path.resolve(__dirname, "../.."));
+
+if (!/^[A-Za-z0-9._-]+$/.test(PLUGIN_SLUG)) {
+  throw new Error(`Invalid PLUGIN_SLUG: ${PLUGIN_SLUG}`);
+}
 
 /** Storage-state file holding the authenticated admin session. */
 export const ADMIN_STORAGE_STATE = "playwright/.auth/admin.json";
