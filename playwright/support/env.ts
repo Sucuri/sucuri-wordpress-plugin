@@ -14,11 +14,12 @@ export const BASE_URL = (
 
 const baseUrl = new URL(BASE_URL);
 const localHosts = new Set(["localhost", "127.0.0.1", "::1"]);
+const testsPort = process.env.WP_ENV_TESTS_PORT || "8889";
 
-if (!localHosts.has(baseUrl.hostname)) {
+if (!localHosts.has(baseUrl.hostname) || baseUrl.port !== testsPort) {
   throw new Error(
-    `Refusing to run destructive E2E tests against ${baseUrl.hostname}; ` +
-      "this suite can only clean up the local wp-env instance.",
+    `SUCURI_BASE_URL must target the wp-env tests site on port ${testsPort}; ` +
+      `received ${BASE_URL}.`,
   );
 }
 
@@ -71,7 +72,3 @@ if (!/^[A-Za-z0-9._-]+$/.test(PLUGIN_SLUG)) {
 
 /** Storage-state file holding the authenticated admin session. */
 export const ADMIN_STORAGE_STATE = "playwright/.auth/admin.json";
-
-/** Path (inside the container, relative to the WP docroot) of the plugin settings file. */
-export const SETTINGS_FILE_PATH =
-  "wp-content/uploads/sucuri/sucuri-settings.php";

@@ -42,10 +42,8 @@ touch wp-test-file-{1..100}.php
 # Hardening tests setup
 mkdir -p wp-includes/test-1
 touch wp-includes/test-1/test-{1..3}.php
-touch wp-content/archive-legacy.php
-echo '<?php echo "Hello, world!"; ?>' >> wp-content/archive-legacy.php
-touch wp-content/archive.php
-echo '<?php echo "Hello, world!"; ?>' >> wp-content/archive.php
+printf '%s\n' '<?php echo "Hello, world!"; ?>' > wp-content/archive-legacy.php
+printf '%s\n' '<?php echo "Hello, world!"; ?>' > wp-content/archive.php
 printf '%s\n' '<?php echo "Hello, world!"; ?>' > 'wp-content/literal.(a|b)*.php'
 printf '%s\n' '<?php echo "Hello, world!"; ?>' > 'wp-content/literal.a.php'
 

@@ -28,7 +28,7 @@
  * marker. The seed/corrupt scripts live under tests/ and run inside the plugin
  * dir; runPluginScript derives PLUGIN_SLUG from the mounted checkout directory.
  */
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../../support/fixtures";
 import type { Page } from "@playwright/test";
 import {
   getOption,
@@ -36,11 +36,12 @@ import {
   deleteRawOption,
   readWpConfig,
   restoreWpConfig,
+  restoreRawOptions,
   runPluginScript,
-  updateRawOption,
+  snapshotRawOptions,
   wpEnvRun,
   wpEval,
-  deleteOption,
+  type RawOptionSnapshot,
 } from "../../support/wp-cli";
 import { expectNoErrorNotice } from "../../support/notices";
 
@@ -62,24 +63,16 @@ const RAW_OPTIONS = [
 ] as const;
 
 let originalWpConfig: string;
-let originalRawOptions: Map<string, unknown>;
+let originalRawOptions: Map<string, RawOptionSnapshot | null>;
 
 test.beforeAll(() => {
   originalWpConfig = readWpConfig();
-  originalRawOptions = new Map(
-    RAW_OPTIONS.map((name) => [name, tryGetOption(name)]),
-  );
+  originalRawOptions = snapshotRawOptions(RAW_OPTIONS);
 });
 
 test.afterAll(() => {
   restoreWpConfig(originalWpConfig);
-  for (const name of RAW_OPTIONS) {
-    deleteRawOption(name);
-    const value = originalRawOptions.get(name);
-    if (value !== null && value !== undefined) {
-      updateRawOption(name, value);
-    }
-  }
+  restoreRawOptions(originalRawOptions);
 });
 
 /** v:1 / v:2 encrypted-payload shape stored in sucuriscan_secret_cloudproxy_apikey_enc. */
@@ -209,10 +202,12 @@ test.describe("SUCURI_PLUG_* salt migration", () => {
 
 test.describe("SUCURI_PLUG_* salt - fresh key save and decrypt", () => {
   test.beforeEach(() => {
-    // Remove the encrypted key + plaintext fallback so save exercises the
-    // v:2-from-scratch path; wp-config.php constants are regenerated on save.
-    deleteOption("sucuriscan_secret_cloudproxy_apikey_enc");
-    deleteOption("sucuriscan_secret_cloudproxy_apikey");
+    // Re-establish deterministic constants even after an interrupted corrupt-salt test.
+    runPluginScript("tests/e2e-seed-waf-plug-salt.sh");
+    deleteRawOption("sucuriscan_secret_cloudproxy_apikey_enc");
+    deleteRawOption("sucuriscan_secret_cloudproxy_apikey");
+    deleteRawOption("sucuriscan_no_salt_encryption");
+    deleteRawOption("sucuriscan_waf_key_decrypt_error");
     wpEval(
       `SucuriScanOption::updateOption(":cloudproxy_apikey", "${NEW_KEY}");`,
     );

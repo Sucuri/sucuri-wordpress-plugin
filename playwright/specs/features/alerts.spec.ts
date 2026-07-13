@@ -18,7 +18,7 @@
  * afterAll restores the recipients, subject, ignored-events and toggled options
  * to a sane baseline so repeated runs never trip over leftover state.
  */
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../../support/fixtures";
 import type { Page } from "@playwright/test";
 import { expectNotice } from "../../support/notices";
 import { updateOption, wpEval } from "../../support/wp-cli";
@@ -40,7 +40,7 @@ const CUSTOM_POST_TYPE = "new_sucuri_post_type";
 /** Remove the file-based `trustip` cache datastore so the table starts empty. */
 function clearTrustedIpDatastore(): void {
   wpEval(
-    '$f=WP_CONTENT_DIR."/uploads/sucuri/sucuri-trustip.php";if(file_exists($f)){@unlink($f);}',
+    '$f=SucuriScan::dataStorePath("sucuri-trustip.php");if(file_exists($f)){@unlink($f);}',
   );
 }
 
@@ -51,10 +51,8 @@ async function expectErrorNotice(page: Page, text: string): Promise<void> {
   ).toBeVisible();
 }
 
-test.describe.configure({ mode: "serial" });
-
 test.describe("Settings · Alerts", () => {
-  test.beforeAll(() => {
+  test.beforeEach(() => {
     // The post-type panel is disabled (and its inputs unusable) unless the
     // "new site content" alert is enabled.
     updateOption("sucuriscan_notify_post_publication", "enabled");
@@ -72,18 +70,6 @@ test.describe("Settings · Alerts", () => {
     updateOption("sucuriscan_emails_per_hour", "5");
     updateOption("sucuriscan_maximum_failed_logins", "30");
     // The trusted-IP test asserts an empty table.
-    clearTrustedIpDatastore();
-  });
-
-  test.afterAll(() => {
-    // Restore a sane baseline so the file is fully re-runnable and does not
-    // leak alert-option changes into sibling suites.
-    updateOption("sucuriscan_notify_to", DEFAULT_RECIPIENT);
-    updateOption("sucuriscan_email_subject", PRESET_SUBJECT);
-    updateOption("sucuriscan_ignored_events", "[]");
-    updateOption("sucuriscan_notify_plugin_deleted", "disabled");
-    updateOption("sucuriscan_emails_per_hour", "5");
-    updateOption("sucuriscan_maximum_failed_logins", "30");
     clearTrustedIpDatastore();
   });
 

@@ -10,18 +10,31 @@
  * so an afterEach wipes the integrity + ignore data stores for the next test/run.
  * The cron schedule and the diff-utility option are also restored.
  *
- * Order matters (each test depends on a clean shared baseline) -> serial.
+ * Every selected test creates the scanner fixtures and clears scanner state.
  * beforeEach pins :diff_utility = enabled so the dashboard renders the
  * clickable integrity rows and the toggle test starts from a known state.
  */
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../../support/fixtures";
 import type { Page, Response } from "@playwright/test";
-import { updateOption, wpEval } from "../../support/wp-cli";
+import {
+  deleteOption,
+  restoreCron,
+  restoreWpFiles,
+  snapshotCron,
+  snapshotWpFiles,
+  updateOption,
+  wpEval,
+  type CronSnapshot,
+  type FileSnapshot,
+} from "../../support/wp-cli";
 
 const DASHBOARD_URL = "/wp-admin/admin.php?page=sucuriscan";
 const SCANNER_URL = "/wp-admin/admin.php?page=sucuriscan_settings#scanner";
 
-test.describe.configure({ mode: "serial" });
+const SCANNER_FIXTURES = [
+  "wp-config-test.php",
+  ...Array.from({ length: 100 }, (_, index) => `wp-test-file-${index + 1}.php`),
+];
 
 /**
  * Match the integrity-list AJAX: a POST to admin-ajax.php?page=sucuriscan
@@ -100,32 +113,43 @@ async function confirmAndSubmitIntegrity(page: Page): Promise<void> {
  */
 function clearScannerDataStores(): void {
   wpEval(
-    '$d=WP_CONTENT_DIR."/uploads/sucuri";' +
-      '@unlink($d."/sucuri-integrity.php");' +
-      '@unlink($d."/sucuri-ignorescanning.php");',
+    '@unlink(SucuriScan::dataStorePath("sucuri-integrity.php"));' +
+      '@unlink(SucuriScan::dataStorePath("sucuri-ignorescanning.php"));',
   );
 }
 
 test.describe("Scanner", () => {
+  let originalFiles: FileSnapshot;
+  let originalPluginCron: CronSnapshot[];
+
+  test.beforeAll(() => {
+    originalFiles = snapshotWpFiles(SCANNER_FIXTURES);
+    originalPluginCron = snapshotCron("wp_update_plugins");
+  });
+
   test.beforeEach(() => {
+    clearScannerDataStores();
+    deleteOption("sucuriscan_checksum_api");
     // The dashboard only renders the clickable integrity rows (and the toggle
     // test only starts "disabled") when this option is enabled at page load.
     updateOption("sucuriscan_diff_utility", "enabled");
+    wpEval(
+      'touch(ABSPATH."wp-config-test.php");' +
+        'for($i=1;$i<=100;$i++){touch(ABSPATH."wp-test-file-".$i.".php");}' +
+        'wp_clear_scheduled_hook("wp_update_plugins");' +
+        'wp_schedule_event(time()+3600,"twicedaily","wp_update_plugins");',
+    );
   });
 
   test.afterEach(() => {
     // Guarantee an empty ignore list for the next test, even if a test left
     // files marked-fixed (the pagination test does).
     clearScannerDataStores();
+    restoreCron("wp_update_plugins", originalPluginCron);
   });
 
   test.afterAll(() => {
-    // Restore the wp_update_plugins cron to a sane default so the shared
-    // instance is not left permanently on the quarterly schedule.
-    wpEval(
-      'wp_clear_scheduled_hook("wp_update_plugins");wp_schedule_event(time(),"twicedaily","wp_update_plugins");',
-    );
-    clearScannerDataStores();
+    restoreWpFiles(originalFiles);
   });
 
   test("can modify scheduled tasks", async ({ page }) => {
@@ -232,7 +256,7 @@ test.describe("Scanner", () => {
 
     // WordPress-version checksum differences can add modified core files that
     // cannot be marked fixed. Show all rows and select 50 deterministic files
-    // created by e2e-prepare instead.
+    // created by this spec instead.
     await selectPerPageAndExpectCount(page, "200", initialCount);
     const seededFiles = page.locator(
       'input[name="sucuriscan_integrity[]"][value^="added@wp-test-file-"]',

@@ -34,7 +34,7 @@ migrated 1:1.
 | `sucuri-scanner-waf-migration.cy.js` | `mutations/waf-migration.spec.ts` |
 | `sucuri-scanner-waf-plug-salt.cy.js` | `mutations/waf-plug-salt.spec.ts` |
 
-**81 tests across 20 files.** Local plugin coverage was verified against the
+**79 tests across 20 files.** Local plugin coverage was verified against the
 Cypress source; the unsafe live-WAF suite was intentionally removed.
 
 ## Abstractions introduced
@@ -63,11 +63,12 @@ Cypress source; the unsafe live-WAF suite was intentionally removed.
 
 All tests run against **one shared `wp-env` WordPress instance** with global
 mutable plugin state, so unrestricted in-process parallelism is unsafe. The
-config therefore uses `workers: 1`, `fullyParallel: false`, and enforces ordering
-via project dependencies:
+config therefore uses `workers: 1` and `fullyParallel: false`. Both functional
+projects depend only on lightweight setup:
 
 ```
-setup  →  features (disjoint, non-destructive)  →  mutations (destructive / auth-affecting)
+setup → features
+setup → mutations
 ```
 
 Speed gains over Cypress come from: reused `storageState` (no per-test UI login),
@@ -77,19 +78,18 @@ elimination of every fixed `cy.wait(ms)` in favour of web-first assertions /
 
 ## Re-runnability / idempotency
 
-Specs pin their preconditions in `beforeEach`/`beforeAll` (via `wp-cli`) and clean
-up created entities in `afterAll`/`afterEach`, so repeated runs don't fail on
-leftover state. Notable cases:
+The shared fixture snapshots/restores the plugin datastore around every test.
+Specs pin their own additional resources in `beforeEach`/`beforeAll` and restore
+files, cron, raw options, user metadata, or `wp-config.php` as needed. Notable cases:
 
-- **Two-Factor**: an always-run `afterEach` resets all 2FA (`reset_everything`)
-  plus a `wp-cli` fallback that wipes per-user secrets/mode, so a mid-test failure
-  can never leave the shared admin account locked behind 2FA.
-- **Secret keys**: rotating keys invalidates the admin session for the whole site,
-  so the spec regenerates the admin `storageState` in `afterAll`.
-- **Hardening**: the legacy-rule-removal test permanently changes `.htaccess`, so
-  `tests/e2e-seed-hardening.sh` re-seeds the fixtures in `beforeAll`.
-- **Dashboard theme / WAF specs**: delete the WAF key and reset proxy/header
-  options after running so the freemium baseline is restored.
+- **Two-Factor**: direct before/after cleanup disables enforcement, removes TOTP
+  metadata/transients, and restores named-user session metadata.
+- **Secret keys**: each test restores the original `wp-config.php`, cron, and
+  administrator session metadata after exercising rotation.
+- **Hardening**: each selected test re-seeds its baseline; original files are
+  restored after the spec.
+- **Dashboard theme / WAF specs**: snapshot and restore raw WAF options,
+  `wp-config.php`, proxy/header settings, and theme metadata.
 - **WAF migration / plug-salt**: re-seed via `tests/e2e-seed-waf-migration.sh` /
   `tests/e2e-seed-waf-plug-salt.sh` / `tests/e2e-corrupt-salt.sh` each run.
 
@@ -127,16 +127,18 @@ leftover state. Notable cases:
 ## How to run
 
 ```bash
-make e2e            # clean wp-env, seed fixtures, run the whole suite
+make e2e            # preserve the current tests environment and run everything
+make e2e-reset      # explicitly clean only the tests DB and seed fixtures
+make e2e-setup      # refresh users, 2FA recovery, and auth storageState
 make e2e-install    # one-time: install the Chromium browser
-make e2e-features   # only the non-destructive feature specs
-make e2e-mutations  # the destructive / auth-affecting specs
+make e2e-features   # setup + feature specs, no reset
+make e2e-mutations  # setup + mutation specs, no feature dependency/reset
 npm run typecheck   # tsc --noEmit
 npx playwright test --ui   # interactive debugging
 ```
 
-Destructive tests refuse non-local `SUCURI_BASE_URL` values because setup and
-cleanup operate on the local wp-env instance.
+The suite requires `SUCURI_BASE_URL` to match the local wp-env tests port because
+browser and WP-CLI cleanup must target the same installation.
 
 ## Follow-ups / environment notes
 
@@ -145,8 +147,5 @@ cleanup operate on the local wp-env instance.
   for environment reasons (the plugin falls back to plaintext storage).
 - The integrity diff-utility toggle needs the Unix `diff` binary on the wp-env host.
 - The "test alert" emails invoke real `wp_mail` (a silent no-op in wp-env); not stubbed.
-- Live validation against a running `wp-env`/Docker was not performed in the
-  migration environment (Docker was unavailable); the suite was validated
-  statically (`tsc`, `playwright test --list`, prettier) and by adversarial
-  coverage review. Run `make e2e` once in an environment with Docker to confirm
-  green end-to-end.
+- Separate Playwright processes targeting one wp-env are serialized by a local
+  lock; use separate wp-env instances for real parallelism.

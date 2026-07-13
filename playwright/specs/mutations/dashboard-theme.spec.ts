@@ -7,15 +7,21 @@
  * hides the freemium markers and reveals the vulnerability panels + the two
  * plugin/theme list-body wrappers.
  *
- * isPremium() is GLOBAL (single shared `sucuriscan_cloudproxy_apikey` option),
- * so the two tests are mutually interfering and run serial: Light (freemium)
- * first against a clean baseline, Dark (premium) second after saving a key.
- * The Dark test MUST restore the freemium baseline afterward (delete the key +
- * reset revproxy/addr-header side-effects) so the WAF-modal / Light-Theme tests
- * and any other isPremium-sensitive spec keep passing.
+ * isPremium() is global, so each test snapshots WAF/config/theme state, starts
+ * from a freemium baseline, and restores the exact entry state afterward.
  */
-import { test, expect } from "@playwright/test";
-import { deleteOption, updateOption, wp } from "../../support/wp-cli";
+import { test, expect } from "../../support/fixtures";
+import {
+  deleteOption,
+  readWpConfig,
+  restoreRawOptions,
+  restoreUserMeta,
+  restoreWpConfig,
+  snapshotRawOptions,
+  tryGetUserMeta,
+  updateOption,
+  type RawOptionSnapshot,
+} from "../../support/wp-cli";
 import { adminUser } from "../../support/env";
 
 const DASHBOARD_URL = "/wp-admin/admin.php?page=sucuriscan";
@@ -25,6 +31,13 @@ const FIREWALL_URL = "/wp-admin/admin.php?page=sucuriscan_firewall";
 // reaches the live Sucuri API, so it flips isPremium() without a real account.
 const FAKE_API_KEY =
   "abcdefghiabcegasabcdefghiabcegas/abcdefghiabcegasabcdefghiabcegas";
+const RAW_OPTIONS = [
+  "sucuriscan_cloudproxy_apikey",
+  "sucuriscan_secret_cloudproxy_apikey_enc",
+  "sucuriscan_secret_cloudproxy_apikey",
+  "sucuriscan_no_salt_encryption",
+  "sucuriscan_waf_key_decrypt_error",
+] as const;
 
 /** Delete the stored WAF key (all storage variants) and reverse its proxy side-effects. */
 function restoreFreemiumBaseline(): void {
@@ -35,17 +48,7 @@ function restoreFreemiumBaseline(): void {
   // reverse both so the freemium baseline (used by waf-modal and others) is clean.
   updateOption("sucuriscan_revproxy", "disabled");
   updateOption("sucuriscan_addr_header", "REMOTE_ADDR");
-  try {
-    wp(
-      "user",
-      "meta",
-      "delete",
-      adminUser.login,
-      "sucuriscan_preferred_theme",
-    );
-  } catch {
-    // Absence is the desired baseline.
-  }
+  restoreUserMeta(adminUser.login, "sucuriscan_preferred_theme", null);
 }
 
 async function stubExternalAjax(page: import("@playwright/test").Page): Promise<void> {
@@ -69,18 +72,26 @@ async function stubExternalAjax(page: import("@playwright/test").Page): Promise<
   });
 }
 
-test.describe.configure({ mode: "serial" });
-
 test.describe("Dashboard theme gating", () => {
-  test.afterEach(() => {
-    // Always return to freemium regardless of which test ran/failed.
+  let wpConfig: string;
+  let rawOptions: Map<string, RawOptionSnapshot | null>;
+  let theme: string | null;
+
+  test.beforeEach(() => {
+    wpConfig = readWpConfig();
+    rawOptions = snapshotRawOptions(RAW_OPTIONS);
+    theme = tryGetUserMeta(adminUser.login, "sucuriscan_preferred_theme");
     restoreFreemiumBaseline();
+  });
+
+  test.afterEach(() => {
+    restoreWpConfig(wpConfig);
+    restoreRawOptions(rawOptions);
+    restoreUserMeta(adminUser.login, "sucuriscan_preferred_theme", theme);
   });
 
   test("Test Light Theme", async ({ page }) => {
     // Freemium baseline: no valid WAF key stored.
-    restoreFreemiumBaseline();
-
     await page.goto(DASHBOARD_URL);
 
     await expect(page.locator(".unlock-premium")).toBeVisible();
@@ -151,7 +162,6 @@ test.describe("Dashboard theme gating", () => {
   });
 
   test("toggles and persists the premium dashboard theme", async ({ page }) => {
-    restoreFreemiumBaseline();
     await stubExternalAjax(page);
     await page.goto(FIREWALL_URL);
     await page

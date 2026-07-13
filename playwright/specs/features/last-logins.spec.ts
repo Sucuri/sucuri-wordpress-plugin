@@ -10,7 +10,7 @@
  * accounted for and can be revived once the failed-login seeding is made
  * deterministic (e.g. via a wp-cli seed of sucuri-failedlogins.php).
  */
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../../support/fixtures";
 import { login, submitLogin } from "../../support/auth";
 import { adminUser } from "../../support/env";
 

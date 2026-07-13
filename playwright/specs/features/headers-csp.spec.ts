@@ -15,9 +15,7 @@
  * they mirror Cypress' anonymous `cy.request('/')` (csp.lib.php emits the header
  * on normal front-end requests).
  *
- * afterAll sets the CSP mode option back to `disabled` so the live site stops
- * emitting Content-Security-Policy-Report-Only — keeping re-runs and the CORS
- * spec clean.
+ * The shared plugin-data fixture restores the original mode/directives afterward.
  */
 import { test, expect } from "../../support/fixtures";
 import type { Page } from "@playwright/test";
@@ -52,16 +50,6 @@ test.describe("Headers · Content-Security-Policy", () => {
     // page load — which is the clean baseline the first test requires.
     updateOption("sucuriscan_headers_csp", "disabled");
     deleteOption("sucuriscan_headers_csp_options");
-  });
-
-  test.afterAll(async ({ loggedOutRequest }) => {
-    // Disable CSP so the live front-end stops emitting the Report-Only header,
-    // keeping re-runs and the CORS spec clean. Deleting the options object
-    // resets all enforced flags to their plugin defaults (all false), ensuring
-    // a subsequent run always starts from a known-clean state.
-    updateOption("sucuriscan_headers_csp", "disabled");
-    deleteOption("sucuriscan_headers_csp_options");
-    await expectHeaderAbsent(loggedOutRequest, "/", CSP_HEADER);
   });
 
   test("Toggling enforce checkbox enables/disables inputs interactively", async ({

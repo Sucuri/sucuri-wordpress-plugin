@@ -26,7 +26,8 @@ playwright/
 
 ## Projects & ordering
 
-`setup` → `features` → `mutations` (enforced via project `dependencies`).
+Both `features` and `mutations` depend only on `setup`, so selecting one mutation
+does not run every feature test first.
 `workers: 1`, `fullyParallel: false` — the suite shares one mutable WordPress
 instance, so in-process parallelism is unsafe. Each CI matrix entry uses its own
 isolated wp-env.
@@ -53,11 +54,13 @@ isolated wp-env.
   `http.ts` helpers. For logged-in checks pass the authenticated `request` fixture.
 - **No browser artifacts**: traces, screenshots, videos, HTML reports, and
   failure snapshots can expose credentials, TOTP secrets, or WordPress salts.
-- **Idempotency**: pin preconditions in `beforeEach`/`beforeAll` via `wp-cli`
-  helpers (`updateOption`, `wpEval`, `runPluginScript`) and restore/clean up in
-  `afterAll`/`afterEach`, so repeated runs never fail on leftover state.
-- **Intra-file order**: add `test.describe.configure({ mode: 'serial' })` when
-  tests depend on each other (e.g. CSP/CORS chains, toggle sequences).
+- **Idempotency**: the shared fixture snapshots/restores `uploads/sucuri` around
+  every test. Specs must additionally own `wp-config.php`, cron, users/posts, and
+  files outside that directory through the helpers below.
+- **Targeted runs**: use normal project dependencies when possible. `--no-deps`
+  is safe only after `npm run test:e2e:setup` has refreshed authentication.
+- **Single environment**: never run separate Playwright processes concurrently
+  against one wp-env. A worker-scoped lock queues accidental overlap.
 
 ## Helper quick-reference
 
@@ -70,6 +73,8 @@ import { login, submitLogin, addWafDismissCookie } from '../../support/auth';
 import {
   getOption, updateOption, deleteOption, wp, wpEval, runPluginScript,
   readWpConfig, readSettingsFileJson, ensureUser, getUserId,
+  snapshotPluginData, restorePluginData, snapshotWpFiles, restoreWpFiles,
+  snapshotCron, restoreCron, snapshotRawOptions, restoreRawOptions,
 } from '../../support/wp-cli';
 import { totp } from '../../support/totp';
 import {
@@ -86,3 +91,17 @@ import { adminUser, testAdminUser, extraUser, resetUser } from '../../support/en
 See `specs/features/audit-logs.spec.ts` (route mocking + `waitForResponse`) and
 `specs/mutations/settings-general.spec.ts` (notices + `wp-cli` pinning +
 idempotent destructive flows) as canonical examples.
+
+## Local commands
+
+```bash
+make e2e                         # preserve environment, run everything
+make e2e-reset                   # destructive tests-DB reset + canonical seed
+npm run test:e2e -- --project=features --grep='header'
+npm run test:e2e -- --project=mutations --grep='password'
+npm run test:e2e:setup           # refresh auth before --no-deps/UI debugging
+```
+
+The intentionally skipped hardening-all, plugin-reinstall, and last-login tests
+still require dedicated fixture work and should not be enabled for arbitrary
+local subsets.

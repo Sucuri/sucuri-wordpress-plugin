@@ -10,27 +10,42 @@
  *      wp-login.php round-trip, replacing the now-stale cookies),
  *   3. exercises the auto-updater (Disabled -> Quarterly -> Disabled).
  *
- * afterAll regenerates the global admin storageState because the rotation left
- * the saved artifact stale for every later spec/run, and re-pins the
- * auto-updater cron to Disabled so re-runs start from a known state.
+ * Per-test cleanup restores wp-config.php, cron, and administrator sessions, so
+ * filtered/repeated runs do not permanently rotate the environment.
  */
-import { test, expect } from "@playwright/test";
-import { login, saveAdminStorageState } from "../../support/auth";
+import { test, expect } from "../../support/fixtures";
+import { login } from "../../support/auth";
 import { adminUser } from "../../support/env";
-import { wpEval } from "../../support/wp-cli";
+import {
+  readWpConfig,
+  restoreCron,
+  restoreSerializedUserMeta,
+  restoreWpConfig,
+  snapshotCron,
+  snapshotSerializedUserMeta,
+  wpEval,
+  type CronSnapshot,
+} from "../../support/wp-cli";
 
 const POST_HACK_URL = "/wp-admin/admin.php?page=sucuriscan_post_hack_actions";
 
-// The single test mutates auth + cron in a strict sequence; keep it serial.
-test.describe.configure({ mode: "serial" });
+let originalWpConfig: string;
+let updaterCron: CronSnapshot[];
+let adminSessions: string | null;
 
-test.afterAll(async ({ browser }) => {
+test.beforeEach(() => {
+  originalWpConfig = readWpConfig();
+  updaterCron = snapshotCron("sucuriscan_autoseckeyupdater");
+  adminSessions = snapshotSerializedUserMeta(adminUser.login, "session_tokens");
+  wpEval("wp_clear_scheduled_hook('sucuriscan_autoseckeyupdater');");
+});
+
+test.afterEach(() => {
   // Defensively clear the auto-updater cron so the auto-updater starts Disabled
   // on the next run regardless of where the test left off.
-  wpEval("wp_clear_scheduled_hook('sucuriscan_autoseckeyupdater');");
-  // The key rotation invalidated the shared admin storageState; rebuild it so
-  // every later spec (and the next run) re-reads valid admin cookies.
-  await saveAdminStorageState(browser);
+  restoreWpConfig(originalWpConfig);
+  restoreCron("sucuriscan_autoseckeyupdater", updaterCron);
+  restoreSerializedUserMeta(adminUser.login, "session_tokens", adminSessions);
 });
 
 test("can update the secret keys", async ({ page }) => {

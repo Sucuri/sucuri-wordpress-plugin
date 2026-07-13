@@ -11,9 +11,9 @@
  * defined in .wp-env.json — otherwise the button is forced to "Enable".
  *
  * The checksum test stores a valid GitHub repository and verifies the resolved
- * API URL. afterAll restores the checksum and service options.
+ * API URL. The shared plugin-data fixture restores the prior options.
  */
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../../support/fixtures";
 import { expectNotice } from "../../support/notices";
 import {
   updateOption,
@@ -24,24 +24,12 @@ import {
 const APISERVICE_URL =
   "/wp-admin/admin.php?page=sucuriscan_settings#apiservice";
 
-// The toggle test performs a paired enable/disable sequence whose label/notice
-// assertions depend on the starting state; keep these tests ordered.
-test.describe.configure({ mode: "serial" });
-
 test.describe("Settings · API Service", () => {
   test.beforeEach(() => {
     // Deterministic starting point: the toggle test asserts the button reads
     // "Enable" after the first click, which only holds if it started enabled.
     updateOption("sucuriscan_api_service", "enabled");
-  });
-
-  test.afterAll(() => {
-    updateOption("sucuriscan_api_service", "enabled");
-    // The checksum test's api.wordpress.org URL fails the github regex and
-    // deletes this option; clear it so a later integrity/checksum test starts
-    // from the unset default.
     deleteOption("sucuriscan_checksum_api");
-    // The malware-scan-target test sets this; reset to the unset default.
     deleteOption("sucuriscan_sitecheck_target");
   });
 

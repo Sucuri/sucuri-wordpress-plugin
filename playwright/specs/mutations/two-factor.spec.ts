@@ -6,14 +6,8 @@
  * replay rejection.
  *
  * HIGHEST-RISK suite: tests enforce 2FA on the SHARED default admin (id 1). If a
- * test fails mid-flow the admin account is left locked behind a 2FA challenge,
- * which would hang every later spec's login. Two safety nets guarantee recovery:
- *   1. an afterEach that ALWAYS runs `resetEverything()` (mode=disabled + every
- *      secret wiped) through the inherited admin session;
- *   2. an afterAll wp-cli fallback that, via `wp eval`, forces twofactor_mode to
- *      disabled and deletes the per-user secret/last-success meta for admin
- *      (id 1), sucuri-admin and sucuri — so recovery happens even if the UI
- *      teardown itself failed.
+ * test fails mid-flow direct before/after cleanup disables enforcement, removes
+ * all TOTP metadata/login transients, and restores named-user session metadata.
  *
  * Bulk-policy actions reuse the inherited admin `page` (its auth cookies were
  * captured before any enforcement and stay valid — enforcement only gates fresh
@@ -24,7 +18,8 @@
  * allowance covers the round-trip. The replay test deliberately REUSES the exact
  * code string from setup (no recompute) so it still proves replay rejection.
  */
-import { test, expect, type Browser, type Page } from "@playwright/test";
+import { test, expect } from "../../support/fixtures";
+import type { Browser, Page } from "@playwright/test";
 import {
   TwoFactorAdminPage,
   loginExpect2FA,
@@ -35,7 +30,18 @@ import {
 } from "../../support/pages/two-factor.page";
 import { totp } from "../../support/totp";
 import { addWafDismissCookie } from "../../support/auth";
-import { wpEval, getUserId } from "../../support/wp-cli";
+import {
+  restoreAllUserMeta,
+  restorePluginData,
+  restoreRawOptionsByPrefix,
+  snapshotAllUserMeta,
+  snapshotPluginData,
+  snapshotRawOptionsByPrefix,
+  wpEval,
+  type AllUserMetaSnapshot,
+  type PluginDataSnapshot,
+  type RawOptionSnapshot,
+} from "../../support/wp-cli";
 import {
   adminUser,
   testAdminUser,
@@ -46,6 +52,21 @@ import {
 const TWO_FACTOR_USERS = "[data-cy=sucuriscan_twofactor_users_response]";
 const TWO_FACTOR_USER_CHECKBOX =
   'input[name="sucuriscan_twofactor_users[]"]';
+let pluginData: PluginDataSnapshot;
+let createdBulkUsers: number[] = [];
+let userMeta: AllUserMetaSnapshot;
+let loginTransients: Map<string, RawOptionSnapshot | null>;
+const TRANSIENT_PREFIXES = [
+  "_transient_sucuri_2fa_",
+  "_transient_timeout_sucuri_2fa_",
+] as const;
+const USER_META_KEYS = [
+  "sucuriscan_topt_secret_key",
+  "sucuriscan_topt_last_success",
+  "session_tokens",
+] as const;
+
+test.use({ preservePluginData: false });
 
 function invalidTotp(secret: string): string {
   const now = Date.now();
@@ -67,7 +88,32 @@ async function waitForUsersTable(page: Page): Promise<void> {
   ).toBeVisible();
 }
 
-test.describe.configure({ mode: "serial" });
+function resetTwoFactorState(): void {
+  wpEval(
+    "SucuriScanOption::updateOption(':twofactor_mode','disabled');" +
+      "SucuriScanOption::updateOption(':twofactor_users',array());" +
+      '$users=get_users(array("fields"=>"ID"));foreach($users as $uid){' +
+      "delete_user_meta($uid,'sucuriscan_topt_secret_key');" +
+      "delete_user_meta($uid,'sucuriscan_topt_last_success');}" +
+      'global $wpdb;' +
+      '$wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE \'_transient_sucuri_2fa_%\' OR option_name LIKE \'_transient_timeout_sucuri_2fa_%\'");' +
+      `foreach(array(${JSON.stringify(testAdminUser.login)},${JSON.stringify(extraUser.login)}) as $login){` +
+      '$user=get_user_by("login",$login);if($user){WP_Session_Tokens::get_instance($user->ID)->destroy_all();}}',
+  );
+}
+
+function ensureBulkUsers(): void {
+  createdBulkUsers = JSON.parse(
+    wpEval(
+      '$created=array();' +
+        'for($i=1;$i<=60;$i++){$login=sprintf("bulkuser-%03d",$i);' +
+        '$user=get_user_by("login",$login);if(!$user){wp_insert_user(array(' +
+        '"user_login"=>$login,"user_email"=>$login."@sucuri.net",' +
+        '"user_pass"=>"password","role"=>"subscriber"));$user=get_user_by("login",$login);$created[]=$user->ID;}}' +
+        'echo wp_json_encode($created);',
+    ),
+  ) as number[];
+}
 
 /**
  * Run a wp-login flow for `user` in an isolated context (fresh cookies/storage),
@@ -100,30 +146,29 @@ async function submitLoginRaw(page: Page, user: WpUser): Promise<void> {
 }
 
 test.describe("Two-Factor Authentication", () => {
+  test.beforeEach(() => {
+    createdBulkUsers = [];
+    pluginData = snapshotPluginData();
+    userMeta = snapshotAllUserMeta(USER_META_KEYS);
+    loginTransients = snapshotRawOptionsByPrefix(TRANSIENT_PREFIXES);
+    resetTwoFactorState();
+  });
+
   // ALWAYS-RUNS safety net: fully reset 2FA after every test so the shared admin
   // (id 1) is never left locked behind a challenge for the next test/spec.
-  test.afterEach(async ({ page }) => {
-    await new TwoFactorAdminPage(page).resetEverything();
+  test.afterEach(() => {
+    if (createdBulkUsers.length) {
+      wpEval(
+        `foreach(array(${createdBulkUsers.join(",")}) as $uid){wp_delete_user($uid);}`,
+      );
+    }
+    restorePluginData(pluginData);
+    restoreAllUserMeta(userMeta, USER_META_KEYS);
+    restoreRawOptionsByPrefix(TRANSIENT_PREFIXES, loginTransients);
   });
 
   // Belt-and-braces fallback: force disabled mode and drop every relevant
   // user's TOTP meta directly, in case the UI teardown above ever fails.
-  test.afterAll(() => {
-    const ids = [
-      getUserId(adminUser.login),
-      getUserId(testAdminUser.login),
-      getUserId(extraUser.login),
-    ];
-    const idList = ids.join(",");
-    wpEval(
-      "SucuriScanOption::updateOption(':twofactor_mode','disabled');" +
-        "SucuriScanOption::updateOption(':twofactor_users',array());" +
-        `foreach(array(${idList}) as $uid){` +
-        "delete_user_meta($uid,'sucuriscan_topt_secret_key');" +
-        "delete_user_meta($uid,'sucuriscan_topt_last_success');}",
-    );
-  });
-
   test("enforces 2FA for all users and completes verify with a valid code", async ({
     page,
     browser,
@@ -491,6 +536,7 @@ test.describe("Two-Factor Authentication", () => {
   });
 
   test("loads a bounded, paginated users table", async ({ page }) => {
+    ensureBulkUsers();
     await new TwoFactorAdminPage(page).goto();
     await waitForUsersTable(page);
 
@@ -507,6 +553,7 @@ test.describe("Two-Factor Authentication", () => {
   });
 
   test("loads a different 2FA users page through AJAX", async ({ page }) => {
+    ensureBulkUsers();
     await new TwoFactorAdminPage(page).goto();
     await waitForUsersTable(page);
 
@@ -525,6 +572,7 @@ test.describe("Two-Factor Authentication", () => {
   });
 
   test("searches and clears the 2FA users table", async ({ page }) => {
+    ensureBulkUsers();
     await new TwoFactorAdminPage(page).goto();
     await waitForUsersTable(page);
 
@@ -548,11 +596,15 @@ test.describe("Two-Factor Authentication", () => {
     page,
     browser,
   }) => {
+    ensureBulkUsers();
     const admin2fa = new TwoFactorAdminPage(page);
 
     await admin2fa.resetEverything();
     await admin2fa.goto();
     await waitForUsersTable(page);
+    await expect(
+      page.locator(".sucuriscan-2fa-pagination-panel"),
+    ).not.toHaveClass(/sucuriscan-hidden/);
     await admin2fa.selectUsers([testAdminUser]);
     await admin2fa.applyBulk("activate_selected");
     await expect(

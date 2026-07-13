@@ -6,9 +6,11 @@
   "scripts": {
     "start": "npx wp-env start",
     "stop": "npx wp-env stop",
-    "test:e2e": "make e2e",
-    "test:e2e:ui": "playwright test --ui",
-    "test:e2e:headed": "playwright test --headed",
+    "test:e2e": "bash tests/e2e-with-lock.sh bash tests/e2e-run.sh",
+    "test:e2e:reset": "make e2e-reset",
+    "test:e2e:setup": "bash tests/e2e-with-lock.sh bash tests/e2e-run.sh --project=setup",
+    "test:e2e:ui": "bash tests/e2e-with-lock.sh bash tests/e2e-ui.sh",
+    "test:e2e:headed": "bash tests/e2e-with-lock.sh bash tests/e2e-run.sh --headed",
     "test:e2e:list": "playwright test --list",
     "typecheck": "tsc --noEmit"
   },

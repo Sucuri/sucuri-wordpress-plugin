@@ -18,9 +18,8 @@
  * POST is awaited via waitForResponse before reading the header / reloading, so
  * the GET never races the option write (the top flakiness source per blueprint).
  *
- * All five tests mutate the same two global options, so they run serially and an
- * afterAll resets the mode to Disabled and restores the cache options to plugin
- * defaults — keeping re-runs and any later header spec starting from clean state.
+ * Each test resets cache options, temporarily quarantines future posts, and uses
+ * test-owned content IDs. The shared fixture restores plugin options afterward.
  */
 import { test, expect } from "../../support/fixtures";
 import type { Page } from "@playwright/test";
@@ -29,13 +28,69 @@ import {
   deleteOption,
   readSettingsFileJson,
   updateOption,
+  wpEval,
 } from "../../support/wp-cli";
 
 const HEADERS_URL = "/wp-admin/admin.php?page=sucuriscan_headers_management";
+const FUTURE_MARKER = "_sucuri_e2e_original_future";
+
+let postId: number;
+let pageId: number;
+let categoryId: number;
+const categorySlug = `sucuri-e2e-cache-${process.pid}`;
+
+function restoreFuturePosts(): void {
+  wpEval(
+    `$q=new WP_Query(array("post_type"=>"any","post_status"=>"draft","posts_per_page"=>-1,"meta_key"=>"${FUTURE_MARKER}"));` +
+      `global $wpdb;foreach($q->posts as $p){$wpdb->update($wpdb->posts,array("post_status"=>"future"),array("ID"=>$p->ID));delete_post_meta($p->ID,"${FUTURE_MARKER}");clean_post_cache($p->ID);}`,
+  );
+}
+
+function quarantineFuturePosts(): void {
+  restoreFuturePosts();
+  wpEval(
+    '$q=new WP_Query(array("post_type"=>"any","post_status"=>"future","posts_per_page"=>-1));' +
+      `global $wpdb;foreach($q->posts as $p){update_post_meta($p->ID,"${FUTURE_MARKER}",1);` +
+      '$wpdb->update($wpdb->posts,array("post_status"=>"draft"),array("ID"=>$p->ID));clean_post_cache($p->ID);}',
+  );
+}
+
+test.beforeAll(() => {
+  const fixture = JSON.parse(
+    wpEval(
+      '$old=get_posts(array("post_type"=>array("post","page"),"post_status"=>"any","meta_key"=>"_sucuri_e2e_cache_fixture","posts_per_page"=>-1));' +
+        'foreach($old as $p){wp_delete_post($p->ID,true);}' +
+        '$terms=get_terms(array("taxonomy"=>"category","hide_empty"=>false,"meta_key"=>"_sucuri_e2e_cache_fixture","meta_value"=>1));' +
+        'foreach($terms as $term){wp_delete_term($term->term_id,"category");}' +
+        `$cat=wp_insert_term("Sucuri E2E Cache","category",array("slug"=>${JSON.stringify(categorySlug)}));` +
+        '$cid=(int)(is_array($cat)?$cat["term_id"]:$cat);' +
+        'update_term_meta($cid,"_sucuri_e2e_cache_fixture",1);' +
+        '$post=wp_insert_post(array("post_title"=>"Sucuri E2E Cache Post","post_name"=>"sucuri-e2e-cache-post","post_status"=>"publish","post_type"=>"post","post_category"=>array($cid),"meta_input"=>array("_sucuri_e2e_cache_fixture"=>1)));' +
+        '$page=wp_insert_post(array("post_title"=>"Sucuri E2E Cache Page","post_name"=>"sucuri-e2e-cache-page","post_status"=>"publish","post_type"=>"page","meta_input"=>array("_sucuri_e2e_cache_fixture"=>1)));' +
+        'echo wp_json_encode(array("post"=>$post,"page"=>$page,"category"=>$cid));',
+    ),
+  ) as { post: number; page: number; category: number };
+  postId = fixture.post;
+  pageId = fixture.page;
+  categoryId = fixture.category;
+});
 
 test.beforeEach(() => {
+  quarantineFuturePosts();
   deleteOption("sucuriscan_headers_cache_control_options");
   updateOption("sucuriscan_headers_cache_control", "disabled");
+});
+
+test.afterEach(() => {
+  restoreFuturePosts();
+});
+
+test.afterAll(() => {
+  restoreFuturePosts();
+  wpEval(
+    `wp_delete_post(${postId},true);wp_delete_post(${pageId},true);` +
+      `wp_delete_term(${categoryId},"category");`,
+  );
 });
 
 /**
@@ -89,15 +144,6 @@ async function expectCacheControlEnabled(page: Page): Promise<void> {
   await expect(box).toContainText("Enabled");
 }
 
-test.afterAll(() => {
-  // Robust reset: drop both options so the plugin regenerates defaults
-  // (mode 'disabled', posts.max_age=43200, posts.old_age_multiplier=0) on next
-  // read, then pin the mode explicitly. This guarantees re-runnability even if
-  // a test failed mid-flight leaving 'busy'/'custom' + posts.max_age=12345.
-  deleteOption("sucuriscan_headers_cache_control_options");
-  updateOption("sucuriscan_headers_cache_control", "disabled");
-});
-
 test("Can toggle the header cache control setting", async ({ page }) => {
   await page.goto(HEADERS_URL);
 
@@ -123,19 +169,19 @@ test("Can set the Cache-Control header properly", async ({
   ); // home / front_page
   await expectHeaderEquals(
     loggedOutRequest,
-    "/?p=1",
+    `/?p=${postId}`,
     "cache-control",
     "max-age=600",
   ); // single post
   await expectHeaderEquals(
     loggedOutRequest,
-    "/?page_id=2",
+    `/?page_id=${pageId}`,
     "cache-control",
     "max-age=600",
   ); // page
   await expectHeaderEquals(
     loggedOutRequest,
-    "/?cat=1",
+    `/?cat=${categoryId}`,
     "cache-control",
     "max-age=600",
   ); // category archive
@@ -147,7 +193,7 @@ test("Can set the Cache-Control header properly", async ({
   ); // author archive
   await expectHeaderEquals(
     loggedOutRequest,
-    "/?p=12",
+    "/?p=999999999",
     "cache-control",
     "max-age=600",
     { status: 404 },
@@ -178,7 +224,7 @@ test("Can customize the Cache-Control header properly", async ({
 
   await expectHeaderEquals(
     loggedOutRequest,
-    "/?p=1",
+    `/?p=${postId}`,
     "cache-control",
     "max-age=12345",
   );

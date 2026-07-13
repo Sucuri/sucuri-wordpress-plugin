@@ -28,15 +28,22 @@
  * 'password' for later specs. The admin account is never touched here (its row
  * checkbox is rendered disabled).
  */
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../../support/fixtures";
 import { addWafDismissCookie, login } from "../../support/auth";
-import { wp } from "../../support/wp-cli";
+import {
+  restoreSerializedUserMeta,
+  snapshotSerializedUserMeta,
+  wp,
+} from "../../support/wp-cli";
 import { resetUser } from "../../support/env";
 
 const POST_HACK_URL = "/wp-admin/admin.php?page=sucuriscan_post_hack_actions";
 
 test.describe("Post-hack · Reset user password", () => {
+  let sessions: string | null;
+
   test.beforeEach(() => {
+    sessions = snapshotSerializedUserMeta(resetUser.login, "session_tokens");
     // Pin the precondition: sucuri-reset must start with the known old password
     // so the initial "can log in" step is deterministic. beforeEach (not
     // beforeAll) so a retry re-seeds it — the test body randomizes the password,
@@ -44,10 +51,11 @@ test.describe("Post-hack · Reset user password", () => {
     wp("user", "update", resetUser.login, `--user_pass=${resetUser.pass}`);
   });
 
-  test.afterAll(() => {
+  test.afterEach(() => {
     // The reset randomized sucuri-reset's password; restore it so the next run's
     // initial login step passes. Never touch the admin account.
     wp("user", "update", resetUser.login, `--user_pass=${resetUser.pass}`);
+    restoreSerializedUserMeta(resetUser.login, "session_tokens", sessions);
   });
 
   test("resets a user password and invalidates the old one", async ({

@@ -1,17 +1,22 @@
 #!/bin/sh
 
-.PHONY: e2e e2e-prepare e2e-install e2e-test e2e-features e2e-mutations e2e-ui unit-test update-translations git-archive
+.PHONY: e2e e2e-start e2e-reset e2e-setup e2e-install e2e-test e2e-features e2e-mutations e2e-ui unit-test update-translations git-archive
 
-# Full local run: (re)provision a clean WordPress, then run the Playwright suite.
-e2e: e2e-prepare e2e-test
+# Normal runs preserve the existing tests environment and hold the workspace lock.
+e2e:
+	bash tests/e2e-with-lock.sh bash tests/e2e-run.sh
 
-# Start wp-env, reset to a clean state, and seed users / files / hardening
-# fixtures. `wp-env clean all` makes this idempotent across runs.
-e2e-prepare:
-	npx wp-env start
-	npx wp-env clean all
-	chmod +x tests/*.sh
-	npx wp-env run tests-cli bash wp-content/plugins/$(notdir $(CURDIR))/tests/e2e-prepare.sh
+# Start the shared local environment without resetting either database.
+e2e-start:
+	bash tests/e2e-with-lock.sh npx wp-env start
+
+# Explicit destructive recovery for CI or an irreparably dirty tests environment.
+e2e-reset:
+	bash tests/e2e-with-lock.sh bash tests/e2e-reset-env.sh
+
+# Refresh essential users, 2FA state, and authenticated storageState.
+e2e-setup:
+	bash tests/e2e-with-lock.sh bash tests/e2e-run.sh --project=setup
 
 # Install the Playwright browser (chromium) and its OS dependencies.
 e2e-install:
@@ -22,16 +27,16 @@ e2e-test:
 	npx playwright test
 
 # Run only the non-destructive feature specs (setup runs automatically).
-e2e-features: e2e-prepare
-	npx playwright test --project=features
+e2e-features:
+	bash tests/e2e-with-lock.sh bash tests/e2e-run.sh --project=features
 
-# Run the destructive / auth-affecting specs (setup + features run as deps).
-e2e-mutations: e2e-prepare
-	npx playwright test --project=mutations
+# Run the destructive / auth-affecting specs (setup runs automatically).
+e2e-mutations:
+	bash tests/e2e-with-lock.sh bash tests/e2e-run.sh --project=mutations
 
 # Interactive UI mode for debugging.
 e2e-ui:
-	npx playwright test --ui
+	bash tests/e2e-with-lock.sh bash tests/e2e-ui.sh
 
 unit-test:
 	./vendor/bin/phpunit

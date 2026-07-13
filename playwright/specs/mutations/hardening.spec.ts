@@ -6,18 +6,19 @@
  * wildcard (".*") rules, preserving literal regex characters, the full 403<->200
  * add/remove round-trip, and multi-file add + Select-All removal.
  *
- * SHARED STATE / IDEMPOTENCY: every test mutates wp-content/.htaccess or
- * wp-includes/.htaccess (and Select-All clears all allowlisted folders), so the
- * whole file runs serially. The legacy-removal test PERMANENTLY drops the
- * `<Files archive-legacy.php>` grant, flipping that file to 403 forever; a
- * beforeAll re-seed (tests/e2e-seed-hardening.sh) restores the seeded baseline
- * so the 200 precondition holds on every run, and an afterAll re-seed wipes the
- * allowlist rules left behind by the add tests.
+ * SHARED STATE / IDEMPOTENCY: every selected test re-seeds its own .htaccess and
+ * PHP fixtures. The spec snapshots and restores the user's original files.
  */
 import { test, expect } from "../../support/fixtures";
 import type { APIRequestContext, Page } from "@playwright/test";
 import { expectForbidden, expectHelloWorld } from "../../support/http";
-import { runPluginScript } from "../../support/wp-cli";
+import {
+  restoreWpFiles,
+  runPluginScript,
+  snapshotWpFiles,
+  updateOption,
+  type FileSnapshot,
+} from "../../support/wp-cli";
 
 const HARDENING_URL =
   "/wp-admin/admin.php?page=sucuriscan_hardening_prevention";
@@ -27,9 +28,19 @@ const HARDENING_URL =
 const WP_CONTENT = "/var/www/html/wp-content";
 const WP_INCLUDES = "/var/www/html/wp-includes";
 
-// The add/remove tests share wp-content/.htaccess and the allowlist table; the
-// multi-file Select-All clears every folder, so order matters — run serially.
-test.describe.configure({ mode: "serial" });
+const HARDENING_FILES = [
+  "wp-content/.htaccess",
+  "wp-includes/.htaccess",
+  "wp-content/archive-legacy.php",
+  "wp-content/archive.php",
+  "wp-content/literal.(a|b)*.php",
+  "wp-content/literal.a.php",
+  "wp-includes/test-1/test-1.php",
+  "wp-includes/test-1/test-2.php",
+  "wp-includes/test-1/test-3.php",
+];
+
+let originalFiles: FileSnapshot;
 
 /**
  * Restore the seeded hardening fixtures: recreates archive.php (403),
@@ -98,15 +109,20 @@ async function expectPublicStatus(
 }
 
 test.beforeAll(() => {
-  // Start every run from the seeded baseline so the legacy <Files> grant exists
-  // (archive-legacy.php = 200) and archive.php is blocked (403).
+  originalFiles = snapshotWpFiles(HARDENING_FILES);
+});
+
+test.beforeEach(() => {
   reseedHardening();
+  updateOption("sucuriscan_hardening_xmlrpc", "disabled");
+});
+
+test.afterEach(() => {
+  updateOption("sucuriscan_hardening_xmlrpc", "disabled");
 });
 
 test.afterAll(() => {
-  // Wipe the allowlist rules left in wp-content/.htaccess and wp-includes/.htaccess
-  // (testing.php, test-1/test-*.php) by restoring the deny-all baselines.
-  reseedHardening();
+  restoreWpFiles(originalFiles);
 });
 
 // SKIPPED in the Cypress source (it.skip). Toggles every hardening option on the

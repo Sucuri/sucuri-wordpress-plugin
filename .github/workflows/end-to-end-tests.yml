@@ -50,17 +50,17 @@ jobs:
           WP_VERSION: ${{ matrix.wp }}
         run: |
           if [[ $WP_VERSION == "latest" ]]; then
-            echo "{ \"core\": null, \"plugins\": [\".\"], \"phpVersion\": \"$PHP_VERSION\" }" > .wp-env.override.json
+            echo "{ \"core\": null, \"plugins\": [\".\"], \"phpVersion\": \"$PHP_VERSION\", \"config\": { \"SUCURISCAN_API_URL\": \"https://sucuri.net\", \"DISABLE_WP_CRON\": true } }" > .wp-env.override.json
           else
-            echo "{ \"core\": \"WordPress/WordPress#$WP_VERSION\", \"plugins\": [\".\"], \"phpVersion\": \"$PHP_VERSION\" }" > .wp-env.override.json
+            echo "{ \"core\": \"WordPress/WordPress#$WP_VERSION\", \"plugins\": [\".\"], \"phpVersion\": \"$PHP_VERSION\", \"config\": { \"SUCURISCAN_API_URL\": \"https://sucuri.net\", \"DISABLE_WP_CRON\": true } }" > .wp-env.override.json
           fi
           cat .wp-env.override.json
 
       - name: Start WordPress environment and seed fixtures
-        run: make e2e-prepare
+        run: make e2e-reset
 
       - name: Log WordPress version
-        run: npx wp-env run cli wp core version
+        run: npx wp-env run tests-cli wp core version
 
       - name: Run Playwright e2e tests
         env:

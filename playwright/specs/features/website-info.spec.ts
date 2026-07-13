@@ -5,11 +5,31 @@
  * Pure read; no state is mutated and nothing needs cleanup. The page is
  * order-independent, so this describe runs in the default parallel mode.
  */
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../../support/fixtures";
+import {
+  restoreWpFiles,
+  snapshotWpFiles,
+  wpEval,
+  type FileSnapshot,
+} from "../../support/wp-cli";
 
 const WEBINFO_URL = "/wp-admin/admin.php?page=sucuriscan_settings#webinfo";
 
 test.describe("Settings · Website Info", () => {
+  let htaccess: FileSnapshot;
+
+  test.beforeAll(() => {
+    htaccess = snapshotWpFiles([".htaccess"]);
+  });
+
+  test.beforeEach(() => {
+    wpEval('touch(ABSPATH.".htaccess");');
+  });
+
+  test.afterAll(() => {
+    restoreWpFiles(htaccess);
+  });
+
   test("loads the environment variables and access-file-integrity panels", async ({
     page,
   }) => {

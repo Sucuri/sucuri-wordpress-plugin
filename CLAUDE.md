@@ -26,18 +26,20 @@ WP constants (`tests/constants.php`), stubs a minimal set of WordPress functions
 demand). When a test needs a WP function not already stubbed, either add a `Functions\when(...)`
 mock inside the test (Brain\Monkey), or add a global stub in `tests/autoload.php` if many tests need it.
 
-### End-to-end tests (Cypress + wp-env / Docker)
+### End-to-end tests (Playwright + wp-env / Docker)
 ```sh
-cp cypress.config.js.example cypress.config.js   # first-time setup, gitignored
-make e2e                # = e2e-prepare + e2e-scanner + e2e-firewall
-make e2e-prepare        # starts wp-env, cleans DB, runs tests/e2e-prepare.sh inside the container
-make e2e-scanner        # npx cypress run --spec cypress/e2e/sucuri-scanner.cy.js
-make e2e-firewall       # npx cypress run --spec cypress/e2e/sucuri-scanner-firewall.cy.js
-make e2e-waf-migration  # seeds via tests/e2e-seed-waf-migration.sh, then runs waf-migration spec
-make e2e-waf-plug-salt  # seeds via tests/e2e-seed-waf-plug-salt.sh, then runs waf-plug-salt spec
+make e2e                # starts wp-env and runs the whole suite without cleaning
+make e2e-reset          # explicitly cleans only the tests DB and seeds canonical fixtures
+make e2e-setup          # repairs users/2FA/auth storage only
+make e2e-features       # setup + feature project, no environment reset
+make e2e-mutations      # setup + mutation project, no feature dependency/reset
+npx playwright test --project=features --grep='name'
+npx playwright test --project=mutations --grep='name'
 npm run start / npm run stop   # start/stop the wp-env Docker environment directly
 ```
-E2E requires Docker (wp-env). Tests that mutate a live external WAF account are intentionally excluded.
+E2E requires Docker (wp-env). Tests preserve the plugin datastore automatically and own their
+additional files/options where practical. Do not run multiple Playwright processes concurrently
+against the same wp-env; a workspace lock serializes them. Live external-WAF tests are excluded.
 
 ### Translations
 ```sh

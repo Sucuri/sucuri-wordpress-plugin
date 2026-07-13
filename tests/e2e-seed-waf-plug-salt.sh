@@ -23,6 +23,8 @@ $payload  = array(
 );
 update_option( "sucuriscan_secret_cloudproxy_apikey_enc", $payload, false );
 delete_option( "sucuriscan_secret_cloudproxy_apikey" );
+delete_option( "sucuriscan_no_salt_encryption" );
+delete_option( "sucuriscan_waf_key_decrypt_error" );
 
 // Remove SUCURI_PLUG_* constants from wp-config.php so the first-run write
 // path is exercised from scratch.

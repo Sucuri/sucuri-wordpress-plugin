@@ -18,14 +18,10 @@ const SEND_LOGS_FIXTURE = path.join(DATA_DIR, "auditlogs_send_logs.json");
 const REPORTING_URL =
   "/wp-admin/admin.php?page=sucuriscan_events_reporting#auditlogs";
 
-// These tests share the same page state and reload the same list; keep them ordered.
-test.describe.configure({ mode: "serial" });
-
 function seedAuditQueue(): void {
   wpEval(
-    '$d=WP_CONTENT_DIR."/uploads/sucuri";' +
-      '@unlink($d."/sucuri-auditqueue.php");' +
-      '@unlink($d."/sucuri-auditlogs.php");' +
+    '@unlink(SucuriScan::dataStorePath("sucuri-auditqueue.php"));' +
+      '@unlink(SucuriScan::dataStorePath("sucuri-auditlogs.php"));' +
       'SucuriScanEvent::reportWarningEvent("Plugin activated: Akismet Anti-spam");' +
       'SucuriScanEvent::reportNoticeEvent("User authentication succeeded: admin");',
   );
@@ -36,12 +32,22 @@ test.beforeEach(() => {
 });
 
 /** Click the filter button and wait for the audit-log list AJAX to come back. */
-async function applyFilter(page: Page): Promise<void> {
+async function applyFilter(
+  page: Page,
+  expected: Record<string, string>,
+): Promise<void> {
   await Promise.all([
     page.waitForResponse(
-      (r) =>
-        r.url().includes("admin-ajax.php") &&
-        (r.request().postData() ?? "").includes("get_audit_logs"),
+      (r) => {
+        const url = new URL(r.url());
+        return (
+          url.pathname.endsWith("admin-ajax.php") &&
+          (r.request().postData() ?? "").includes("get_audit_logs") &&
+          Object.entries(expected).every(
+            ([name, value]) => url.searchParams.get(name) === value,
+          )
+        );
+      },
     ),
     page.getByTestId("sucuriscan_auditlogs_filter_button").click(),
   ]);
@@ -56,7 +62,10 @@ async function clearFilter(page: Page): Promise<void> {
     page.waitForResponse(
       (r) =>
         r.url().includes("admin-ajax.php") &&
-        (r.request().postData() ?? "").includes("get_audit_logs"),
+        (r.request().postData() ?? "").includes("get_audit_logs") &&
+        !["time", "posts", "logins", "users", "plugins", "files"].some(
+          (name) => new URL(r.url()).searchParams.has(name),
+        ),
     ),
     page.getByTestId("sucuriscan_auditlogs_clear_filter_button").click(),
   ]);
@@ -127,20 +136,20 @@ test("filters audit logs by plugin, login, and time", async ({ page }) => {
 
   // Plugins filter -> every entry is a plugin activation.
   await page.locator("#plugins").selectOption({ label: "Activated" });
-  await applyFilter(page);
+  await applyFilter(page, { plugins: "activated" });
   await expectAllEntryTitles(page, /Plugin activated/);
   await clearFilter(page);
 
   // Logins filter -> every entry is a successful authentication.
   await page.locator("#logins").selectOption({ label: "Succeeded" });
-  await applyFilter(page);
+  await applyFilter(page, { logins: "succeeded" });
   await expectAllEntryTitles(page, /User authentication succeeded/);
   await clearFilter(page);
 
   // Combined plugins + logins -> each entry matches one of the two.
   await page.locator("#plugins").selectOption({ label: "Activated" });
   await page.locator("#logins").selectOption({ label: "Succeeded" });
-  await applyFilter(page);
+  await applyFilter(page, { plugins: "activated", logins: "succeeded" });
   await expectAllEntryTitles(
     page,
     /Plugin activated|User authentication succeeded/,
@@ -150,7 +159,7 @@ test("filters audit logs by plugin, login, and time", async ({ page }) => {
   // Combined time + login -> only successful authentications.
   await page.locator("#time").selectOption({ label: "Last 7 Days" });
   await page.locator("#logins").selectOption({ label: "Succeeded" });
-  await applyFilter(page);
+  await applyFilter(page, { time: "last 7 days", logins: "succeeded" });
   await expectAllEntryTitles(page, /User authentication succeeded/);
   await clearFilter(page);
 

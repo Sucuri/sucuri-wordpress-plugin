@@ -14,8 +14,9 @@ process.env.PLAYWRIGHT_NO_COPY_PROMPT = "1";
  * `fullyParallel: false` are the correct defaults. Each CI PHP matrix job has
  * its own isolated wp-env — see .github/workflows/end-to-end-tests.yml.
  *
- * Ordering is enforced via project dependencies:
- *   setup  ->  features (disjoint, non-destructive)  ->  mutations (destructive / auth-affecting)
+ * Both functional projects depend on lightweight setup. Individual specs own
+ * and restore their mutable state, so targeted mutation runs do not execute all
+ * feature tests first.
  */
 export default defineConfig({
   testDir: "./playwright/specs",
@@ -60,9 +61,7 @@ export default defineConfig({
     {
       name: "mutations",
       testDir: "./playwright/specs/mutations",
-      // Run after the non-destructive feature specs so global wipes / auth
-      // changes can't corrupt them.
-      dependencies: ["setup", "features"],
+      dependencies: ["setup"],
       use: { ...devices["Desktop Chrome"], storageState: ADMIN_STORAGE_STATE },
     },
   ],

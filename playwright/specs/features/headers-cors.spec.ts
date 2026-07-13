@@ -8,9 +8,7 @@
  * an anonymous visitor via the `loggedOutRequest` fixture (mirrors cy.request('/')).
  *
  * Each test resets the CORS option object and explicitly selects its mode, so
- * scenarios can run independently. The afterAll selects CORS mode = disabled
- * so re-runs start clean (and the live
- * site stops emitting CORS headers into later spec files). The CORS form POST
+ * scenarios can run independently. The CORS form POST
  * reloads the page, so each submit awaits the navigation before any header read.
  */
 import { test, expect } from "../../support/fixtures";
@@ -77,14 +75,6 @@ test.describe("Headers · CORS", () => {
     updateOption("sucuriscan_headers_cors", "disabled");
     deleteOption("sucuriscan_headers_cors_options");
   });
-  test.afterAll(() => {
-    // Disable CORS mode so re-runs start clean and the live site stops emitting
-    // CORS headers into subsequent spec files. Done via wp-cli (not the UI) so it
-    // is auth-independent and cannot silently no-op. Mode 'disabled' => the plugin
-    // short-circuits before sending any Access-Control-* header (cors.lib.php:42).
-    updateOption("sucuriscan_headers_cors", "disabled");
-  });
-
   test("toggling enforce checkbox enables/disables the Allow-Origin input", async ({
     page,
   }) => {

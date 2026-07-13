@@ -18,19 +18,41 @@
  * Lives in mutations/ because it depends on the global isPremium() state (the
  * shared sucuriscan_cloudproxy_apikey option) and must run freemium.
  */
-import { test, expect } from "@playwright/test";
-import { deleteOption } from "../../support/wp-cli";
+import { test, expect } from "../../support/fixtures";
+import {
+  deleteOption,
+  restoreRawOptions,
+  snapshotRawOptions,
+  updateOption,
+  type RawOptionSnapshot,
+} from "../../support/wp-cli";
 import { BASE_URL } from "../../support/env";
 
 const DASHBOARD_URL = "/wp-admin/admin.php?page=sucuriscan";
+const RAW_OPTIONS = [
+  "sucuriscan_cloudproxy_apikey",
+  "sucuriscan_secret_cloudproxy_apikey_enc",
+  "sucuriscan_secret_cloudproxy_apikey",
+  "sucuriscan_no_salt_encryption",
+  "sucuriscan_waf_key_decrypt_error",
+] as const;
 
 test.describe("WAF activation modal", () => {
+  let rawOptions: Map<string, RawOptionSnapshot | null>;
+
   test.beforeEach(() => {
+    rawOptions = snapshotRawOptions(RAW_OPTIONS);
     // Force the freemium baseline: with any of these set, getKey() returns a
     // value, isPremium() is true, and the modal is never rendered.
     deleteOption("sucuriscan_cloudproxy_apikey");
     deleteOption("sucuriscan_secret_cloudproxy_apikey_enc");
     deleteOption("sucuriscan_secret_cloudproxy_apikey");
+    updateOption("sucuriscan_revproxy", "disabled");
+    updateOption("sucuriscan_addr_header", "REMOTE_ADDR");
+  });
+
+  test.afterEach(() => {
+    restoreRawOptions(rawOptions);
   });
 
   test("appears only on Dashboard, dismisses once, and CTA navigates to WAF", async ({
