@@ -10,14 +10,16 @@
  * re-runnable. The toggle is enable-able only because SUCURISCAN_API_URL is
  * defined in .wp-env.json — otherwise the button is forced to "Enable".
  *
- * The checksum test types an api.wordpress.org URL, which does NOT match the
- * github-only regex, so the plugin deletes sucuriscan_checksum_api while still
- * emitting the same success notice; the afterAll resets that option for
- * cleanliness. afterAll also restores api_service to 'enabled'.
+ * The checksum test stores a valid GitHub repository and verifies the resolved
+ * API URL. afterAll restores the checksum and service options.
  */
 import { test, expect } from "@playwright/test";
 import { expectNotice } from "../../support/notices";
-import { updateOption, deleteOption } from "../../support/wp-cli";
+import {
+  updateOption,
+  deleteOption,
+  readSettingsFileJson,
+} from "../../support/wp-cli";
 
 const APISERVICE_URL =
   "/wp-admin/admin.php?page=sucuriscan_settings#apiservice";
@@ -59,14 +61,12 @@ test.describe("Settings · API Service", () => {
     await expect(toggle).toContainText("Disable");
   });
 
-  test("can update the wordpress checksum api", async ({ page }) => {
+  test("can update the WordPress checksum repository", async ({ page }) => {
     await page.goto(APISERVICE_URL);
 
     await page
       .getByTestId("sucuriscan_wordpress_checksum_api_input")
-      .fill(
-        "https://api.wordpress.org/core/checksums/1.0/?version=5.5.1&locale=es_ES",
-      );
+      .fill("https://github.com/WordPress/WordPress");
     await page.getByTestId("sucuriscan_wordpress_checksum_api_submit").click();
 
     // The .updated notice and .sucuriscan-alert co-exist on the same notice div;
@@ -75,6 +75,14 @@ test.describe("Settings · API Service", () => {
       page,
       "The URL to retrieve the WordPress checksums has been changed",
     );
+    expect(readSettingsFileJson().sucuriscan_checksum_api).toBe(
+      "WordPress/WordPress",
+    );
+    await expect(
+      page.getByRole("link", {
+        name: "https://api.github.com/repos/WordPress/WordPress/git/trees/master?recursive=1",
+      }),
+    ).toBeVisible();
   });
 
   test("can change malware scan target", async ({ page }) => {

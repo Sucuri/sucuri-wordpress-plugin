@@ -148,6 +148,8 @@ export async function expectChallenge(
     // `action=sucuri-2fa` (NOT `-setup`) is the verify screen.
     await expect(page).toHaveURL(/action=sucuri-2fa(?!-setup)/);
     await expect(page).not.toHaveURL(/action=sucuri-2fa-setup/);
+    await expect(page.locator(TOTP_INPUT)).toBeVisible();
+    await expect(page.locator(TOTP_SUBMIT)).toBeVisible();
   }
 }
 

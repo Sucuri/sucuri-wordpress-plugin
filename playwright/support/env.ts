@@ -11,6 +11,16 @@ export const BASE_URL = (
   process.env.SUCURI_BASE_URL || "http://localhost:8889"
 ).replace(/\/$/, "");
 
+const baseUrl = new URL(BASE_URL);
+const localHosts = new Set(["localhost", "127.0.0.1", "::1"]);
+
+if (!localHosts.has(baseUrl.hostname)) {
+  throw new Error(
+    `Refusing to run destructive E2E tests against ${baseUrl.hostname}; ` +
+      "this suite can only clean up the local wp-env instance.",
+  );
+}
+
 /** Host used for cookies (matches BASE_URL host without scheme/port handling done by Playwright). */
 export const BASE_HOST = new URL(BASE_URL).host;
 
@@ -42,12 +52,6 @@ export const resetUser: WpUser = {
   login: process.env.RESET_USER || "sucuri-reset",
   pass: process.env.RESET_USER_PASS || "password",
 };
-
-/**
- * Real WAF API key for the gated firewall suite. When unset, the firewall
- * spec skips itself (it talks to the live Sucuri WAF API).
- */
-export const WAF_API_KEY = process.env.WAF_API_KEY || "";
 
 /** Cookie the plugin reads to suppress the "activate your WAF key" dashboard modal. */
 export const WAF_DISMISS_COOKIE = "sucuriscan_waf_dismissed";

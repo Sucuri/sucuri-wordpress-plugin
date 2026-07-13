@@ -43,7 +43,9 @@ test.skip("can see last logins tab and delete last logins file", async ({
   ).toContainText("admin");
 
   // Generate a failed-login record in a throwaway context, then return as admin.
-  const guest = await browser.newContext();
+  const guest = await browser.newContext({
+    storageState: { cookies: [], origins: [] },
+  });
   await submitLogin(await guest.newPage(), {
     login: "admin_x",
     pass: "NOT_A_WP_PASS",

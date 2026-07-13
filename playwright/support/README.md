@@ -28,8 +28,8 @@ playwright/
 
 `setup` → `features` → `mutations` (enforced via project `dependencies`).
 `workers: 1`, `fullyParallel: false` — the suite shares one mutable WordPress
-instance, so in-process parallelism is unsafe; horizontal scaling is via CI
-sharding (`--shard`), one isolated wp-env per shard.
+instance, so in-process parallelism is unsafe. Each CI matrix entry uses its own
+isolated wp-env.
 
 - **features/**: touch a disjoint slice of state, no global wipe, no auth change.
 - **mutations/**: wipe/overwrite many options, change auth/2FA/passwords/keys,
@@ -47,10 +47,12 @@ sharding (`--shard`), one isolated wp-env per shard.
 - **Notices**: `await expectNotice(page, 'exact substring')` — tolerant of the
   admin-notice prefix and of multiple notices on one page.
 - **Auth**: specs inherit the admin `storageState` (no per-test login). For 2FA
-  challenge flows use fresh `browser.newContext()` per user and the helpers in
-  `pages/two-factor.page.ts`.
+  challenge flows use `browser.newContext()` with an explicit empty
+  `storageState` and the helpers in `pages/two-factor.page.ts`.
 - **Response headers (logged-out)**: use the `loggedOutRequest` fixture +
   `http.ts` helpers. For logged-in checks pass the authenticated `request` fixture.
+- **No browser artifacts**: traces, screenshots, videos, HTML reports, and
+  failure snapshots can expose credentials, TOTP secrets, or WordPress salts.
 - **Idempotency**: pin preconditions in `beforeEach`/`beforeAll` via `wp-cli`
   helpers (`updateOption`, `wpEval`, `runPluginScript`) and restore/clean up in
   `afterAll`/`afterEach`, so repeated runs never fail on leftover state.
@@ -78,7 +80,7 @@ import {
   TwoFactorAdminPage, loginExpect2FA, expectChallenge,
   extractSecret, finishWithCode, completeSetupWithGeneratedCode,
 } from '../../support/pages/two-factor.page';
-import { adminUser, testAdminUser, extraUser, resetUser, WAF_API_KEY } from '../../support/env';
+import { adminUser, testAdminUser, extraUser, resetUser } from '../../support/env';
 ```
 
 See `specs/features/audit-logs.spec.ts` (route mocking + `waitForResponse`) and

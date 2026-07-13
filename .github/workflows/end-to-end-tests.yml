@@ -63,18 +63,8 @@ jobs:
         run: npx wp-env run cli wp core version
 
       - name: Run Playwright e2e tests
-        # The firewall WAF-key spec self-skips when WAF_API_KEY is empty, so the
-        # suite is green without the secret; provide it to exercise that spec.
         env:
-          WAF_API_KEY: ${{ secrets.WAF_API_KEY }}
+          # Prevent Playwright from attaching an accessibility tree of a failed
+          # page; auth and post-hack pages can contain credentials or salts.
+          PLAYWRIGHT_NO_COPY_PROMPT: "1"
         run: npx playwright test
-
-      - name: Upload Playwright report
-        uses: actions/upload-artifact@v6
-        if: ${{ !cancelled() }}
-        with:
-          name: playwright-report-php-${{ matrix.php }}
-          path: |
-            playwright/.report
-            playwright/.results
-          retention-days: 7

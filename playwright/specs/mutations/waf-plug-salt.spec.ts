@@ -15,11 +15,10 @@
  *   2. "fresh key save and decrypt" — deletes the encrypted/secret options, then
  *      saves a brand-new key via SucuriScanOption::updateOption (stored v:2 from
  *      the start, single constants), decrypts it back, and finally verifies the
- *      corrupt-salt recovery: garbage "badbad..." constants are replaced with
- *      valid 64-hex on re-save and the new key still reads back.
+ *      stable-salt behavior after deterministic constants are installed: a
+ *      re-saved key remains decryptable without rotating the constants.
  *
- * Tests in each group share the wp-config.php / option state produced by the one
- * before, so both groups run serially. The live WAF AJAX is neutralised with
+ * Each test seeds its own wp-config.php / option preconditions. Live WAF AJAX is neutralised with
  * page.route — the old Cypress get_firewall_settings intercept was a dead no-op
  * (the real page POSTs form_action='firewall_settings'); migration is triggered
  * server-side by the page render, not the AJAX.
@@ -34,8 +33,12 @@ import { test, expect } from "@playwright/test";
 import type { Page } from "@playwright/test";
 import {
   getOption,
+  tryGetOption,
+  deleteRawOption,
   readWpConfig,
+  restoreWpConfig,
   runPluginScript,
+  updateRawOption,
   wpEnvRun,
   wpEval,
   deleteOption,
@@ -51,6 +54,34 @@ const CORRUPT_RECOVERY_KEY =
 
 const PLUG_KEY_DEFINE = /define\('SUCURI_PLUG_KEY',\s*'[0-9a-f]{64}'\)/;
 const PLUG_SALT_DEFINE = /define\('SUCURI_PLUG_SALT',\s*'[0-9a-f]{64}'\)/;
+
+const RAW_OPTIONS = [
+  "sucuriscan_secret_cloudproxy_apikey_enc",
+  "sucuriscan_secret_cloudproxy_apikey",
+  "sucuriscan_no_salt_encryption",
+  "sucuriscan_waf_key_decrypt_error",
+] as const;
+
+let originalWpConfig: string;
+let originalRawOptions: Map<string, unknown>;
+
+test.beforeAll(() => {
+  originalWpConfig = readWpConfig();
+  originalRawOptions = new Map(
+    RAW_OPTIONS.map((name) => [name, tryGetOption(name)]),
+  );
+});
+
+test.afterAll(() => {
+  restoreWpConfig(originalWpConfig);
+  for (const name of RAW_OPTIONS) {
+    deleteRawOption(name);
+    const value = originalRawOptions.get(name);
+    if (value !== null && value !== undefined) {
+      updateRawOption(name, value);
+    }
+  }
+});
 
 /** v:1 / v:2 encrypted-payload shape stored in sucuriscan_secret_cloudproxy_apikey_enc. */
 interface EncryptedPayload {
@@ -69,7 +100,13 @@ interface EncryptedPayload {
 function getEncryptedPayload(): EncryptedPayload {
   return JSON.parse(
     wpEnvRun(
-      "wp option get sucuriscan_secret_cloudproxy_apikey_enc --format=json --skip-plugins --skip-themes",
+      "wp",
+      "option",
+      "get",
+      "sucuriscan_secret_cloudproxy_apikey_enc",
+      "--format=json",
+      "--skip-plugins",
+      "--skip-themes",
     ),
   ) as EncryptedPayload;
 }
@@ -91,7 +128,10 @@ async function blockLiveWaf(page: Page): Promise<void> {
 }
 
 test.describe("SUCURI_PLUG_* salt migration", () => {
-  test.describe.configure({ mode: "serial" });
+  test.beforeEach(async ({ page }) => {
+    runPluginScript("tests/e2e-seed-waf-plug-salt.sh");
+    await blockLiveWaf(page);
+  });
 
   test("migrates a v:1 payload to v:2 on first firewall page load", async ({
     page,
@@ -99,14 +139,10 @@ test.describe("SUCURI_PLUG_* salt migration", () => {
     // Seed after Playwright has initialized this test's page. Earlier mutation
     // specs may leave an open request that reads and migrates the payload, so a
     // beforeAll seed is not isolated enough for this one-way migration scenario.
-    runPluginScript("tests/e2e-seed-waf-plug-salt.sh");
-
     // PRE: the seed left a v:1 payload in place.
     const before = getEncryptedPayload();
     expect(typeof before).toBe("object");
     expect(before.v).toBe(1);
-
-    await blockLiveWaf(page);
 
     // The firewall render calls getSecretOption() server-side, which decrypts the
     // v:1 payload with the auth key and re-encrypts it as v:2. Await full
@@ -124,23 +160,22 @@ test.describe("SUCURI_PLUG_* salt migration", () => {
     expect(payload).toHaveProperty("ct");
   });
 
-  test("writes SUCURI_PLUG_KEY and SUCURI_PLUG_SALT to wp-config.php (not wp_options)", () => {
+  test("writes SUCURI_PLUG_KEY and SUCURI_PLUG_SALT to wp-config.php (not wp_options)", async ({ page }) => {
+    await page.goto(FIREWALL_URL, { waitUntil: "networkidle" });
     const config = readWpConfig();
     // Exact written format (option.lib.php:1007-1011): two spaces after the KEY
     // comma, one after SALT; each value is 64-hex (hash_hmac sha256 hex output).
-    expect(config).toMatch(PLUG_KEY_DEFINE);
-    expect(config).toMatch(PLUG_SALT_DEFINE);
+    // Assert booleans so a failure never prints the full wp-config.php and salts.
+    expect(PLUG_KEY_DEFINE.test(config)).toBe(true);
+    expect(PLUG_SALT_DEFINE.test(config)).toBe(true);
 
     // The constants live in wp-config.php only — never in wp_options.
-    expect(
-      wpEnvRun("wp option get sucuriscan_plug_key || echo __missing__"),
-    ).toContain("__missing__");
-    expect(
-      wpEnvRun("wp option get sucuriscan_plug_salt || echo __missing__"),
-    ).toContain("__missing__");
+    expect(tryGetOption("sucuriscan_plug_key")).toBeNull();
+    expect(tryGetOption("sucuriscan_plug_salt")).toBeNull();
   });
 
-  test("inserts constants before the stop-editing marker in wp-config.php", () => {
+  test("inserts constants before the stop-editing marker in wp-config.php", async ({ page }) => {
+    await page.goto(FIREWALL_URL, { waitUntil: "networkidle" });
     const config = readWpConfig();
     const plugPos = config.indexOf("SUCURI_PLUG_KEY");
     const stopPos = config.indexOf("That's all");
@@ -153,7 +188,8 @@ test.describe("SUCURI_PLUG_* salt migration", () => {
     expect(plugPos).toBeLessThan(stopPos);
   });
 
-  test("does not duplicate constants on repeated reads", () => {
+  test("does not duplicate constants on repeated reads", async ({ page }) => {
+    await page.goto(FIREWALL_URL, { waitUntil: "networkidle" });
     // Reading the key does not regenerate constants: getPluginSaltRaw returns the
     // already-defined SUCURI_PLUG_KEY.SUCURI_PLUG_SALT without writing.
     wpEval('SucuriScanOption::getOption(":cloudproxy_apikey");');
@@ -165,7 +201,6 @@ test.describe("SUCURI_PLUG_* salt migration", () => {
   });
 
   test("no decrypt-error notice is shown after migration", async ({ page }) => {
-    await blockLiveWaf(page);
     await page.goto(FIREWALL_URL, { waitUntil: "networkidle" });
     // The "could not be decrypted" notice renders as .sucuriscan-alert-error /
     // .notice-error; after a clean migration it must be absent.
@@ -174,20 +209,17 @@ test.describe("SUCURI_PLUG_* salt migration", () => {
 });
 
 test.describe("SUCURI_PLUG_* salt - fresh key save and decrypt", () => {
-  test.describe.configure({ mode: "serial" });
-
-  test.beforeAll(() => {
+  test.beforeEach(() => {
     // Remove the encrypted key + plaintext fallback so save exercises the
     // v:2-from-scratch path; wp-config.php constants are regenerated on save.
     deleteOption("sucuriscan_secret_cloudproxy_apikey_enc");
     deleteOption("sucuriscan_secret_cloudproxy_apikey");
-  });
-
-  test("stores a newly saved key as v:2 and replaces constants in wp-config.php", () => {
     wpEval(
       `SucuriScanOption::updateOption(":cloudproxy_apikey", "${NEW_KEY}");`,
     );
+  });
 
+  test("stores a newly saved key as v:2 and replaces constants in wp-config.php", () => {
     // Save always encrypts as v:2 (encryptSecretValue, option.lib.php:1504-1508).
     const payload = getOption<EncryptedPayload>(
       "sucuriscan_secret_cloudproxy_apikey_enc",

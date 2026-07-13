@@ -25,13 +25,18 @@
 import { test, expect } from "../../support/fixtures";
 import type { Page } from "@playwright/test";
 import { expectHeaderEquals } from "../../support/http";
-import { deleteOption, updateOption } from "../../support/wp-cli";
+import {
+  deleteOption,
+  readSettingsFileJson,
+  updateOption,
+} from "../../support/wp-cli";
 
 const HEADERS_URL = "/wp-admin/admin.php?page=sucuriscan_headers_management";
 
-// These tests share the two cache-control options and a single mutable WP
-// instance; ordering matters (each pins a mode then reads headers).
-test.describe.configure({ mode: "serial" });
+test.beforeEach(() => {
+  deleteOption("sucuriscan_headers_cache_control_options");
+  updateOption("sucuriscan_headers_cache_control", "disabled");
+});
 
 /**
  * Select a cache mode by its (capitalised) label, submit the full-page POST,
@@ -145,6 +150,7 @@ test("Can set the Cache-Control header properly", async ({
     "/?p=12",
     "cache-control",
     "max-age=600",
+    { status: 404 },
   ); // 404 (busy tier)
 });
 
@@ -193,10 +199,23 @@ test("Can customize the old age multiplier for the Cache-Control header", async 
   // The checkbox is rendered disabled and only becomes editable while the row is
   // expanded, so toggle it strictly between the two row-expander clicks.
   await page.getByTestId("sucuriscan-row-posts").click();
-  await oldAgeMultiplier.click();
+  await expect(oldAgeMultiplier).toBeEnabled();
+  await oldAgeMultiplier.evaluate((element) => {
+    const input = element as HTMLInputElement;
+    input.checked = true;
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+  await expect(oldAgeMultiplier).toHaveValue("1");
   await collapsePostsRowAndPersist(page);
 
   await expectCacheControlEnabled(page);
+  expect(
+    (
+      readSettingsFileJson().sucuriscan_headers_cache_control_options as {
+        posts: { old_age_multiplier: number };
+      }
+    ).posts.old_age_multiplier,
+  ).toBe(1);
 
   // Reload to confirm the checked state persisted to the option store.
   await page.goto(HEADERS_URL);
@@ -204,7 +223,12 @@ test("Can customize the old age multiplier for the Cache-Control header", async 
 
   // Toggle it back off.
   await page.getByTestId("sucuriscan-row-posts").click();
-  await oldAgeMultiplier.click();
+  await oldAgeMultiplier.evaluate((element) => {
+    const input = element as HTMLInputElement;
+    input.checked = false;
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+  await expect(oldAgeMultiplier).toHaveValue("0");
   await collapsePostsRowAndPersist(page);
 
   await expect(oldAgeMultiplier).not.toBeChecked();

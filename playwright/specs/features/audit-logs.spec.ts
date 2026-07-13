@@ -9,6 +9,7 @@
 import path from "node:path";
 import { test, expect } from "../../support/fixtures";
 import type { Page } from "@playwright/test";
+import { wpEval } from "../../support/wp-cli";
 
 const DATA_DIR = path.join(__dirname, "../../data");
 const AUDIT_LOGS_FIXTURE = path.join(DATA_DIR, "audit_logs.json");
@@ -19,6 +20,20 @@ const REPORTING_URL =
 
 // These tests share the same page state and reload the same list; keep them ordered.
 test.describe.configure({ mode: "serial" });
+
+function seedAuditQueue(): void {
+  wpEval(
+    '$d=WP_CONTENT_DIR."/uploads/sucuri";' +
+      '@unlink($d."/sucuri-auditqueue.php");' +
+      '@unlink($d."/sucuri-auditlogs.php");' +
+      'SucuriScanEvent::reportWarningEvent("Plugin activated: Akismet Anti-spam");' +
+      'SucuriScanEvent::reportNoticeEvent("User authentication succeeded: admin");',
+  );
+}
+
+test.beforeEach(() => {
+  seedAuditQueue();
+});
 
 /** Click the filter button and wait for the audit-log list AJAX to come back. */
 async function applyFilter(page: Page): Promise<void> {
@@ -86,14 +101,16 @@ test("sends audit logs to the Sucuri servers (AJAX stubbed)", async ({
   // before asserting the result; the element does not transition through a
   // "Loading..." state during send (it's only set during the initial page-load
   // get_audit_logs call, which the stub resolves immediately).
-  await Promise.all([
-    page.waitForResponse(
-      (r) =>
-        r.url().includes("admin-ajax.php") &&
-        (r.request().postData() ?? "").includes("auditlogs_send_logs"),
-    ),
-    page.getByTestId("sucuriscan_dashboard_send_audit_logs_submit").click(),
-  ]);
+  const sent = page.waitForResponse(
+    (r) =>
+      r.url().includes("admin-ajax.php") &&
+      (r.request().postData() ?? "").includes("auditlogs_send_logs"),
+  );
+  await page.getByTestId("sucuriscan_dashboard_send_audit_logs_submit").click();
+  await expect(
+    page.locator(".sucuriscan-auditlogs-sendlogs-response"),
+  ).toContainText("Loading...");
+  await sent;
 
   await expect(
     page.locator(".sucuriscan-auditlog-entry-title").first(),

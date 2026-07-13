@@ -24,19 +24,15 @@ test.describe("Settings · Website Info", () => {
       "/var/www/html/",
     );
 
-    // Access File Integrity: assert the "no .htaccess" message on the whole
-    // panel. tests/e2e-prepare.sh touches an EMPTY /var/www/html/.htaccess, so
-    // getHtaccessPath() (file_exists-based, src/base.lib.php:374) reports the
-    // file as found and the plugin actually toggles the "found" branch visible.
-    // The panel template (inc/tpl/settings-webinfo-htaccess.html.tpl) still
-    // renders the not-found <p> in the DOM (merely display:none via
-    // .sucuriscan-hidden), and toContainText reads textContent including hidden
-    // descendants — matching the original Cypress .contains() behaviour. So the
-    // assertion below holds regardless of which branch is visually shown.
+    const accessPanel = page.getByTestId("sucuriscan_access_file_integrity");
     await expect(
-      page.getByTestId("sucuriscan_access_file_integrity"),
-    ).toContainText(
-      "Your website has no .htaccess file or it was not found in the default location.",
-    );
+      accessPanel.locator(".sucuriscan-inline-alert-success"),
+    ).toBeVisible();
+    await expect(
+      accessPanel.locator(".sucuriscan-inline-alert-success"),
+    ).toContainText("Htaccess file found in /var/www/html/.htaccess");
+    await expect(
+      accessPanel.locator(".sucuriscan-inline-alert-error"),
+    ).toBeHidden();
   });
 });

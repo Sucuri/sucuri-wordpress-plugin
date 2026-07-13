@@ -6,12 +6,8 @@
  * header), the sandbox multi_checkbox directive, and the conditional
  * upgrade-insecure-requests directive.
  *
- * INTENTIONAL intra-file data carry-over (faithful 1:1 with the Cypress source):
- * the "Saves enforced state..." test persists default-src 'none' with mode
- * Report Only; the sandbox and upgrade-insecure-requests tests rely on that
- * persisted default-src 'none' (and on report-only mode being live) to assert
- * the exact combined header. The tests therefore run SERIAL in declaration
- * order — do not reorder them. The token order in the emitted header is fixed
+ * Every test resets the CSP option object and seeds the directives it needs,
+ * so each scenario can run independently. The token order in the emitted header is fixed
  * by the PHP option-array declaration order (allow-forms < allow-orientation-lock
  * < allow-popups), not by checkbox click order, so the exact strings are asserted.
  *
@@ -35,10 +31,6 @@ import {
 const HEADERS_URL = "/wp-admin/admin.php?page=sucuriscan_headers_management";
 const CSP_HEADER = "content-security-policy-report-only";
 
-// The sandbox / upgrade-insecure-requests tests depend on default-src 'none'
-// (Report Only) persisted by the earlier save test, so keep declaration order.
-test.describe.configure({ mode: "serial" });
-
 /** Submit the CSP form and wait for the new page to fully render. */
 async function submitCspForm(page: Page): Promise<void> {
   // Click the submit button, then auto-wait for the confirmation alert that
@@ -52,7 +44,7 @@ async function submitCspForm(page: Page): Promise<void> {
 }
 
 test.describe("Headers · Content-Security-Policy", () => {
-  test.beforeAll(() => {
+  test.beforeEach(() => {
     // Reset to clean state before the suite so a previous interrupted run that
     // left any directive enforced doesn't break the first assertion.
     // Disabling the mode stops header emission; deleting the options object
@@ -138,6 +130,12 @@ test.describe("Headers · Content-Security-Policy", () => {
     await page.goto(HEADERS_URL);
 
     await page
+      .locator("input[name='sucuriscan_enforced_default_src']")
+      .check({ force: true });
+    await page
+      .locator("input[name='sucuriscan_csp_default_src']")
+      .fill("'none'");
+    await page
       .locator("input[name='sucuriscan_enforced_sandbox']")
       .check({ force: true });
     await page
@@ -155,8 +153,7 @@ test.describe("Headers · Content-Security-Policy", () => {
       .selectOption("report-only");
     await submitCspForm(page);
 
-    // default-src 'none' carried over from the previous test; token order is
-    // fixed by PHP option-array declaration order, not click order.
+    // Token order is fixed by PHP option-array declaration order, not click order.
     await expectHeaderEquals(
       loggedOutRequest,
       "/",
@@ -196,6 +193,24 @@ test.describe("Headers · Content-Security-Policy", () => {
   }) => {
     await page.goto(HEADERS_URL);
 
+    await page
+      .locator("input[name='sucuriscan_enforced_default_src']")
+      .check({ force: true });
+    await page
+      .locator("input[name='sucuriscan_csp_default_src']")
+      .fill("'none'");
+    await page
+      .getByTestId("sucuriscan_csp_options_mode_button")
+      .selectOption("report-only");
+    await submitCspForm(page);
+
+    const before = await loggedOutRequest.get("/", { failOnStatusCode: false });
+    expect(before.headers()[CSP_HEADER] ?? "").not.toContain(
+      "upgrade-insecure-requests",
+    );
+
+    await page.goto(HEADERS_URL);
+
     const enforce = page.locator(
       "input[name='sucuriscan_enforced_upgrade_insecure_requests']",
     );
@@ -205,13 +220,6 @@ test.describe("Headers · Content-Security-Policy", () => {
 
     await expect(enforce).not.toBeChecked();
     await expect(token).toBeDisabled();
-
-    // Mode is report-only (carried over from the sandbox test); the header is
-    // emitted but must not yet contain the directive.
-    const before = await loggedOutRequest.get("/", { failOnStatusCode: false });
-    expect(before.headers()[CSP_HEADER] ?? "").not.toContain(
-      "upgrade-insecure-requests",
-    );
 
     await enforce.check({ force: true });
     await expect(token).toBeEnabled();

@@ -14,7 +14,12 @@
  */
 import { test, expect } from "@playwright/test";
 import { expectNotice } from "../../support/notices";
-import { updateOption, wpEval } from "../../support/wp-cli";
+import {
+  readSettingsFileJson,
+  replaceOptions,
+  updateOption,
+  wpEval,
+} from "../../support/wp-cli";
 
 const GENERAL_URL = "/wp-admin/admin.php?page=sucuriscan_settings#general";
 
@@ -24,6 +29,12 @@ const IMPORT_PAYLOAD =
 test.describe.configure({ mode: "serial" });
 
 test.describe("Settings · General", () => {
+  let originalOptions: Record<string, unknown>;
+
+  test.beforeAll(() => {
+    originalOptions = readSettingsFileJson();
+  });
+
   test.beforeEach(() => {
     // Deterministic starting point for the label-flip / paired-notice toggles.
     updateOption("sucuriscan_dns_lookups", "enabled");
@@ -37,9 +48,11 @@ test.describe("Settings · General", () => {
   });
 
   test.afterAll(() => {
-    updateOption("sucuriscan_revproxy", "enabled");
-    updateOption("sucuriscan_addr_header", "HTTP_X_SUCURI_CLIENTIP");
-    updateOption("sucuriscan_dns_lookups", "enabled");
+    replaceOptions(originalOptions);
+    wpEval(
+      "wp_clear_scheduled_hook('sucuriscan_scheduled_scan');" +
+        "SucuriScanEvent::installScheduledTask();",
+    );
   });
 
   test("updates the timezone setting", async ({ page }) => {
@@ -141,7 +154,13 @@ test.describe("Settings · General", () => {
     );
   });
 
-  test("resets logs, hardening and settings", async ({ page }) => {
+  test("requires explicit confirmation before the reset action", async ({ page }) => {
+    await page.goto(GENERAL_URL);
+    await page.getByTestId("sucuriscan_reset_submit").click();
+    await expect(page.locator(".sucuriscan-alert-error")).toContainText(
+      "You need to confirm that you understand the risk of this operation.",
+    );
+
     await page.goto(GENERAL_URL);
     await page.getByTestId("sucuriscan_reset_checkbox").check();
     await page.getByTestId("sucuriscan_reset_submit").click();

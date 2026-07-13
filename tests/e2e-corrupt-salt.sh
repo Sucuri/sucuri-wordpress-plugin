@@ -1,11 +1,10 @@
 #!/bin/bash
 # Corrupt the SUCURI_PLUG_* constants in wp-config.php for the corrupt-salt
-# recovery E2E test: strip the existing valid SUCURI_PLUG_KEY / SUCURI_PLUG_SALT
-# define() lines and append two obviously-invalid "badbad...(x64)" defines.
+# stability E2E test: strip the existing SUCURI_PLUG_KEY / SUCURI_PLUG_SALT
+# define() lines and append deterministic replacement values.
 #
-# The subsequent key re-save (SucuriScanOption::updateOption) must replace these
-# garbage defines with freshly-derived valid 64-hex constants and re-encrypt the
-# key, proving the plugin recovers from a corrupted plug-salt.
+# The subsequent key re-save must use the loaded constants without rotating them,
+# proving that a save and read use the same stable salt in one request.
 #
 # Lives in a script (invoked via runPluginScript) to avoid the nested single/
 # double-quote escaping hell of passing this multi-statement PHP through
@@ -32,7 +31,7 @@ $content = preg_replace(
     $content
 );
 
-// Append two deliberately-invalid 64-char defines (not valid derived hex).
+// Append deterministic 64-character hexadecimal defines.
 $bad = substr( str_repeat( "badbad", 11 ), 0, 64 );
 $content .= "define(\x27SUCURI_PLUG_KEY\x27,  \x27" . $bad . "\x27);\n";
 $content .= "define(\x27SUCURI_PLUG_SALT\x27, \x27" . $bad . "\x27);\n";

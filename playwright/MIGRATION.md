@@ -30,18 +30,19 @@ migrated 1:1.
 | …CORS headers | `features/headers-cors.spec.ts` |
 | …Last logins (was `it.skip`) | `features/last-logins.spec.ts` (`test.skip`) |
 | …Two-Factor Authentication (10 tests) | `mutations/two-factor.spec.ts` |
-| `sucuri-scanner-firewall.js` (live WAF key) | `mutations/firewall-waf-key.spec.ts` (gated) |
+| `sucuri-scanner-firewall.js` (live WAF key) | Removed: unsafe external-account mutation |
 | `sucuri-scanner-waf-migration.cy.js` | `mutations/waf-migration.spec.ts` |
 | `sucuri-scanner-waf-plug-salt.cy.js` | `mutations/waf-plug-salt.spec.ts` |
 
-**80 tests across 21 files.** Coverage was verified test-by-test and assertion-by-assertion
-against the Cypress source via an adversarial review pass (0 missing scenarios).
+**81 tests across 20 files.** Local plugin coverage was verified against the
+Cypress source; the unsafe live-WAF suite was intentionally removed.
 
 ## Abstractions introduced
 
 - **`playwright.config.ts`** — `testIdAttribute: 'data-cy'` (so the plugin's 116
   existing `data-cy` hooks map to `getByTestId`), three projects with
-  dependencies, retries/traces/screenshots/video.
+  dependencies and CI retries. HTML reports and browser artifacts stay disabled
+  because these security flows render credentials, TOTP secrets, and WordPress salts.
 - **`support/global.setup.ts`** (`setup` project) — logs in once and saves an
   admin `storageState`, replacing Cypress's per-test `cy.session` login (the
   single biggest speedup). Also idempotently provisions the named test users.
@@ -71,10 +72,8 @@ setup  →  features (disjoint, non-destructive)  →  mutations (destructive / 
 
 Speed gains over Cypress come from: reused `storageState` (no per-test UI login),
 elimination of every fixed `cy.wait(ms)` in favour of web-first assertions /
-`waitForResponse` / route stubbing, and Chromium-only execution. **Horizontal
-scaling is via CI sharding** (`--shard=i/n`) — each shard is a separate job with
-its own isolated `wp-env` (see `.github/workflows/end-to-end-tests.yml`, which
-keeps the PHP 7.4 / 8.0 matrix as two isolated environments).
+`waitForResponse` / route stubbing, and Chromium-only execution. The PHP 7.4 /
+8.0 matrix entries each run in an isolated `wp-env`.
 
 ## Re-runnability / idempotency
 
@@ -116,10 +115,9 @@ leftover state. Notable cases:
 
 ## Tests that could not be migrated exactly (with rationale)
 
-- **Firewall live-WAF suite** (`firewall-waf-key.spec.ts`) — `test.skip`s itself
-  unless `WAF_API_KEY` is set, because it calls the live Sucuri WAF API. Same
-  gating Cypress used (`env.cypress_waf_api_key`). Assertions restored the
-  `SUCURI:` notice prefix and replaced the stale delete-key/response selectors.
+- **Firewall live-WAF suite** — intentionally removed. It mutated a shared
+  external account (blocklist and cache flush), could not guarantee remote
+  cleanup, and exposed the real API key to browser traces on failure.
 - **Three `it.skip` tests** were preserved as `test.skip` (not dropped) so their
   intent stays visible: "toggle hardening options" (premium/firewall + fragile
   filesystem/wp-config/cron state), "reset installed plugins" (re-installs akismet
@@ -137,7 +135,8 @@ npm run typecheck   # tsc --noEmit
 npx playwright test --ui   # interactive debugging
 ```
 
-Set `WAF_API_KEY=<32hex>/<32hex>` to also exercise the live firewall suite.
+Destructive tests refuse non-local `SUCURI_BASE_URL` values because setup and
+cleanup operate on the local wp-env instance.
 
 ## Follow-ups / environment notes
 

@@ -36,7 +36,11 @@ test.describe("WAF activation modal", () => {
   test("appears only on Dashboard, dismisses once, and CTA navigates to WAF", async ({
     page,
   }) => {
-    const modal = page.getByTestId("sucuriscan-modal-container");
+    const modal = page.getByTestId("sucuriscan-modal-container").filter({
+      has: page.getByRole("heading", {
+        name: "Activate Your Firewall API Key",
+      }),
+    });
 
     // The admin storageState seeds sucuriscan_waf_dismissed=1; reset it to '0'
     // on the context so the very first server render shows the modal. This

@@ -41,13 +41,13 @@ test.describe("Post-hack · Reset user password", () => {
     // so the initial "can log in" step is deterministic. beforeEach (not
     // beforeAll) so a retry re-seeds it — the test body randomizes the password,
     // and beforeAll would not re-run, dooming every retry at step 1.
-    wp(`user update ${resetUser.login} --user_pass=${resetUser.pass}`);
+    wp("user", "update", resetUser.login, `--user_pass=${resetUser.pass}`);
   });
 
   test.afterAll(() => {
     // The reset randomized sucuri-reset's password; restore it so the next run's
     // initial login step passes. Never touch the admin account.
-    wp(`user update ${resetUser.login} --user_pass=${resetUser.pass}`);
+    wp("user", "update", resetUser.login, `--user_pass=${resetUser.pass}`);
   });
 
   test("resets a user password and invalidates the old one", async ({

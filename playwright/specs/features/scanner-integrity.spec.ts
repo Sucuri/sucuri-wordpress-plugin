@@ -205,26 +205,42 @@ test.describe("Scanner", () => {
   test("can use new dropdown in integrity diff utility", async ({ page }) => {
     await gotoDashboardAndWaitIntegrity(page);
     const initialCount = await integrityFileCount(page);
+    expect(initialCount).toBeGreaterThanOrEqual(101);
 
-    // The checker may report a different number of files for each supported
-    // WordPress version, but a multi-page result must show pagination.
+    const totalPages = Math.ceil(initialCount / 15);
+    // Pagination renders at most 16 buttons around the active page.
     await expect(
       page.locator(
         ".sucuriscan-pagination-integrity .sucuriscan-pagination-link",
       ),
-    ).not.toHaveCount(0);
+    ).toHaveCount(Math.min(totalPages, 16));
 
     await selectPerPageAndExpectCount(page, "200", initialCount);
+    const fixturePaths = await page
+      .locator(".sucuriscan-integrity-filepath")
+      .evaluateAll((elements) =>
+        elements
+          .map((element) => element.getAttribute("data-filepath") ?? "")
+          .filter((path) => /^wp-test-file-\d+\.php$/.test(path)),
+      );
+    expect(new Set(fixturePaths).size).toBe(100);
+    for (let index = 1; index <= 100; index++) {
+      expect(fixturePaths).toContain(`wp-test-file-${index}.php`);
+    }
     await selectPerPageAndExpectCount(page, "15", 15);
     await selectPerPageAndExpectCount(page, "50", 50);
 
-    // Select-all is the integrity table's #cb-select-all-1; on the dashboard it
-    // is the only such id, but scope to the enclosing form to stay explicit.
-    await page
-      .locator("form")
-      .filter({ has: page.getByTestId("sucuriscan_integrity_list_table") })
-      .locator("#cb-select-all-1")
-      .check();
+    // WordPress-version checksum differences can add modified core files that
+    // cannot be marked fixed. Show all rows and select 50 deterministic files
+    // created by e2e-prepare instead.
+    await selectPerPageAndExpectCount(page, "200", initialCount);
+    const seededFiles = page.locator(
+      'input[name="sucuriscan_integrity[]"][value^="added@wp-test-file-"]',
+    );
+    await expect(seededFiles).toHaveCount(100);
+    for (let index = 0; index < 50; index++) {
+      await seededFiles.nth(index).check();
+    }
     await confirmAndSubmitIntegrity(page);
 
     await expect(page.locator(".sucuriscan-alert")).toContainText(
@@ -260,7 +276,7 @@ test.describe("Scanner", () => {
     await selectPerPageAndExpectCount(
       page,
       "200",
-      await integrityFileCount(page),
+      initialCount,
     );
   });
 
@@ -270,47 +286,34 @@ test.describe("Scanner", () => {
     const pagination = page.locator(
       ".sucuriscan-pagination-integrity .sucuriscan-pagination-link",
     );
-    await expect(pagination).not.toHaveCount(0);
+    const initialCount = await integrityFileCount(page);
+    const totalPages = Math.ceil(initialCount / 15);
+    await expect(pagination).toHaveCount(Math.min(totalPages, 16));
     await expect(
       page.locator('.sucuriscan-pagination-integrity [data-page="2"]'),
     ).toBeVisible();
 
-    // Capture page 2, then mark its current rows fixed.
+    const pageOneFirstPath = await page
+      .locator(".sucuriscan-integrity-filepath")
+      .first()
+      .getAttribute("data-filepath");
+
     const toPage2 = waitForIntegrityCheck(page);
     await page
       .locator('.sucuriscan-pagination-integrity [data-page="2"]')
       .click();
     await toPage2;
-    const pageTwoFirstPath = await page
-      .locator(".sucuriscan-integrity-filepath")
-      .first()
-      .getAttribute("data-filepath");
-
-    await page
-      .locator("form")
-      .filter({ has: page.getByTestId("sucuriscan_integrity_list_table") })
-      .locator("#cb-select-all-1")
-      .check();
-    await confirmAndSubmitIntegrity(page);
-
-    await expect(page.locator(".sucuriscan-alert")).toContainText(
-      "15 out of 15 files were successfully processed.",
-    );
-
-    // Page 2 has advanced to a different set after the first page-two rows
-    // were removed from the result.
-    const toPage2Again = waitForIntegrityCheck(page);
-    await page
-      .locator('.sucuriscan-pagination-integrity [data-page="2"]')
-      .click();
-    await toPage2Again;
     await expect(
       page.locator(".sucuriscan-integrity-filepath").first(),
-    ).not.toHaveAttribute("data-filepath", pageTwoFirstPath ?? "");
+    ).not.toHaveAttribute("data-filepath", pageOneFirstPath ?? "");
 
-    // Navigate through the last pagination link currently rendered.
+    const visibleLastPage = Math.min(totalPages, 16);
     const toLastPage = waitForIntegrityCheck(page);
-    await pagination.last().click();
+    await page
+      .locator(
+        `.sucuriscan-pagination-integrity [data-page="${visibleLastPage}"]`,
+      )
+      .click();
     await toLastPage;
     await expect(page.locator(".sucuriscan-integrity-filepath").first()).toBeVisible();
   });

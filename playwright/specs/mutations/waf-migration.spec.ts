@@ -18,14 +18,25 @@ import { test, expect } from "@playwright/test";
 import {
   getOption,
   tryGetOption,
+  deleteRawOption,
   readSettingsFileJson,
+  readWpConfig,
+  replaceOptions,
+  restoreWpConfig,
   runPluginScript,
+  updateRawOption,
 } from "../../support/wp-cli";
 
 const FIREWALL_URL = "/wp-admin/admin.php?page=sucuriscan_firewall";
 
 const LEGACY_WAF_KEY =
   "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
+const RAW_OPTIONS = [
+  "sucuriscan_secret_cloudproxy_apikey_enc",
+  "sucuriscan_secret_cloudproxy_apikey",
+  "sucuriscan_no_salt_encryption",
+  "sucuriscan_waf_key_decrypt_error",
+] as const;
 
 interface EncryptedPayload {
   alg: string;
@@ -35,10 +46,31 @@ interface EncryptedPayload {
 }
 
 test.describe("WAF key migration", () => {
+  let originalOptions: Record<string, unknown>;
+  let originalWpConfig: string;
+  let originalRawOptions: Map<string, unknown>;
+
   test.beforeAll(() => {
+    originalOptions = readSettingsFileJson();
+    originalWpConfig = readWpConfig();
+    originalRawOptions = new Map(
+      RAW_OPTIONS.map((name) => [name, tryGetOption(name)]),
+    );
     // Re-seed the plaintext key + addr_header REMOTE_ADDR + notify_to and delete
     // both secret options so the one-way migration can run from a clean slate.
     runPluginScript("tests/e2e-seed-waf-migration.sh");
+  });
+
+  test.afterAll(() => {
+    replaceOptions(originalOptions);
+    restoreWpConfig(originalWpConfig);
+    for (const name of RAW_OPTIONS) {
+      deleteRawOption(name);
+      const value = originalRawOptions.get(name);
+      if (value !== null && value !== undefined) {
+        updateRawOption(name, value);
+      }
+    }
   });
 
   test("migrates legacy WAF key to encrypted DB option", async ({ page }) => {

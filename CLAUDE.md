@@ -37,7 +37,7 @@ make e2e-waf-migration  # seeds via tests/e2e-seed-waf-migration.sh, then runs w
 make e2e-waf-plug-salt  # seeds via tests/e2e-seed-waf-plug-salt.sh, then runs waf-plug-salt spec
 npm run start / npm run stop   # start/stop the wp-env Docker environment directly
 ```
-E2E requires Docker (wp-env). Firewall E2E only runs in CI when a `WAF_API_KEY` secret is present.
+E2E requires Docker (wp-env). Tests that mutate a live external WAF account are intentionally excluded.
 
 ### Translations
 ```sh

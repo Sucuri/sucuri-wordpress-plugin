@@ -1,6 +1,6 @@
 #!/bin/sh
 
-.PHONY: e2e e2e-prepare e2e-install e2e-test e2e-features e2e-mutations e2e-ui e2e-report unit-test update-translations git-archive
+.PHONY: e2e e2e-prepare e2e-install e2e-test e2e-features e2e-mutations e2e-ui unit-test update-translations git-archive
 
 # Full local run: (re)provision a clean WordPress, then run the Playwright suite.
 e2e: e2e-prepare e2e-test
@@ -22,20 +22,16 @@ e2e-test:
 	npx playwright test
 
 # Run only the non-destructive feature specs (setup runs automatically).
-e2e-features:
+e2e-features: e2e-prepare
 	npx playwright test --project=features
 
 # Run the destructive / auth-affecting specs (setup + features run as deps).
-e2e-mutations:
+e2e-mutations: e2e-prepare
 	npx playwright test --project=mutations
 
 # Interactive UI mode for debugging.
 e2e-ui:
 	npx playwright test --ui
-
-# Open the last HTML report.
-e2e-report:
-	npx playwright show-report playwright/.report
 
 unit-test:
 	./vendor/bin/phpunit

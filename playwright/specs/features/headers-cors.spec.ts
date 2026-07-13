@@ -7,16 +7,15 @@
  * set/unset, and disabling the whole CORS mode. Front-end headers are read as
  * an anonymous visitor via the `loggedOutRequest` fixture (mirrors cy.request('/')).
  *
- * State / ordering: several tests do not select a mode and rely on CORS already
- * being `enabled` by an earlier test, and the credentials test must run before
- * the final "disable" test. They run SERIAL in declaration order. The afterAll
- * selects CORS mode = disabled and submits so re-runs start clean (and the live
+ * Each test resets the CORS option object and explicitly selects its mode, so
+ * scenarios can run independently. The afterAll selects CORS mode = disabled
+ * so re-runs start clean (and the live
  * site stops emitting CORS headers into later spec files). The CORS form POST
  * reloads the page, so each submit awaits the navigation before any header read.
  */
 import { test, expect } from "../../support/fixtures";
 import type { Page } from "@playwright/test";
-import { updateOption } from "../../support/wp-cli";
+import { deleteOption, updateOption } from "../../support/wp-cli";
 import {
   expectHeaderEquals,
   expectHeaderContains,
@@ -73,9 +72,11 @@ async function submitCors(page: Page): Promise<void> {
   ]);
 }
 
-test.describe.configure({ mode: "serial" });
-
 test.describe("Headers · CORS", () => {
+  test.beforeEach(() => {
+    updateOption("sucuriscan_headers_cors", "disabled");
+    deleteOption("sucuriscan_headers_cors_options");
+  });
   test.afterAll(() => {
     // Disable CORS mode so re-runs start clean and the live site stops emitting
     // CORS headers into subsequent spec files. Done via wp-cli (not the UI) so it
@@ -179,8 +180,9 @@ test.describe("Headers · CORS", () => {
   }) => {
     await page.goto(HEADERS_URL);
 
-    // Unset credentials and submit -> header absent (CORS still enabled by prior tests).
+    // Unset credentials and submit -> header absent while CORS is enabled.
     await enforceCredentials(page).uncheck({ force: true });
+    await modeSelect(page).selectOption("enabled");
     await submitCors(page);
 
     await expectHeaderAbsent(

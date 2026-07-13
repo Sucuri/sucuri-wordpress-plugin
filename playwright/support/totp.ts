@@ -31,9 +31,14 @@ function base32ToBuffer(base32: string): Buffer {
  * @param stepSeconds time step, default 30s
  * @param digits code length, default 6
  */
-export function totp(secret: string, stepSeconds = 30, digits = 6): string {
+export function totp(
+  secret: string,
+  stepSeconds = 30,
+  digits = 6,
+  timestampMs = Date.now(),
+): string {
   const key = base32ToBuffer(secret);
-  const counter = Math.floor(Date.now() / 1000 / stepSeconds);
+  const counter = Math.floor(timestampMs / 1000 / stepSeconds);
 
   const msg = Buffer.alloc(8);
   msg.writeUInt32BE(0, 0);

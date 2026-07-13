@@ -1,10 +1,22 @@
 #!/bin/bash
 set -e
 
-# Create users
-wp user create sucuri sucuri@sucuri.net --role=author --user_pass=password
-wp user create sucuri-admin sucuri-admin@sucuri.net --role=administrator --user_pass=password
-wp user create sucuri-reset sucuri-reset@sucuri.net --role=author --user_pass=password
+# Create or repair users.
+ensure_user() {
+    local login="$1"
+    local email="$2"
+    local role="$3"
+
+    if wp user get "$login" --field=ID >/dev/null 2>&1; then
+        wp user update "$login" --user_email="$email" --role="$role" --user_pass=password >/dev/null
+    else
+        wp user create "$login" "$email" --role="$role" --user_pass=password >/dev/null
+    fi
+}
+
+ensure_user sucuri sucuri@sucuri.net author
+ensure_user sucuri-admin sucuri-admin@sucuri.net administrator
+ensure_user sucuri-reset sucuri-reset@sucuri.net author
 
 # Create a large batch of users to exercise the paginated/searchable
 # Two-Factor users table (mirrors WooCommerce-scale sites). These are created
@@ -12,11 +24,15 @@ wp user create sucuri-reset sucuri-reset@sucuri.net --role=author --user_pass=pa
 # ordered by ID ascending (25 users per page).
 for i in $(seq 1 60); do
     n=$(printf '%03d' "$i")
-    wp user create "bulkuser-$n" "bulkuser-$n@sucuri.net" --role=subscriber --user_pass=password >/dev/null
+    ensure_user "bulkuser-$n" "bulkuser-$n@sucuri.net" subscriber
 done
 
 # Install plugins
-wp plugin install akismet --activate
+if wp plugin is-installed akismet; then
+    wp plugin activate akismet >/dev/null
+else
+    wp plugin install akismet --activate
+fi
 
 # Create test files in WP root
 touch .htaccess

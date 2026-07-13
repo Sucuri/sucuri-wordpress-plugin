@@ -15,7 +15,8 @@
  * and any other isPremium-sensitive spec keep passing.
  */
 import { test, expect } from "@playwright/test";
-import { deleteOption, updateOption } from "../../support/wp-cli";
+import { deleteOption, updateOption, wp } from "../../support/wp-cli";
+import { adminUser } from "../../support/env";
 
 const DASHBOARD_URL = "/wp-admin/admin.php?page=sucuriscan";
 const FIREWALL_URL = "/wp-admin/admin.php?page=sucuriscan_firewall";
@@ -34,6 +35,38 @@ function restoreFreemiumBaseline(): void {
   // reverse both so the freemium baseline (used by waf-modal and others) is clean.
   updateOption("sucuriscan_revproxy", "disabled");
   updateOption("sucuriscan_addr_header", "REMOTE_ADDR");
+  try {
+    wp(
+      "user",
+      "meta",
+      "delete",
+      adminUser.login,
+      "sucuriscan_preferred_theme",
+    );
+  } catch {
+    // Absence is the desired baseline.
+  }
+}
+
+async function stubExternalAjax(page: import("@playwright/test").Page): Promise<void> {
+  await page.route("**/admin-ajax.php**", async (route) => {
+    const body = route.request().postData() ?? "";
+    if (body.includes("firewall_settings")) {
+      return route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ ok: true, settings: {} }),
+      });
+    }
+    if (body.includes("vulnerabilities_scan_core_php")) {
+      return route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ success: false, data: "Could not fetch data" }),
+      });
+    }
+    return route.fallback();
+  });
 }
 
 test.describe.configure({ mode: "serial" });
@@ -66,6 +99,7 @@ test.describe("Dashboard theme gating", () => {
   });
 
   test("Test Dark Theme", async ({ page }) => {
+    await stubExternalAjax(page);
     await page.goto(FIREWALL_URL);
 
     // If a key is already stored the entry form is hidden behind an "Update"
@@ -100,21 +134,6 @@ test.describe("Dashboard theme gating", () => {
     // Stub the vulnerability-scan AJAX to fail immediately, avoiding a ~60s wait
     // for two sequential 30s external-API timeouts. Register BEFORE visiting the
     // dashboard so the background scan request is intercepted on first render.
-    await page.route("**/admin-ajax.php**", async (route) => {
-      const body = route.request().postData() ?? "";
-      if (body.includes("vulnerabilities_scan_core_php")) {
-        return route.fulfill({
-          status: 200,
-          contentType: "application/json",
-          body: JSON.stringify({
-            success: false,
-            data: "Could not fetch data",
-          }),
-        });
-      }
-      return route.fallback();
-    });
-
     await page.goto(DASHBOARD_URL);
 
     await expect(page.locator(".unlock-premium")).not.toBeVisible();
@@ -129,5 +148,42 @@ test.describe("Dashboard theme gating", () => {
     );
     // Structural: the two wrapper bodies (Plugins + Themes), only present in premium.
     await expect(page.locator(".sucuriscan-themes-list-body")).toHaveCount(2);
+  });
+
+  test("toggles and persists the premium dashboard theme", async ({ page }) => {
+    restoreFreemiumBaseline();
+    await stubExternalAjax(page);
+    await page.goto(FIREWALL_URL);
+    await page
+      .locator('input[name="sucuriscan_cloudproxy_apikey"]')
+      .fill(FAKE_API_KEY);
+    await page.getByTestId("sucuriscan-save-wafkey").click();
+    await expect(
+      page
+        .locator(".sucuriscan-alert-updated")
+        .filter({ hasText: "Firewall API key was successfully saved" }),
+    ).toBeVisible();
+
+    await page.goto(DASHBOARD_URL);
+    const toggle = page.locator("#sucuriscan-toggle-theme");
+    await expect(toggle).toHaveAttribute("data-theme", "light");
+    await Promise.all([
+      page.waitForResponse(
+        (response) =>
+          response.url().includes("admin-ajax.php") &&
+          (response.request().postData() ?? "").includes("toggle_theme"),
+      ),
+      toggle.click(),
+    ]);
+    await expect(toggle).toHaveAttribute("data-theme", "dark");
+
+    await page.reload();
+    await expect(page.locator("#sucuriscan-toggle-theme")).toHaveAttribute(
+      "data-theme",
+      "dark",
+    );
+    await expect(
+      page.locator('link[href*="/inc/css/dark.css"]'),
+    ).toBeAttached();
   });
 });

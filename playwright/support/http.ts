@@ -9,8 +9,20 @@
  */
 import { expect, type APIRequestContext } from "@playwright/test";
 
-async function fetch(request: APIRequestContext, path: string) {
-  return request.get(path, { failOnStatusCode: false });
+interface ResponseExpectation {
+  status?: number;
+}
+
+async function fetch(
+  request: APIRequestContext,
+  path: string,
+  options: ResponseExpectation = {},
+) {
+  const response = await request.get(path, { failOnStatusCode: false });
+  expect(response.status()).toBe(options.status ?? 200);
+  const finalUrl = new URL(response.url());
+  expect(`${finalUrl.pathname}${finalUrl.search}`).toBe(path);
+  return response;
 }
 
 /** Assert a response header equals an exact value. */
@@ -19,8 +31,9 @@ export async function expectHeaderEquals(
   path: string,
   name: string,
   value: string,
+  options?: ResponseExpectation,
 ): Promise<void> {
-  const response = await fetch(request, path);
+  const response = await fetch(request, path, options);
   expect(response.headers()[name.toLowerCase()]).toBe(value);
 }
 
@@ -30,8 +43,9 @@ export async function expectHeaderContains(
   path: string,
   name: string,
   substring: string,
+  options?: ResponseExpectation,
 ): Promise<void> {
-  const response = await fetch(request, path);
+  const response = await fetch(request, path, options);
   expect(response.headers()[name.toLowerCase()] ?? "").toContain(substring);
 }
 
@@ -40,8 +54,9 @@ export async function expectHeaderAbsent(
   request: APIRequestContext,
   path: string,
   name: string,
+  options?: ResponseExpectation,
 ): Promise<void> {
-  const response = await fetch(request, path);
+  const response = await fetch(request, path, options);
   expect(response.headers()[name.toLowerCase()]).toBeUndefined();
 }
 
@@ -50,8 +65,7 @@ export async function expectForbidden(
   request: APIRequestContext,
   path: string,
 ): Promise<void> {
-  const response = await fetch(request, path);
-  expect(response.status()).toBe(403);
+  const response = await fetch(request, path, { status: 403 });
   expect(await response.text()).toContain("Forbidden");
 }
 

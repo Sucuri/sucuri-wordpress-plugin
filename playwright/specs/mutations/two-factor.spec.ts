@@ -47,6 +47,20 @@ const TWO_FACTOR_USERS = "[data-cy=sucuriscan_twofactor_users_response]";
 const TWO_FACTOR_USER_CHECKBOX =
   'input[name="sucuriscan_twofactor_users[]"]';
 
+function invalidTotp(secret: string): string {
+  const now = Date.now();
+  const validCodes = new Set(
+    Array.from({ length: 9 }, (_, index) =>
+      totp(secret, 30, 6, now + (index - 4) * 30_000),
+    ),
+  );
+  for (let value = 0; value < 1_000_000; value++) {
+    const candidate = value.toString().padStart(6, "0");
+    if (!validCodes.has(candidate)) return candidate;
+  }
+  throw new Error("Could not generate an invalid TOTP code");
+}
+
 async function waitForUsersTable(page: Page): Promise<void> {
   await expect(
     page.locator(TWO_FACTOR_USERS).locator(TWO_FACTOR_USER_CHECKBOX).first(),
@@ -64,7 +78,9 @@ async function withFreshUser(
   browser: Browser,
   fn: (page: Page) => Promise<void>,
 ): Promise<void> {
-  const context = await browser.newContext();
+  const context = await browser.newContext({
+    storageState: { cookies: [], origins: [] },
+  });
   await addWafDismissCookie(context);
   const page = await context.newPage();
   try {
@@ -149,15 +165,16 @@ test.describe("Two-Factor Authentication", () => {
     await admin2fa.setModeSelectedUsersFor([extraUser], "activate_selected");
 
     // extraUser SETUP + complete.
+    let secret = "";
     await withFreshUser(browser, async (p) => {
       await loginExpect2FA(p, extraUser, "setup");
-      await completeSetupWithGeneratedCode(p);
+      secret = await completeSetupWithGeneratedCode(p);
     });
 
     // extraUser VERIFY, then submit a wrong code -> Invalid error.
     await withFreshUser(browser, async (p) => {
       await loginExpect2FA(p, extraUser, "verify");
-      await finishWithCode(p, "000000");
+      await finishWithCode(p, invalidTotp(secret));
       await expect(p.locator("#login_error")).toContainText("Invalid");
     });
 
@@ -319,9 +336,10 @@ test.describe("Two-Factor Authentication", () => {
     await admin2fa.setModeSelectedUsersFor([extraUser], "activate_selected");
 
     // First, complete setup so the next login hits the VERIFY screen.
+    let secret = "";
     await withFreshUser(browser, async (p) => {
       await loginExpect2FA(p, extraUser, "setup");
-      await completeSetupWithGeneratedCode(p);
+      secret = await completeSetupWithGeneratedCode(p);
     });
 
     await withFreshUser(browser, async (p) => {
@@ -332,7 +350,9 @@ test.describe("Two-Factor Authentication", () => {
       // an Invalid error, the fifth clears the transient and kicks us back to
       // the plain wp-login.php.
       for (let i = 0; i < 5; i++) {
-        await p.locator("#sucuriscan-totp-code").fill("111111");
+        await p
+          .locator("#sucuriscan-totp-code")
+          .fill(invalidTotp(secret));
         await p.locator("#sucuriscan-totp-submit").click();
 
         if (i < 4) {

@@ -21,13 +21,13 @@ test.describe.configure({ mode: "serial" });
 test.describe("Plugin lifecycle", () => {
   test.beforeAll(() => {
     // The deactivate link only renders while the plugin is active.
-    wp(`plugin activate ${PLUGIN_SLUG}`);
+    wp("plugin", "activate", PLUGIN_SLUG);
   });
 
   test.afterAll(() => {
     // Always leave the plugin enabled — a deactivated plugin removes all sucuri
     // admin pages and breaks every other spec, so re-activate even on failure.
-    wp(`plugin activate ${PLUGIN_SLUG}`);
+    wp("plugin", "activate", PLUGIN_SLUG);
   });
 
   test("can deactivate sucuri-scanner", async ({ page }) => {

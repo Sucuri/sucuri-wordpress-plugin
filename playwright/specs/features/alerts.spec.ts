@@ -69,6 +69,8 @@ test.describe("Settings · Alerts", () => {
     // Pin the events-test checkbox to its default so a worker killed mid-test
     // (between its ON-save and OFF-save) cannot leak an enabled state into a re-run.
     updateOption("sucuriscan_notify_plugin_deleted", "disabled");
+    updateOption("sucuriscan_emails_per_hour", "5");
+    updateOption("sucuriscan_maximum_failed_logins", "30");
     // The trusted-IP test asserts an empty table.
     clearTrustedIpDatastore();
   });
@@ -80,6 +82,8 @@ test.describe("Settings · Alerts", () => {
     updateOption("sucuriscan_email_subject", PRESET_SUBJECT);
     updateOption("sucuriscan_ignored_events", "[]");
     updateOption("sucuriscan_notify_plugin_deleted", "disabled");
+    updateOption("sucuriscan_emails_per_hour", "5");
+    updateOption("sucuriscan_maximum_failed_logins", "30");
     clearTrustedIpDatastore();
   });
 
