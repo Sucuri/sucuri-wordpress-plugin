@@ -43,6 +43,16 @@ import {
   type WpUser,
 } from "../../support/env";
 
+const TWO_FACTOR_USERS = "[data-cy=sucuriscan_twofactor_users_response]";
+const TWO_FACTOR_USER_CHECKBOX =
+  'input[name="sucuriscan_twofactor_users[]"]';
+
+async function waitForUsersTable(page: Page): Promise<void> {
+  await expect(
+    page.locator(TWO_FACTOR_USERS).locator(TWO_FACTOR_USER_CHECKBOX).first(),
+  ).toBeVisible();
+}
+
 test.describe.configure({ mode: "serial" });
 
 /**
@@ -457,6 +467,82 @@ test.describe("Two-Factor Authentication", () => {
     });
     await withFreshUser(browser, async (p) => {
       await loginExpect2FA(p, extraUser, "setup");
+    });
+  });
+
+  test("loads a bounded, paginated users table", async ({ page }) => {
+    await new TwoFactorAdminPage(page).goto();
+    await waitForUsersTable(page);
+
+    const visibleUsers = page
+      .locator(TWO_FACTOR_USERS)
+      .locator(TWO_FACTOR_USER_CHECKBOX);
+    expect(await visibleUsers.count()).toBeLessThanOrEqual(25);
+    await expect(
+      page.locator(".sucuriscan-2fa-pagination-panel"),
+    ).not.toHaveClass(/sucuriscan-hidden/);
+    await expect(
+      page.locator(".sucuriscan-2fa-pagination .sucuriscan-pagination-link"),
+    ).not.toHaveCount(0);
+  });
+
+  test("loads a different 2FA users page through AJAX", async ({ page }) => {
+    await new TwoFactorAdminPage(page).goto();
+    await waitForUsersTable(page);
+
+    const firstUser = page
+      .locator(TWO_FACTOR_USERS)
+      .locator(TWO_FACTOR_USER_CHECKBOX)
+      .first();
+    const firstPageUserId = await firstUser.inputValue();
+
+    await page
+      .locator(
+        '.sucuriscan-2fa-pagination .sucuriscan-pagination-link[data-page="2"]',
+      )
+      .click();
+    await expect(firstUser).not.toHaveValue(firstPageUserId);
+  });
+
+  test("searches and clears the 2FA users table", async ({ page }) => {
+    await new TwoFactorAdminPage(page).goto();
+    await waitForUsersTable(page);
+
+    await page.getByTestId("sucuriscan_twofactor_search").fill("bulkuser-055");
+    await page.getByTestId("sucuriscan_twofactor_search_btn").click();
+    await expect(page.locator(TWO_FACTOR_USERS)).toContainText("bulkuser-055");
+    await expect(
+      page.locator(TWO_FACTOR_USERS).locator(TWO_FACTOR_USER_CHECKBOX),
+    ).toHaveCount(1);
+
+    await page.getByTestId("sucuriscan_twofactor_search_clear").click();
+    await expect(page.getByTestId("sucuriscan_twofactor_search")).toHaveValue("");
+    await expect
+      .poll(() =>
+        page.locator(TWO_FACTOR_USERS).locator(TWO_FACTOR_USER_CHECKBOX).count(),
+      )
+      .toBeGreaterThan(1);
+  });
+
+  test("applies a selection from the AJAX-rendered users table", async ({
+    page,
+    browser,
+  }) => {
+    const admin2fa = new TwoFactorAdminPage(page);
+
+    await admin2fa.resetEverything();
+    await admin2fa.goto();
+    await waitForUsersTable(page);
+    await admin2fa.selectUsers([testAdminUser]);
+    await admin2fa.applyBulk("activate_selected");
+    await expect(
+      page.locator(".sucuriscan-alert, .updated, .notice", {
+        hasText: "Two-Factor",
+      }),
+    ).toBeVisible();
+
+    await withFreshUser(browser, async (p) => {
+      await loginExpect2FA(p, testAdminUser, "setup");
     });
   });
 });

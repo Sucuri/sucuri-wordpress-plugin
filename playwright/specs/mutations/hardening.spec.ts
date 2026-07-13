@@ -3,8 +3,8 @@
  *
  * Exercises the prevention page's allowlist form: adding a blocked PHP file
  * (flips Apache 403 -> 200), rejecting duplicates, removing legacy
- * wildcard (".*") rules, the full 403<->200 add/remove round-trip, and multi-file
- * add + Select-All removal.
+ * wildcard (".*") rules, preserving literal regex characters, the full 403<->200
+ * add/remove round-trip, and multi-file add + Select-All removal.
  *
  * SHARED STATE / IDEMPOTENCY: every test mutates wp-content/.htaccess or
  * wp-includes/.htaccess (and Select-All clears all allowlisted folders), so the
@@ -39,6 +39,27 @@ test.describe.configure({ mode: "serial" });
  */
 function reseedHardening(): void {
   runPluginScript("tests/e2e-seed-hardening.sh");
+}
+
+function xmlrpcHardeningOption(page: Page) {
+  return page
+    .locator(".sucuriscan-hardening-option")
+    .filter({ hasText: "Disable XML-RPC" });
+}
+
+async function revertXmlrpcHardening(page: Page): Promise<void> {
+  await page.goto(HARDENING_URL);
+
+  const revertButton = xmlrpcHardeningOption(page).locator(
+    'input[name="sucuriscan_hardening_xmlrpc_revert"]',
+  );
+
+  if (await revertButton.count()) {
+    await revertButton.click();
+    await expect(page.locator(".sucuriscan-alert")).toContainText(
+      "XML-RPC (xmlrpc.php) has been re-enabled.",
+    );
+  }
 }
 
 /** Add one relative PHP file under `folder` to the allowlist and assert success. */
@@ -161,6 +182,35 @@ test.skip("can toggle hardening options", async ({ page }) => {
   );
 });
 
+test("can disable and re-enable XML-RPC", async ({ page }) => {
+  await revertXmlrpcHardening(page);
+
+  try {
+    const option = xmlrpcHardeningOption(page);
+    await expect(option).toHaveClass(/sucuriscan-status-0/);
+    await option
+      .locator('input[name="sucuriscan_hardening_xmlrpc"]')
+      .click();
+    await expect(page.locator(".sucuriscan-alert")).toContainText(
+      "XML-RPC (xmlrpc.php) has been disabled.",
+    );
+    await expect(option).toHaveClass(/sucuriscan-status-1/);
+    await expect(
+      option.locator('input[name="sucuriscan_hardening_xmlrpc_revert"]'),
+    ).toBeVisible();
+
+    await option
+      .locator('input[name="sucuriscan_hardening_xmlrpc_revert"]')
+      .click();
+    await expect(page.locator(".sucuriscan-alert")).toContainText(
+      "XML-RPC (xmlrpc.php) has been re-enabled.",
+    );
+    await expect(option).toHaveClass(/sucuriscan-status-0/);
+  } finally {
+    await revertXmlrpcHardening(page);
+  }
+});
+
 test("cannot add the same file twice to the allowlist", async ({ page }) => {
   await page.goto(HARDENING_URL);
 
@@ -253,6 +303,45 @@ test("can add and remove from allowlist of blocked PHP files", async ({
   await expectPublicStatus(
     loggedOutRequest,
     "/wp-content/archive.php",
+    403,
+    expectForbidden,
+  );
+});
+
+test("treats regex characters in allowlisted paths literally", async ({
+  page,
+  loggedOutRequest,
+}) => {
+  const literalPath = "literal.(a|b)*.php";
+
+  await expectForbidden(loggedOutRequest, `/wp-content/${literalPath}`);
+  await expectForbidden(loggedOutRequest, "/wp-content/literal.a.php");
+
+  await page.goto(HARDENING_URL);
+  await addAllowlistFile(page, literalPath, WP_CONTENT);
+
+  await expectPublicStatus(
+    loggedOutRequest,
+    `/wp-content/${literalPath}`,
+    200,
+    expectHelloWorld,
+  );
+  await expectForbidden(loggedOutRequest, "/wp-content/literal.a.php");
+
+  await page
+    .getByRole("row")
+    .filter({ hasText: literalPath })
+    .getByRole("checkbox")
+    .check();
+  await page
+    .getByTestId("sucuriscan_hardening_remove_allowlist_submit")
+    .click();
+  await expect(page.locator(".sucuriscan-alert")).toContainText(
+    "Selected files have been removed",
+  );
+  await expectPublicStatus(
+    loggedOutRequest,
+    `/wp-content/${literalPath}`,
     403,
     expectForbidden,
   );

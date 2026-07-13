@@ -18,6 +18,8 @@ touch wp-includes/test-1/test-1.php wp-includes/test-1/test-2.php wp-includes/te
 
 printf '%s\n' '<?php echo "Hello, world!"; ?>' > wp-content/archive-legacy.php
 printf '%s\n' '<?php echo "Hello, world!"; ?>' > wp-content/archive.php
+printf '%s\n' '<?php echo "Hello, world!"; ?>' > 'wp-content/literal.(a|b)*.php'
+printf '%s\n' '<?php echo "Hello, world!"; ?>' > 'wp-content/literal.a.php'
 
 # wp-includes/.htaccess: deny-all so wp-includes/*.php returns 403 until allowlisted.
 cat <<'EOF' > wp-includes/.htaccess

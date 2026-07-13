@@ -6,7 +6,7 @@
 # wp-config.php so the migration path is exercised from a clean state.
 set -e
 
-wp eval '
+wp eval --skip-plugins --skip-themes '
 $key_str = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
 $context  = "sucuriscan_waf_key_v1";
 $raw_salt = wp_salt( "auth" );

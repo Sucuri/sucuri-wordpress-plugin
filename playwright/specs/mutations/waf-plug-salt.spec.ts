@@ -61,6 +61,19 @@ interface EncryptedPayload {
   ct: string;
 }
 
+/**
+ * Read the payload without booting this plugin. A normal `wp option get` loads
+ * active plugins, and this plugin reads the WAF key during bootstrap, which
+ * would perform the v:1-to-v:2 migration before the test triggers it.
+ */
+function getEncryptedPayload(): EncryptedPayload {
+  return JSON.parse(
+    wpEnvRun(
+      "wp option get sucuriscan_secret_cloudproxy_apikey_enc --format=json --skip-plugins --skip-themes",
+    ),
+  ) as EncryptedPayload;
+}
+
 /** Count non-overlapping occurrences of a literal substring. */
 function countOccurrences(haystack: string, needle: string): number {
   return haystack.split(needle).length - 1;
@@ -80,21 +93,18 @@ async function blockLiveWaf(page: Page): Promise<void> {
 test.describe("SUCURI_PLUG_* salt migration", () => {
   test.describe.configure({ mode: "serial" });
 
-  test.beforeAll(() => {
-    // Seed a v:1 (AUTH_SALT-encrypted) payload and strip any SUCURI_PLUG_*
-    // constants from wp-config.php so the first-run write path runs from scratch.
-    runPluginScript("tests/e2e-seed-waf-plug-salt.sh");
-  });
-
   test("migrates a v:1 payload to v:2 on first firewall page load", async ({
     page,
   }) => {
+    // Seed after Playwright has initialized this test's page. Earlier mutation
+    // specs may leave an open request that reads and migrates the payload, so a
+    // beforeAll seed is not isolated enough for this one-way migration scenario.
+    runPluginScript("tests/e2e-seed-waf-plug-salt.sh");
+
     // PRE: the seed left a v:1 payload in place.
-    const before = getOption<EncryptedPayload>(
-      "sucuriscan_secret_cloudproxy_apikey_enc",
-    );
+    const before = getEncryptedPayload();
     expect(typeof before).toBe("object");
-    expect((before as EncryptedPayload).v).toBe(1);
+    expect(before.v).toBe(1);
 
     await blockLiveWaf(page);
 
@@ -104,11 +114,9 @@ test.describe("SUCURI_PLUG_* salt migration", () => {
     await page.goto(FIREWALL_URL, { waitUntil: "networkidle" });
 
     // POST: the stored payload is now v:2 / aes-256-gcm with iv/tag/ct.
-    const after = getOption<EncryptedPayload>(
-      "sucuriscan_secret_cloudproxy_apikey_enc",
-    );
+    const after = getEncryptedPayload();
     expect(typeof after).toBe("object");
-    const payload = after as EncryptedPayload;
+    const payload = after;
     expect(payload.v).toBe(2);
     expect(payload.alg).toBe("aes-256-gcm");
     expect(payload).toHaveProperty("iv");

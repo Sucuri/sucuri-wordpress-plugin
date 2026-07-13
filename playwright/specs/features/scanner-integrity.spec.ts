@@ -4,13 +4,11 @@
  * pagination), the integrity diff utility enable/disable toggle, and
  * ignoring files/folders during scans.
  *
- * Shared state: every integrity test reads the seeded 105-file baseline
- * (wp-config-test.php + wp-test-file-1..100.php from tests/e2e-prepare.sh)
- * and mutates the integrity false-positive cache (sucuri-integrity.php data
- * store). The pagination test in particular marks 15 files fixed WITHOUT
- * un-ignoring them, so an afterEach wipes the integrity + ignore data stores
- * to restore the 105-file baseline and the empty ignore list for the next
- * test/run. The cron schedule and the diff-utility option are also restored.
+ * Shared state: every integrity test reads the seeded file baseline and mutates
+ * the integrity false-positive cache (sucuri-integrity.php data store). The
+ * pagination test in particular marks 15 files fixed WITHOUT un-ignoring them,
+ * so an afterEach wipes the integrity + ignore data stores for the next test/run.
+ * The cron schedule and the diff-utility option are also restored.
  *
  * Order matters (each test depends on a clean shared baseline) -> serial.
  * beforeEach pins :diff_utility = enabled so the dashboard renders the
@@ -67,6 +65,21 @@ async function selectPerPageAndExpectCount(
   );
 }
 
+/** Read the affected-file total reported by the current integrity response. */
+async function integrityFileCount(page: Page): Promise<number> {
+  const heading = await page
+    .locator(".sucuriscan-integrity-table thead span")
+    .first()
+    .innerText();
+  const match = heading.match(/WordPress Integrity \((\d+)\)/);
+
+  if (!match) {
+    throw new Error(`Could not read the integrity file count from: ${heading}`);
+  }
+
+  return Number(match[1]);
+}
+
 /**
  * Tick the confirm-irreversible checkbox, assert the submit button is enabled
  * (it is disabled until both the confirm box and >=1 file row are checked),
@@ -101,8 +114,8 @@ test.describe("Scanner", () => {
   });
 
   test.afterEach(() => {
-    // Guarantee the 105-file baseline + empty ignore list for the next test,
-    // even if a test left files marked-fixed (the pagination test does).
+    // Guarantee an empty ignore list for the next test, even if a test left
+    // files marked-fixed (the pagination test does).
     clearScannerDataStores();
   });
 
@@ -191,15 +204,17 @@ test.describe("Scanner", () => {
 
   test("can use new dropdown in integrity diff utility", async ({ page }) => {
     await gotoDashboardAndWaitIntegrity(page);
+    const initialCount = await integrityFileCount(page);
 
-    // 105 files / 15 per page (default) = 7 pages, all links rendered.
+    // The checker may report a different number of files for each supported
+    // WordPress version, but a multi-page result must show pagination.
     await expect(
       page.locator(
         ".sucuriscan-pagination-integrity .sucuriscan-pagination-link",
       ),
-    ).toHaveCount(7);
+    ).not.toHaveCount(0);
 
-    await selectPerPageAndExpectCount(page, "200", 105);
+    await selectPerPageAndExpectCount(page, "200", initialCount);
     await selectPerPageAndExpectCount(page, "15", 15);
     await selectPerPageAndExpectCount(page, "50", 50);
 
@@ -242,27 +257,34 @@ test.describe("Scanner", () => {
 
     await gotoDashboardAndWaitIntegrity(page);
 
-    await selectPerPageAndExpectCount(page, "200", 105);
+    await selectPerPageAndExpectCount(
+      page,
+      "200",
+      await integrityFileCount(page),
+    );
   });
 
   test("can use pagination in integrity diff utility", async ({ page }) => {
     await gotoDashboardAndWaitIntegrity(page);
 
+    const pagination = page.locator(
+      ".sucuriscan-pagination-integrity .sucuriscan-pagination-link",
+    );
+    await expect(pagination).not.toHaveCount(0);
     await expect(
-      page.locator(
-        ".sucuriscan-pagination-integrity .sucuriscan-pagination-link",
-      ),
-    ).toHaveCount(7);
+      page.locator('.sucuriscan-pagination-integrity [data-page="2"]'),
+    ).toBeVisible();
 
-    // Page 2 (files 16-30 at 15/page) contains wp-test-file-21.php.
+    // Capture page 2, then mark its current rows fixed.
     const toPage2 = waitForIntegrityCheck(page);
     await page
       .locator('.sucuriscan-pagination-integrity [data-page="2"]')
       .click();
     await toPage2;
-    await expect(
-      page.getByTestId("sucuriscan_integrity_list_table"),
-    ).toContainText("wp-test-file-21.php");
+    const pageTwoFirstPath = await page
+      .locator(".sucuriscan-integrity-filepath")
+      .first()
+      .getAttribute("data-filepath");
 
     await page
       .locator("form")
@@ -275,25 +297,22 @@ test.describe("Scanner", () => {
       "15 out of 15 files were successfully processed.",
     );
 
-    // After 15 files removed (90 remain), page 2 now shows wp-test-file-35.php.
+    // Page 2 has advanced to a different set after the first page-two rows
+    // were removed from the result.
     const toPage2Again = waitForIntegrityCheck(page);
     await page
       .locator('.sucuriscan-pagination-integrity [data-page="2"]')
       .click();
     await toPage2Again;
     await expect(
-      page.getByTestId("sucuriscan_integrity_list_table"),
-    ).toContainText("wp-test-file-35.php");
+      page.locator(".sucuriscan-integrity-filepath").first(),
+    ).not.toHaveAttribute("data-filepath", pageTwoFirstPath ?? "");
 
-    // Page 6 (last page of the remaining 90) contains wp-test-file-99.php.
-    const toPage6 = waitForIntegrityCheck(page);
-    await page
-      .locator('.sucuriscan-pagination-integrity [data-page="6"]')
-      .click();
-    await toPage6;
-    await expect(
-      page.getByTestId("sucuriscan_integrity_list_table"),
-    ).toContainText("wp-test-file-99.php");
+    // Navigate through the last pagination link currently rendered.
+    const toLastPage = waitForIntegrityCheck(page);
+    await pagination.last().click();
+    await toLastPage;
+    await expect(page.locator(".sucuriscan-integrity-filepath").first()).toBeVisible();
   });
 
   test("can activate and deactivate the WordPress integrity diff utility", async ({

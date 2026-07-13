@@ -30,6 +30,8 @@ touch wp-content/archive-legacy.php
 echo '<?php echo "Hello, world!"; ?>' >> wp-content/archive-legacy.php
 touch wp-content/archive.php
 echo '<?php echo "Hello, world!"; ?>' >> wp-content/archive.php
+printf '%s\n' '<?php echo "Hello, world!"; ?>' > 'wp-content/literal.(a|b)*.php'
+printf '%s\n' '<?php echo "Hello, world!"; ?>' > 'wp-content/literal.a.php'
 
 # Create .htaccess file inside the wp-includes directory
 cat <<EOF > wp-includes/.htaccess

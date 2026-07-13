@@ -72,7 +72,7 @@ test.describe("WAF activation modal", () => {
     await expect(modal).toHaveCount(0);
 
     // Back on the dashboard: dismissed cookie keeps it suppressed.
-    await page.goto(DASHBOARD_URL);
+    await page.goto(DASHBOARD_URL, { waitUntil: "networkidle" });
     await expect(modal).toHaveCount(0);
   });
 });
