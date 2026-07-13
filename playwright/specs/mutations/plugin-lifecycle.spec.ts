@@ -17,7 +17,9 @@ import {
 import { PLUGIN_SLUG } from "../../support/env";
 
 const PLUGINS_URL = "/wp-admin/plugins.php";
-const ROW = `[data-slug="${PLUGIN_SLUG}"]`;
+// WordPress derives data-slug from plugin metadata, which can differ from the
+// wp-env mount directory. The main plugin filename is stable in both locations.
+const ROW = 'tr[data-plugin$="/sucuri.php"]';
 
 test.describe("Plugin lifecycle", () => {
   let scheduledScan: CronSnapshot[];

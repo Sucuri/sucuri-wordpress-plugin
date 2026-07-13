@@ -133,7 +133,12 @@ export function wpEval(php: string): string {
 
 /** Read the full contents of wp-config.php. */
 export function readWpConfig(): string {
-  return wpEnvRun("cat", wp("config", "path"));
+  return wpEnvRun("cat", wpConfigPath());
+}
+
+/** Resolve wp-config.php without loading active plugins. */
+function wpConfigPath(): string {
+  return wp("config", "path", "--skip-plugins", "--skip-themes");
 }
 
 /**
@@ -164,10 +169,13 @@ export function replaceOptions(options: Record<string, unknown>): void {
 /** Restore wp-config.php byte-for-byte from a previously captured snapshot. */
 export function restoreWpConfig(content: string): void {
   const encoded = Buffer.from(content).toString("base64");
-  wpEval(
-    '$p=ABSPATH."wp-config.php";' +
-      'if(!file_exists($p)){$p=ABSPATH."../wp-config.php";}' +
-      `file_put_contents($p,base64_decode("${encoded}"),LOCK_EX);`,
+  wpEnvRun(
+    "sh",
+    "-c",
+    'set -e; target="$1"; tmp="${target}.sucuri-restore.$$"; printf %s "$2" | base64 -d > "$tmp"; chmod --reference="$target" "$tmp" 2>/dev/null || true; mv "$tmp" "$target"',
+    "sucuri-wp-config-restore",
+    wpConfigPath(),
+    encoded,
   );
 }
 
