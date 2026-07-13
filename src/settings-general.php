@@ -232,7 +232,14 @@ function sucuriscan_settings_general_selfhosting($nonce)
                 SucuriScanOption::updateOption(':selfhosting_monitor', 'disabled');
                 SucuriScanEvent::notifyEvent('plugin_change', $message);
                 SucuriScanInterface::info(__('The log exporter feature has been disabled', 'sucuri-scanner'));
-            } elseif (SucuriScanRequest::server('DOCUMENT_ROOT') && strpos($monitor_fpath, SucuriScanRequest::server('DOCUMENT_ROOT')) !== false) {
+            } elseif (!SucuriScanRequest::server('DOCUMENT_ROOT')) {
+                /*
+                 * Without DOCUMENT_ROOT (FastCGI/CLI/some nginx setups) the public-path
+                 * check below cannot run, so deny rather than fall through to writing the
+                 * file at an unverified location.
+                 */
+                SucuriScanInterface::error(__('Cannot verify the path is safe because DOCUMENT_ROOT is not set.', 'sucuri-scanner'));
+            } elseif (strpos($monitor_fpath, SucuriScanRequest::server('DOCUMENT_ROOT')) !== false) {
                 SucuriScanInterface::error(__('File should not be publicly accessible.', 'sucuri-scanner'));
             } elseif (file_exists($monitor_fpath)) {
                 SucuriScanInterface::error(__('File already exists and will not be overwritten.', 'sucuri-scanner'));
@@ -435,8 +442,6 @@ function sucuriscan_settings_general_importexport($nonce)
         ':notify_widget_deleted',
         ':prettify_mails',
         ':revproxy',
-        ':selfhosting_fpath',
-        ':selfhosting_monitor',
         ':use_wpmail',
     );
 
@@ -464,6 +469,15 @@ function sucuriscan_settings_general_importexport($nonce)
 
                     /* check if the option can be imported */
                     if (!in_array($option_name, $allowed)) {
+                        continue;
+                    }
+
+                    /*
+                     * Accept the IP-source header only when it is one of the headers the
+                     * UI offers, matching the validation applied elsewhere for this option.
+                     */
+                    if ($option_name === ':addr_header'
+                        && !in_array($value, SucuriScan::allowedHttpHeaders(), true)) {
                         continue;
                     }
 

@@ -75,12 +75,17 @@ if (!function_exists('current_user_can')) {
     /**
      * Test stub for current_user_can. Accepts optional cap for compatibility.
      *
+     * Defaults to true so existing tests are unaffected; a test that needs to exercise a
+     * denied path can set $GLOBALS['__test_current_user_can'] to false.
+     *
      * @param mixed $cap Optional capability name (ignored in tests).
-     * @return bool Always true in test context.
+     * @return bool Result, overridable via $GLOBALS['__test_current_user_can'].
      */
     function current_user_can($cap = null)
     {
-        return true;
+        return array_key_exists('__test_current_user_can', $GLOBALS)
+            ? (bool) $GLOBALS['__test_current_user_can']
+            : true;
     }
 }
 

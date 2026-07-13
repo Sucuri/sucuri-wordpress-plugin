@@ -476,6 +476,15 @@ class SucuriScan
      */
     private static function orderedHttpHeaders()
     {
+        /*
+         * Proxy headers (X-Sucuri-ClientIP, X-Forwarded-For, etc.) are only used when an
+         * administrator has explicitly enabled reverse proxy mode. Otherwise the client IP
+         * is taken solely from REMOTE_ADDR, the real TCP peer reported by the web server.
+         */
+        if (!self::supportReverseProxy()) {
+            return array('REMOTE_ADDR');
+        }
+
         $ordered = array();
         $allowed = self::allowedHttpHeaders();
         $addr_header = SucuriScanOption::getOption(':addr_header');

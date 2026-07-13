@@ -611,7 +611,7 @@ class SucuriScanFirewall extends SucuriScanAPI
 
         if ($out && !empty($out['messages'])) {
             $response['ok'] = (bool) ($out['status'] == 1);
-            $response['msg'] = implode(";\x20", $out['messages']);
+            $response['msg'] = implode(";\x20", self::normalizeMessages($out['messages']));
 
             if ($out['status'] == 1) {
                 /* translators: %s: IP address */
@@ -651,7 +651,7 @@ class SucuriScanFirewall extends SucuriScanAPI
         $out = self::apiCallFirewall('POST', $params);
 
         $response['ok'] = (bool) ($out['status'] == 1);
-        $response['msg'] = implode(";\x20", $out['messages']);
+        $response['msg'] = implode(";\x20", self::normalizeMessages($out['messages']));
 
         if ($out['status'] == 1) {
             /* translators: %s: IP address */
@@ -762,14 +762,15 @@ class SucuriScanFirewall extends SucuriScanAPI
         $out = self::clearCache($api_key, $path);
 
         if (is_array($out) && isset($out['messages'])) {
+            $messages = self::normalizeMessages($out['messages']);
             $response = sprintf(
                 '<div class="sucuriscan-inline-alert-%s"><p>%s</p></div>',
                 ($out['status'] == 1) ? 'success' : 'error',
-                implode('<br>', $out['messages'])
+                implode('<br>', $messages)
             );
 
             $context = ($path) ? sprintf("path '%s'", $path) : 'global';
-            $flatMsg = implode('; ', $out['messages']);
+            $flatMsg = implode('; ', $messages);
 
             if ((int) $out['status'] === 1) {
                 SucuriScanEvent::reportInfoEvent(sprintf('Firewall cache clear requested (%s): %s', $context, $flatMsg));

@@ -21,6 +21,12 @@ final class HardeningTest extends TestCase
 
         $_SERVER['SERVER_SOFTWARE'] = 'apache';
 
+        // Remove any .htaccess left by a previous test run so hardenDirectory()
+        // always starts from a clean slate (it appends rather than overwrites).
+        if (file_exists($this->getHtaccessPath())) {
+            unlink($this->getHtaccessPath());
+        }
+
         // Creating temp .php files in order to test allowing/disallowing them
         file_put_contents(SUCURI_DATA_STORAGE . '/archive.php', '<?php echo "Hello World";');
         file_put_contents(SUCURI_DATA_STORAGE . '/export.php', '<?php echo "Hello World";');
@@ -252,8 +258,8 @@ final class HardeningTest extends TestCase
                 . "  </If>\n"
                 . "</Files>",
                 basename($filepath),
-                rtrim($relative_folder, '/'),
-                $filepath
+                preg_quote(rtrim($relative_folder, '/'), '#'),
+                preg_quote($filepath, '#')
             );
         }
 

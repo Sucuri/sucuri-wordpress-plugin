@@ -8,7 +8,7 @@
  * Author: Sucuri Inc.
  * Text Domain: sucuri-scanner
  * Domain Path: /lang
- * Version: 2.7.3
+ * Version: 2.7.4
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  *
@@ -87,7 +87,7 @@ define('SUCURISCAN', 'sucuriscan');
 /**
  * Current version of the plugin's code.
  */
-define('SUCURISCAN_VERSION', '2.7.3');
+define('SUCURISCAN_VERSION', '2.7.4');
 
 /**
  * Defines the human readable name of the plugin.
@@ -149,6 +149,14 @@ define('SUCURISCAN_AUDITLOGS_PER_PAGE', 25);
  * The maximum quantity of entries that will be displayed in the integrity section.
  */
 define('SUCURISCAN_INTEGRITY_FILES_PER_PAGE', 15);
+
+/**
+ * The maximum quantity of users that will be displayed per page in the
+ * Two-Factor Authentication users table. Keeping this bounded prevents the
+ * page from loading every registered user at once, which previously broke
+ * the 2FA page on sites with hundreds/thousands of users (e.g. WooCommerce).
+ */
+define('SUCURISCAN_TWOFACTOR_USERS_PER_PAGE', 25);
 
 /**
  * The maximum quantity of buttons in the paginations.
