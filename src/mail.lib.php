@@ -174,7 +174,12 @@ class SucuriScanMail extends SucuriScanOption
         $params = array();
         $display_name = '';
         $prettify_type = 'simple';
-        $user = wp_get_current_user();
+        
+        // Check if the WordPress function wp_get_current_user is available
+        if (!function_exists('wp_get_current_user')) {
+            include(ABSPATH . "wp-includes/pluggable.php");
+        }
+        
         $website = self::getDomain();
 
         if (isset($data_set['PrettifyType'])) {
