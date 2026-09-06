@@ -19,7 +19,7 @@ playwright/
     scanner.ts                # typed seam over tests/e2e-seed-scanner.sh
     settings-general.ts       # typed seam over tests/e2e-seed-settings-general.sh
     two-factor-state.ts       # typed seam over tests/e2e-seed-two-factor.sh
-    wp-cli.ts                 # wp-env tests-cli helpers (options, eval, seeds)
+    wp-cli.ts                 # wp-env cli helpers (options, eval, seeds)
     totp.ts                   # RFC-6238 TOTP generator (2FA)
     pages/two-factor.page.ts  # 2FA admin page object, login-challenge + backup-code helpers
     global.setup.ts           # `setup` project: provision users + admin storageState
@@ -143,16 +143,19 @@ npm run test:e2e:setup           # refresh auth before --no-deps/UI debugging
 These are environment facts the suite depends on; when a spec fails for no
 obvious reason, check them first.
 
-- **`wp-config.php` must be writable** by the wp-env `tests-cli` user, and
+- **`wp-config.php` must be writable** by the wp-env `cli` user, and
   `openssl aes-256-gcm` must be available — otherwise the plugin silently falls
   back to plaintext storage and the WAF plug-salt assertions fail for reasons
   that have nothing to do with the code under test.
 - The integrity diff-utility toggle needs the Unix `diff` binary on the wp-env host.
 - The "test alert" emails invoke real `wp_mail`, which is a silent no-op in
   wp-env. They are not stubbed, and nothing asserts delivery.
-- `SUCURI_BASE_URL` must point at the local wp-env **tests** port: the browser
-  and the WP-CLI cleanup have to target the same installation, and `support/env.ts`
-  throws if they diverge.
+- `SUCURI_BASE_URL` must point at the local wp-env port (8889, or `WP_ENV_PORT`
+  if set): the browser and the WP-CLI cleanup have to target the same
+  installation, and `support/env.ts` throws if they diverge.
+- The project runs a **single** wp-env environment, declared by
+  `testsEnvironment: false` in `.wp-env.json`, so the containers are `cli` /
+  `wordpress` / `mysql` and there are no `tests-*` counterparts.
 
 ## Deliberate coverage gaps
 

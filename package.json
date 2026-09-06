@@ -25,11 +25,11 @@
   },
   "homepage": "https://github.com/Sucuri/sucuri-wordpress-plugin#readme",
   "devDependencies": {
-    "@playwright/test": "1.60.0",
+    "@playwright/test": "1.62.1",
     "@types/node": "22.19.19",
-    "@wordpress/env": "10.27.0",
-    "prettier": "3.3.2",
-    "typescript": "5.9.3"
+    "@wordpress/env": "11.14.0",
+    "prettier": "3.9.6",
+    "typescript": "7.0.2"
   },
   "dependencies": {
     "qrcode-generator": "1.5.1"

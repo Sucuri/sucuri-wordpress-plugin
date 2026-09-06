@@ -3,7 +3,7 @@ set -e
 
 # Idempotent re-seed of the "Allow Blocked PHP Files" hardening fixtures.
 #
-# Runs inside the wp-env tests-cli container (cwd = WP docroot, /var/www/html),
+# Runs inside the wp-env cli container (cwd = WP docroot, /var/www/html),
 # invoked from the Playwright hardening spec via runPluginScript() in beforeAll,
 # and from tests/e2e-prepare.sh when the environment is reset.
 #

@@ -3,7 +3,7 @@ set -e
 
 # Fixtures for the Audit Logs spec.
 #
-# Runs inside the wp-env tests-cli container (cwd = WP docroot, /var/www/html),
+# Runs inside the wp-env cli container (cwd = WP docroot, /var/www/html),
 # invoked from playwright/support/audit-logs.ts via runPluginScript().
 #
 #   seed-queue   Drop the queue and log datastores, then report one warning and

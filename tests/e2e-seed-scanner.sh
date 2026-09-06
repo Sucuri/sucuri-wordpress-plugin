@@ -3,7 +3,7 @@ set -e
 
 # Fixtures for the Scanner / WordPress-integrity spec.
 #
-# Runs inside the wp-env tests-cli container (cwd = WP docroot, /var/www/html),
+# Runs inside the wp-env cli container (cwd = WP docroot, /var/www/html),
 # invoked from playwright/support/scanner.ts via runPluginScript().
 #
 #   seed <count>   Create wp-config-test.php plus wp-test-file-1..count.php in

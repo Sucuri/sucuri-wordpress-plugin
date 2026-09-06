@@ -11,11 +11,18 @@ import { runPluginScript } from "./wp-cli";
 
 const SEED_SCRIPT = "tests/e2e-seed-cache-control.sh";
 
-/** IDs of the published content the Cache-Control assertions read headers from. */
+/**
+ * Site-relative paths to the content the Cache-Control assertions read headers
+ * from, resolved by WordPress so they stay canonical under whichever permalink
+ * structure the environment uses. A hand-built query string would
+ * canonical-redirect and trip the no-redirect check in support/http.ts.
+ */
 export interface CacheControlContent {
-  postId: number;
-  pageId: number;
-  categoryId: number;
+  postUrl: string;
+  pageUrl: string;
+  categoryUrl: string;
+  /** Author archive for `admin` (user 1); the seed script does not create it. */
+  authorUrl: string;
 }
 
 /**

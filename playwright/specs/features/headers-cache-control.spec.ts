@@ -112,7 +112,7 @@ test("serves the busy-tier max-age for every page type when logged out", async (
   loggedOutRequest,
   cacheControlContent,
 }) => {
-  const { postId, pageId, categoryId } = cacheControlContent;
+  const { postUrl, pageUrl, categoryUrl, authorUrl } = cacheControlContent;
 
   await page.goto(HEADERS_URL);
 
@@ -128,25 +128,25 @@ test("serves the busy-tier max-age for every page type when logged out", async (
   ); // home / front_page
   await expectHeaderEquals(
     loggedOutRequest,
-    `/?p=${postId}`,
+    postUrl,
     "cache-control",
     "max-age=600",
   ); // single post
   await expectHeaderEquals(
     loggedOutRequest,
-    `/?page_id=${pageId}`,
+    pageUrl,
     "cache-control",
     "max-age=600",
   ); // page
   await expectHeaderEquals(
     loggedOutRequest,
-    `/?cat=${categoryId}`,
+    categoryUrl,
     "cache-control",
     "max-age=600",
   ); // category archive
   await expectHeaderEquals(
     loggedOutRequest,
-    "/?author=1",
+    authorUrl,
     "cache-control",
     "max-age=600",
   ); // author archive
@@ -184,7 +184,7 @@ test("serves a custom max-age after editing the Posts row", async ({
 
   await expectHeaderEquals(
     loggedOutRequest,
-    `/?p=${cacheControlContent.postId}`,
+    cacheControlContent.postUrl,
     "cache-control",
     "max-age=12345",
   );

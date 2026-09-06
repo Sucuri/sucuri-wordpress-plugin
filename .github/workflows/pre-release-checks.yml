@@ -27,7 +27,7 @@ jobs:
 
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup PHP
         uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
@@ -49,7 +49,7 @@ jobs:
 
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       # Passed through the environment rather than interpolated into the run
       # block, so the tag value can never be expanded as shell source.
@@ -61,24 +61,20 @@ jobs:
       - name: Check distribution manifest
         run: make check-dist
 
-  # Reports known advisories in either dependency tree.
+  # Records the state of both dependency trees at publish time. Informational:
+  # continue-on-error means a finding here cannot hold the release, because
+  # nothing here can make the published artifact unsafe.
   #
-  # None of these packages ship in the plugin, but they execute on developer
-  # machines and on the runner that holds the wordpress.org SVN credentials, so
-  # a compromised build dependency is a credential problem rather than only a
-  # broken build.
+  # - Neither tree ships. composer.json requires nothing but php itself, every
+  #   other PHP package is require-dev, and the build allowlist in
+  #   tests/check-dist-manifest.sh admits no vendor/ and no node_modules/.
+  # - The deploy job never runs them. It is a checkout, the 10up deploy action
+  #   and the asset upload; none of them invokes composer, npm or node.
+  # - Install-time execution, the vector that would actually matter, is already
+  #   closed by ignore-scripts=true in .npmrc.
   #
-  # Runs at release time only.
-  #
-  # This job can go red without anyone touching the code, when an advisory is
-  # published against something already in the lock file. On a pull request that
-  # is somebody else's news, and it has no bearing on whether the change under
-  # review is sound, so it does not run there at all rather than sitting in the
-  # checks list as noise somebody has to learn to ignore.
-  #
-  # At release time the same finding does matter, because publishing is what puts
-  # the dependency tree in front of the wordpress.org credentials and there is no
-  # reviewer left to make the call, so there it blocks the deploy.
+  # An advisory here is still real news about the developer toolchain, which is
+  # what dependency-audit.yml reports weekly and files an issue for.
   #
   # release-tag is empty on push and pull_request, and set only when the deploy
   # workflow calls this one, so this is skipped everywhere except a release.
@@ -86,10 +82,11 @@ jobs:
     name: Dependency audit
     runs-on: ubuntu-latest
     if: inputs.release-tag != ''
+    continue-on-error: true
 
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup PHP
         uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
@@ -98,7 +95,7 @@ jobs:
           tools: composer
 
       - name: Install NodeJS
-        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 22
 

@@ -3,7 +3,7 @@ set -e
 
 # Snapshot and restore the plugin datastore directory (wp-content/uploads/sucuri).
 #
-# Runs inside the wp-env tests-cli container (cwd = WP docroot, /var/www/html),
+# Runs inside the wp-env cli container (cwd = WP docroot, /var/www/html),
 # invoked from playwright/support/wp-cli.ts via runPluginScript().
 #
 #   snapshot <yes|no>                      Copy the datastore aside. Prints

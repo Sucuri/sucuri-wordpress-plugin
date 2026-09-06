@@ -4,7 +4,7 @@ set -e
 # Saves a WAF API key through the plugin's own option path, for the
 # SUCURI_PLUG_* salt spec.
 #
-# Runs inside the wp-env tests-cli container (cwd = WP docroot, /var/www/html),
+# Runs inside the wp-env cli container (cwd = WP docroot, /var/www/html),
 # invoked from playwright/specs/mutations/waf-plug-salt.spec.ts via
 # runPluginScript(), alongside e2e-seed-waf-plug-salt.sh and e2e-corrupt-salt.sh.
 #

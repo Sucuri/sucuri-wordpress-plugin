@@ -1,5 +1,5 @@
 /**
- * Thin wrappers around `npx wp-env run tests-cli …` for the e2e suite.
+ * Thin wrappers around `npx wp-env run cli …` for the e2e suite.
  *
  * Specs use these to read and write WordPress/plugin state directly (options,
  * users, cron, files) for seeding and teardown. Commands are passed as argv
@@ -75,10 +75,10 @@ export interface RawOptionSnapshot {
   autoload: string;
 }
 
-/** Run an argv-safe command inside the wp-env `tests-cli` container. */
+/** Run an argv-safe command inside the wp-env `cli` container. */
 export function wpEnvRun(...command: string[]): string {
   try {
-    return execFileSync(WP_ENV_BIN, ["run", "tests-cli", "--", ...command], {
+    return execFileSync(WP_ENV_BIN, ["run", "cli", "--", ...command], {
       encoding: "utf8",
       maxBuffer: MAX_BUFFER,
       stdio: ["ignore", "pipe", "pipe"],
