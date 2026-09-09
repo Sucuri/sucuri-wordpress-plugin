@@ -1,6 +1,8 @@
 {
     "core": null,
     "plugins": ["."],
+    "port": 8889,
+    "testsEnvironment": false,
     "config":{
         "SUCURISCAN_API_URL": "https://sucuri.net",
         "DISABLE_WP_CRON": true

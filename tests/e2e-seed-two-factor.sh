@@ -3,7 +3,7 @@ set -e
 
 # Fixtures for the Two-Factor Authentication spec.
 #
-# Runs inside the wp-env tests-cli container (cwd = WP docroot, /var/www/html),
+# Runs inside the wp-env cli container (cwd = WP docroot, /var/www/html),
 # invoked from playwright/support/two-factor-state.ts via runPluginScript().
 #
 #   reset <json-logins>      Force 2FA back to a disabled, un-enrolled state.

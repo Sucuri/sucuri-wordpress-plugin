@@ -3,7 +3,7 @@ set -e
 
 # Fixtures for the Settings · General spec.
 #
-# Runs inside the wp-env tests-cli container (cwd = WP docroot, /var/www/html),
+# Runs inside the wp-env cli container (cwd = WP docroot, /var/www/html),
 # invoked from playwright/support/settings-general.ts via runPluginScript().
 #
 #   write-integrity-datastore   Create an empty sucuri-integrity.php datastore,

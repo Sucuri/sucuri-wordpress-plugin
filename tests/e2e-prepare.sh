@@ -2,7 +2,7 @@
 set -e
 
 # Canonical wp-env baseline. Run once by tests/e2e-reset-env.sh, after
-# `wp-env clean tests`, with cwd = the WP docroot.
+# `wp-env reset all`, with cwd = the WP docroot.
 #
 # Per-spec fixtures are NOT reimplemented here. Each one is owned by the seed
 # script its spec calls, and this file only warms them up so a full-suite run

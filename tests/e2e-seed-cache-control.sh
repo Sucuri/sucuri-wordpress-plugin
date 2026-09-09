@@ -3,13 +3,13 @@ set -e
 
 # Fixtures for the Cache-Control header spec.
 #
-# Runs inside the wp-env tests-cli container (cwd = WP docroot, /var/www/html),
+# Runs inside the wp-env cli container (cwd = WP docroot, /var/www/html),
 # invoked from playwright/support/cache-control.ts via runPluginScript().
 #
 # Four commands, because the spec needs state at four different moments:
 #
 #   seed <slug>   Sweep leftovers, create the post/page/category the header
-#                 assertions read, print {postId,pageId,categoryId} as JSON.
+#                 assertions read, print their canonical URLs as JSON.
 #   teardown      Restore parked posts, then sweep the fixture content.
 #   quarantine    Park every scheduled ("future") post as a draft.
 #   restore       Put the parked posts back to "future".
@@ -103,10 +103,15 @@ foreach (array("post" => $postId, "page" => $pageId) as $label => $value) {
     }
 }
 
+// Canonical URLs, asked of WordPress rather than built by hand, so the spec
+// holds under whatever permalink structure the environment uses and never hands
+// support/http.ts a URL that canonical-redirects. User 1 is the admin account
+// wp-env installs.
 echo wp_json_encode(array(
-    "postId"     => (int) $postId,
-    "pageId"     => (int) $pageId,
-    "categoryId" => $categoryId,
+    "postUrl"     => wp_make_link_relative(get_permalink($postId)),
+    "pageUrl"     => wp_make_link_relative(get_permalink($pageId)),
+    "categoryUrl" => wp_make_link_relative(get_category_link($categoryId)),
+    "authorUrl"   => wp_make_link_relative(get_author_posts_url(1)),
 ));
 '
 }

@@ -24,7 +24,7 @@
  * the page render, not by any AJAX, so stubbing cannot mask it.
  *
  * Preconditions (asserted/relied upon): wp-config.php is writable by the wp-env
- * tests-cli user and contains the canonical "/* That's all, stop editing!"
+ * cli user and contains the canonical "/* That's all, stop editing!"
  * marker. The seed/corrupt scripts live under tests/ and run inside the plugin
  * dir; runPluginScript derives PLUGIN_SLUG from the mounted checkout directory.
  */

@@ -32,7 +32,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
     - name: Setup PHP
       uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
@@ -58,9 +58,16 @@ jobs:
     runs-on: ubuntu-latest
     needs: [pre-release-checks, test]
 
+    # Attaching the zip to the release is the only thing here that writes to
+    # this repository; the wordpress.org push authenticates with SVN secrets
+    # instead. Stated explicitly so the release job is not running on whatever
+    # the repository default happens to be.
+    permissions:
+      contents: write
+
     steps:
     - name: Checkout code
-      uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
     - name: Deploy plugin to wordpress.org
       id: deploy
@@ -72,13 +79,12 @@ jobs:
         SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
         SLUG: 'sucuri-scanner' # WordPress.org plugin's slug
 
+    # gh is preinstalled on the runner, so uploading the asset needs no
+    # third-party action in the job that holds the wordpress.org credentials.
+    # --clobber lets a re-run replace an asset a previous attempt uploaded.
     - name: Upload release asset
-      uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5 # v1.0.2
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SLUG: 'sucuri-scanner' # WordPress.org plugin's slug
-      with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ${{ github.workspace }}/${{ env.SLUG }}.zip
-        asset_name: ${{ env.SLUG }}.zip
-        asset_content_type: application/zip
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        TAG: ${{ github.event.release.tag_name }}
+        ZIP_PATH: ${{ steps.deploy.outputs.zip-path }}
+      run: gh release upload "$TAG" "$ZIP_PATH" --clobber

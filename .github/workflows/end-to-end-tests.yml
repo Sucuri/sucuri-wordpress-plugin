@@ -18,12 +18,12 @@ jobs:
           - env_1: "Latest WordPress on PHP 7.4"
             php: "7.4"
             wp: "latest"
-          - env_2: "Latest WordPress on PHP 8.0"
-            php: "8.0"
+          - env_2: "Latest WordPress on PHP 8.5"
+            php: "8.5"
             wp: "latest"
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Log debug information
         run: |
@@ -33,7 +33,7 @@ jobs:
           php --version
 
       - name: Install NodeJS
-        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 22
           cache: "npm"
@@ -56,11 +56,37 @@ jobs:
           fi
           cat .wp-env.override.json
 
+      # wordpress:php7.4 is the last image still on Debian 11 (bullseye), and
+      # bullseye's security pool is being pruned while its package index still
+      # advertises the pruned versions, so the image build wp-env runs on top of
+      # it dies on `apt-get install`. wp-env rewrites sources.list to
+      # archive.debian.org for stretch and buster but not bullseye, and
+      # bullseye-security is not on archive.debian.org at all, so point main at
+      # the archive and drop the security suite.
+      #
+      # The test container therefore runs without bullseye security patches.
+      # That is acceptable for a throwaway environment and would not be
+      # anywhere near a release artifact.
+      #
+      # Docker resolves `FROM wordpress:php7.4` to a local tag and wp-env does
+      # not force a pull, so retagging here is enough; no wp-env changes.
+      #
+      # Delete this together with the 7.4 leg when `Requires PHP` in sucuri.php
+      # moves off 7.4. It props up an EOL platform and will rot again.
+      - name: Patch the PHP 7.4 base image for archived Debian
+        if: matrix.php == '7.4'
+        run: |
+          docker build -t wordpress:php7.4 - <<'EOF'
+          FROM wordpress:php7.4
+          RUN sed -i 's|deb.debian.org/debian bullseye|archive.debian.org/debian bullseye|g' /etc/apt/sources.list \
+           && sed -i '/bullseye-security/d;/bullseye-updates/d' /etc/apt/sources.list
+          EOF
+
       - name: Start WordPress environment and seed fixtures
         run: make e2e-reset
 
       - name: Log WordPress version
-        run: npx wp-env run tests-cli wp core version
+        run: npx wp-env run cli wp core version
 
       - name: Run Playwright e2e tests
         env:

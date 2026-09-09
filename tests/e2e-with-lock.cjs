@@ -12,7 +12,7 @@ if (!command.length) {
 }
 
 function lockPort() {
-  const key = `${path.resolve(__dirname, "..")}::${process.env.WP_ENV_TESTS_PORT || "8889"}`;
+  const key = `${path.resolve(__dirname, "..")}::${process.env.WP_ENV_PORT || "8889"}`;
   let hash = 0;
   for (const char of key) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
   return 20_000 + (hash % 20_000);

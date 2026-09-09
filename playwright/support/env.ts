@@ -14,11 +14,12 @@ export const BASE_URL = (
 
 const baseUrl = new URL(BASE_URL);
 const localHosts = new Set(["localhost", "127.0.0.1", "::1"]);
-const testsPort = process.env.WP_ENV_TESTS_PORT || "8889";
+// WP_ENV_PORT, not WP_ENV_TESTS_PORT: single wp-env environment, no tests port.
+const sitePort = process.env.WP_ENV_PORT || "8889";
 
-if (!localHosts.has(baseUrl.hostname) || baseUrl.port !== testsPort) {
+if (!localHosts.has(baseUrl.hostname) || baseUrl.port !== sitePort) {
   throw new Error(
-    `SUCURI_BASE_URL must target the wp-env tests site on port ${testsPort}; ` +
+    `SUCURI_BASE_URL must target the local wp-env site on port ${sitePort}; ` +
       `received ${BASE_URL}.`,
   );
 }

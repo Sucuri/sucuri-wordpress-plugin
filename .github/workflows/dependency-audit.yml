@@ -1,0 +1,119 @@
+name: Dependency audit
+
+# Weekly report on known advisories in the PHP and Node dependency trees.
+#
+# Deliberately not a release gate — see the dependency-audit job in
+# pre-release-checks.yml for why. What an advisory here can compromise is a
+# developer machine or the e2e runner, which is worth fixing but needs time to
+# act rather than a veto on the next publish.
+on:
+  schedule:
+    # Mondays, 06:00 UTC. Scheduled runs always use the default branch.
+    - cron: '0 6 * * 1'
+  # So the report can be regenerated once a fix lands, instead of waiting a week
+  # to confirm the issue closes.
+  workflow_dispatch:
+
+# Only what filing the report needs.
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  audit:
+    name: Audit dependencies
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+        with:
+          php-version: '8.5'
+          tools: composer
+
+      - name: Install NodeJS
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+
+      # Both read their lock file directly, so nothing needs installing first,
+      # and neither may fail the step: a finding is the thing being reported, and
+      # the report should cover both trees no matter which one is dirty.
+      #
+      # npm is held to --audit-level=high because the tree carries known moderate
+      # advisories that were looked at and left in place; reporting those would
+      # file an issue that never closes.
+      - name: Audit both dependency trees
+        id: audit
+        env:
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -u
+
+          findings=0
+          composer audit --locked > php.txt 2>&1 || findings=1
+          npm audit --audit-level=high > node.txt 2>&1 || findings=1
+
+          {
+            echo 'Weekly audit of the committed lock files. Nothing here blocks a'
+            echo 'release; see the dependency-audit job in pre-release-checks.yml'
+            echo 'for why.'
+            echo
+            echo "Report from $RUN_URL"
+            echo
+            echo '### PHP — `composer audit --locked`'
+            echo
+            echo '```'
+            cat php.txt
+            echo '```'
+            echo
+            echo '### Node — `npm audit --audit-level=high`'
+            echo
+            echo '```'
+            cat node.txt
+            echo '```'
+          } > report.md
+
+          cat report.md
+          echo "findings=$findings" >> "$GITHUB_OUTPUT"
+
+      # One tracking issue, kept current, rather than a fresh issue every week:
+      # an advisory persists across runs, and a weekly notification about the
+      # same finding is what teaches people to mute it. The issue being open is
+      # the signal; its body is always the latest report.
+      - name: Update the tracking issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          FINDINGS: ${{ steps.audit.outputs.findings }}
+          LABEL: dependency-audit
+          TITLE: 'Dependency audit: advisories in the lock files'
+        run: |
+          set -eu
+
+          # The label only has to exist; it will not on the first run.
+          gh label create "$LABEL" \
+            --description 'Filed by .github/workflows/dependency-audit.yml' \
+            --color ededed || true
+
+          existing=$(gh issue list --state open --label "$LABEL" --limit 1 \
+            --json number --jq '.[0].number // empty')
+
+          if [ "$FINDINGS" = '1' ]; then
+            if [ -n "$existing" ]; then
+              gh issue edit "$existing" --body-file report.md
+              echo "Updated #$existing."
+            else
+              gh issue create --title "$TITLE" --label "$LABEL" --body-file report.md
+            fi
+          elif [ -n "$existing" ]; then
+            gh issue comment "$existing" \
+              --body 'Both dependency trees are clean as of the latest audit. Closing.'
+            gh issue close "$existing"
+            echo "Closed #$existing."
+          else
+            echo 'Both dependency trees clean, no open report.'
+          fi

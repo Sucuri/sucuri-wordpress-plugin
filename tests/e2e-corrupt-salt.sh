@@ -9,7 +9,7 @@
 #
 # Lives in a script (invoked via runPluginScript) to avoid the nested single/
 # double-quote escaping hell of passing this multi-statement PHP through
-# `npx wp-env run tests-cli wp eval '...'` and a shell.
+# `npx wp-env run cli wp eval '...'` and a shell.
 set -e
 
 wp eval '
