@@ -685,7 +685,7 @@ class SucuriScanEvent extends SucuriScan
     /**
      * Reports a debug event on the website.
      *
-     * @param string $message Text witht the explanation of the event or action performed.
+     * @param string $message Text with the explanation of the event or action performed.
      * @return bool            Either true or false depending on the success of the operation.
      */
     public static function reportDebugEvent($message = '')
@@ -696,7 +696,7 @@ class SucuriScanEvent extends SucuriScan
     /**
      * Reports a notice event on the website.
      *
-     * @param string $message Text witht the explanation of the event or action performed.
+     * @param string $message Text with the explanation of the event or action performed.
      * @return bool            Either true or false depending on the success of the operation.
      */
     public static function reportNoticeEvent($message = '')
@@ -707,7 +707,7 @@ class SucuriScanEvent extends SucuriScan
     /**
      * Reports a info event on the website.
      *
-     * @param string $message Text witht the explanation of the event or action performed.
+     * @param string $message Text with the explanation of the event or action performed.
      * @return bool            Either true or false depending on the success of the operation.
      */
     public static function reportInfoEvent($message = '')
@@ -718,7 +718,7 @@ class SucuriScanEvent extends SucuriScan
     /**
      * Reports a warning event on the website.
      *
-     * @param string $message Text witht the explanation of the event or action performed.
+     * @param string $message Text with the explanation of the event or action performed.
      * @return bool            Either true or false depending on the success of the operation.
      */
     public static function reportWarningEvent($message = '')
@@ -729,7 +729,7 @@ class SucuriScanEvent extends SucuriScan
     /**
      * Reports a error event on the website.
      *
-     * @param string $message Text witht the explanation of the event or action performed.
+     * @param string $message Text with the explanation of the event or action performed.
      * @return bool            Either true or false depending on the success of the operation.
      */
     public static function reportErrorEvent($message = '')
@@ -740,7 +740,7 @@ class SucuriScanEvent extends SucuriScan
     /**
      * Reports a critical event on the website.
      *
-     * @param string $message Text witht the explanation of the event or action performed.
+     * @param string $message Text with the explanation of the event or action performed.
      * @return bool            Either true or false depending on the success of the operation.
      */
     public static function reportCriticalEvent($message = '')
