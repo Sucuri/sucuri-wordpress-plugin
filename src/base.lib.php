@@ -736,10 +736,14 @@ class SucuriScan
         }
 
         if ($format === null) {
+            $date_format = SucuriScanOption::getOption('date_format');
+            $time_format = SucuriScanOption::getOption('time_format');
+
+            /* missing, blank or non-printing core formats would render an empty date */
             $format = sprintf(
                 "%s\x20%s",
-                SucuriScanOption::getOption('date_format'),
-                SucuriScanOption::getOption('time_format')
+                is_string($date_format) && trim(gmdate($date_format)) !== '' ? $date_format : 'F j, Y',
+                is_string($time_format) && trim(gmdate($time_format)) !== '' ? $time_format : 'g:i a'
             );
         }
 
