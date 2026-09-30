@@ -14,6 +14,7 @@ if (!class_exists('WP_User')) {
     class WP_User
     {
         public $ID;
+        public $user_login = '';
         public function __construct($id)
         {
             $this->ID = (int) $id;
@@ -415,5 +416,81 @@ final class TwoFactorTest extends TestCase
             SucuriScanBackupCodes::validate_and_consume($userId, $validCode),
             'a consumed backup code must not validate again'
         );
+    }
+
+    /**
+     * Every way a two-factor login can succeed must finish like wp_signon():
+     * auth cookie, then wp_login with the user, then the redirect.
+     *
+     * @see https://wordpress.org/support/topic/2fa-logins-are-never-recorded-in-last-logins-wp_login-never-fires/
+     * @dataProvider twoFactorLoginExits
+     */
+    public function testTwoFactorLoginFiresWpLoginLikeWpSignon(string $method, array $args): void
+    {
+        Functions\when('get_user_by')->alias(function ($field, $val) {
+            $user = new WP_User($val);
+            $user->user_login = 'u' . $val;
+            return $user;
+        });
+
+        $this->assertSame(array('cookie', 'wp_login:u321:WP_User', 'redirect'), $this->runLoginExit($method, $args));
+    }
+
+    public function twoFactorLoginExits(): array
+    {
+        $url = 'https://example.com/wp-admin/';
+
+        return array(
+            'authenticator code' => array('complete_success_login', array(321, false, $url, 'token1234567890', 123)),
+            'backup code' => array('complete_success_login', array(321, true, $url, 'token1234567890', 0)),
+            'first-time setup' => array('process_successful_setup', array(321, 'JBSWY3DPEHPK3PXP', 123, false, $url, 'token1234567890')),
+        );
+    }
+
+    public function testTwoFactorLoginSkipsWpLoginWhenUserIsGone(): void
+    {
+        Functions\when('get_user_by')->justReturn(false);
+
+        $this->assertSame(
+            array('cookie', 'redirect'),
+            $this->runLoginExit('complete_success_login', array(321, false, 'https://example.com/wp-admin/', 'token1234567890', 0))
+        );
+        $this->assertSame(0, did_action('wp_login'));
+    }
+
+    /**
+     * Run a protected login exit point and return the order of the calls it made.
+     */
+    private function runLoginExit(string $method, array $args): array
+    {
+        SucuriScanOption::updateOption(':twofactor_mode', 'all_users');
+
+        $calls = array();
+
+        Functions\when('wp_hash_password')->alias(function ($password) {
+            return 'HASH:' . $password;
+        });
+        Functions\when('wp_set_auth_cookie')->alias(function () use (&$calls) {
+            $calls[] = 'cookie';
+        });
+        Monkey\Actions\expectDone('wp_login')->zeroOrMoreTimes()->whenHappen(function ($login, $user) use (&$calls) {
+            $calls[] = 'wp_login:' . $login . ':' . get_class($user);
+        });
+        Functions\when('wp_safe_redirect')->alias(function () use (&$calls) {
+            $calls[] = 'redirect';
+            throw new RuntimeException('REDIRECT');
+        });
+
+        $ref = (new ReflectionClass(SucuriScanTwoFactor::class))->getMethod($method);
+        $ref->setAccessible(true);
+
+        try {
+            $ref->invokeArgs(null, $args);
+            $this->fail('Expected a redirect');
+        } catch (RuntimeException $e) {
+            $this->assertSame('REDIRECT', $e->getMessage());
+        }
+
+        return $calls;
     }
 }
