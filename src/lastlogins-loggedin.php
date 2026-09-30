@@ -228,5 +228,5 @@ if (!function_exists('sucuriscan_set_online_user')) {
         sucuriscan_save_online_users($logged_in_users);
     }
 
-    add_action('wp_login', 'sucuriscan_set_online_user', 50, 2);
+    add_action('sucuriscan_login', 'sucuriscan_set_online_user', 50, 2);
 }
