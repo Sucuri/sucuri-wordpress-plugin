@@ -280,7 +280,7 @@ if (!function_exists('sucuriscan_set_lastlogin')) {
         );
     }
 
-    add_action('wp_login', 'sucuriscan_set_lastlogin', 50);
+    add_action('sucuriscan_login', 'sucuriscan_set_lastlogin', 50);
 }
 
 /**
