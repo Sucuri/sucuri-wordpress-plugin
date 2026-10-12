@@ -1897,7 +1897,7 @@ class SucuriScanTwoFactor extends SucuriScan
             'fields' => 'ID',
             'number' => 1,
             'count_total' => true,
-            'meta_key' => self::SECRET_META_KEY,
+            'meta_key' => self::SECRET_META_KEY, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- single count over one meta key
             'meta_compare' => 'EXISTS',
         ));
 

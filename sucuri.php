@@ -203,7 +203,7 @@ if (!array_key_exists('SERVER_NAME', $_SERVER)) {
 /* Load plugin translations */
 function sucuriscan_load_plugin_textdomain()
 {
-    load_plugin_textdomain('sucuri-scanner', false, basename(dirname(__FILE__)) . '/lang/');
+    load_plugin_textdomain('sucuri-scanner', false, basename(dirname(__FILE__)) . '/lang/'); // phpcs:ignore PluginCheck.CodeAnalysis.DiscouragedFunctions.load_plugin_textdomainFound -- loads the bundled lang/ directory
 }
 
 add_action('plugins_loaded', 'sucuriscan_load_plugin_textdomain');

@@ -103,7 +103,7 @@ function sucuriscan_settings_general_datastorage($nonce)
                 }
 
                 /* ignore write permissions */
-                if (@unlink($filepath)) {
+                if (@unlink($filepath)) { // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
                     $deleted++;
                 }
             }

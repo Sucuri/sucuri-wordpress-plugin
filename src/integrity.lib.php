@@ -227,7 +227,7 @@ class SucuriScanIntegrity
             }
 
             if ($action === 'delete' && $status_type === 'added') {
-                if (@unlink($full_path)) {
+                if (@unlink($full_path)) { // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
                     $files_affected[] = $full_path;
                     $files_processed++;
                 }

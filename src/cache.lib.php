@@ -518,6 +518,6 @@ class SucuriScanCache extends SucuriScan
     {
         $filename = 'sucuri-' . $this->datastore . '.php';
 
-        return @unlink($this->dataStorePath($filename));
+        return @unlink($this->dataStorePath($filename)); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
     }
 }

@@ -172,7 +172,7 @@ class SucuriScanHardening extends SucuriScan
         $trimmed = trim($content);
 
         if (!filesize($fpath) || empty($trimmed)) {
-            @unlink($fpath);
+            @unlink($fpath); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
         }
 
         return (bool) ($written !== false);

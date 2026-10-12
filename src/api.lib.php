@@ -114,7 +114,7 @@ class SucuriScanAPI extends SucuriScanOption
 
         /* separate hardcoded query parameters */
         if (empty($params) && strpos($url, '?')) {
-            $parts = @parse_url($url);
+            $parts = wp_parse_url($url);
 
             if (array_key_exists('query', $parts)) {
                 $portions = explode('&', $parts['query']);
@@ -1418,7 +1418,7 @@ class SucuriScanAPI extends SucuriScanOption
 
         if ($custom) {
             $url = sprintf(
-                'https://raw.githubusercontent.com/%s/master/{filename}',
+                'https://raw.githubusercontent.com/%s/master/{filename}', // phpcs:ignore PluginCheck.CodeAnalysis.Offloading.OffloadedContent -- server-side fetch of core files for the integrity diff, not a front-end asset
                 $custom /* expect: username/repository */
             );
         }

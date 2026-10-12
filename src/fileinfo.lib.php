@@ -370,7 +370,7 @@ class SucuriScanFileInfo extends SucuriScan
         if (is_array($dir_tree) && !empty($dir_tree)) {
             foreach ($dir_tree as $filename) {
                 if (is_file($filename) || is_link($filename)) {
-                    @unlink($filename);
+                    @unlink($filename); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
                 }
             }
         }

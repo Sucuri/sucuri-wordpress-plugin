@@ -1,0 +1,41 @@
+name: Plugin Check
+
+# Runs WordPress Plugin Check, the tool the wordpress.org review team uses, on
+# every push and pull request. Deliberately its own workflow rather than part
+# of pre-release-checks.yml: it is advice for review, never a release gate.
+on: [ push, pull_request ]
+
+jobs:
+  # Checks exactly what ships: the export-ignore build from git archive, not the
+  # repository. That keeps tests, tooling and the e2e .wp-env.json out of the
+  # scan, and names the directory after the slug PCP checks against.
+  plugin-check:
+    name: Plugin Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: repository
+
+      - name: Build the plugin
+        run: git -C repository archive --prefix=sucuri-scanner/ HEAD | tar -x
+
+      # Ignored codes, which cannot be silenced inline:
+      #
+      # - missing_direct_file_access_protection: PCP only recognises an ABSPATH
+      #   or WPINC guard. Every file already exits on SUCURISCAN_INIT, which
+      #   only the plugin bootstrap defines, so direct access is still refused.
+      # - readme_parser_warnings_too_many_tags: wordpress.org shows the first
+      #   five tags; the rest are kept on purpose.
+      # - mismatched_plugin_name: the wordpress.org listing name and the plugin
+      #   header differ, and the listing name is not ours to change.
+      - name: Run Plugin Check
+        uses: wordpress/plugin-check-action@10857da14b6c2246d15402b3e69f777edcf8c12e # v1.1.9
+        with:
+          build-dir: ./sucuri-scanner
+          ignore-codes: |-
+            missing_direct_file_access_protection
+            readme_parser_warnings_too_many_tags
+            mismatched_plugin_name

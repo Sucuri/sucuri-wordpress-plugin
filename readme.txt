@@ -257,7 +257,7 @@ The best place is to engage us via the [Support Forum](https://wordpress.org/sup
 This version requires PHP 7.4 and WordPress 6.0 or later. It also adds one-time backup codes for two-factor authentication; if you already had 2FA turned on before upgrading, open your WordPress profile and generate your codes so you are not locked out if you lose your authenticator app.
 
 = 1.8.37 =
-This version removes the API communication service dependency on https://wordpress.sucuri.net/api/, because this service has been discontinued until further notice. Users who have their custom APIs to use in place of https://wordpress.sucuri.net/api/ can still use the API communication service by adding the API endpoint as SUCURISCAN_API_URL on the wp-config.php file.
+This version removes the dependency on the discontinued https://wordpress.sucuri.net/api/ service. To keep using the API communication service with your own API, set SUCURISCAN_API_URL in wp-config.php.
 
 = 1.8.19 =
 This version adds an option to refresh the malware scan results on demand, as well as several small bug fixes and improvements.

@@ -353,7 +353,7 @@ function sucuriscan_lastlogins_page()
     ) {
         $file_path = sucuriscan_lastlogins_datastore_filepath();
 
-        if (@unlink($file_path)) {
+        if (@unlink($file_path)) { // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
             sucuriscan_lastlogins_datastore_exists();
             SucuriScanInterface::info(__('Last-Logins logs were successfully reset.', 'sucuri-scanner'));
         } else {
