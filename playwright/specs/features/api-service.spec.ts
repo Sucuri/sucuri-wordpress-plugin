@@ -82,6 +82,10 @@ test.describe("Settings · API Service", () => {
       .getByTestId("sucuriscan_sitecheck_target_input")
       .fill(testDomain);
     await page.getByTestId("sucuriscan_sitecheck_target_submit").click();
+    // The POST re-renders the target; wait for it so the reload can't cancel the save.
+    await expect(page.getByTestId("sucuriscan_sitecheck_target")).toContainText(
+      testDomain,
+    );
 
     await page.reload();
     await expect(page.getByTestId("sucuriscan_sitecheck_target")).toContainText(
