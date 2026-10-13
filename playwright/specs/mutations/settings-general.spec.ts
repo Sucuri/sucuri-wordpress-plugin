@@ -138,6 +138,8 @@ test.describe("Settings · General", () => {
       .getByTestId("sucuriscan_import_export_settings_checkbox")
       .check();
     await page.getByTestId("sucuriscan_import_export_settings_submit").click();
+    // Let the POST finish before reloading, or the reload can cancel the import.
+    await expectNotice(page, /option have been successfully imported/);
 
     await page.reload();
     // The imported addr_header makes REMOTE_ADDR the selected option.

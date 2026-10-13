@@ -52,12 +52,15 @@ function restoreFreemiumBaseline(): void {
 }
 
 /**
- * Neutralise the two admin-ajax calls that would otherwise reach the network:
- * the firewall settings fetch, and the core/PHP vulnerability scan. The scan is
- * stubbed to fail immediately because the premium dashboard fires two sequential
- * 30s external-API requests, which would push these tests past the test timeout.
+ * Neutralise the admin-ajax calls that would otherwise reach the network: the
+ * firewall settings fetch, the core/PHP vulnerability scan, the SiteCheck
+ * malware scan and the per-plugin/theme vulnerability scans. The scans are
+ * stubbed to fail immediately: each one waits up to 30-60s on Sucuri's API, and
+ * the premium dashboard fires about ten of them on load, filling the browser's
+ * six connections to the site so later requests (e.g. the theme toggle) queue
+ * past their timeout whenever the API is slow.
  *
- * Must be registered before the first navigation — both requests fire on the
+ * Must be registered before the first navigation — all of them fire on the
  * page's initial render. Everything else falls through to the real server.
  */
 async function stubExternalAjax(page: import("@playwright/test").Page): Promise<void> {
@@ -70,7 +73,7 @@ async function stubExternalAjax(page: import("@playwright/test").Page): Promise<
         body: JSON.stringify({ ok: true, settings: {} }),
       });
     }
-    if (body.includes("vulnerabilities_scan_core_php")) {
+    if (/vulnerabilities_scan|malware_scan/.test(body)) {
       return route.fulfill({
         status: 200,
         contentType: "application/json",

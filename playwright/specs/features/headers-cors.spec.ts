@@ -54,20 +54,16 @@ const modeSelect = (page: Page) =>
   page.getByTestId("sucuriscan_cors_options_mode_button");
 
 /**
- * Click the CORS submit and wait for the form POST round-trip to complete, so
- * the option is persisted server-side before any front-end header is read.
- * (waitForLoadState('load') would resolve immediately since the page is already
- * loaded — we must wait for the POST navigation response instead.)
+ * Click the CORS submit and wait for the confirmation alert on the page the
+ * POST renders, so the option is persisted and the new page has loaded before
+ * any header read or reload. (Waiting only for the POST response returns while
+ * that page is still loading, and a page.reload() then races the navigation.)
  */
 async function submitCors(page: Page): Promise<void> {
-  await Promise.all([
-    page.waitForResponse(
-      (r) =>
-        r.request().method() === "POST" &&
-        r.url().includes("page=sucuriscan_headers_management"),
-    ),
-    page.getByTestId("sucuriscan_headers_cors_control_submit_btn").click(),
-  ]);
+  await page.getByTestId("sucuriscan_headers_cors_control_submit_btn").click();
+  await expect(page.locator(".sucuriscan-alert")).toContainText(
+    "CORS settings were updated.",
+  );
 }
 
 test.describe("Headers · CORS", () => {
