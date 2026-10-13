@@ -507,8 +507,29 @@ class SucuriScanTwoFactor extends SucuriScan
     }
 
     /**
+     * Log the user in and redirect, the same way wp_signon() finishes a login,
+     * including the wp_login action so login listeners (Last Logins, alerts,
+     * other plugins) see logins completed through two-factor.
+     */
+    protected static function finish_login($user_id, $remember, $redirect_to, $token)
+    {
+        self::clear_login_session($token);
+        wp_set_current_user($user_id);
+        wp_set_auth_cookie($user_id, $remember);
+
+        $user = get_user_by('id', $user_id);
+
+        if ($user instanceof WP_User) {
+            do_action('wp_login', $user->user_login, $user);
+        }
+
+        wp_safe_redirect($redirect_to);
+        exit;
+    }
+
+    /**
      * Complete a successful standard verification login.
-     * Clears session, sets auth cookie and redirects.
+     * Records the code timestamp, then finishes the login.
      */
     protected static function complete_success_login($user_id, $remember, $redirect_to, $token, $valid_ts)
     {
@@ -516,11 +537,7 @@ class SucuriScanTwoFactor extends SucuriScan
             update_user_meta($user_id, self::LAST_SUCCESS_META_KEY, $valid_ts);
         }
 
-        self::clear_login_session($token);
-        wp_set_current_user($user_id);
-        wp_set_auth_cookie($user_id, $remember);
-        wp_safe_redirect($redirect_to);
-        exit;
+        self::finish_login($user_id, $remember, $redirect_to, $token);
     }
 
     /**
@@ -560,11 +577,7 @@ class SucuriScanTwoFactor extends SucuriScan
             SucuriScanOption::updateOption(':twofactor_mode', 'selected_users');
         }
 
-        self::clear_login_session($token);
-        wp_set_current_user($user_id);
-        wp_set_auth_cookie($user_id, $remember);
-        wp_safe_redirect($redirect_to);
-        exit;
+        self::finish_login($user_id, $remember, $redirect_to, $token);
     }
 
     /*
