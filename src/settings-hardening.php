@@ -446,7 +446,7 @@ class SucuriScanHardeningPage extends SucuriScan
 	    $params['URL.Hardening'] = admin_url('admin.php?page=sucuriscan_hardening_prevention');
 
 	    if (self::processRequest(__FUNCTION__)) {
-            if (@unlink(ABSPATH . '/readme.html') === false) {
+            if (@unlink(ABSPATH . '/readme.html') === false) { // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
                 SucuriScanInterface::error(sprintf(
                     /* translators: %s: path to the wordpress root */
                     __('Cannot delete <code>%s/readme.html</code>', 'sucuri-scanner'),

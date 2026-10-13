@@ -652,7 +652,7 @@ class SucuriScanAuditLogs
     {
         $row = self::auditLogCsvRow($fields);
 
-        return fwrite($stream, $row) === strlen($row);
+        return fwrite($stream, $row) === strlen($row); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite
     }
 
     /**

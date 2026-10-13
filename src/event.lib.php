@@ -1121,7 +1121,7 @@ class SucuriScanEvent extends SucuriScan
                 );
             }
 
-            @unlink($filepath);
+            @unlink($filepath); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
             $filesDeleted[] = $file;
         }
 
