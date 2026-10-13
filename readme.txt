@@ -5,7 +5,7 @@ Tags: malware, security, firewall, scan, spam, virus, sucuri, protection, blockl
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.8
+Stable tag: 2.8.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -263,6 +263,10 @@ This version removes the dependency on the discontinued https://wordpress.sucuri
 This version adds an option to refresh the malware scan results on demand, as well as several small bug fixes and improvements.
 
 == Changelog ==
+= 2.8.1 =
+* Fix the Last Logins date and time column showing up blank when the site's date or time format setting is empty or invalid. The WordPress default format is used instead.
+* Fix logins completed through Two-Factor Authentication not being recorded in Last Logins or reported to other plugins that watch for logins.
+
 = 2.8 =
 * Add one-time backup codes for Two-Factor Authentication. Ten codes are created when 2FA is turned on, any one of them will get you in if you lose your authenticator app, and each code stops working once it has been used. You can generate a fresh set at any time from your WordPress profile.
 * Add a search box and severity, plugin, and theme filters to the Audit Logs page, so you can find a specific event without paging through the whole history. Filtering and paging now happen instantly.

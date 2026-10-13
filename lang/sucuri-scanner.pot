@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Sucuri Security - Auditing, Malware Scanner and Hardening 2.8\n"
+"Project-Id-Version: Sucuri Security - Auditing, Malware Scanner and Hardening 2.8.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/sucuri-scanner\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-06T06:21:57+00:00\n"
+"POT-Creation-Date: 2026-10-13T14:55:11+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: sucuri-scanner\n"
@@ -184,13 +184,13 @@ msgstr ""
 
 #: src/api.lib.php:644
 #: src/api.lib.php:670
-#: src/topt.lib.php:1801
+#: src/topt.lib.php:1814
 msgid "Activated"
 msgstr ""
 
 #: src/api.lib.php:648
-#: src/topt.lib.php:1805
-#: src/topt.lib.php:1857
+#: src/topt.lib.php:1818
+#: src/topt.lib.php:1870
 msgid "Deactivated"
 msgstr ""
 
@@ -531,7 +531,7 @@ msgstr ""
 
 #: src/globals.php:103
 #: src/strings.php:825
-#: src/topt.lib.php:734
+#: src/topt.lib.php:747
 msgid "Two-Factor Authentication"
 msgstr ""
 
@@ -1829,7 +1829,7 @@ msgstr ""
 #: src/settings-headers.php:439
 #: src/settings-integrity.php:82
 #: src/strings.php:778
-#: src/topt.lib.php:1241
+#: src/topt.lib.php:1254
 msgid "Enabled"
 msgstr ""
 
@@ -1851,7 +1851,7 @@ msgstr ""
 #: src/settings-headers.php:395
 #: src/settings-headers.php:439
 #: src/strings.php:779
-#: src/topt.lib.php:1242
+#: src/topt.lib.php:1255
 msgid "Disabled"
 msgstr ""
 
@@ -3866,7 +3866,7 @@ msgid "Click \"Setup\" to activate."
 msgstr ""
 
 #: src/strings.php:833
-#: src/topt.lib.php:1566
+#: src/topt.lib.php:1579
 msgid "Two-Factor Authentication is enabled for your account."
 msgstr ""
 
@@ -3879,7 +3879,7 @@ msgid "Setup"
 msgstr ""
 
 #: src/strings.php:838
-#: src/topt.lib.php:1526
+#: src/topt.lib.php:1539
 msgid "Two-Factor Authentication is already enabled for your account."
 msgstr ""
 
@@ -3891,179 +3891,179 @@ msgstr ""
 msgid "Invalid template type"
 msgstr ""
 
-#: src/topt.lib.php:628
+#: src/topt.lib.php:641
 msgid "Unable to initialize two-factor setup."
 msgstr ""
 
-#: src/topt.lib.php:676
+#: src/topt.lib.php:689
 msgid "Invalid two-factor authentication code."
 msgstr ""
 
-#: src/topt.lib.php:717
+#: src/topt.lib.php:730
 msgid "Invalid backup code."
 msgstr ""
 
-#: src/topt.lib.php:725
+#: src/topt.lib.php:738
 msgid "Enter the 6-digit code from your authenticator app or an 8-character backup code to continue."
 msgstr ""
 
-#: src/topt.lib.php:774
+#: src/topt.lib.php:787
 msgid "Invalid code. Make sure you scanned the QR and your device time is correct."
 msgstr ""
 
-#: src/topt.lib.php:798
+#: src/topt.lib.php:811
 msgid "Set up two-factor authentication. Scan the QR code with your authenticator app, then enter the 6-digit code to continue."
 msgstr ""
 
-#: src/topt.lib.php:807
+#: src/topt.lib.php:820
 msgid "Set up Two-Factor Authentication"
 msgstr ""
 
-#: src/topt.lib.php:1142
-#: src/topt.lib.php:1188
+#: src/topt.lib.php:1155
+#: src/topt.lib.php:1201
 msgid "Please enter the 6-digit verification code."
 msgstr ""
 
-#: src/topt.lib.php:1147
+#: src/topt.lib.php:1160
 msgid "Invalid secret. Reload the page and try again."
 msgstr ""
 
-#: src/topt.lib.php:1167
-#: src/topt.lib.php:1210
+#: src/topt.lib.php:1180
+#: src/topt.lib.php:1223
 msgid "Incorrect code. Check your authenticator app and device time."
 msgstr ""
 
-#: src/topt.lib.php:1192
+#: src/topt.lib.php:1205
 msgid "Invalid secret."
 msgstr ""
 
-#: src/topt.lib.php:1199
+#: src/topt.lib.php:1212
 msgid "Verification failed."
 msgstr ""
 
-#: src/topt.lib.php:1263
+#: src/topt.lib.php:1276
 msgid "Two-Factor is not enabled for this user. Ask the user to enable it from their own Profile page."
 msgstr ""
 
-#: src/topt.lib.php:1293
+#: src/topt.lib.php:1306
 msgid "You can only enable two-factor for your own account."
 msgstr ""
 
-#: src/topt.lib.php:1389
+#: src/topt.lib.php:1402
 msgid "You can only regenerate backup codes for your own account."
 msgstr ""
 
-#: src/topt.lib.php:1396
+#: src/topt.lib.php:1409
 msgid "Two-Factor must be enabled before generating backup codes."
 msgstr ""
 
-#: src/topt.lib.php:1449
+#: src/topt.lib.php:1462
 msgid "Two-Factor is not enforced for your account."
 msgstr ""
 
-#: src/topt.lib.php:1456
+#: src/topt.lib.php:1469
 msgid "Two-Factor is already enabled."
 msgstr ""
 
-#: src/topt.lib.php:1513
-#: src/topt.lib.php:2197
+#: src/topt.lib.php:1526
+#: src/topt.lib.php:2210
 msgid "Incorrect nonce."
 msgstr ""
 
-#: src/topt.lib.php:1519
-#: src/topt.lib.php:1559
-#: src/topt.lib.php:2203
+#: src/topt.lib.php:1532
+#: src/topt.lib.php:1572
+#: src/topt.lib.php:2216
 msgid "Incorrect user."
 msgstr ""
 
-#: src/topt.lib.php:1533
-#: src/topt.lib.php:1573
+#: src/topt.lib.php:1546
+#: src/topt.lib.php:1586
 msgid "Unable to generate secret."
 msgstr ""
 
-#: src/topt.lib.php:1634
+#: src/topt.lib.php:1647
 msgid "You are not allowed to list users."
 msgstr ""
 
-#: src/topt.lib.php:1803
+#: src/topt.lib.php:1816
 msgid "Enforced / not active"
 msgstr ""
 
-#: src/topt.lib.php:1829
+#: src/topt.lib.php:1842
 msgid "Activate two factor for all users"
 msgstr ""
 
-#: src/topt.lib.php:1830
+#: src/topt.lib.php:1843
 msgid "Activate two factor for selected users"
 msgstr ""
 
-#: src/topt.lib.php:1831
+#: src/topt.lib.php:1844
 msgid "Deactivate two factor for all users"
 msgstr ""
 
-#: src/topt.lib.php:1832
+#: src/topt.lib.php:1845
 msgid "Deactivate two factor for selected users"
 msgstr ""
 
-#: src/topt.lib.php:1833
+#: src/topt.lib.php:1846
 msgid "Reset two factor for selected users (keep enforcement)"
 msgstr ""
 
-#: src/topt.lib.php:1834
+#: src/topt.lib.php:1847
 msgid "Reset two factor for all users (keep enforcement)"
 msgstr ""
 
-#: src/topt.lib.php:1835
+#: src/topt.lib.php:1848
 msgid "Delete all two-factor data and disable enforcement"
 msgstr ""
 
-#: src/topt.lib.php:1862
+#: src/topt.lib.php:1875
 msgid "Activated for all users"
 msgstr ""
 
-#: src/topt.lib.php:1865
+#: src/topt.lib.php:1878
 msgid "Activated for some users"
 msgstr ""
 
-#: src/topt.lib.php:2022
+#: src/topt.lib.php:2035
 msgid "You are not allowed to modify Two-Factor settings."
 msgstr ""
 
-#: src/topt.lib.php:2038
+#: src/topt.lib.php:2051
 msgid "Two-Factor enforced for all users."
 msgstr ""
 
-#: src/topt.lib.php:2048
+#: src/topt.lib.php:2061
 msgid "Two-Factor deactivated for all users."
 msgstr ""
 
-#: src/topt.lib.php:2055
-#: src/topt.lib.php:2073
-#: src/topt.lib.php:2114
+#: src/topt.lib.php:2068
+#: src/topt.lib.php:2086
+#: src/topt.lib.php:2127
 msgid "No users selected."
 msgstr ""
 
-#: src/topt.lib.php:2066
+#: src/topt.lib.php:2079
 msgid "Two-Factor enforced for selected users."
 msgstr ""
 
-#: src/topt.lib.php:2108
+#: src/topt.lib.php:2121
 msgid "Two-Factor deactivated for selected users."
 msgstr ""
 
-#: src/topt.lib.php:2126
+#: src/topt.lib.php:2139
 msgid "Two-Factor settings reset for selected users."
 msgstr ""
 
-#: src/topt.lib.php:2150
+#: src/topt.lib.php:2163
 msgid "Two-Factor settings reset for all users."
 msgstr ""
 
-#: src/topt.lib.php:2169
+#: src/topt.lib.php:2182
 msgid "All Two-Factor data deleted and enforcement disabled."
 msgstr ""
 
-#: src/topt.lib.php:2175
+#: src/topt.lib.php:2188
 msgid "Invalid two-factor action selected."
 msgstr ""
 
