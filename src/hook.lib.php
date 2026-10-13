@@ -294,6 +294,76 @@ class SucuriScanHook extends SucuriScanEvent
     }
 
     /**
+     * User the current request arrived logged in as.
+     *
+     * @var int
+     */
+    private static $loginArrivedAs = 0;
+
+    /**
+     * Sessions issued during the current request, as user ID => session token.
+     *
+     * @var array
+     */
+    private static $loginSessions = array();
+
+    /**
+     * Record the user the request arrived logged in as.
+     *
+     * Logins are detected from the session WordPress issues rather than from
+     * wp_login, which two-factor plugins skip or interrupt. A login counts when
+     * the request ends with a live session for a user it did not arrive as, so
+     * cookie renewals and logins interrupted by a second factor are ignored.
+     *
+     * @return void
+     */
+    public static function loginWatchStart()
+    {
+        self::$loginArrivedAs = get_current_user_id();
+    }
+
+    /**
+     * Remember a session issued for a user other than the one already logged in.
+     *
+     * @param  string $auth_cookie Authentication cookie value.
+     * @param  int    $expire      Cookie grace period.
+     * @param  int    $expiration  Cookie expiration.
+     * @param  int    $user_id     User the session belongs to.
+     * @param  string $scheme      Cookie scheme.
+     * @param  string $token       Session token.
+     * @return void
+     */
+    public static function loginWatchCookieSet($auth_cookie, $expire, $expiration, $user_id, $scheme, $token)
+    {
+        $user_id = (int) $user_id;
+        /* before init, fall back to the cookie the request arrived with */
+        $arrived_as = did_action('init') ? self::$loginArrivedAs : (int) wp_validate_auth_cookie('', 'logged_in');
+
+        if ($user_id > 0 && $user_id !== $arrived_as) {
+            self::$loginSessions[$user_id] = (string) $token;
+        }
+    }
+
+    /**
+     * Report each session issued in this request that is still valid.
+     *
+     * @return void
+     */
+    public static function loginWatchFinish()
+    {
+        $sessions = self::$loginSessions;
+        self::$loginSessions = array();
+
+        foreach ($sessions as $user_id => $token) {
+            $user = get_user_by('id', $user_id);
+
+            if ($user instanceof WP_User && WP_Session_Tokens::get_instance($user_id)->verify($token)) {
+                do_action('sucuriscan_login', $user->user_login, $user);
+            }
+        }
+    }
+
+    /**
      * Send an alert notifying that an attempt to login into the
      * administration panel was successful.
      *
